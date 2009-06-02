@@ -1,0 +1,71 @@
+<!-- Begin Header -->
+	<h1> <a href="{{script_name}}/">Prototipo Backup Corporativo</a> </h1>
+	<hr />
+<!-- End Header -->
+
+<!-- Begin Computers -->
+	<h2>Computadores</h2>
+	
+	<ul>
+	{% for c in comps %}
+		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | Hash Attributes |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} <form class="link" action="{{script_name}}/computer/{{comp.id}}/delete" method="post">
+	    <button type="submit">remover</button>
+	</form></li>
+	{% endfor %}
+	</ul>
+	
+	<hr />
+<!--  Expandable/Collapsible Area -->
+	<h3>Adicionar Computador</h3>
+	
+	<form action="{{script_name}}/computer/" method="post">
+	{{ compform.as_p }}
+	<input type="submit" value="Submit" />
+	</form> 
+
+	<hr />
+<!-- End Computers -->
+
+<!-- Begin Procedures -->
+	<h2>Procedimentos</h2>
+	{% if procs %}
+	<ul>
+	{% for p in procs %}
+	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.name }}</a> | Hash Attributes | <form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
+	    <button type="submit">remover</button>
+	</form></li>
+	{% endfor %}
+	</ul>
+	{% else %}
+	<p>Nao existem procedimentos para este computador.</p>
+	{% endif %}
+	
+	<hr />
+<!--  Expandable/Collapsible Area -->
+	<h3>Adicionar Procedimento</h3>
+	<form action="{{script_name}}/computer/{{comp.id}}/procedure/" method="post">
+	{{ procform.as_p }}
+	<input type="submit" value="Submit" />
+	</form> 
+	
+	<hr />
+<!-- End Procedures -->
+
+<!-- Begin FileSets -->
+	<h2>Locais</h2>
+	<p>Nao ha procedimento selecionado.</p>
+	
+	<hr />
+<!-- End FileSets -->
+
+<!-- Begin Schedules -->
+	<h2>Agendamentos</h2>
+	<p>Nao ha procedimento selecionado.</p>
+	
+	<hr />
+<!-- End Schedules -->
+
+<!-- Begin Triggers-->
+	<h2>Detalhe Agendamento</h2>
+	<p>Nao ha agendamento selecionado.</p>
+<!-- End Triggers -->
