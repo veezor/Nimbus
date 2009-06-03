@@ -41,6 +41,9 @@ class Computer(models.Model):
     def procedures_list(self):
         return Procedure.objects.filter(computer=self.id)
 
+    def get_computer_name(self):
+        return str.lower(str(self.name))
+
     def __unicode__(self):
         return self.name
         
@@ -67,6 +70,21 @@ class Procedure(models.Model):
     # get list of associated pools        
     def pools_list(self):
         return Pool.objects.filter(procedure=self.id)
+    
+    # get fileset name for bacula file
+    def get_fileset_name(self):
+        return "%sSet" % (self.name)
+        
+    # get procedure name for bacula file    
+    def get_procedure_name(self):
+        return "%sJob" % (self.name)
+        
+    # get schedule name for bacula file       
+    def get_schedule_name(self):
+        return "%sSched" % (self.name)
+    # get pool name for bacula file
+    def get_pool_name(self):
+        return "%sPool" % (self.name)
 
     def __unicode__(self):
         return self.name

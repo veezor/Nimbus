@@ -22,9 +22,7 @@ from backup_corporativo.bkp.models import Pool
 def create_pools(sender, instance, signal, *args, **kwargs):
     if 'created' in kwargs:
         if kwargs['created']:   # instance was just created
-            ipool = Pool(procedure=instance,level='Incremental')
-            ipool.save()
-            fpool = Pool(procedure=instance,level='Full')
+            fpool = Pool(procedure=instance,level='remover atributo')
             fpool.save()
 
 # updates statuses for procedure and schedule objects
@@ -37,10 +35,11 @@ def update_rel_statuses(sender, instance, signal, *args, **kwargs):
 # entry point for update files
 def update_files(sender, instance, signal, *args, **kwargs):
     if sender == FileSet:
-        update_fileset_file(instance.procedure)    
+        update_fileset_file(instance.procedure)
     elif sender == Computer:
         update_computer_file(instance)
     elif sender == Procedure:
+        update_procedure_file(instance)
         update_fileset_file(instance)
     else:
         # do nothing for now
@@ -51,6 +50,7 @@ def remove_files(sender, instance, signal, *args, **kwargs):
     if sender == Computer:
         remove_computer_file(instance)
     elif sender == Procedure:
+        remove_procedure_file(instance)
         remove_fileset_file(instance)
     else:
         # do nothing for now
@@ -60,11 +60,52 @@ def remove_files(sender, instance, signal, *args, **kwargs):
 #   Auxiliar Definitions
 #
 
+# Procedure update file
+def update_procedure_file(instance):
+    proc_name = instance.get_procedure_name()
+    fset_name = instance.get_fileset_name()
+    sched_name = instance.get_schedule_name()
+    pool_name = instance.get_pool_name()
+    comp_name = instance.computer.get_computer_name()
+    jdict = procedure_dict(proc_name,'Backup',comp_name,fset_name,sched_name,pool_name)
+    generate_procedure(proc_name,jdict)
+    
+# generate procedure attributes dict
+def procedure_dict(proc_name, type, computer_name, fset_name, sched_name, pool_name, where=None):
+    bootstrap = '/var/lib/bacula/%s.bsr' % (proc_name)
+    
+    return {'Name':proc_name, 'Client':computer_name, 'Level':'Incremental', 
+    'FileSet':fset_name, 'Schedule':sched_name, 'Storage':'LinconetStorage', 'Pool':pool_name, 
+    'Write Bootstrap':bootstrap, 'Priority':'10', 'Messages':'Standard','Type':type,'Where':where}
+
+
+# generate procedure file
+def generate_procedure(proc_name,attr_dict):
+    f = prepare_to_write(proc_name,'custom/jobs')
+
+    f.write("Job {\n")
+    if attr_dict['Type'] == 'Backup':
+        f.write('''\tWrite Bootstrap = "%s"\n''' % (attr_dict['Write Bootstrap']))
+
+    elif attr_dict['Type'] == 'Restore':
+        f.write('''\tWhere = "%s"\n''' % (attr_dict['Where']))
+    del(attr_dict['Where'])
+    del(attr_dict['Write Bootstrap'])
+    for k in attr_dict.keys():
+        f.write('''\t%(key)s = "%(value)s"\n''' % {'key':k,'value':attr_dict[k]})
+    f.write("}\n")
+
+# remove procedure file
+def remove_procedure_file(instance):
+    base_dir,filepath = mount_path(instance.get_procedure_name(),'custom/jobs')
+    remove_or_leave(filepath)
+
+
 # Computer update file
 def update_computer_file(instance):
     default_password = 'm4r14f4r1nh4'
-    cdict = computer_dict(instance.name,instance.ip,default_password)
-    generate_computer_file(instance.name,cdict)
+    cdict = computer_dict(instance.get_computer_name(),instance.ip,default_password)
+    generate_computer_file(instance.get_computer_name(),cdict)
 
 # generate attributes dict
 def computer_dict(name,ip,senha):
@@ -83,20 +124,17 @@ def generate_computer_file(name,attr_dict):
 
 # Computer remove file
 def remove_computer_file(instance):
-    base_dir,filepath = mount_path(instance.name,'custom/computers')
+    base_dir,filepath = mount_path(instance.get_computer_name(),'custom/computers')
     remove_or_leave(filepath)
     
 
 # FileSet update filesets to a procedure instance
 def update_fileset_file(procedure):
     fsets = procedure.filesets_list()
-    name = get_fileset_name(procedure.name)
+    name = procedure.get_fileset_name()
     farray = generate_file_array(fsets)
     generate_fileset_file(name,farray)
 
-# get fileset name
-def get_fileset_name(procedure_name):
-    return "%sSet" % (procedure_name)
     
 # generate file_array
 def generate_file_array(fsets):
@@ -124,7 +162,7 @@ def generate_fileset_file(name,file_array):
 
 # remove FileSet file
 def remove_fileset_file(procedure):
-    name = get_fileset_name(procedure.name)
+    name = procedure.get_fileset_name()
     base_dir,filepath = mount_path(name,'custom/filesets')
     remove_or_leave(filepath)    
 
@@ -152,6 +190,7 @@ def remove_or_leave(filepath):
         # Leave
         pass
 
+
 # make sure base_dir exists and open filename        
 def prepare_to_write(instance_name,rel_dir):
     base_dir,filepath = mount_path(instance_name,rel_dir)
@@ -159,6 +198,7 @@ def prepare_to_write(instance_name,rel_dir):
     #remove_or_leave(filepath)
     return open(filepath, 'w')
 
+# mount absolute dir path and filepath
 def mount_path(instance_name,rel_dir):
     filename = str.lower(str(instance_name))
     root = os.path.dirname(os.path.abspath(__file__))
