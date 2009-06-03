@@ -41,9 +41,11 @@ def update_files(sender, instance, signal, *args, **kwargs):
     elif sender == Procedure:
         update_procedure_file(instance)
         update_fileset_file(instance)
+    elif sender == Pool:
+        update_pool_file(instance.procedure)
     else:
-        # do nothing for now
-        pass
+        raise # Oops!
+
 
 # entry point for remove files
 def remove_files(sender, instance, signal, *args, **kwargs):
@@ -52,9 +54,10 @@ def remove_files(sender, instance, signal, *args, **kwargs):
     elif sender == Procedure:
         remove_procedure_file(instance)
         remove_fileset_file(instance)
+    elif sender == Pool:
+        remove_pool_file(instance.procedure)
     else:
-        # do nothing for now
-        pass
+        raise # Oops!
 
 #
 #   Auxiliar Definitions
@@ -94,6 +97,7 @@ def generate_procedure(proc_name,attr_dict):
     for k in attr_dict.keys():
         f.write('''\t%(key)s = "%(value)s"\n''' % {'key':k,'value':attr_dict[k]})
     f.write("}\n")
+    f.close()
 
 # remove procedure file
 def remove_procedure_file(instance):
@@ -166,6 +170,34 @@ def remove_fileset_file(procedure):
     base_dir,filepath = mount_path(name,'custom/filesets')
     remove_or_leave(filepath)    
 
+# Pool update pool bacula file
+def update_pool_file(procedure):
+    pool_name = procedure.get_pool_name()
+    pdict = pool_dict(pool_name)
+    generate_pool(pool_name,pdict)
+
+# Generate pool attributes dict
+def pool_dict(pool_name):
+    format = '%s-vol-' % (pool_name)
+    return {'Name':pool_name, 'Pool Type':'Backup', 'Recycle':'yes', 'AutoPrune':'yes', 
+    'Volue Retention':'31 days','Purge Oldest Volume':'yes','Maximum Volume Bytes':'1048576',
+    'Recycle Oldest Volume':'yes','Label Format':format}
+
+# generate pool bacula file
+def generate_pool(name,attr_dict):        
+    f = prepare_to_write(name,'custom/pools')
+    
+    f.write("Pool {\n")
+    for k in attr_dict.keys():
+        f.write('''\t%(key)s = "%(value)s"\n''' % {'key':k,'value':attr_dict[k]})
+    f.write("}\n")
+    f.close()
+
+# pool remove file
+def remove_pool_file(instance):
+    base_dir,filepath = mount_path(instance.get_pool_name(),'custom/pools')
+    remove_or_leave(filepath)
+
 #
 #   File Handling Specific Definitions
 #
@@ -233,3 +265,6 @@ models.signals.post_delete.connect(update_rel_statuses, sender=MonthlyTrigger)
 # UniqueTrigger
 models.signals.post_save.connect(update_rel_statuses, sender=UniqueTrigger)
 models.signals.post_delete.connect(update_rel_statuses, sender=UniqueTrigger)
+# Pool
+models.signals.post_save.connect(update_files, sender=Pool)
+models.signals.post_delete.connect(remove_files, sender=Pool)

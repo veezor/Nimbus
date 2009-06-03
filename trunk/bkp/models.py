@@ -73,18 +73,18 @@ class Procedure(models.Model):
     
     # get fileset name for bacula file
     def get_fileset_name(self):
-        return "%sSet" % (self.name)
+        return "%s_Set" % (self.name)
         
     # get procedure name for bacula file    
     def get_procedure_name(self):
-        return "%sJob" % (self.name)
+        return "%s_Job" % (self.name)
         
     # get schedule name for bacula file       
     def get_schedule_name(self):
-        return "%sSched" % (self.name)
+        return "%s_Sched" % (self.name)
     # get pool name for bacula file
     def get_pool_name(self):
-        return "%sPool" % (self.name)
+        return "%s_Pool" % (self.name)
 
     def __unicode__(self):
         return self.name
