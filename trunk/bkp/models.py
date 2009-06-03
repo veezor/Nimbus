@@ -1,4 +1,11 @@
 from django.db import models
+import os
+import string
+
+# TODO
+# add computer attribute password
+# auto generate computer password
+# update def update_computer_file(instance): with computer password
 
 # Some constants
 TYPE_CHOICES = (
@@ -127,35 +134,4 @@ class Pool(models.Model):
 #
 #   Signals
 #
-
-# create associated pools to the procedure 
-def create_pools(sender, instance, signal,*args, **kwargs):
-    if 'created' in kwargs:
-        if kwargs['created']:   # instance was just created
-            ipool = Pool(procedure=instance,level='Incremental')
-            ipool.save()
-            fpool = Pool(procedure=instance,level='Full')
-            fpool.save()
-
-# updates statuses for procedure and schedule objects
-def update_rel_statuses(sender, instance, signal,*args, **kwargs):
-    if sender == FileSet:   # need to update procedure
-        instance.procedure.update_status()
-    elif ((sender == WeeklyTrigger) or (sender == MonthlyTrigger) or (sender == UniqueTrigger)): # need to update schedule
-        instance.schedule.update_status()
-        
-       
-# Procedure    
-models.signals.post_save.connect(create_pools, sender=Procedure)
-# FileSet
-models.signals.post_save.connect(update_rel_statuses, sender=FileSet)
-models.signals.post_delete.connect(update_rel_statuses, sender=FileSet)
-# WeeklyTrigger
-models.signals.post_save.connect(update_rel_statuses, sender=WeeklyTrigger)
-models.signals.post_delete.connect(update_rel_statuses, sender=WeeklyTrigger)
-# MonthlyTrigger
-models.signals.post_save.connect(update_rel_statuses, sender=MonthlyTrigger)
-models.signals.post_delete.connect(update_rel_statuses, sender=MonthlyTrigger)
-# UniqueTrigger
-models.signals.post_save.connect(update_rel_statuses, sender=UniqueTrigger)
-models.signals.post_delete.connect(update_rel_statuses, sender=UniqueTrigger)
+import backup_corporativo.bkp.signals
