@@ -112,6 +112,8 @@ def generate_procedure(proc_name,attr_dict):
 
     elif attr_dict['Type'] == 'Restore':
         f.write('''\tWhere = "%s"\n''' % (attr_dict['Where']))
+        del(attr_dict['Schedule'])
+        del(attr_dict['Level'])    
     del(attr_dict['Where'])
     del(attr_dict['Write Bootstrap'])
     for k in attr_dict.keys():
@@ -139,7 +141,7 @@ def update_computer_file(instance):
 # generate computer attributes dict
 def computer_dict(name,ip,senha):
     return {'Name':name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
-    'password':senha, 'File Retention':'30 days', 'Job Retention':'6 months', 'AutoPrune':'yes'}
+    'password':senha, 'AutoPrune':'yes'}
 
 # Computer generate file    
 def generate_computer_file(name,attr_dict):        
@@ -208,7 +210,7 @@ def update_pool_file(procedure):
 def pool_dict(pool_name):
     format = '%s-vol-' % (pool_name)
     return {'Name':pool_name, 'Pool Type':'Backup', 'Recycle':'yes', 'AutoPrune':'yes', 
-    'Volue Retention':'31 days','Purge Oldest Volume':'yes','Maximum Volume Bytes':'1048576',
+    'Volume Retention':'31 days','Purge Oldest Volume':'yes','Maximum Volume Bytes':'1048576',
     'Recycle Oldest Volume':'yes','Label Format':format}
 
 # generate pool bacula file
@@ -216,6 +218,10 @@ def generate_pool(name,attr_dict):
     f = prepare_to_write(name,'custom/pools')
     
     f.write("Pool {\n")
+    f.write("\tMaximum Volume Bytes = %s\n" % (attr_dict['Maximum Volume Bytes']))
+    f.write("\tVolume Retention = %s\n" % (attr_dict['Volume Retention']))    
+    del(attr_dict['Maximum Volume Bytes'])
+    del(attr_dict['Volume Retention'])
     for k in attr_dict.keys():
         f.write('''\t%(key)s = "%(value)s"\n''' % {'key':k,'value':attr_dict[k]})
     f.write("}\n")
@@ -237,12 +243,12 @@ def run_dict(schedules_list):
                 days = []
                 for day in DAYS_OF_THE_WEEK:
                     if getattr(trigg, day, None):
-                        key = "%s at %s" % (day,str(trigg.hour))
+                        key = "%s at %s" % (day,str(trigg.hour.strftime("%H:%M")))
                         dict[key] = trigg.level
             elif sched.type == 'Monthly':
                 days = trigg.target_days.split(';')
                 for day in days:
-                    key = "monthly %s at %s" % (day,str(trigg.hour))
+                    key = "monthly %s at %s" % (day,str(trigg.hour.strftime("%H:%M")))
                     dict[key] = trigg.level
             else:
                 # unique type still needs to be implemented
@@ -265,7 +271,7 @@ def generate_schedule(schedule_name,run_dict):
     f.write("Schedule {\n")
     f.write('''\tName = "%s"\n''' % (schedule_name))
     for k in run_dict.keys():
-        f.write('''\tRun = "%(level)s %(date)s"\n''' % {'date':k,'level':run_dict[k]})
+        f.write('''\tRun = %(level)s %(date)s\n''' % {'date':k,'level':run_dict[k]})    
     f.write("}\n")
     f.close()
 
