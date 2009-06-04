@@ -7,7 +7,7 @@ import string
 # auto generate computer password
 # update def update_computer_file(instance): with computer password
 
-# Some constants
+### Constants ###
 TYPE_CHOICES = (
     ('Weekly', 'Weekly'),
     ('Monthly', 'Monthly'),
@@ -26,12 +26,13 @@ DAYS_OF_THE_WEEK = (
 )
 
 
-#
-#   Models
-#
+###
+###   Models
+###
 
 
-# Computer
+### Computer ###
+
 class Computer(models.Model):
     name = models.CharField(max_length=50)
     ip = models.IPAddressField()
@@ -47,7 +48,8 @@ class Computer(models.Model):
     def __unicode__(self):
         return self.name
         
-# Procedure
+### Procedure ###
+
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
     name = models.CharField(max_length=50)
@@ -78,6 +80,10 @@ class Procedure(models.Model):
     # get procedure name for bacula file    
     def get_procedure_name(self):
         return "%s_Job" % (self.name)
+    
+    # get restore procedure name for bacula    
+    def get_restore_name(self):
+        return "%s_RestoreJob" % (self.name)
         
     # get schedule name for bacula file       
     def get_schedule_name(self):
@@ -90,7 +96,8 @@ class Procedure(models.Model):
         return self.name
 
 
-# Schedule
+### Schedule ###
+
 class Schedule(models.Model):
     procedure = models.ForeignKey(Procedure)
     type = models.CharField(max_length=20,choices=TYPE_CHOICES)
@@ -114,7 +121,8 @@ class Schedule(models.Model):
         return self.procedure.name 
 
 
-# WeeklyTrigger
+### WeeklyTrigger ###
+
 class WeeklyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
     for day in DAYS_OF_THE_WEEK:
@@ -123,7 +131,8 @@ class WeeklyTrigger(models.Model):
     level = models.CharField(max_length=20,choices=LEVEL_CHOICES)
 
 
-# MonthlyTrigger
+### MonthlyTrigger ###
+
 class MonthlyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
     hour = models.TimeField()
@@ -131,25 +140,25 @@ class MonthlyTrigger(models.Model):
     target_days = models.CharField(max_length=100)
 
 
-# UniqueTrigger
+### UniqueTrigger ###
 class UniqueTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
     target_date = models.DateField()
     hour = models.TimeField()
     level = models.CharField(max_length=20,choices=LEVEL_CHOICES)
 
-# FileSet
+### FileSet ###
 class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
     path = models.CharField(max_length="255")
 
 
-# Pool
+### Pool ###
 class Pool(models.Model):
     procedure = models.ForeignKey(Procedure)
     level = models.CharField(max_length=20,choices=LEVEL_CHOICES)
     
-#
-#   Signals
-#
+###
+###   Signals
+###
 import backup_corporativo.bkp.signals

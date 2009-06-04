@@ -13,10 +13,18 @@ from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import Pool
 # debug     import pdb; pdb.set_trace()
 
+### Constants ###
 
-#
-#   Main Definitions
-#
+DAYS_OF_THE_WEEK = (
+    'sunday','monday','tuesday',
+    'wednesday','thursday','friday',
+    'saturday',
+)
+
+
+###
+###   Main Definitions
+###
 
 # create associated pools to the procedure 
 def create_pools(sender, instance, signal, *args, **kwargs):
@@ -41,8 +49,11 @@ def update_files(sender, instance, signal, *args, **kwargs):
     elif sender == Procedure:
         update_procedure_file(instance)
         update_fileset_file(instance)
+        update_schedule_file(instance)        
     elif sender == Pool:
         update_pool_file(instance.procedure)
+    elif sender == Schedule:
+        update_schedule_file(instance.procedure)
     else:
         raise # Oops!
 
@@ -54,24 +65,33 @@ def remove_files(sender, instance, signal, *args, **kwargs):
     elif sender == Procedure:
         remove_procedure_file(instance)
         remove_fileset_file(instance)
+        remove_schedule_file(instance)
     elif sender == Pool:
         remove_pool_file(instance.procedure)
+    elif sender == Schedule:
+        pass
     else:
         raise # Oops!
 
-#
-#   Auxiliar Definitions
-#
+###
+###   Auxiliar Definitions
+###
+
+
+#### Procedure #####
 
 # Procedure update file
 def update_procedure_file(instance):
     proc_name = instance.get_procedure_name()
+    restore_name = instance.get_restore_name()
     fset_name = instance.get_fileset_name()
     sched_name = instance.get_schedule_name()
     pool_name = instance.get_pool_name()
     comp_name = instance.computer.get_computer_name()
     jdict = procedure_dict(proc_name,'Backup',comp_name,fset_name,sched_name,pool_name)
     generate_procedure(proc_name,jdict)
+    rdict = procedure_dict(restore_name,'Restore',comp_name,fset_name,sched_name,pool_name,instance.restore_path)
+    generate_procedure(restore_name,rdict)
     
 # generate procedure attributes dict
 def procedure_dict(proc_name, type, computer_name, fset_name, sched_name, pool_name, where=None):
@@ -103,7 +123,12 @@ def generate_procedure(proc_name,attr_dict):
 def remove_procedure_file(instance):
     base_dir,filepath = mount_path(instance.get_procedure_name(),'custom/jobs')
     remove_or_leave(filepath)
+    base_dir,filepath = mount_path(instance.get_restore_name(),'custom/jobs')
+    remove_or_leave(filepath)
+    
 
+
+#### Computer #####
 
 # Computer update file
 def update_computer_file(instance):
@@ -111,7 +136,7 @@ def update_computer_file(instance):
     cdict = computer_dict(instance.get_computer_name(),instance.ip,default_password)
     generate_computer_file(instance.get_computer_name(),cdict)
 
-# generate attributes dict
+# generate computer attributes dict
 def computer_dict(name,ip,senha):
     return {'Name':name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
     'password':senha, 'File Retention':'30 days', 'Job Retention':'6 months', 'AutoPrune':'yes'}
@@ -131,6 +156,7 @@ def remove_computer_file(instance):
     base_dir,filepath = mount_path(instance.get_computer_name(),'custom/computers')
     remove_or_leave(filepath)
     
+#### FileSet #####
 
 # FileSet update filesets to a procedure instance
 def update_fileset_file(procedure):
@@ -170,6 +196,8 @@ def remove_fileset_file(procedure):
     base_dir,filepath = mount_path(name,'custom/filesets')
     remove_or_leave(filepath)    
 
+#### Pool #####
+
 # Pool update pool bacula file
 def update_pool_file(procedure):
     pool_name = procedure.get_pool_name()
@@ -198,9 +226,58 @@ def remove_pool_file(instance):
     base_dir,filepath = mount_path(instance.get_pool_name(),'custom/pools')
     remove_or_leave(filepath)
 
-#
-#   File Handling Specific Definitions
-#
+### Schedule ###
+
+def run_dict(schedules_list):
+    dict = {}
+    for sched in schedules_list:
+        trigg = sched.get_trigger()
+        if trigg:
+            if sched.type == 'Weekly':
+                days = []
+                for day in DAYS_OF_THE_WEEK:
+                    if getattr(trigg, day, None):
+                        key = "%s at %s" % (day,str(trigg.hour))
+                        dict[key] = trigg.level
+            elif sched.type == 'Monthly':
+                days = trigg.target_days.split(';')
+                for day in days:
+                    key = "monthly %s at %s" % (day,str(trigg.hour))
+                    dict[key] = trigg.level
+            else:
+                # unique type still needs to be implemented
+                raise
+        else:
+            # there's no trigger configured
+            pass
+    return dict
+
+
+def update_schedule_file(procedure):
+    sched_name = procedure.get_schedule_name()
+    scheds = procedure.schedules_list()
+    rdict = run_dict(scheds)
+    generate_schedule(sched_name,rdict)
+
+def generate_schedule(schedule_name,run_dict):        
+    f = prepare_to_write(schedule_name,'custom/schedules')
+
+    f.write("Schedule {\n")
+    f.write('''\tName = "%s"\n''' % (schedule_name))
+    for k in run_dict.keys():
+        f.write('''\tRun = "%(level)s %(date)s"\n''' % {'date':k,'level':run_dict[k]})
+    f.write("}\n")
+    f.close()
+
+def remove_schedule_file(procedure):
+    base_dir,filepath = mount_path(procedure.get_schedule_name(),'custom/schedules')
+    remove_or_leave(filepath)
+    
+
+
+###
+###   File Handling Specific Definitions
+###
 
 # create dir if dont exists
 def create_or_leave(dirpath):
@@ -239,9 +316,9 @@ def mount_path(instance_name,rel_dir):
     return base_dir, filepath
     
     
-#
-#   Dispatcher Connection
-#
+###
+###   Dispatcher Connection
+###
 
 
 # Computer
@@ -256,6 +333,10 @@ models.signals.post_save.connect(update_rel_statuses, sender=FileSet)
 models.signals.post_save.connect(update_files, sender=FileSet)
 models.signals.post_delete.connect(update_rel_statuses, sender=FileSet)
 models.signals.post_delete.connect(update_files, sender=FileSet)
+# Schedule
+models.signals.post_save.connect(update_files, sender=Schedule)
+models.signals.post_delete.connect(remove_files, sender=Schedule)
+
 # WeeklyTrigger
 models.signals.post_save.connect(update_rel_statuses, sender=WeeklyTrigger)
 models.signals.post_delete.connect(update_rel_statuses, sender=WeeklyTrigger)

@@ -29,7 +29,8 @@ from django.shortcuts import render_to_response
 def index(request):
     return render_to_response('bkp/index.html', {'script_name':request.META['SCRIPT_NAME']})
 
-# Computers 
+### Computers ###
+
 def list_computers(request):
     comps = Computer.objects.all()
     compform = ComputerForm()
@@ -106,7 +107,8 @@ def create_computer(request):
         return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
 
 
-# Procedure
+### Procedure ###
+
 def view_procedure(request, computer_id=None, procedure_id=None):
     if request.method == 'GET':
         if procedure_id:
@@ -158,7 +160,8 @@ def delete_procedure(request, computer_id=None, procedure_id=None):
 
 
 
-# Schedule
+### Schedule ###
+
 def view_schedule(request, computer_id=None, procedure_id=None, schedule_id=None):
     if request.method == 'GET':
         if schedule_id:
@@ -228,7 +231,7 @@ def delete_schedule(request, computer_id=None, procedure_id=None, schedule_id=No
         return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
         
         
-# Triggers        
+### Triggers ###
 
 def weeklytrigger(request, computer_id=None, procedure_id=None, schedule_id=None):
     if request.method == 'POST': # If the form has been submitted...
@@ -298,7 +301,7 @@ def uniquetrigger(request, computer_id=None, procedure_id=None, schedule_id=None
         return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})
         
         
-# FileSets
+### FileSets ###
 
 def create_fileset(request, computer_id=None, procedure_id=None):
     if request.method == 'POST': # If the form has been submitted...
