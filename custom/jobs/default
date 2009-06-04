@@ -1,0 +1,9 @@
+Job {
+	Name = "empty job"
+	Type = "Backup"
+	Messages = "Standard"
+	Pool = "empty pool"
+	Client = "empty client"
+	FileSet = "empty fileset"
+	Storage = "LinconetStorage"
+}

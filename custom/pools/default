@@ -1,0 +1,4 @@
+Pool {
+	Name = "empty pool"
+	Pool Type = "Backup"
+}
