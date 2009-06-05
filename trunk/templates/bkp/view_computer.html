@@ -1,5 +1,5 @@
 <!-- Begin Header -->
-	<h1> <a href="{{script_name}}/">Prototipo Backup Corporativo</a> </h1>
+	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
 	<hr />
 <!-- End Header -->
 
@@ -9,7 +9,7 @@
 	<ul>
 	{% for c in comps %}
 		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | Hash Attributes |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
+		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | {{ c.ip }} | {{ c.description }} |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
 	    <button type="submit">Remover</button> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} 
 		</li></form>
 	{% endfor %}
@@ -39,41 +39,49 @@
 	{% if procs %}
 	<ul>
 	{% for p in procs %}
-	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.name }}</a> | Hash Attributes | <form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
-	    <button type="submit">remover</button>
-	</form></li>
+	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
+	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.name }}</a> | 
+	<a href="{{script_name}}/procedure/{{p.id}}/edit">Alterar</a>  |
+	<button type="submit">Remover</button> |
+	</li></form>
 	{% endfor %}
 	</ul>
 	{% else %}
-	<p>Nao existem procedimentos para este computador.</p>
+	<p>Não há procedimentos para este computador.</p>
 	{% endif %}
 	
 	<hr />
 <!--  Expandable/Collapsible Area -->
 	<h3>Adicionar Procedimento</h3>
-	<form action="{{script_name}}/computer/{{comp.id}}/procedure/" method="post">
-	{{ procform.as_p }}
-	<input type="submit" value="Submit" />
-	</form> 
-	
+
+<form action="{{script_name}}/computer/{{comp.id}}/procedure/" method="post">
+    {% for field in procform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
 	<hr />
 <!-- End Procedures -->
 
 <!-- Begin FileSets -->
 	<h2>Locais</h2>
-	<p>Nao ha procedimento selecionado.</p>
+	<p>Não há procedimento selecionado.</p>
 	
 	<hr />
 <!-- End FileSets -->
 
 <!-- Begin Schedules -->
 	<h2>Agendamentos</h2>
-	<p>Nao ha procedimento selecionado.</p>
+	<p>Não há procedimento selecionado.</p>
 	
 	<hr />
 <!-- End Schedules -->
 
 <!-- Begin Triggers-->
 	<h2>Detalhe Agendamento</h2>
-	<p>Nao ha agendamento selecionado.</p>
+	<p>Não há agendamento selecionado.</p>
 <!-- End Triggers -->

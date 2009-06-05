@@ -1,5 +1,5 @@
 <!-- Begin Header -->
-	<h1> <a href="{{script_name}}/">Prototipo Backup Corporativo</a> </h1>
+	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
 	<hr />
 <!-- End Header -->
 
@@ -9,7 +9,7 @@
 	<ul>
 	{% for c in comps %}
 		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | Hash Attributes |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
+		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | {{ c.ip }} | {{ c.description }} |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
 	    <button type="submit">Remover</button> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} 
 		</li></form>
 	{% endfor %}
@@ -36,9 +36,11 @@
 	<h2>Procedimentos</h2>
 	<ul>
 	{% for p in procs %}
-	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.name }}</a> | Hash Attributes | {% ifequal p.id proc.id %} (Selecao Atual) {% endifequal %} <form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
-	    <button type="submit">remover</button>
-	</form></li>
+	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
+	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.name }}</a> | 
+	<a href="{{script_name}}/procedure/{{p.id}}/edit">Alterar</a>  |
+	<button type="submit">Remover</button> | {% ifequal p.id proc.id %} (Selecao Atual) {% endifequal %}
+	</li></form>
 	{% endfor %}
 	</ul>
 
@@ -46,10 +48,16 @@
 <!--  Expandable/Collapsible Area -->
 
 	<h3>Adicionar Procedimento</h3>
-	<form action="{{script_name}}/computer/{{comp.id}}/procedure/" method="post">
-	{{ procform.as_p }}
-	<input type="submit" value="Submit" />
-	</form> 
+
+<form action="{{script_name}}/computer/{{comp.id}}/procedure/" method="post">
+    {% for field in procform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
 	
 	<hr />
 <!-- End Procedures -->
@@ -59,49 +67,65 @@
 	{% if fsets %}
 	<ul>
 	{% for fset in fsets %}
-	<li>{{ fset.path }} <form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/{{fset.id}}/delete" method="post">
-	    <button type="submit">remover</button>
-	</form></li>
+	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/{{fset.id}}/delete" method="post">
+	<li>{{ fset.path }} | <button type="submit">remover</button> | 
+	</li></form>
 	{% endfor %}
 	</ul>
 	{% else %}
-	<p>Nao existem locais para este procedimento.</p>
+	<p>Não há locais para este procedimento.</p>
 	{% endif %}
 
 <!--  Expandable/Collapsible Area -->
 	<hr>
 	
 	<h3>Adicionar Local</h3>
-	<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/" method="post">
-	{{ fsetform.as_p }}
-	<input type="submit" value="Submit" />
-	</form> 
+
+<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/" method="post">
+    {% for field in fsetform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
 	
 	<hr />
 <!-- End FileSets -->
 
 <!-- Begin Schedules -->
 	<h2>Agendamentos</h2>
+	{% if scheds %}
 	<ul>
 	{% for s in scheds %}
-	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{s.id}}">{{ s.type }}</a>  | Hash Attributes | {% ifequal s.id sched.id %} (Selecao Atual) {% endifequal %}
 	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{s.id}}/delete" method="post">
-	    <div>
-	    <button type="submit">remover</button>
-	    </div>
-	</form></li>
+	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{s.id}}">{{ s }}</a>
+    <button type="submit">Remover</button> | {% ifequal s.id sched.id %} (Selecao Atual) {% endifequal %}
+	</li></form>
 	{% endfor %}
 	</ul>
-
-<!--  Expandable/Collapsible Area -->
+	{% else %}
+	<p>Não há agendamentos para este computador.</p>
+	{% endif %}
 	<hr />
-	
-	<h3> Adicionar Agendamento</h3>
-	<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/" method="post">
-	{{ schedform.as_p }}
-	<input type="submit" value="Submit" />
-	</form> 
-	
+	<!--  Expandable/Collapsible Area -->
+	<h3>Adicionar Agendamento</h3>
+	{% ifequal proc.status 'Valid' %}
+
+<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/" method="post">
+    {% for field in schedform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+	{% else %}
+	<p>Não é possível adicionar agendamento, pois não há local configurado. </p>
+	{% endifequal %}
+
 	<hr />
 <!-- End Schedules -->
 
@@ -111,9 +135,14 @@
 	<p>Configurar Agendamento</p>
 	{% endif %}
 	<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{sched.id}}/{{sched_lower_type}}trigger/" method="post">
-	{{ triggerform.as_p }}
-	<input type="submit" value="Submit" />
-	</form> 
+    {% for field in triggerform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
 
 
 <!-- End Triggers -->

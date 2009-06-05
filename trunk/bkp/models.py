@@ -12,21 +12,21 @@ import string
 
 ### Constants ###
 TYPE_CHOICES = (
-    ('Weekly', 'Weekly'),
-    ('Monthly', 'Monthly'),
-    ('Unique','Unique'),
+    ('Weekly', 'Semanal'),
+    ('Monthly', 'Mensal'),
+#    ('Unique','Unique'),
 )
 
 LEVEL_CHOICES = (
-    ('Full', 'Full'),
+    ('Full', 'Completo'),
     ('Incremental', 'Incremental'),
 )
 
-DAYS_OF_THE_WEEK = (
-    'sunday','monday','tuesday',
-    'wednesday','thursday','friday',
-    'saturday',
-)
+DAYS_OF_THE_WEEK = {
+    'sunday':'Domingo','monday':'Segunda','tuesday':'Terça',
+    'wednesday':'Quarta','thursday':'Quinta','friday':'Sexta',
+    'saturday':'Sábado',
+}
 
 
 ###
@@ -55,8 +55,8 @@ class Computer(models.Model):
 
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
-    name = models.CharField(max_length=50)
-    restore_path = models.CharField(max_length="255")
+    name = models.CharField("Nome", max_length=50)
+    restore_path = models.CharField("Recuperar Em", max_length="255")
     status = models.CharField(max_length=10, default="Invalid")
 
     # change status to valid or invalid depending if filesets_list() returns the list or an empty set
@@ -103,7 +103,7 @@ class Procedure(models.Model):
 
 class Schedule(models.Model):
     procedure = models.ForeignKey(Procedure)
-    type = models.CharField(max_length=20,choices=TYPE_CHOICES)
+    type = models.CharField("Nível",max_length=20,choices=TYPE_CHOICES)
     status = models.CharField(max_length=10, default="Invalid")
 
     # change status to valid or invalid depending if get_trigger() returns the trigger of False
@@ -119,28 +119,31 @@ class Schedule(models.Model):
         except Exception, e: # DoesNotExist Exception means there's no trigger
             trigger = False
         return trigger
-    
+
     def __unicode__(self):
-        return self.procedure.name 
+        if self.type == "Weekly":
+            return "Semanal"
+        elif self.type == "Monthly":
+            return "Mensal"
 
 
 ### WeeklyTrigger ###
 
 class WeeklyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
-    for day in DAYS_OF_THE_WEEK:
-        exec('%s = models.BooleanField()' % day)    
-    hour = models.TimeField()
-    level = models.CharField(max_length=20,choices=LEVEL_CHOICES)
+    for day in DAYS_OF_THE_WEEK.keys():
+        exec('''%s = models.BooleanField("%s")''' % (day,DAYS_OF_THE_WEEK[day]))    
+    hour = models.TimeField("Horário")
+    level = models.CharField("Nível", max_length=20,choices=LEVEL_CHOICES)
 
 
 ### MonthlyTrigger ###
 
 class MonthlyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
-    hour = models.TimeField()
-    level = models.CharField(max_length=20,choices=LEVEL_CHOICES)
-    target_days = models.CharField(max_length=100)
+    hour = models.TimeField("Horário")
+    level = models.CharField("Nível", max_length=20,choices=LEVEL_CHOICES)
+    target_days = models.CharField("Dias do Mês", max_length=100)
 
 
 ### UniqueTrigger ###
@@ -153,7 +156,7 @@ class UniqueTrigger(models.Model):
 ### FileSet ###
 class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
-    path = models.CharField(max_length="255")
+    path = models.CharField("Local", max_length="255")
 
 
 ### Pool ###

@@ -1,5 +1,5 @@
 <!-- Begin Header -->
-	<h1> <a href="{{script_name}}/">Prototipo Backup Corporativo</a> </h1>
+	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
 	<hr />
 <!-- End Header -->
 
@@ -10,13 +10,13 @@
 	<ul>
 	{% for c in comps %}
 		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | Hash Attributes |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
+		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | {{ c.ip }} | {{ c.description }} |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
 	    <button type="submit">Remover</button> |
 		</li></form>
 	{% endfor %}
 	</ul>
 	{% else %}
-	<p>Nao existem computadores disponiveis.</p>
+	<p>Não há computadores disponíveis.</p>
 	{% endif %}
 	
 	<hr />

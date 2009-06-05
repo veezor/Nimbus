@@ -132,16 +132,20 @@ def view_procedure(request, computer_id, procedure_id):
     
 def create_procedure(request, computer_id):
     if request.method == 'POST': # If the form has been submitted...
-        form = ProcedureForm(request.POST)
-        if form.is_valid():
+        procform = ProcedureForm(request.POST)
+        if procform.is_valid():
             procedure = Procedure()
             procedure.computer_id = computer_id
-            procedure.name = form.cleaned_data['name']
-            procedure.restore_path = form.cleaned_data['restore_path']
+            procedure.name = procform.cleaned_data['name']
+            procedure.restore_path = procform.cleaned_data['restore_path']
             procedure.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure.id})
         else:
-            return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
+            comp = Computer.objects.get(pk=computer_id)
+            compform = ComputerForm()
+            comps = Computer.objects.all()
+            procs = comp.procedures_list()
+            return render_to_response('bkp/view_computer.html', {'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procs':procs,'procform':procform})
 
 
 def delete_procedure(request, computer_id, procedure_id):
@@ -199,20 +203,30 @@ def view_schedule(request, computer_id, procedure_id, schedule_id):
             except UniqueTrigger.DoesNotExist:
                 triggerform = UniqueTriggerForm()
                 triggerformempty = True
-        return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type})
+        return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})
 
 
 def create_schedule(request, computer_id, procedure_id):
     if request.method == 'POST': # If the form has been submitted...
-        form = ScheduleForm(request.POST)
-        if form.is_valid():
+        schedform = ScheduleForm(request.POST)
+        if schedform.is_valid():
             schedule = Schedule()
             schedule.procedure_id = procedure_id
-            schedule.type = form.cleaned_data['type']
+            schedule.type = schedform.cleaned_data['type']
             schedule.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule.id})
         else:
-            return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
+            proc = Procedure.objects.get(pk=procedure_id)
+            comp = Computer.objects.get(pk=computer_id)
+            compform = ComputerForm()
+            comps = Computer.objects.all()
+            procform = ProcedureForm()
+            procs = comp.procedures_list()
+            fsets = proc.filesets_list()
+            fsetform = FileSetForm() # An unbound form            
+            scheds = proc.schedules_list()
+
+            return render_to_response('bkp/view_procedure.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'schedform':schedform})
 
 
 def delete_schedule(request, computer_id, procedure_id, schedule_id):
@@ -294,15 +308,25 @@ def uniquetrigger(request, computer_id, procedure_id, schedule_id):
 
 def create_fileset(request, computer_id, procedure_id):
     if request.method == 'POST': # If the form has been submitted...
-        form = FileSetForm(request.POST)
-        if form.is_valid():
+        fsetform = FileSetForm(request.POST)
+        if fsetform.is_valid():
             fileset = FileSet()
             fileset.procedure_id = procedure_id
-            fileset.path = form.cleaned_data['path']
+            fileset.path = fsetform.cleaned_data['path']
             fileset.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id})
         else:
-            return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
+            proc = Procedure.objects.get(pk=procedure_id)
+            comp = Computer.objects.get(pk=computer_id)
+            compform = ComputerForm()
+            comps = Computer.objects.all()
+            procform = ProcedureForm()
+            procs = comp.procedures_list()
+            fsets = proc.filesets_list()
+            scheds = proc.schedules_list()
+            schedform = ScheduleForm() # An unbound form
+
+            return render_to_response('bkp/view_procedure.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'schedform':schedform})
 
 def delete_fileset(request, computer_id, procedure_id, fileset_id):
     if request.method == 'POST':
@@ -324,7 +348,6 @@ def __store_location(request):
     request.session["location"] = request.build_absolute_uri()
 
 def __redirect_back_or_default(request, default, except_pattern=None):
-    import pdb; pdb.set_trace()
     if except_pattern and ("location" in request.session):
         import re
         if re.search(except_pattern,request.session["location"]):
