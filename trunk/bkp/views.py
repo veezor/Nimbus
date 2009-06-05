@@ -26,7 +26,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 
 
+###
+###   Views
+###
+
+
 def index(request):
+    __store_location(request)
     return render_to_response('bkp/index.html', {'script_name':request.META['SCRIPT_NAME']})
 
 ### Computers ###
@@ -37,12 +43,7 @@ def list_computers(request):
     return render_to_response('bkp/list_computers.html', {'script_name':request.META['SCRIPT_NAME'],'comps':comps,'compform':compform})
 
 
-def add_computer(request):
-    form = ComputerForm() # An unbound form
-    return render_to_response('bkp/add_computer.html', {'script_name':request.META['SCRIPT_NAME'],'form': form,})
-
-
-def edit_computer(request, computer_id=None):
+def edit_computer(request, computer_id):
     if request.method == 'GET': # Edit computer
         try:
             comp = Computer.objects.get(pk=computer_id)
@@ -64,36 +65,33 @@ def edit_computer(request, computer_id=None):
             return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':comp.id})
         else:
             return HttpResponse('Erro de formulario (falta customizar erro)')
-    else: 
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})        
             
-def view_computer(request, computer_id=None):
+def view_computer(request, computer_id):
+    __store_location(request)
     if request.method == 'GET':  # View computer
-        if computer_id:
-            try:
-                comp = Computer.objects.get(pk=computer_id)
-            except Computer.DoesNotExist:
-                return HttpResponse('Erro de URL. Computador Nao Existe (Falta customizar mensagem de erro)')
-            compform = ComputerForm()
-            comps = Computer.objects.all()
-            procs = comp.procedures_list()
-            procform = ProcedureForm() # An unbound form
-            return render_to_response('bkp/view_computer.html', {'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procs':procs,'procform':procform})
-        else:
-            return HttpResponse('Erro de URL. Falta ID do computador (Falta customizar mensagem de erro)')
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
-
-def delete_computer(request, computer_id=None):
-    if request.method == 'POST':
         try:
             comp = Computer.objects.get(pk=computer_id)
         except Computer.DoesNotExist:
             return HttpResponse('Erro de URL. Computador Nao Existe (Falta customizar mensagem de erro)')
+        compform = ComputerForm()
+        comps = Computer.objects.all()
+        procs = comp.procedures_list()
+        procform = ProcedureForm() # An unbound form
+        return render_to_response('bkp/view_computer.html', {'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procs':procs,'procform':procform})
+
+    
+def delete_computer(request, computer_id):
+    if request.method == 'POST':
+        try:
+            comp = Computer.objects.get(pk=computer_id)
+        except Computer.DoesNotExist:
+            # message to user
+            return HttpResponse('Erro de URL. Computador Nao Existe (Falta customizar mensagem de erro)')
         comp.delete()
-        return HttpResponseRedirect("%(script_name)s/computers/" % {'script_name':request.META['SCRIPT_NAME'],})
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
+        except_pattern = "computer/%s" % (computer_id)
+        default = "%(script_name)s/computers/" % {'script_name':request.META['SCRIPT_NAME'],}
+        return __redirect_back_or_default(request, default, except_pattern)
+
 
 def create_computer(request):
     if request.method == 'POST':  # If the form has been submitted...
@@ -103,13 +101,12 @@ def create_computer(request):
                 return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':computer.id})
             else:
                 return HttpResponse('Erro de Formulario (Falta customizar mensagem de erro)')
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
 
 
 ### Procedure ###
 
-def view_procedure(request, computer_id=None, procedure_id=None):
+def view_procedure(request, computer_id, procedure_id):
+    __store_location(request)
     if request.method == 'GET':
         if procedure_id:
             try: 
@@ -128,11 +125,9 @@ def view_procedure(request, computer_id=None, procedure_id=None):
             return render_to_response('bkp/view_procedure.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'schedform':schedform})
         else:
             return HttpResponse('Erro de URL. Falta id do procedimento na url (Falta customizar mensagem de erro)')
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
 
-
-def create_procedure(request, computer_id=None):
+    
+def create_procedure(request, computer_id):
     if request.method == 'POST': # If the form has been submitted...
         form = ProcedureForm(request.POST)
         if form.is_valid():
@@ -144,70 +139,67 @@ def create_procedure(request, computer_id=None):
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure.id})
         else:
             return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
 
-def delete_procedure(request, computer_id=None, procedure_id=None):
+
+def delete_procedure(request, computer_id, procedure_id):
     if request.method == 'POST':
         try:
             proc = Procedure.objects.get(pk=procedure_id)
         except Procedure.DoesNotExist:
             return HttpResponse('Erro de URL. Procedumento nao existe.')
         proc.delete()
-        return HttpResponseRedirect('%(script_name)s/computer/%(comp_id)s' % {'script_name':request.META['SCRIPT_NAME'],'comp_id':computer_id})
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
+        except_pattern = "procedure/%s" % (procedure_id)
+        default = "%(script_name)s/computer/%(computer_id)s" % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,}
+        return __redirect_back_or_default(request, default, except_pattern)
+
 
 
 
 ### Schedule ###
 
-def view_schedule(request, computer_id=None, procedure_id=None, schedule_id=None):
+def view_schedule(request, computer_id, procedure_id, schedule_id):
+    __store_location(request)
     if request.method == 'GET':
-        if schedule_id:
-            comp = Computer.objects.get(pk=computer_id)
-            comps = Computer.objects.all()
-            compform = ComputerForm()
-            proc = Procedure.objects.get(pk=procedure_id)
-            procs = Procedure.objects.filter(computer=comp)
-            procform = ProcedureForm()
-            sched = Schedule.objects.get(pk=schedule_id)
-            sched_lower_type = sched.type.lower()
-            scheds = Schedule.objects.filter(procedure=proc)
-            fsets = proc.filesets_list()
-            fsetform = FileSetForm() # An unbound form
-            schedform = ScheduleForm() # An unbound form
-            if (sched.type == 'Weekly'):
-                try:
-                    trigger = WeeklyTrigger.objects.get(schedule=sched)
-                    triggerform = WeeklyTriggerForm(instance=trigger)
-                    triggerformempty = False
-                except WeeklyTrigger.DoesNotExist:
-                    triggerform = WeeklyTriggerForm()
-                    triggerformempty = True
-            elif (sched.type == 'Monthly'):
-                try:
-                    trigger = MonthlyTrigger.objects.get(schedule=sched)
-                    triggerform = MonthlyTriggerForm(instance=trigger)                
-                    triggerformempty = False
-                except MonthlyTrigger.DoesNotExist:
-                    triggerform = MonthlyTriggerForm()
-                    triggerformempty = True
-            elif (sched.type == 'Unique'):
-                try:
-                    trigger = UniqueTrigger.objects.get(schedule=sched)
-                    triggerform = UniqueTriggerForm(instance=trigger)
-                    triggerformempty = False
-                except UniqueTrigger.DoesNotExist:
-                    triggerform = UniqueTriggerForm()
-                    triggerformempty = True
-            return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type})
-        else:
-            return HttpResponse('Erro de URL. Falta id do agendamento na url (Falta customizar mensagem de erro)')
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
+        comp = Computer.objects.get(pk=computer_id)
+        comps = Computer.objects.all()
+        compform = ComputerForm()
+        proc = Procedure.objects.get(pk=procedure_id)
+        procs = Procedure.objects.filter(computer=comp)
+        procform = ProcedureForm()
+        sched = Schedule.objects.get(pk=schedule_id)
+        sched_lower_type = sched.type.lower()
+        scheds = Schedule.objects.filter(procedure=proc)
+        fsets = proc.filesets_list()
+        fsetform = FileSetForm() # An unbound form
+        schedform = ScheduleForm() # An unbound form
+        if (sched.type == 'Weekly'):
+            try:
+                trigger = WeeklyTrigger.objects.get(schedule=sched)
+                triggerform = WeeklyTriggerForm(instance=trigger)
+                triggerformempty = False
+            except WeeklyTrigger.DoesNotExist:
+                triggerform = WeeklyTriggerForm()
+                triggerformempty = True
+        elif (sched.type == 'Monthly'):
+            try:
+                trigger = MonthlyTrigger.objects.get(schedule=sched)
+                triggerform = MonthlyTriggerForm(instance=trigger)                
+                triggerformempty = False
+            except MonthlyTrigger.DoesNotExist:
+                triggerform = MonthlyTriggerForm()
+                triggerformempty = True
+        elif (sched.type == 'Unique'):
+            try:
+                trigger = UniqueTrigger.objects.get(schedule=sched)
+                triggerform = UniqueTriggerForm(instance=trigger)
+                triggerformempty = False
+            except UniqueTrigger.DoesNotExist:
+                triggerform = UniqueTriggerForm()
+                triggerformempty = True
+        return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type})
 
-def create_schedule(request, computer_id=None, procedure_id=None):
+
+def create_schedule(request, computer_id, procedure_id):
     if request.method == 'POST': # If the form has been submitted...
         form = ScheduleForm(request.POST)
         if form.is_valid():
@@ -218,22 +210,21 @@ def create_schedule(request, computer_id=None, procedure_id=None):
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule.id})
         else:
             return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
 
 
-def delete_schedule(request, computer_id=None, procedure_id=None, schedule_id=None):
+def delete_schedule(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
         sched = Schedule.objects.get(pk=schedule_id)
         sched.delete()
-        return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,})
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
+        except_pattern = "schedule/%s" % (schedule_id)
+        default = '%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,}
+        return __redirect_back_or_default(request, default, except_pattern)
+
         
         
 ### Triggers ###
 
-def weeklytrigger(request, computer_id=None, procedure_id=None, schedule_id=None):
+def weeklytrigger(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
         form = WeeklyTriggerForm(request.POST)
         if form.is_valid():
@@ -256,11 +247,9 @@ def weeklytrigger(request, computer_id=None, procedure_id=None, schedule_id=None
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
             return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
 
 
-def monthlytrigger(request, computer_id=None, procedure_id=None, schedule_id=None):
+def monthlytrigger(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
         form = MonthlyTriggerForm(request.POST)
         if form.is_valid():
@@ -277,10 +266,9 @@ def monthlytrigger(request, computer_id=None, procedure_id=None, schedule_id=Non
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
             return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
+
             
-def uniquetrigger(request, computer_id=None, procedure_id=None, schedule_id=None):
+def uniquetrigger(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
         form = UniqueTriggerForm(request.POST)
         if form.is_valid():
@@ -297,13 +285,11 @@ def uniquetrigger(request, computer_id=None, procedure_id=None, schedule_id=None
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
             return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})
         
         
 ### FileSets ###
 
-def create_fileset(request, computer_id=None, procedure_id=None):
+def create_fileset(request, computer_id, procedure_id):
     if request.method == 'POST': # If the form has been submitted...
         form = FileSetForm(request.POST)
         if form.is_valid():
@@ -314,16 +300,32 @@ def create_fileset(request, computer_id=None, procedure_id=None):
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id})
         else:
             return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
 
-def delete_fileset(request, computer_id=None, procedure_id=None, fileset_id=None):
+def delete_fileset(request, computer_id, procedure_id, fileset_id):
     if request.method == 'POST':
         try:
             fset = FileSet.objects.get(pk=fileset_id)
         except FileSet.DoesNotExist:
             return HttpResponse('Erro de URL. FileSet nao existe.')
         fset.delete()
-        return HttpResponseRedirect('%(script_name)s/computer/%(comp_id)s/procedure/%(proc_id)s' % {'script_name':request.META['SCRIPT_NAME'],'comp_id':computer_id,'proc_id':procedure_id})
-    else:
-        return HttpResponse('Erro de Metodo. %(met)s eh inesperado (Falta customizar mensagem de erro)' % {'met':request.method})    
+        default = '%(script_name)s/computer/%(comp_id)s/procedure/%(proc_id)s' % {'script_name':request.META['SCRIPT_NAME'],'comp_id':computer_id,'proc_id':procedure_id}
+        return __redirect_back_or_default(request, default)
+
+
+        
+###
+###   Auxiliar Definitions
+###
+
+def __store_location(request):
+    request.session["location"] = request.build_absolute_uri()
+
+def __redirect_back_or_default(request, default, except_pattern=None):
+    import pdb; pdb.set_trace()
+    if except_pattern and ("location" in request.session):
+        import re
+        if re.search(except_pattern,request.session["location"]):
+            del(request.session["location"]) # use default location
+    
+    redirect = ("location" in request.session) and request.session["location"] or default
+    return HttpResponseRedirect(redirect)
