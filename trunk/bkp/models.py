@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from django.db import models
 import os
 import string
@@ -34,9 +37,9 @@ DAYS_OF_THE_WEEK = (
 ### Computer ###
 
 class Computer(models.Model):
-    name = models.CharField(max_length=50)
-    ip = models.IPAddressField()
-    description = models.CharField(max_length=100)
+    name = models.CharField("Nome",max_length=50)
+    ip = models.IPAddressField("Endereço IP")
+    description = models.CharField("Descrição",max_length=100)
     
     # get list of associated procedures
     def procedures_list(self):

@@ -8,10 +8,11 @@
 	
 	{% if comps %}
 	<ul>
-	{% for comp in comps %}
-	<li><a href="{{script_name}}/computer/{{comp.id}}">{{ comp.name }}</a>  | Hash Attributes | <a href="{{script_name}}/computer/{{comp.id}}/edit">Alterar</a> | <form class="link" action="{{script_name}}/computer/{{comp.id}}/delete" method="post">
-		<button type="submit">remover</button>
-	</form></li>
+	{% for c in comps %}
+		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
+		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | Hash Attributes |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
+	    <button type="submit">Remover</button> |
+		</li></form>
 	{% endfor %}
 	</ul>
 	{% else %}
@@ -22,10 +23,16 @@
 <!--  Expandable/Collapsible Area -->
 	<h3>Adicionar Computador</h3>
 	
-	<form action="{{script_name}}/computer/" method="post">
-	{{ compform.as_p }}
-	<input type="submit" value="Submit" />
-	</form> 
+<form action="{{script_name}}/computer/" method="post">
+    {% for field in compform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
 	<hr />
 <!-- End Computers -->
 

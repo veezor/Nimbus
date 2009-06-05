@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 # TODO:
 # Falta tratar erros URL caso o ID esteja faltando 
 # Criar erro caso ID na URL seja de um computador que nao existe
@@ -95,13 +98,13 @@ def delete_computer(request, computer_id):
 
 def create_computer(request):
     if request.method == 'POST':  # If the form has been submitted...
-            form = ComputerForm(request.POST)
-            if form.is_valid():
-                computer = form.save()
+            compform = ComputerForm(request.POST)
+            if compform.is_valid():
+                computer = compform.save()
                 return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':computer.id})
             else:
-                return HttpResponse('Erro de Formulario (Falta customizar mensagem de erro)')
-
+                comps = Computer.objects.all()           
+                return render_to_response('bkp/list_computers.html', {'script_name':request.META['SCRIPT_NAME'],'comps':comps,'compform':compform})
 
 ### Procedure ###
 
