@@ -45,14 +45,17 @@ class Computer(models.Model):
     description = models.CharField("Descrição",max_length=100, blank=True)
     fd_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     
-    # get list of associated procedures
+
     def procedures_list(self):
+        "get list of associated procedure"
         return Procedure.objects.filter(computer=self.id)
 
     def get_computer_name(self):
+        "return computer name lower string"
         return str.lower(str(self.computer_name))
         
     def generate_password(self):
+        "generate custom password"
         import string
         from random import choice
         size = 20
@@ -69,42 +72,42 @@ class Procedure(models.Model):
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     restore_path = cfields.ModelPathField("Recuperar Em", max_length="255")
     status = models.CharField(max_length=10, default="Invalid")
-    
 
-    # change status to valid or invalid depending if filesets_list() returns the list or an empty set
     def update_status(self):
+        "change status to valid or invalid depending if filesets_list() returns the list or an empty set"
         self.status = self.filesets_list() and 'Valid' or 'Invalid'
         self.save()
     
-    # get list of associated file sets    
     def filesets_list(self):
+        "get list of associated file sets"
         return FileSet.objects.filter(procedure=self.id)
 
-    # get list of associated schedules
     def schedules_list(self):
+        "get list of associated schedules"
         return Schedule.objects.filter(procedure=self.id)
 
-    # get list of associated pools        
     def pools_list(self):
+        "get list of associated pools"
         return Pool.objects.filter(procedure=self.id)
     
-    # get fileset name for bacula file
     def get_fileset_name(self):
+        "get fileset name for bacula file"
         return "%s_Set" % (self.procedure_name)
         
-    # get procedure name for bacula file    
     def get_procedure_name(self):
+        "get procedure name for bacula file"
         return "%s_Job" % (self.procedure_name)
     
-    # get restore procedure name for bacula    
     def get_restore_name(self):
+        "get restore procedure name for bacula"
         return "%s_RestoreJob" % (self.procedure_name)
         
-    # get schedule name for bacula file       
     def get_schedule_name(self):
+        "get schedule name for bacula file       "
         return "%s_Sched" % (self.procedure_name)
-    # get pool name for bacula file
+
     def get_pool_name(self):
+        "get pool name for bacula file"
         return "%s_Pool" % (self.procedure_name)
 
     def __unicode__(self):
@@ -118,13 +121,13 @@ class Schedule(models.Model):
     type = models.CharField("Nível",max_length=20,choices=TYPE_CHOICES)
     status = models.CharField(max_length=10, default="Invalid")
 
-    # change status to valid or invalid depending if get_trigger() returns the trigger of False
     def update_status(self):
+        "change status to valid or invalid depending if get_trigger() returns the trigger of False"
         self.status = (self.get_trigger()) and 'Valid' or 'Invalid'
         self.save()
 
-    # return the associated trigger or False in case of it doesnt exist
     def get_trigger(self):
+        "return the associated trigger or False in case of it doesnt exist"
         cmd = "trigger = %sTrigger.objects.get(schedule=self)" % (self.type)
         try:
             exec(cmd)

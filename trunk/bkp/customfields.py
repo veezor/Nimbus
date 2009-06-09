@@ -22,7 +22,7 @@ class FormSlugField(forms.CharField):
 
 class ModelSlugField(models.CharField):
     def formfield(self, *args, **kwargs):
-        '''Changing standard FormField'''
+        "Changing standard FormField"
         kwargs['form_class'] = FormSlugField
         return super(ModelSlugField, self).formfield(*args, **kwargs)
 
@@ -37,7 +37,7 @@ class FormPathField(forms.CharField):
 
 class ModelPathField(models.CharField):
     def formfield(self, *args, **kwargs):
-        '''Changing standard FormField'''
+        "Changing standard FormField"
         kwargs['form_class'] = FormPathField
         return super(ModelPathField, self).formfield(*args, **kwargs)
         
@@ -50,6 +50,6 @@ class FormMonthDaysListField(forms.CharField):
 
 class ModelMonthDaysListField(models.CharField):
     def formfield(self, *args, **kwargs):
-        '''Changing standard FormField'''
+        "Changing standard FormField"
         kwargs['form_class'] = FormMonthDaysListField
         return super(ModelMonthDaysListField, self).formfield(*args, **kwargs)

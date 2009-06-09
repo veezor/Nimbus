@@ -17,6 +17,11 @@ from backup_corporativo.bkp.models import FileSet
 #
 #   Forms
 #
+
+class LoginForm(forms.Form):
+    auth_login = forms.CharField(label="Usuário",max_length=20)
+    auth_password = forms.CharField(label="Senha",max_length=50)
+
 class ComputerForm(ModelForm):
     class Meta:
         model = Computer

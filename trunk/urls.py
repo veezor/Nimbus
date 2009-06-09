@@ -7,6 +7,10 @@ base_url = 'backup_corporativo'
 
 urlpatterns = patterns('',
     (r'^$', 'backup_corporativo.bkp.views.list_computers'), #index
+    # session [NEW, DELETE, CREATE]
+    (r'^session/new$', 'backup_corporativo.bkp.views.new_session'),
+    (r'^session/delete$', 'backup_corporativo.bkp.views.delete_session'),        
+    (r'^session/$', 'backup_corporativo.bkp.views.create_session'),    
     # computer [LIST, VIEW, EDIT, DELETE, CREATE]
     (r'^computer/(?P<computer_id>\d+)$', 'backup_corporativo.bkp.views.view_computer'),
     (r'^computer/(?P<computer_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_computer'),

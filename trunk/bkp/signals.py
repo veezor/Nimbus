@@ -15,7 +15,7 @@ from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import UniqueTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import Pool
-# debug     import pdb; pdb.set_trace()
+
 
 ### Constants ###
 
@@ -30,22 +30,23 @@ DAYS_OF_THE_WEEK = (
 ###   Main Definitions
 ###
 
-# create associated pools to the procedure 
+
 def create_pools(sender, instance, signal, *args, **kwargs):
+    "create associated pools to the procedure"
     if 'created' in kwargs:
         if kwargs['created']:   # instance was just created
             fpool = Pool(procedure=instance,level='remover atributo')
             fpool.save()
 
-# updates statuses for procedure and schedule objects
 def update_rel_statuses(sender, instance, signal, *args, **kwargs):
+    "updates statuses for procedure and schedule objects"
     if sender == FileSet:
         instance.procedure.update_status()
     elif ((sender == WeeklyTrigger) or (sender == MonthlyTrigger) or (sender == UniqueTrigger)):
         instance.schedule.update_status()
 
-# entry point for update files
 def update_files(sender, instance, signal, *args, **kwargs):
+    "entry point for update files"
     if sender == FileSet:
         update_fileset_file(instance.procedure)
     elif sender == Computer:
@@ -61,9 +62,8 @@ def update_files(sender, instance, signal, *args, **kwargs):
     else:
         raise # Oops!
 
-
-# entry point for remove files
 def remove_files(sender, instance, signal, *args, **kwargs):
+    "entry point for remove files"
     if sender == Computer:
         remove_computer_file(instance)
     elif sender == Procedure:
@@ -84,8 +84,8 @@ def remove_files(sender, instance, signal, *args, **kwargs):
 
 #### Procedure #####
 
-# Procedure update file
 def update_procedure_file(instance):
+    "Procedure update file"
     proc_name = instance.get_procedure_name()
     restore_name = instance.get_restore_name()
     fset_name = instance.get_fileset_name()
@@ -97,17 +97,16 @@ def update_procedure_file(instance):
     rdict = procedure_dict(restore_name,'Restore',comp_name,fset_name,sched_name,pool_name,instance.restore_path)
     generate_procedure(restore_name,rdict)
     
-# generate procedure attributes dict
 def procedure_dict(proc_name, type, computer_name, fset_name, sched_name, pool_name, where=None):
+    "generate procedure attributes dict"
     bootstrap = '/var/lib/bacula/%s.bsr' % (proc_name)
     
     return {'Name':proc_name, 'Client':computer_name, 'Level':'Incremental', 
     'FileSet':fset_name, 'Schedule':sched_name, 'Storage':'LinconetStorage', 'Pool':pool_name, 
     'Write Bootstrap':bootstrap, 'Priority':'10', 'Messages':'Standard','Type':type,'Where':where}
 
-
-# generate procedure file
 def generate_procedure(proc_name,attr_dict):
+    "generate procedure file"
     f = prepare_to_write(proc_name,'custom/jobs')
 
     f.write("Job {\n")
@@ -125,30 +124,28 @@ def generate_procedure(proc_name,attr_dict):
     f.write("}\n")
     f.close()
 
-# remove procedure file
 def remove_procedure_file(instance):
+    "remove procedure file"
     base_dir,filepath = mount_path(instance.get_procedure_name(),'custom/jobs')
     remove_or_leave(filepath)
     base_dir,filepath = mount_path(instance.get_restore_name(),'custom/jobs')
     remove_or_leave(filepath)
     
-
-
 #### Computer #####
 
-# Computer update file
 def update_computer_file(instance):
+    "Computer update file"
     default_password = 'm4r14f4r1nh4'
     cdict = computer_dict(instance.get_computer_name(),instance.ip,default_password)
     generate_computer_file(instance.get_computer_name(),cdict)
 
-# generate computer attributes dict
 def computer_dict(name,ip,senha):
+    "generate computer attributes dict"
     return {'Name':name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
     'password':senha, 'AutoPrune':'yes'}
 
-# Computer generate file    
 def generate_computer_file(name,attr_dict):        
+    "Computer generate file    "
     f = prepare_to_write(name,'custom/computers')
 
     f.write("Client {\n")
@@ -157,30 +154,30 @@ def generate_computer_file(name,attr_dict):
     f.write("}\n")
     f.close()
 
-# Computer remove file
 def remove_computer_file(instance):
+    "Computer remove file"
     base_dir,filepath = mount_path(instance.get_computer_name(),'custom/computers')
     remove_or_leave(filepath)
     
 #### FileSet #####
 
-# FileSet update filesets to a procedure instance
+
 def update_fileset_file(procedure):
+    "FileSet update filesets to a procedure instance"
     fsets = procedure.filesets_list()
     name = procedure.get_fileset_name()
     farray = generate_file_array(fsets)
     generate_fileset_file(name,farray)
 
-    
-# generate file_array
 def generate_file_array(fsets):
+    "generate file_array"
     array = []
     for fset in fsets:
         array.append(fset.path)
     return array
     
-# FileSet generate file    
 def generate_fileset_file(name,file_array):
+    "FileSet generate file    "
     f = prepare_to_write(name,'custom/filesets')
 
     f.write("FileSet {\n")
@@ -196,29 +193,30 @@ def generate_fileset_file(name,file_array):
     f.write("}\n")
     f.close()
 
-# remove FileSet file
 def remove_fileset_file(procedure):
+    "remove FileSet file"
     name = procedure.get_fileset_name()
     base_dir,filepath = mount_path(name,'custom/filesets')
     remove_or_leave(filepath)    
 
 #### Pool #####
 
-# Pool update pool bacula file
 def update_pool_file(procedure):
+    "Pool update pool bacula file"
     pool_name = procedure.get_pool_name()
     pdict = pool_dict(pool_name)
     generate_pool(pool_name,pdict)
 
-# Generate pool attributes dict
+
 def pool_dict(pool_name):
+    "Generate pool attributes dict"
     format = '%s-vol-' % (pool_name)
     return {'Name':pool_name, 'Pool Type':'Backup', 'Recycle':'yes', 'AutoPrune':'yes', 
     'Volume Retention':'31 days','Purge Oldest Volume':'yes','Maximum Volume Bytes':'1048576',
     'Recycle Oldest Volume':'yes','Label Format':format}
 
-# generate pool bacula file
 def generate_pool(name,attr_dict):        
+    "generate pool bacula file"
     f = prepare_to_write(name,'custom/pools')
     
     f.write("Pool {\n")
@@ -231,14 +229,15 @@ def generate_pool(name,attr_dict):
     f.write("}\n")
     f.close()
 
-# pool remove file
 def remove_pool_file(instance):
+    "pool remove file"
     base_dir,filepath = mount_path(instance.get_pool_name(),'custom/pools')
     remove_or_leave(filepath)
 
 ### Schedule ###
 
 def run_dict(schedules_list):
+    "build a dict with bacula run specification"
     dict = {}
     for sched in schedules_list:
         trigg = sched.get_trigger()
@@ -289,8 +288,8 @@ def remove_schedule_file(procedure):
 ###   File Handling Specific Definitions
 ###
 
-# create dir if dont exists
 def create_or_leave(dirpath):
+    "create dir if dont exists"
     try:
         os.makedirs(dirpath)
     except OSError:
@@ -301,24 +300,22 @@ def create_or_leave(dirpath):
             # There was an error on creation, so make sure we know about it
             raise
 
-# remove file if exists            
 def remove_or_leave(filepath):
+    "remove file if exists"
     try:
         os.remove(filepath)
     except os.error:
         # Leave
         pass
 
-
-# make sure base_dir exists and open filename        
 def prepare_to_write(instance_name,rel_dir):
+    "make sure base_dir exists and open filename"
     base_dir,filepath = mount_path(instance_name,rel_dir)
     create_or_leave(base_dir)
-    #remove_or_leave(filepath)
     return open(filepath, 'w')
 
-# mount absolute dir path and filepath
 def mount_path(instance_name,rel_dir):
+    "mount absolute dir path and filepath"
     filename = str.lower(str(instance_name))
     root = os.path.dirname(os.path.abspath(__file__))
     base_dir = os.path.join(root,rel_dir)
@@ -346,7 +343,6 @@ models.signals.post_delete.connect(update_files, sender=FileSet)
 # Schedule
 models.signals.post_save.connect(update_files, sender=Schedule)
 models.signals.post_delete.connect(remove_files, sender=Schedule)
-
 # WeeklyTrigger
 models.signals.post_save.connect(update_rel_statuses, sender=WeeklyTrigger)
 models.signals.post_delete.connect(update_rel_statuses, sender=WeeklyTrigger)

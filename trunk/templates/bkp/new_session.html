@@ -1,0 +1,20 @@
+<!-- Begin Header -->
+	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
+	<hr />
+<!-- End Header -->
+
+<!-- Begin Login -->
+<h2>Login</h2>
+
+<form action="{{script_name}}/session/" method="post">
+    {% for field in loginform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Entrar" /></p>
+</form>
+
+
+<!-- End Login -->
