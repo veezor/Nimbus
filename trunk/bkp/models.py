@@ -51,6 +51,13 @@ class Computer(models.Model):
 
     def get_computer_name(self):
         return str.lower(str(self.computer_name))
+        
+    def generate_password(self):
+        import string
+        from random import choice
+        size = 20
+        self.fd_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
+        self.save()
 
     def __unicode__(self):
         return self.name

@@ -10,7 +10,8 @@
 	<ul>
 	{% for c in comps %}
 		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
+		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  
+		{{ c.fd_password }} | <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
 	    <button type="submit">Remover</button> |
 		</li></form>
 	{% endfor %}
@@ -35,5 +36,3 @@
 
 	<hr />
 <!-- End Computers -->
-
-	<a href="{{script_name}}/">voltar</a>

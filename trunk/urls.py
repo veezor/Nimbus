@@ -6,15 +6,15 @@ admin.autodiscover()
 base_url = 'backup_corporativo'
 
 urlpatterns = patterns('',
-    (r'^$', 'backup_corporativo.bkp.views.index'), #index
+    (r'^$', 'backup_corporativo.bkp.views.list_computers'), #index
     # computer [LIST, VIEW, EDIT, DELETE, CREATE]
-    (r'^computers/$', 'backup_corporativo.bkp.views.list_computers'),
     (r'^computer/(?P<computer_id>\d+)$', 'backup_corporativo.bkp.views.view_computer'),
     (r'^computer/(?P<computer_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_computer'),
     (r'^computer/(?P<computer_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_computer'),
     (r'^computer/$', 'backup_corporativo.bkp.views.create_computer'),
-    # procedure [VIEW, DELETE, CREATE]
+    # procedure [VIEW, EDIT, DELETE, CREATE]
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)$', 'backup_corporativo.bkp.views.view_procedure'),
+    (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_procedure'),    
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/$', 'backup_corporativo.bkp.views.create_procedure'),
     # fileset [CREATE]

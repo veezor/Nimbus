@@ -27,6 +27,7 @@ from backup_corporativo.bkp.forms import FileSetForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.shortcuts import get_object_or_404
 
 
 ###
@@ -47,29 +48,22 @@ def list_computers(request):
 
 
 def edit_computer(request, computer_id):
+    comp = get_object_or_404(Computer, pk=computer_id)
     if request.method == 'GET': # Edit computer
-        comp = Computer.objects.get(pk=computer_id)
         compform = ComputerForm(instance=comp)
         return render_to_response('bkp/edit_computer.html', {'script_name':request.META['SCRIPT_NAME'],'comp':comp,'compform': compform,})
     elif request.method == 'POST': # Update computer
-        compform = ComputerForm(request.POST)
+        compform = ComputerForm(request.POST,instance=comp)
         if compform.is_valid():
-            comp = Computer.objects.get(pk=computer_id)
-            comp.ip = compform.cleaned_data['ip']
-            comp.description = compform.cleaned_data['description']
-            comp.save()
+            compform.save()
             return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':comp.id})
         else:   # Update failed re-render
-            comp = Computer.objects.get(pk=computer_id)        
             return render_to_response('bkp/edit_computer.html', {'script_name':request.META['SCRIPT_NAME'],'comp':comp,'compform': compform,})
             
 def view_computer(request, computer_id):
     __store_location(request)
     if request.method == 'GET':  # View computer
-        try:
-            comp = Computer.objects.get(pk=computer_id)
-        except Computer.DoesNotExist:
-            return HttpResponse('Erro de URL. Computador Nao Existe (Falta customizar mensagem de erro)')
+        comp = get_object_or_404(Computer,pk=computer_id)
         compform = ComputerForm()
         comps = Computer.objects.all()
         procs = comp.procedures_list()
@@ -79,14 +73,10 @@ def view_computer(request, computer_id):
     
 def delete_computer(request, computer_id):
     if request.method == 'POST':
-        try:
-            comp = Computer.objects.get(pk=computer_id)
-        except Computer.DoesNotExist:
-            # message to user
-            return HttpResponse('Erro de URL. Computador Nao Existe (Falta customizar mensagem de erro)')
+        comp = get_object_or_404(Computer,pk=computer_id)
         comp.delete()
         except_pattern = "computer/%s" % (computer_id)
-        default = "%(script_name)s/computers/" % {'script_name':request.META['SCRIPT_NAME'],}
+        default = "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
         return __redirect_back_or_default(request, default, except_pattern)
 
 
@@ -95,6 +85,7 @@ def create_computer(request):
             compform = ComputerForm(request.POST)
             if compform.is_valid():
                 computer = compform.save()
+                computer.generate_password()
                 return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':computer.id})
             else:
                 comps = Computer.objects.all()           
@@ -102,17 +93,31 @@ def create_computer(request):
 
 ### Procedure ###
 
+def edit_procedure(request, computer_id, procedure_id):
+    comp = get_object_or_404(Computer, pk=computer_id)
+    proc = get_object_or_404(Procedure, pk=procedure_id)
+    if request.method == 'GET': # Edit computer
+        procform = ProcedureForm(instance=proc)
+        return render_to_response('bkp/edit_procedure.html', {'script_name':request.META['SCRIPT_NAME'],'comp':comp,'proc':proc,'procform': procform,})
+    elif request.method == 'POST': # Update procedure
+        procform = ProcedureForm(request.POST,instance=proc)
+        import pdb;pdb.set_trace()
+        if procform.is_valid():
+
+            procform.save()
+            return HttpResponseRedirect("%(script_name)s/computer/%(comp_id)i/procedure/%(proc_id)i" % {'script_name':request.META['SCRIPT_NAME'],'comp_id':comp.id,'proc_id':proc.id})
+        else:   # Update failed re-render
+            return render_to_response('bkp/edit_procedure.html', {'script_name':request.META['SCRIPT_NAME'],'comp':comp,'proc':proc,'procform': procform,})
+
+
 def view_procedure(request, computer_id, procedure_id):
     __store_location(request)
     if request.method == 'GET':
         if procedure_id:
-            try: 
-                proc = Procedure.objects.get(pk=procedure_id)
-            except Computer.DoesNotExist:
-                return HttpResponse('Erro de URL. Procedimento Nao Existe (Falta customizar mensagem de erro)')
-            comp = Computer.objects.get(pk=computer_id)
+            comp = get_object_or_404(Computer, pk=computer_id)
             compform = ComputerForm()
             comps = Computer.objects.all()
+            proc = get_object_or_404(Procedure, pk=procedure_id)
             procform = ProcedureForm()
             procs = comp.procedures_list()
             fsets = proc.filesets_list()
@@ -121,7 +126,7 @@ def view_procedure(request, computer_id, procedure_id):
             schedform = ScheduleForm() # An unbound form
             return render_to_response('bkp/view_procedure.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'schedform':schedform})
         else:
-            return HttpResponse('Erro de URL. Falta id do procedimento na url (Falta customizar mensagem de erro)')
+            return HttpResponseRedirect("%(script_name)s/computer/%(computer_id)i", {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id})
 
     
 def create_procedure(request, computer_id):
@@ -135,7 +140,7 @@ def create_procedure(request, computer_id):
             procedure.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure.id})
         else:
-            comp = Computer.objects.get(pk=computer_id)
+            comp = get_object_or_404(Computer, pk=computer_id)
             compform = ComputerForm()
             comps = Computer.objects.all()
             procs = comp.procedures_list()
@@ -144,10 +149,7 @@ def create_procedure(request, computer_id):
 
 def delete_procedure(request, computer_id, procedure_id):
     if request.method == 'POST':
-        try:
-            proc = Procedure.objects.get(pk=procedure_id)
-        except Procedure.DoesNotExist:
-            return HttpResponse('Erro de URL. Procedimento nao existe.')
+        proc = get_object_or_404(Procedure, pk=procedure_id)
         proc.delete()
         except_pattern = "procedure/%s" % (procedure_id)
         default = "%(script_name)s/computer/%(computer_id)s" % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,}
@@ -161,13 +163,13 @@ def delete_procedure(request, computer_id, procedure_id):
 def view_schedule(request, computer_id, procedure_id, schedule_id):
     __store_location(request)
     if request.method == 'GET':
-        comp = Computer.objects.get(pk=computer_id)
+        comp = get_object_or_404(Computer, pk=computer_id)
         comps = Computer.objects.all()
         compform = ComputerForm()
-        proc = Procedure.objects.get(pk=procedure_id)
+        proc = get_object_or_404(Procedure, pk=procedure_id)
         procs = Procedure.objects.filter(computer=comp)
         procform = ProcedureForm()
-        sched = Schedule.objects.get(pk=schedule_id)
+        sched = get_object_or_404(Schedule, pk=schedule_id)
         sched_lower_type = sched.type.lower()
         scheds = Schedule.objects.filter(procedure=proc)
         fsets = proc.filesets_list()
@@ -210,10 +212,10 @@ def create_schedule(request, computer_id, procedure_id):
             schedule.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule.id})
         else:
-            proc = Procedure.objects.get(pk=procedure_id)
-            comp = Computer.objects.get(pk=computer_id)
+            comp = get_object_or_404(Computer, pk=computer_id)
             compform = ComputerForm()
             comps = Computer.objects.all()
+            proc = get_object_or_404(Procedure, pk=procedure_id)
             procform = ProcedureForm()
             procs = comp.procedures_list()
             fsets = proc.filesets_list()
@@ -225,7 +227,7 @@ def create_schedule(request, computer_id, procedure_id):
 
 def delete_schedule(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
-        sched = Schedule.objects.get(pk=schedule_id)
+        sched = get_object_or_404(Schedule, pk=schedule_id)
         sched.delete()
         except_pattern = "schedule/%s" % (schedule_id)
         default = '%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,}
@@ -237,33 +239,33 @@ def delete_schedule(request, computer_id, procedure_id, schedule_id):
 
 def weeklytrigger(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
+        sched = get_object_or_404(Schedule, pk=schedule_id)
         triggerform = WeeklyTriggerForm(request.POST)
         if triggerform.is_valid():
             try:
-                sched = Schedule.objects.get(pk=schedule_id)
                 wtrigger = WeeklyTrigger.objects.get(schedule=sched)
             except WeeklyTrigger.DoesNotExist:
                 wtrigger = WeeklyTrigger()
             wtrigger.schedule_id = schedule_id
-            wtrigger.sunday = form.cleaned_data['sunday']
-            wtrigger.monday = form.cleaned_data['monday']
-            wtrigger.tuesday = form.cleaned_data['tuesday']
-            wtrigger.wednesday = form.cleaned_data['wednesday']
-            wtrigger.thursday = form.cleaned_data['thursday']
-            wtrigger.friday = form.cleaned_data['friday']
-            wtrigger.saturday = form.cleaned_data['saturday']
-            wtrigger.hour = form.cleaned_data['hour']
-            wtrigger.level = form.cleaned_data['level']
+            wtrigger.sunday = triggerform.cleaned_data['sunday']
+            wtrigger.monday = triggerform.cleaned_data['monday']
+            wtrigger.tuesday = triggerform.cleaned_data['tuesday']
+            wtrigger.wednesday = triggerform.cleaned_data['wednesday']
+            wtrigger.thursday = triggerform.cleaned_data['thursday']
+            wtrigger.friday = triggerform.cleaned_data['friday']
+            wtrigger.saturday = triggerform.cleaned_data['saturday']
+            wtrigger.hour = triggerform.cleaned_data['hour']
+            wtrigger.level = triggerform.cleaned_data['level']
             wtrigger.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
-            comp = Computer.objects.get(pk=computer_id)
+            comp = get_object_or_404(Computer, pk=computer_id)
             comps = Computer.objects.all()
             compform = ComputerForm()
-            proc = Procedure.objects.get(pk=procedure_id)
+            proc = get_object_or_404(Procedure, pk=procedure_id)
             procs = Procedure.objects.filter(computer=comp)
             procform = ProcedureForm()
-            sched = Schedule.objects.get(pk=schedule_id)
+            sched = get_object_or_404(Schedule, pk=schedule_id)
             sched_lower_type = sched.type.lower()
             scheds = Schedule.objects.filter(procedure=proc)
             fsets = proc.filesets_list()
@@ -275,61 +277,58 @@ def weeklytrigger(request, computer_id, procedure_id, schedule_id):
 
 
 def monthlytrigger(request, computer_id, procedure_id, schedule_id):
+    sched = get_object_or_404(Schedule, pk=schedule_id)
     if request.method == 'POST': # If the form has been submitted...
         triggerform = MonthlyTriggerForm(request.POST)
         if triggerform.is_valid():
             try:
-                sched = Schedule.objects.get(pk=schedule_id)
                 mtrigger = MonthlyTrigger.objects.get(schedule=sched)
             except MonthlyTrigger.DoesNotExist:
                 mtrigger = MonthlyTrigger()
             mtrigger.schedule_id = schedule_id
-            mtrigger.hour = form.cleaned_data['hour']
-            mtrigger.level = form.cleaned_data['level']
-            mtrigger.target_days = form.cleaned_data['target_days']
+            mtrigger.hour = triggerform.cleaned_data['hour']
+            mtrigger.level = triggerform.cleaned_data['level']
+            mtrigger.target_days = triggerform.cleaned_data['target_days']
             mtrigger.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
-            comp = Computer.objects.get(pk=computer_id)
+            comp = get_object_or_404(Computer, pk=computer_id)
             comps = Computer.objects.all()
             compform = ComputerForm()
-            proc = Procedure.objects.get(pk=procedure_id)
+            proc = get_object_or_404(Procedure, pk=procedure_id)
             procs = Procedure.objects.filter(computer=comp)
             procform = ProcedureForm()
-            sched = Schedule.objects.get(pk=schedule_id)
             sched_lower_type = sched.type.lower()
             scheds = Schedule.objects.filter(procedure=proc)
             fsets = proc.filesets_list()
             fsetform = FileSetForm() # An unbound form
             schedform = ScheduleForm() # An unbound form
             triggerformempty = True
-                    
             return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})        
 
             
 def uniquetrigger(request, computer_id, procedure_id, schedule_id):
+    sched = get_object_or_404(Schedule, pk=schedule_id)
     if request.method == 'POST': # If the form has been submitted...
         triggerform = UniqueTriggerForm(request.POST)
         if triggerform.is_valid():
             try:
-                sched = Schedule.objects.get(pk=schedule_id)
                 utrigger = UniqueTrigger.objects.get(schedule=sched)
             except UniqueTrigger.DoesNotExist:
                 utrigger = UniqueTrigger()
             utrigger.schedule_id = schedule_id
-            utrigger.target_date = form.cleaned_data['target_date']
-            utrigger.hour = form.cleaned_data['hour']
-            utrigger.level = form.cleaned_data['level']
+            utrigger.target_date = triggerform.cleaned_data['target_date']
+            utrigger.hour = triggerform.cleaned_data['hour']
+            utrigger.level = triggerform.cleaned_data['level']
             utrigger.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
-            comp = Computer.objects.get(pk=computer_id)
+            comp = get_object_or_404(Computer, pk=computer_id)
             comps = Computer.objects.all()
             compform = ComputerForm()
-            proc = Procedure.objects.get(pk=procedure_id)
+            proc = get_object_or_404(Procedure, pk=procedure_id)
             procs = Procedure.objects.filter(computer=comp)
             procform = ProcedureForm()
-            sched = Schedule.objects.get(pk=schedule_id)
             sched_lower_type = sched.type.lower()
             scheds = Schedule.objects.filter(procedure=proc)
             fsets = proc.filesets_list()
@@ -352,10 +351,10 @@ def create_fileset(request, computer_id, procedure_id):
             fileset.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id})
         else:
-            proc = Procedure.objects.get(pk=procedure_id)
-            comp = Computer.objects.get(pk=computer_id)
+            comp = get_object_or_404(Computer, pk=computer_id)
             compform = ComputerForm()
             comps = Computer.objects.all()
+            proc = get_object_or_404(Procedure, pk=procedure_id)
             procform = ProcedureForm()
             procs = comp.procedures_list()
             fsets = proc.filesets_list()
@@ -366,10 +365,7 @@ def create_fileset(request, computer_id, procedure_id):
 
 def delete_fileset(request, computer_id, procedure_id, fileset_id):
     if request.method == 'POST':
-        try:
-            fset = FileSet.objects.get(pk=fileset_id)
-        except FileSet.DoesNotExist:
-            return HttpResponse('Erro de URL. FileSet nao existe.')
+        fset = get_object_or_404(FileSet, pk=fileset_id)
         fset.delete()
         default = '%(script_name)s/computer/%(comp_id)s/procedure/%(proc_id)s' % {'script_name':request.META['SCRIPT_NAME'],'comp_id':computer_id,'proc_id':procedure_id}
         return __redirect_back_or_default(request, default)

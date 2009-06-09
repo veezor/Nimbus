@@ -1,3 +1,6 @@
+{% load bkp_extras %}
+
+
 <!-- Begin Header -->
 	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
 	<hr />
@@ -9,7 +12,8 @@
 	<ul>
 	{% for c in comps %}
 		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
+		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  
+		{{ c.fd_password }} | <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
 	    <button type="submit">Remover</button> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} 
 		</li></form>
 	{% endfor %}
@@ -38,7 +42,7 @@
 	{% for p in procs %}
 	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
 	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.procedure_name }}</a> | 
-	<a href="{{script_name}}/procedure/{{p.id}}/edit">Alterar</a>  |
+	<a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/edit">Alterar</a>  |
 	<button type="submit">Remover</button> | {% ifequal p.id proc.id %} (Selecao Atual) {% endifequal %}
 	</li></form>
 	{% endfor %}
@@ -100,7 +104,8 @@
 	<ul>
 	{% for s in scheds %}
 	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{s.id}}/delete" method="post">
-	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{s.id}}">{{ s }}</a>
+	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{s.id}}">{{ s }}</a> |
+	{{ s|get_trigger_hour }} | {{ s|get_trigger_level }} |
     <button type="submit">Remover</button> | {% ifequal s.id sched.id %} (Selecao Atual) {% endifequal %}
 	</li></form>
 	{% endfor %}

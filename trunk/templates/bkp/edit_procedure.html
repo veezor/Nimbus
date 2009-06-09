@@ -1,10 +1,10 @@
 <h1> <a href="{{script_name}}/">Prototipo Backup Corporativo</a> </h1>
 <hr />
-<h2> Alterar Computador </h2>
+<h2> Alterar Procedimento </h2>
 
 
-<form action="{{script_name}}/computer/{{comp.id}}/edit" method="post">
-    {% for field in compform %}
+<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/edit" method="post">
+    {% for field in procform %}
         <div class="fieldWrapper">
             {{ field.errors }}
             {{ field.label_tag }}: {{ field }}
@@ -13,6 +13,6 @@
     <p><input type="submit" value="Salvar" /></p>
 </form>
 
-<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}">Cancelar</a>
 <br />
 
