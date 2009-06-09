@@ -4,6 +4,7 @@
 
 # Misc
 from django.forms import ModelForm
+from django import forms
 # Models
 from backup_corporativo.bkp.models import Computer
 from backup_corporativo.bkp.models import Procedure
@@ -16,16 +17,15 @@ from backup_corporativo.bkp.models import FileSet
 #
 #   Forms
 #
-
 class ComputerForm(ModelForm):
     class Meta:
         model = Computer
-
-
+        fields = ('computer_name','ip','description')
+        
 class ProcedureForm(ModelForm):
     class Meta:
         model = Procedure
-        fields = ('name','restore_path')
+        fields = ('procedure_name','restore_path')
 
 class ScheduleForm(ModelForm):
     class Meta:

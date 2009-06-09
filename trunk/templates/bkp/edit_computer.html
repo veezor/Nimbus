@@ -2,11 +2,17 @@
 <hr />
 <h2> Alterar Computador </h2>
 
-<form action="{{script_name}}/computer/{{comp.id}}/edit" method="post">
-{{ form.as_p }}
-<input type="submit" value="Submit" />
-</form> 
 
-<a href="{{script_name}}/computers/">voltar</a>
+<form action="{{script_name}}/computer/{{comp.id}}/edit" method="post">
+    {% for field in compform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
+<a href="{{script_name}}/computers/">Cancelar</a>
 <br />
 

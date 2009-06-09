@@ -8,7 +8,7 @@
 	<ul>
 	{% for c in comps %}
 		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.name }}</a> | {{ c.ip }} | {{ c.description }} |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
+		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
 	    <button type="submit">Remover</button> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} 
 		</li></form>
 	{% endfor %}
@@ -37,7 +37,7 @@
 	<ul>
 	{% for p in procs %}
 	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
-	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.name }}</a> | 
+	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.procedure_name }}</a> | 
 	<a href="{{script_name}}/procedure/{{p.id}}/edit">Alterar</a>  |
 	<button type="submit">Remover</button> | {% ifequal p.id proc.id %} (Selecao Atual) {% endifequal %}
 	</li></form>

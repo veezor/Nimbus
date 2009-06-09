@@ -48,26 +48,20 @@ def list_computers(request):
 
 def edit_computer(request, computer_id):
     if request.method == 'GET': # Edit computer
-        try:
-            comp = Computer.objects.get(pk=computer_id)
-        except Computer.DoesNotExist:
-            return HttpResponse('Erro de URL. Computador Nao Existe (Falta customizar mensagem de erro)')
-        form = ComputerForm(instance=comp) # An unbound form
-        return render_to_response('bkp/edit_computer.html', {'script_name':request.META['SCRIPT_NAME'],'comp':comp,'form': form,})
+        comp = Computer.objects.get(pk=computer_id)
+        compform = ComputerForm(instance=comp)
+        return render_to_response('bkp/edit_computer.html', {'script_name':request.META['SCRIPT_NAME'],'comp':comp,'compform': compform,})
     elif request.method == 'POST': # Update computer
-        form = ComputerForm(request.POST)
-        if form.is_valid():
-            try:
-                comp = Computer.objects.get(pk=computer_id)
-            except Computer.DoesNotExist:
-                return HttpResponse('Erro de URL. Computador Nao Existe (Falta customizar mensagem de erro)')
-            comp.name = form.cleaned_data['name']
-            comp.ip = form.cleaned_data['ip']
-            comp.description = form.cleaned_data['description']
+        compform = ComputerForm(request.POST)
+        if compform.is_valid():
+            comp = Computer.objects.get(pk=computer_id)
+            comp.ip = compform.cleaned_data['ip']
+            comp.description = compform.cleaned_data['description']
             comp.save()
             return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':comp.id})
-        else:
-            return HttpResponse('Erro de formulario (falta customizar erro)')
+        else:   # Update failed re-render
+            comp = Computer.objects.get(pk=computer_id)        
+            return render_to_response('bkp/edit_computer.html', {'script_name':request.META['SCRIPT_NAME'],'comp':comp,'compform': compform,})
             
 def view_computer(request, computer_id):
     __store_location(request)
@@ -136,7 +130,7 @@ def create_procedure(request, computer_id):
         if procform.is_valid():
             procedure = Procedure()
             procedure.computer_id = computer_id
-            procedure.name = procform.cleaned_data['name']
+            procedure.procedure_name = procform.cleaned_data['procedure_name']
             procedure.restore_path = procform.cleaned_data['restore_path']
             procedure.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure.id})
@@ -153,7 +147,7 @@ def delete_procedure(request, computer_id, procedure_id):
         try:
             proc = Procedure.objects.get(pk=procedure_id)
         except Procedure.DoesNotExist:
-            return HttpResponse('Erro de URL. Procedumento nao existe.')
+            return HttpResponse('Erro de URL. Procedimento nao existe.')
         proc.delete()
         except_pattern = "procedure/%s" % (procedure_id)
         default = "%(script_name)s/computer/%(computer_id)s" % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,}
@@ -243,8 +237,8 @@ def delete_schedule(request, computer_id, procedure_id, schedule_id):
 
 def weeklytrigger(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
-        form = WeeklyTriggerForm(request.POST)
-        if form.is_valid():
+        triggerform = WeeklyTriggerForm(request.POST)
+        if triggerform.is_valid():
             try:
                 sched = Schedule.objects.get(pk=schedule_id)
                 wtrigger = WeeklyTrigger.objects.get(schedule=sched)
@@ -263,13 +257,27 @@ def weeklytrigger(request, computer_id, procedure_id, schedule_id):
             wtrigger.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
-            return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
+            comp = Computer.objects.get(pk=computer_id)
+            comps = Computer.objects.all()
+            compform = ComputerForm()
+            proc = Procedure.objects.get(pk=procedure_id)
+            procs = Procedure.objects.filter(computer=comp)
+            procform = ProcedureForm()
+            sched = Schedule.objects.get(pk=schedule_id)
+            sched_lower_type = sched.type.lower()
+            scheds = Schedule.objects.filter(procedure=proc)
+            fsets = proc.filesets_list()
+            fsetform = FileSetForm() # An unbound form
+            schedform = ScheduleForm() # An unbound form
+            triggerformempty = True
+        
+            return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})        
 
 
 def monthlytrigger(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
-        form = MonthlyTriggerForm(request.POST)
-        if form.is_valid():
+        triggerform = MonthlyTriggerForm(request.POST)
+        if triggerform.is_valid():
             try:
                 sched = Schedule.objects.get(pk=schedule_id)
                 mtrigger = MonthlyTrigger.objects.get(schedule=sched)
@@ -282,13 +290,27 @@ def monthlytrigger(request, computer_id, procedure_id, schedule_id):
             mtrigger.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
-            return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
+            comp = Computer.objects.get(pk=computer_id)
+            comps = Computer.objects.all()
+            compform = ComputerForm()
+            proc = Procedure.objects.get(pk=procedure_id)
+            procs = Procedure.objects.filter(computer=comp)
+            procform = ProcedureForm()
+            sched = Schedule.objects.get(pk=schedule_id)
+            sched_lower_type = sched.type.lower()
+            scheds = Schedule.objects.filter(procedure=proc)
+            fsets = proc.filesets_list()
+            fsetform = FileSetForm() # An unbound form
+            schedform = ScheduleForm() # An unbound form
+            triggerformempty = True
+                    
+            return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})        
 
             
 def uniquetrigger(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST': # If the form has been submitted...
-        form = UniqueTriggerForm(request.POST)
-        if form.is_valid():
+        triggerform = UniqueTriggerForm(request.POST)
+        if triggerform.is_valid():
             try:
                 sched = Schedule.objects.get(pk=schedule_id)
                 utrigger = UniqueTrigger.objects.get(schedule=sched)
@@ -301,7 +323,21 @@ def uniquetrigger(request, computer_id, procedure_id, schedule_id):
             utrigger.save()
             return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
         else:
-            return HttpResponse("Erro de Formulario (Falta customizar mensagem de erro)")
+            comp = Computer.objects.get(pk=computer_id)
+            comps = Computer.objects.all()
+            compform = ComputerForm()
+            proc = Procedure.objects.get(pk=procedure_id)
+            procs = Procedure.objects.filter(computer=comp)
+            procform = ProcedureForm()
+            sched = Schedule.objects.get(pk=schedule_id)
+            sched_lower_type = sched.type.lower()
+            scheds = Schedule.objects.filter(procedure=proc)
+            fsets = proc.filesets_list()
+            fsetform = FileSetForm() # An unbound form
+            schedform = ScheduleForm() # An unbound form
+            triggerformempty = True      
+            
+            return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})        
         
         
 ### FileSets ###

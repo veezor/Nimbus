@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django import forms
+from backup_corporativo.bkp import customfields as cfields
 import os
 import string
 
@@ -29,6 +31,7 @@ DAYS_OF_THE_WEEK = {
 }
 
 
+
 ###
 ###   Models
 ###
@@ -37,16 +40,17 @@ DAYS_OF_THE_WEEK = {
 ### Computer ###
 
 class Computer(models.Model):
-    name = models.CharField("Nome",max_length=50)
+    computer_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     ip = models.IPAddressField("Endereço IP")
-    description = models.CharField("Descrição",max_length=100)
+    description = models.CharField("Descrição",max_length=100, blank=True)
+    fd_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     
     # get list of associated procedures
     def procedures_list(self):
         return Procedure.objects.filter(computer=self.id)
 
     def get_computer_name(self):
-        return str.lower(str(self.name))
+        return str.lower(str(self.computer_name))
 
     def __unicode__(self):
         return self.name
@@ -55,9 +59,10 @@ class Computer(models.Model):
 
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
-    name = models.CharField("Nome", max_length=50)
-    restore_path = models.CharField("Recuperar Em", max_length="255")
+    procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
+    restore_path = cfields.ModelPathField("Recuperar Em", max_length="255")
     status = models.CharField(max_length=10, default="Invalid")
+    
 
     # change status to valid or invalid depending if filesets_list() returns the list or an empty set
     def update_status(self):
@@ -78,22 +83,22 @@ class Procedure(models.Model):
     
     # get fileset name for bacula file
     def get_fileset_name(self):
-        return "%s_Set" % (self.name)
+        return "%s_Set" % (self.procedure_name)
         
     # get procedure name for bacula file    
     def get_procedure_name(self):
-        return "%s_Job" % (self.name)
+        return "%s_Job" % (self.procedure_name)
     
     # get restore procedure name for bacula    
     def get_restore_name(self):
-        return "%s_RestoreJob" % (self.name)
+        return "%s_RestoreJob" % (self.procedure_name)
         
     # get schedule name for bacula file       
     def get_schedule_name(self):
-        return "%s_Sched" % (self.name)
+        return "%s_Sched" % (self.procedure_name)
     # get pool name for bacula file
     def get_pool_name(self):
-        return "%s_Pool" % (self.name)
+        return "%s_Pool" % (self.procedure_name)
 
     def __unicode__(self):
         return self.name
@@ -143,7 +148,7 @@ class MonthlyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
     hour = models.TimeField("Horário")
     level = models.CharField("Nível", max_length=20,choices=LEVEL_CHOICES)
-    target_days = models.CharField("Dias do Mês", max_length=100)
+    target_days = cfields.ModelMonthDaysListField("Dias do Mês", max_length=100)
 
 
 ### UniqueTrigger ###
@@ -156,7 +161,7 @@ class UniqueTrigger(models.Model):
 ### FileSet ###
 class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
-    path = models.CharField("Local", max_length="255")
+    path = cfields.ModelPathField("Local", max_length="255")
 
 
 ### Pool ###
