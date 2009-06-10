@@ -7,6 +7,9 @@ base_url = 'backup_corporativo'
 
 urlpatterns = patterns('',
     (r'^$', 'backup_corporativo.bkp.views.list_computers'), #index
+    # Arquivos estaticos.
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
+        {'document_root': '/home/jonatas/Projects/bc-devel/backup_corporativo/templates/bkp/static'}),
     # session [NEW, DELETE, CREATE]
     (r'^session/new$', 'backup_corporativo.bkp.views.new_session'),
     (r'^session/delete$', 'backup_corporativo.bkp.views.delete_session'),        
