@@ -1,0 +1,30 @@
+* {
+margin:0;
+padding:0;
+}
+
+body {
+font-size: 12px;
+font-family: Arial, sans-serif;
+}
+
+#site {
+width: 960px;
+margin: 0 auto;
+}
+
+#conteudo {
+width: 960px;
+overflow: hidden;
+}
+
+#sidebar {
+width: 220px;
+float: left;
+}
+
+#main_content {
+background: #EEE;
+float: right;
+width: 720px;
+}
