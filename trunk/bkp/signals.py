@@ -7,6 +7,7 @@ from django.db import models
 import os
 import string
 # Models
+from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.models import Computer
 from backup_corporativo.bkp.models import Procedure
 from backup_corporativo.bkp.models import Schedule
@@ -59,6 +60,10 @@ def update_files(sender, instance, signal, *args, **kwargs):
         update_pool_file(instance.procedure)
     elif sender == Schedule:
         update_schedule_file(instance.procedure)
+    elif sender == GlobalConfig:
+        update_config_file(instance)
+        update_device_file(instance)        
+        update_console_file(instance)                
     else:
         raise # Oops!
 
@@ -81,7 +86,170 @@ def remove_files(sender, instance, signal, *args, **kwargs):
 ###   Auxiliar Definitions
 ###
 
+### Global Config ###
 
+def update_config_file(instance):
+    "Config update file"
+    i = instance
+    dir_dict = config_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
+    sto_dict = config_sto_dict("%sStorage" % i.bacula_name, i.storage_ip, i.storage_port, i.storage_password)
+    cat_dict = config_cat_dict("MyCatalog",i.database_password)
+    smsg_dict = config_msg_dict("Standard",i.admin_mail)
+    dmsg_dict = config_msg_dict("Daemon",i.admin_mail)    
+    generate_config("bacula-dir.conf", dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict)
+
+def config_dir_dict(dir_name, dir_port, dir_passwd):
+    "generate config director attributes dict"
+    
+    return {'Name':dir_name, 'DIRport':dir_port, 'QueryFile':'"/etc/bacula/query.sql"', 
+    'WorkingDirectory':'"var/bacula/working"','PidDirectory':'"/var/run"','Maximum Concurrent Jobs':'1',
+    'Password':'"%s"' % dir_passwd, 'Messages':'Daemon' }
+
+def config_sto_dict(sto_name, sto_ip, sto_port, sto_passwd):
+    "generate config storage attributes dict"
+    
+    return {'Name':sto_name, 'Address':sto_ip,'SDPort':sto_port, 'Password':'"%s"' % sto_passwd,
+    'Device':'FileStorage','Media Type':'File'}
+
+def config_cat_dict(cat_name, db_passwd):
+    "generate config storage attributes dict"
+    
+    return {'Name':cat_name, 'dbname':'"bacula"', 'dbuser':'"bacula"', 'dbpassword':'"%s"' % db_passwd}
+    
+def config_msg_dict(msg_name, admin_mail=None):
+    "generate config message attributes dict"
+    admin_mail = admin_mail or "backup@linconet.com.br"
+    if msg_name == 'Standard':
+        return {'Name':msg_name, 
+        'mailcommand':'"/sbin/bsmtp -h localhost -f \\"\(Bacula\) \<%r\>\\" -s \\"Bacula: %t %e of %c %l\\" %r"', 
+        'operatorcommand':'"/sbin/bsmtp -h localhost -f \\"\(Bacula\) \<%r\>\\" -s \\"Bacula: Intervention needed for %j\\" %r"', 
+        'mail':'%s = all, !skipped' % admin_mail, 'operator':'%s = mount' % admin_mail,
+        'console':'all, !skipped, !saved', 'append':'"/var/bacula/working/log" = all, !skipped'}
+    elif msg_name == 'Daemon':
+        return {'Name':msg_name, 
+        'mailcommand':'"/sbin/bsmtp -h localhost -f \\"\(Bacula\) \<%r\>\\" -s \\"Bacula daemon message\\" %r"',
+        'mail':'%s = all, !skipped' % admin_mail, 'console':'all, !skipped, !saved', 
+        'append':'"/var/bacula/working/log" = all, !skipped'}
+
+
+    
+def generate_config(filename,dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict):
+    "generate config file"
+    f = prepare_to_write(filename,'custom/')
+
+    f.write("Director {\n")
+    for k in dir_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dir_dict[k]})
+    f.write("}\n\n")
+
+    f.write("Storage {\n")
+    for k in sto_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':sto_dict[k]})
+    f.write("}\n\n")
+    
+    f.write("Catalog {\n")
+    for k in cat_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':cat_dict[k]})
+    f.write("}\n\n")
+    
+    f.write("Messages {\n")
+    for k in smsg_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':smsg_dict[k]})
+    f.write("}\n\n")
+
+    f.write("Messages {\n")
+    for k in dmsg_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dmsg_dict[k]})
+    f.write("}\n\n")
+
+    f.close()
+
+### Device ###
+
+def device_sto_dict(sto_name, sto_port):
+    "generate device storage attributes dict"
+    
+    return {'Name':sto_name, 'SDPort':sto_port, 'WorkingDirectory':'"/var/bacula/working"',
+    'Pid Directory':'"/var/run"','Maximum Concurrent Jobs':'20'}
+
+def device_dir_dict(dir_name, dir_passwd):
+    "generate device director attributes dict"
+    
+    return {'Name':dir_name, 'Password':'"%s"' % dir_passwd}
+
+def device_dev_dict(dev_name):
+    "generate device device attributes dict"
+    
+    return {'Name':dev_name, 'Media Type':'File', 'Archive Device':'/var/backup', 'LabelMedia':'yes', 
+    'Random Access':'yes', 'AutomaticMount':'yes', 'RemovableMedia':'no', 'AlwaysOpen':'no'}
+
+
+def device_msg_dict(msg_name, dir_name):
+    "generate device message attributes dict"
+    
+    return {'Name':msg_name, 'Director':'%s = all' % dir_name}
+
+    
+def update_device_file(instance):
+    "Update Device File"
+    i = instance
+    sto_dict = device_sto_dict("%s-sd" % i.bacula_name, i.storage_port)
+    dir_dict = device_dir_dict("%s-dir" % i.bacula_name,i.director_password)
+    dev_dict = device_dev_dict("FileStorage")
+    msg_dict = device_msg_dict("Standard","%s-dir" % i.bacula_name)
+    generate_device("bacula-sd.conf", sto_dict, dir_dict, dev_dict, msg_dict)
+
+def generate_device(filename,sto_dict, dir_dict, dev_dict, msg_dict):
+    "generate config file"
+    f = prepare_to_write(filename,'custom/')
+
+    f.write("Storage {\n")
+    for k in sto_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':sto_dict[k]})
+    f.write("}\n\n")
+
+    f.write("Director {\n")
+    for k in dir_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dir_dict[k]})
+    f.write("}\n\n")
+    
+    f.write("Device {\n")
+    for k in dev_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dev_dict[k]})
+    f.write("}\n\n")
+    
+    f.write("Messages {\n")
+    for k in msg_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':msg_dict[k]})
+    f.write("}\n\n")
+    f.close()
+
+### Console ###
+
+def console_dir_dict(dir_name, dir_port, dir_passwd):
+    "generate device message attributes dict"
+    
+    return {'Name':dir_name, 'DIRPort':dir_port, 'Address':'127.0.0.1', 'Password':'"%s"' % dir_passwd}
+
+
+def update_console_file(instance):
+    "Update Console File"
+    i = instance
+    dir_dict = console_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
+    generate_console("bconsole.conf", dir_dict)
+    
+
+def generate_console(filename,dir_dict):
+    "generate console file"
+    f = prepare_to_write(filename,'custom/')
+
+    f.write("Director {\n")
+    for k in dir_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dir_dict[k]})
+    f.write("}\n\n")
+
+
+    
 #### Procedure #####
 
 def update_procedure_file(instance):
@@ -96,13 +264,14 @@ def update_procedure_file(instance):
     generate_procedure(proc_name,jdict)
     rdict = procedure_dict(restore_name,'Restore',comp_name,fset_name,sched_name,pool_name,instance.restore_path)
     generate_procedure(restore_name,rdict)
+
     
 def procedure_dict(proc_name, type, computer_name, fset_name, sched_name, pool_name, where=None):
     "generate procedure attributes dict"
     bootstrap = '/var/lib/bacula/%s.bsr' % (proc_name)
     
-    return {'Name':proc_name, 'Client':computer_name, 'Level':'Incremental', 
-    'FileSet':fset_name, 'Schedule':sched_name, 'Storage':'LinconetStorage', 'Pool':pool_name, 
+    return {'Name':proc_name, 'Client':computer_name, 'Level':'Incremental',
+    'FileSet':fset_name, 'Schedule':sched_name, 'Storage':'LinconetStorage', 'Pool':pool_name,
     'Write Bootstrap':bootstrap, 'Priority':'10', 'Messages':'Standard','Type':type,'Where':where}
 
 def generate_procedure(proc_name,attr_dict):
@@ -308,9 +477,9 @@ def remove_or_leave(filepath):
         # Leave
         pass
 
-def prepare_to_write(instance_name,rel_dir):
+def prepare_to_write(filename,rel_dir):
     "make sure base_dir exists and open filename"
-    base_dir,filepath = mount_path(instance_name,rel_dir)
+    base_dir,filepath = mount_path(filename,rel_dir)
     create_or_leave(base_dir)
     return open(filepath, 'w')
 
@@ -327,7 +496,8 @@ def mount_path(instance_name,rel_dir):
 ###   Dispatcher Connection
 ###
 
-
+# GlobalConfig
+models.signals.post_save.connect(update_files, sender=GlobalConfig)
 # Computer
 models.signals.post_save.connect(update_files, sender=Computer)
 models.signals.post_delete.connect(remove_files, sender=Computer)

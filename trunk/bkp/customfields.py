@@ -11,7 +11,7 @@ from django.db import models
 
 path_re = re.compile('^([a-zA-Z]:)?/([a-zA-Z0-9 _-]+/)*$')
 slug_re = re.compile('^[a-zA-Z0-9-_]+$')
-mdayslist_re = re.compile('^([0-9]|[0-2][0-9])(;([0-9]|[0-2][0-9]))*$')
+mdayslist_re = re.compile('^([0-9]|[0-2][0-9]|3[0-1])(;([0-9]|[0-2][0-9]|3[0-1]))*$')
 
 class FormSlugField(forms.CharField):
     def clean(self, value):

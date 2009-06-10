@@ -6,6 +6,7 @@
 # Validar gatilho c/ tipo de agendamento
 
 # Models
+from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.models import Computer
 from backup_corporativo.bkp.models import Procedure
 from backup_corporativo.bkp.models import Schedule
@@ -14,6 +15,7 @@ from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import UniqueTrigger
 from backup_corporativo.bkp.models import FileSet
 # Forms
+from backup_corporativo.bkp.forms import GlobalConfigForm
 from backup_corporativo.bkp.forms import LoginForm
 from backup_corporativo.bkp.forms import ComputerForm
 from backup_corporativo.bkp.forms import ProcedureForm
@@ -36,7 +38,30 @@ from django.contrib.auth.decorators import login_required
 ###
 ###   Views
 ###
+### Global Config ###
 
+def edit_config(request):
+    try:
+        gconfig = GlobalConfig.objects.get(pk=1)    
+    except GlobalConfig.DoesNotExist:
+        gconfig = None
+    if request.method == 'GET':
+        gconfig = gconfig or GlobalConfig()
+        gconfigform = GlobalConfigForm(instance=gconfig)
+        return render_to_response('bkp/edit_config.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'gconfig':gconfig,'gconfigform':gconfigform})
+    elif request.method == 'POST':
+        gconfigform = GlobalConfigForm(request.POST, instance=gconfig)
+        if gconfigform.is_valid():
+            if not gconfig:
+                gconfig = gconfigform.save()
+                gconfig.generate_passwords()
+            else:
+                gconfig = gconfigform.save()
+        return render_to_response('bkp/edit_config.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'gconfig':gconfig,'gconfigform':gconfigform})
+
+
+
+### Sessions ###
 
 def new_session(request):
     loginform = LoginForm()
@@ -51,7 +76,7 @@ def create_session(request):
             user = authenticate(username=auth_login, password=auth_passwd)
             if user:
                 login(request, user)
-                default = "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
+                default = GlobalConfig.system_configured(GlobalConfig()) and "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],} or "%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],}
                 return __redirect_back_or_default(request, default)
             else:
                 return render_to_response('bkp/new_session.html', {'script_name':request.META['SCRIPT_NAME'],'loginform':loginform,})                

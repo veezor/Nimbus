@@ -6,6 +6,7 @@
 from django.forms import ModelForm
 from django import forms
 # Models
+from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.models import Computer
 from backup_corporativo.bkp.models import Procedure
 from backup_corporativo.bkp.models import Schedule
@@ -18,9 +19,17 @@ from backup_corporativo.bkp.models import FileSet
 #   Forms
 #
 
+class GlobalConfigForm(ModelForm):
+    class Meta:
+        model = GlobalConfig
+        fields = ('bacula_name','storage_ip','storage_port','director_port','admin_mail')
+        
+
+
+
 class LoginForm(forms.Form):
-    auth_login = forms.CharField(label="Usuário",max_length=20)
-    auth_password = forms.CharField(label="Senha",max_length=50)
+    auth_login = forms.CharField(label=u'Usuário',max_length=20)
+    auth_password = forms.CharField(label=u'Senha',max_length=50,widget=forms.PasswordInput(render_value=False))
 
 class ComputerForm(ModelForm):
     class Meta:

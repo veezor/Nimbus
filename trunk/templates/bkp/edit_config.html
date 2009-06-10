@@ -1,0 +1,36 @@
+<!-- Begin Header -->
+	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
+	<hr />
+<!-- End Header -->
+
+<!-- Welcome -->
+
+<ul><form class="link" action="{{script_name}}/session/delete" method="post">
+<li>Welcome, {{current_user.username}} | <button type="submit">Sair</button> | 
+</li></form>
+</ul>
+
+<!-- End Welcome -->
+
+
+<!--  Begin Global Config -->
+	<h2>Configurações Globais</h2>
+
+{% if gconfig %}
+<h3>Por favor, defina as configurações iniciais do seu sistema.</h3>
+{% endif %}
+
+<form action="{{script_name}}/config/edit" method="post">
+    {% for field in gconfigform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
+
+	<hr />
+
+<!--  End Global Config -->

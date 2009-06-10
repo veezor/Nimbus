@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from django.core import serializers
 from django.db import models
 from django import forms
 from backup_corporativo.bkp import customfields as cfields
@@ -30,13 +31,40 @@ DAYS_OF_THE_WEEK = {
     'saturday':'Sábado',
 }
 
-
-
 ###
 ###   Models
 ###
 
 
+### GlobalConfig ###
+class GlobalConfig(models.Model):
+    bacula_name = cfields.ModelSlugField("Nome da Instância", max_length=50)
+    storage_ip = models.IPAddressField("IP do Servidor")
+    storage_password = models.CharField(max_length=50,default='defaultpw')
+    storage_port = models.IntegerField("Porta do Storage",default='9103')
+    director_port = models.IntegerField("Porta do Director",default='9101')
+    director_password = models.CharField(max_length=50,default='defaultpw')
+    database_password = models.CharField(max_length=50, default='defaultpw')
+    admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
+
+    def generate_passwords(self):
+        "generate random passwords"
+        import string
+        from random import choice
+        size = 50
+        self.storage_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
+        self.director_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
+        self.database_password = ''.join([choice(string.letters + string.digits) for i in range(size)])        
+        self.save()
+
+    def system_configured(self):
+        return GlobalConfig.objects.all().count() > 0
+
+    def save(self):
+        self.id = 1 # always use the same row id at database to store the config
+        super(GlobalConfig, self).save()
+
+ 
 ### Computer ###
 
 class Computer(models.Model):
