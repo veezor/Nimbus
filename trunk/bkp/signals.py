@@ -161,6 +161,11 @@ def generate_config(filename,dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict)
     for k in dmsg_dict.keys():
         f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dmsg_dict[k]})
     f.write("}\n\n")
+    
+    folders = ['computers','filesets','jobs','pools','schedules']
+    for folder in folders:
+        import_dir = absolute_path("custom/%s" % folder)
+        f.write("@|\"sh -c 'for f in %s* ; do echo @${f} ; done'\"\n" % import_dir)
 
     f.close()
 
@@ -483,13 +488,15 @@ def prepare_to_write(filename,rel_dir):
     create_or_leave(base_dir)
     return open(filepath, 'w')
 
-def mount_path(instance_name,rel_dir):
+def mount_path(filename,rel_dir):
     "mount absolute dir path and filepath"
-    filename = str.lower(str(instance_name))
-    root = os.path.dirname(os.path.abspath(__file__))
-    base_dir = os.path.join(root,rel_dir)
+    filename = str(filename).lower()
+    base_dir = absolute_path(rel_dir)
     filepath = os.path.join(base_dir,filename)
     return base_dir, filepath
+    
+def absolute_path(rel_dir):
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
     
     
 ###

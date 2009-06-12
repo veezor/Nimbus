@@ -12,6 +12,8 @@ urlpatterns = patterns('',
         {'document_root': '/home/jonatas/Projects/bc-devel/backup_corporativo/templates/bkp/static'}),
     # Global Config
     (r'^config/edit$', 'backup_corporativo.bkp.views.edit_config'),    
+    # Stats
+    (r'^stats$', 'backup_corporativo.bkp.views.view_stats'),        
     # session [NEW, DELETE, CREATE]
     (r'^session/new$', 'backup_corporativo.bkp.views.new_session'),
     (r'^session/delete$', 'backup_corporativo.bkp.views.delete_session'),        

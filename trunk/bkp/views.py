@@ -38,6 +38,28 @@ from django.contrib.auth.decorators import login_required
 ###
 ###   Views
 ###
+
+
+### Stats ###
+def view_stats(request):
+    import MySQLdb
+    query = ''' select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime, \
+                j.JobFiles, j.JobBytes , JobErrors, JobStatus \
+                from Job as j INNER JOIN Client as jc \
+                on j.ClientId = jc.ClientId; \
+            '''
+            
+    db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
+    cursor = db.cursor()
+    cursor.execute(query)
+    numrows = int(cursor.rowcount)
+    for x in range(0,numrows):
+    rows = cursor.fetchone()
+    
+    return render_to_response('bkp/view_stats.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'rows':rows})
+
+
+
 ### Global Config ###
 
 def edit_config(request):
@@ -159,7 +181,7 @@ def create_computer(request):
                     computer.generate_password()
                     return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':computer.id})
                 else:
-                    comps = Computer.objects.all()           
+                    comps = Computer.objects.all()
                     return render_to_response('bkp/list_computers.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'comps':comps,'compform':compform})
     else:
         __store_location(request)
