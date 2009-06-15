@@ -6,6 +6,8 @@
 		<meta http-equiv="Content-Language" content="pt-BR" />
 
 		<title>{% block title %}{% endblock %} Backup corporativo</title>
+
+		<link href="/static/estilo.css" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="site">
@@ -24,15 +26,13 @@
 				<div id="sidebar">
 					<ul>
 						{% for c in comps %}
-						<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  
-							{{ c.fd_password }} | <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
-							<button type="submit">Remover</button> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} 
-						</li></form>
+						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %}</li>
 						{% endfor %}
 					</ul>
 				</div>
+				<div id="main_content">
 				{% block content %}{% endblock %}
+				</div>
 			</div>
 			<div id="rodape">
 			</div>
