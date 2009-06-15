@@ -21,6 +21,17 @@
 				<!-- End Welcome -->
 			</div>
 			<div id="conteudo">	
+				<div id="sidebar">
+					<ul>
+						{% for c in comps %}
+						<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
+						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  
+							{{ c.fd_password }} | <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
+							<button type="submit">Remover</button> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} 
+						</li></form>
+						{% endfor %}
+					</ul>
+				</div>
 				{% block content %}{% endblock %}
 			</div>
 			<div id="rodape">
