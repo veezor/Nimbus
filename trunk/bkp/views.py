@@ -43,20 +43,67 @@ from django.contrib.auth.decorators import login_required
 ### Stats ###
 def view_stats(request):
     import MySQLdb
-    query = ''' select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime, \
-                j.JobFiles, j.JobBytes , JobErrors, JobStatus \
-                from Job as j INNER JOIN Client as jc \
-                on j.ClientId = jc.ClientId; \
-            '''
+    
+    runningjobs_query = ''' select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime, \
+                        j.JobFiles, j.JobBytes , JobErrors, JobStatus from Job as j \
+                        INNER JOIN Client as jc on j.ClientId = jc.ClientId \
+                        WHERE j.JobStatus = 'R' or j.JobStatus = 'p' or j.JobStatus = 'j' \
+                        or j.JobStatus = 'c' or j.JobStatus = 'd' or j.JobStatus = 's' \
+                        or j.JobStatus = 'M' or j.JobStatus = 'm' or j.JobStatus = 'S' \
+                        or j.JobStatus = 'F' or j.JobStatus = 'B'; \
+                        '''
             
+
+    lastjobs_query =   ''' select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime, \
+                        j.JobFiles, j.JobBytes , JobErrors, JobStatus \
+                        from Job as j INNER JOIN Client as jc \
+                        on j.ClientId = jc.ClientId; \
+                        '''
+    
+    dbsize_query =  ''' SELECT table_schema, 
+                    sum( data_length + index_length ) / (1024 * 1024) "DBSIZE" \
+                    FROM information_schema.TABLES \
+                    WHERE table_schema = 'bacula' \
+                    GROUP BY table_schema; \
+                    '''
+                    
+    numproc_query = '''select count(*) "Procedimentos" \
+                    from backup_corporativo.bkp_procedure; \
+                    '''
+                    
+    numcli_query =  '''select count(*) "Computadores" \
+                    from backup_corporativo.bkp_computer; \
+                    '''
+
+    totalbytes_query =  '''select sum(JobBytes) "Bytes" \
+                        from Job where Job.JobStatus = 'T'; \
+                        '''
+                    
+   
     db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
     cursor = db.cursor()
-    cursor.execute(query)
-    numrows = int(cursor.rowcount)
-    for x in range(0,numrows):
-        rows = cursor.fetchone()
+
+    cursor.execute(runningjobs_query)
+    runningjobs = cursor.fetchall()
+  
     
-    return render_to_response('bkp/view_stats.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'rows':rows})
+    cursor.execute(lastjobs_query)
+    lastjobs = cursor.fetchall()
+    
+    cursor.execute(dbsize_query)    
+    dbsize = cursor.fetchall()[0][1]
+    
+    cursor.execute(numproc_query)
+    numproc = int(cursor.fetchall()[0][0])
+    
+    cursor.execute(numcli_query)
+    numcli = int(cursor.fetchall()[0][0])
+
+    cursor.execute(totalbytes_query)
+    tbytes = cursor.fetchall()[0][0]
+
+        
+    return render_to_response('bkp/view_stats.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'runningjobs':runningjobs,'lastjobs':lastjobs,'dbsize':dbsize,'numproc':numproc,'numcli':numcli, 'tbytes':tbytes})
 
 
 
