@@ -24,7 +24,12 @@ float: left;
 }
 
 #main_content {
-background: #EEE;
+background: #FAFAFA;
 float: right;
 width: 720px;
+}
+
+hr {
+padding-bottom: 20px;
+border: 0;
 }
