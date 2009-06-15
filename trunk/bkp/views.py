@@ -54,7 +54,7 @@ def view_stats(request):
     cursor.execute(query)
     numrows = int(cursor.rowcount)
     for x in range(0,numrows):
-    rows = cursor.fetchone()
+        rows = cursor.fetchone()
     
     return render_to_response('bkp/view_stats.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'rows':rows})
 
