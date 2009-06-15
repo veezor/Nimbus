@@ -1,12 +1,79 @@
-{% extends "bkp/base.html" %}
+<!-- Begin Header -->
+	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
+	<hr />
+<!-- End Header -->
 
-{% block content %}
+<!-- Welcome -->
+
+<ul><form class="link" action="{{script_name}}/session/delete" method="post">
+<li>Welcome, {{current_user.username}} | <button type="submit">Sair</button> | 
+</li></form>
+</ul>
+
+<!-- End Welcome -->
+
+
 <!-- Begin Stats -->
-<h2>Stats</h2>
+<h2>Informações Gerais</h2>
 
-{% for row in rows: %}
-{{ row }}
+<p>Banco de Dados: {{ dbsize }} MB</p>
+<p>Procedimentos: {{ numproc }}</p>
+<p>Computadores: {{ numcli }}</p>
+<p>Total Armazenado: {{ tbytes }} MB</p>
+
+<h2>Procedimentos Executando</h2>
+
+<table>
+<thead>
+	<tr>
+	<th scope='col'>Procedimento</th>
+	<th scope='col'>Computador</th>
+	<th scope='col'>Nível</th>
+	<th scope='col'>Início</th>
+	<th scope='col'>Fim</th>
+	<th scope='col'>Arquivos</th>
+	<th scope='col'>Bytes</th>
+	<th scope='col'>Erros</th>
+	<th scope='col'>Status</th>
+	</tr>
+</thead>
+<tbody>
+{% for job in runningjobs %}
+<tr> 
+{% for item in job %}
+<td> {{ item }} </td>
 {% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+
+<h2>Últimos Procedimentos Executados</h2>
+
+<table>
+<thead>
+	<tr>
+	<th scope='col'>Procedimento</th>
+	<th scope='col'>Computador</th>
+	<th scope='col'>Nível</th>
+	<th scope='col'>Início</th>
+	<th scope='col'>Fim</th>
+	<th scope='col'>Arquivos</th>
+	<th scope='col'>Bytes</th>
+	<th scope='col'>Erros</th>
+	<th scope='col'>Status</th>
+	</tr>
+</thead>
+<tbody>
+{% for job in lastjobs %}
+<tr> 
+{% for item in job %}
+<td> {{ item }} </td>
+{% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
 
 <!-- End Stats -->
-{% endblock %}
