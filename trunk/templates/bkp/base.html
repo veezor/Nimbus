@@ -12,6 +12,13 @@
 			<div id="topo">
 				<h1>Linconet - Tecnologia Estratégica</h1>
 				<div id="menu"></div>
+				<!-- Welcome -->
+				<ul>
+					<form class="link" action="{{script_name}}/session/delete" method="post">
+						<li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
+					</form>
+				</ul>
+				<!-- End Welcome -->
 			</div>
 			<div id="conteudo">	
 				{% block content %}{% endblock %}

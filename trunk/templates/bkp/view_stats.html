@@ -1,18 +1,6 @@
-<!-- Begin Header -->
-	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
-	<hr />
-<!-- End Header -->
+{% extends "bkp/base.html" %}
 
-<!-- Welcome -->
-
-<ul><form class="link" action="{{script_name}}/session/delete" method="post">
-<li>Welcome, {{current_user.username}} | <button type="submit">Sair</button> | 
-</li></form>
-</ul>
-
-<!-- End Welcome -->
-
-
+{% block content %}
 <!-- Begin Stats -->
 <h2>Stats</h2>
 
@@ -21,3 +9,4 @@
 {% endfor %}
 
 <!-- End Stats -->
+{% endblock %}

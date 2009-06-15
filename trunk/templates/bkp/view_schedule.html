@@ -1,21 +1,7 @@
+{% extends "bkp/base.html" %}
 {% load bkp_extras %}
 
-
-<!-- Begin Header -->
-	<h1> <a href="{{script_name}}/">Protótipo Backup Corporativo</a> </h1>
-	<hr />
-<!-- End Header -->
-
-<!-- Welcome -->
-
-<ul><form class="link" action="{{script_name}}/session/delete" method="post">
-<li>Welcome, {{current_user.username}} | <button type="submit">Sair</button> | 
-</li></form>
-</ul>
-
-<!-- End Welcome -->
-
-
+{% block content %}
 <!-- Begin Computers -->
 	<h2>Computadores</h2>
 	<ul>
@@ -160,8 +146,4 @@
 
 
 <!-- End Triggers -->
-
-
-
-
-
+{% endblock %}
