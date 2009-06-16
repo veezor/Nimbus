@@ -39,6 +39,58 @@ import os
 ###   Views
 ###
 
+#                   ##############
+# News Definitions  ##############
+#                   ##############
+
+
+def new_backup(request):
+    f = {}
+    f['compform'] = ComputerForm()
+    f['procform'] = ProcedureForm()
+    f['fsetform'] = FileSetForm()
+    f['schedform'] = ScheduleForm()
+    f['wtriggform'] = WeeklyTriggerForm()
+    f['mtriggform'] = MonthlyTriggerForm()
+    return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+    return_dict.update(f)
+    return render_to_response('bkp/new_backup.html', return_dict)
+
+
+def create_backup(request):
+    if request.method == 'POST':
+        f = {}
+        f['compform'] = ComputerForm(request.POST, instance=Computer())
+        f['procform'] = ProcedureForm(request.POST, instance=Procedure())
+        f['fsetform'] = FileSetForm(request.POST, instance=FileSet())
+        f['schedform'] = ScheduleForm(request.POST, instance=Schedule())
+        f['wtriggform'] = WeeklyTriggerForm(request.POST, instance=WeeklyTrigger())
+        forms_list = f.values()
+
+        if all([form.is_valid() for form in forms_list]): # If all forms inside forms_list are valid
+            comp = f['compform'].save(commit=False)
+            proc = f['procform'].save(commit=False)
+            fset = f['fsetform'].save(commit=False)
+            sched = f['schedform'].save(commit=False)
+            wtrigg = f['wtriggform'].save(commit=False)
+
+            comp.save()
+            comp.build_backup(proc,fset,sched,wtrigg)
+            
+            return HttpResponseRedirect("%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],})
+        else: # Form error
+            return_dict = {}
+            return_dict['script_name'] = request.META['SCRIPT_NAME']
+            return_dict.update(f)
+            return render_to_response('bkp/new_backup.html', return_dict)
+
+#                   ##############
+# Old Definitions   ##############
+#                   ##############
+
+
 ### Dump ###
 
 def create_dump(request):
@@ -248,7 +300,6 @@ def create_computer(request):
                 compform = ComputerForm(request.POST)
                 if compform.is_valid():
                     computer = compform.save()
-                    computer.generate_password()
                     return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':computer.id})
                 else:
                     comps = Computer.objects.all()

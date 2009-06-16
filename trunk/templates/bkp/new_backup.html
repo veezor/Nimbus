@@ -1,0 +1,57 @@
+<form action="{{script_name}}/backup/create" method="post">
+	<h3>Detalhes Computador</h3>
+
+    {% for field in compform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+	
+	<hr />
+
+	<h3>Detalhes Procedimento</h3>
+
+    {% for field in procform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+	
+	<hr />
+	
+	<h3>Detalhes Local</h3>
+
+    {% for field in fsetform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+	
+	<hr />
+	<h3>Tipo Agendamento</h3>
+
+    {% for field in schedform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+
+
+	<hr />
+
+	<h3>Detalhes Agendamento {{ sched.type }}</h3>
+
+    {% for field in wtriggform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+
+
+    <p><input type="submit" value="Salvar" /></p>
+</form>

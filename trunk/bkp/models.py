@@ -8,11 +8,6 @@ from backup_corporativo.bkp import customfields as cfields
 import os
 import string
 
-# TODO
-# add computer attribute password
-# auto generate computer password
-# update def update_computer_file(instance): with computer password
-
 ### Constants ###
 TYPE_CHOICES = (
     ('Weekly', 'Semanal'),
@@ -73,6 +68,19 @@ class Computer(models.Model):
     description = models.CharField("Descrição",max_length=100, blank=True)
     fd_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     
+    def build_backup(self, proc, fset, sched, wtrigg):
+        "save child objects in correct order"
+
+        proc.computer = self
+        proc.save()
+        
+        fset.procedure = sched.procedure = proc
+        fset.save()
+        sched.save()
+        
+        wtrigg.schedule = sched
+        wtrigg.save()
+ 
 
     def procedures_list(self):
         "get list of associated procedure"
@@ -82,16 +90,22 @@ class Computer(models.Model):
         "return computer name lower string"
         return str.lower(str(self.computer_name))
         
-    def generate_password(self):
+
+    def save(self):
+        if not self.id: # If this record is not at database yet
+            self.__generate_password()
+        super(Computer, self).save()
+
+    def __generate_password(self):
         "generate custom password"
         import string
         from random import choice
         size = 20
         self.fd_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
-        self.save()
+
 
     def __unicode__(self):
-        return self.name
+        return self.computer_name
         
 ### Procedure ###
 
@@ -139,7 +153,7 @@ class Procedure(models.Model):
         return "%s_Pool" % (self.procedure_name)
 
     def __unicode__(self):
-        return self.name
+        return self.procedure_name
 
 
 ### Schedule ###
@@ -204,8 +218,8 @@ class FileSet(models.Model):
 
 ### Pool ###
 class Pool(models.Model):
+    # pools are created when Procedure is created through signals
     procedure = models.ForeignKey(Procedure)
-    level = models.CharField(max_length=20,choices=LEVEL_CHOICES)
     
 ###
 ###   Signals

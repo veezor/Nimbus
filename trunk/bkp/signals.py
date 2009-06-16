@@ -36,7 +36,7 @@ def create_pools(sender, instance, signal, *args, **kwargs):
     "create associated pools to the procedure"
     if 'created' in kwargs:
         if kwargs['created']:   # instance was just created
-            fpool = Pool(procedure=instance,level='remover atributo')
+            fpool = Pool(procedure=instance)
             fpool.save()
 
 def update_rel_statuses(sender, instance, signal, *args, **kwargs):
@@ -309,14 +309,13 @@ def remove_procedure_file(instance):
 
 def update_computer_file(instance):
     "Computer update file"
-    default_password = 'm4r14f4r1nh4'
-    cdict = computer_dict(instance.get_computer_name(),instance.ip,default_password)
+    cdict = computer_dict(instance.get_computer_name(),instance.ip,instance.fd_password)
     generate_computer_file(instance.get_computer_name(),cdict)
 
-def computer_dict(name,ip,senha):
+def computer_dict(computer_name,ip,fd_password):
     "generate computer attributes dict"
-    return {'Name':name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
-    'password':senha, 'AutoPrune':'yes'}
+    return {'Name':computer_name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
+    'password':fd_password, 'AutoPrune':'yes'}
 
 def generate_computer_file(name,attr_dict):        
     "Computer generate file    "
