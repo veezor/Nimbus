@@ -33,11 +33,34 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-
+import os
 
 ###
 ###   Views
 ###
+
+### Dump ###
+
+def create_dump(request):
+
+    from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
+    cmd = '''mysqldump --user=root --password=mysqladmin --add-drop-database --create-options --disable-keys --databases backup_corporativo bacula -r "%s"''' % absolute_file_path('tmpdump','custom')
+  
+    os.system(cmd)
+    encrypt(absolute_file_path('tmpdump','custom'),absolute_file_path('systemdump.ninmbus','custom'),'lalala',15,True)
+    return HttpResponseRedirect("%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],})        
+
+def restore_dump(request):
+
+    from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
+    dec = absolute_file_path('dec_systemdump','custom')
+    cmd =   '''mysql --user=root --password=mysqladmin < "%s"''' % dec
+            
+    decrypt(absolute_file_path('systemdump.ninmbus','custom'),dec,'lalala',15)  
+    os.system(cmd)
+    remove_or_leave(dec)
+
+    return HttpResponseRedirect("%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 ### Stats ###
@@ -579,3 +602,22 @@ def __redirect_back_or_default(request, default, except_pattern=None):
     
     redirect = ("location" in request.session) and request.session["location"] or default
     return HttpResponseRedirect(redirect)
+    
+    
+
+def absolute_file_path(filepath,rel_dir):
+    root_dir = absolute_dir_path(rel_dir)
+    return os.path.join(root_dir, filepath)
+
+
+def absolute_dir_path(rel_dir):
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
+
+def remove_or_leave(filepath):
+    "remove file if exists"
+    try:
+        os.remove(filepath)
+    except os.error:
+        # Leave
+        pass
+
