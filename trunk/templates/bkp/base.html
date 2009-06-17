@@ -13,28 +13,47 @@
 		<div id="site">
 			<div id="topo">
 				<h1>Linconet - Tecnologia Estratégica</h1>
-				<div id="menu"></div>
-				<!-- Welcome -->
+				<div id="menu">{% block menu %}{% endblock %}</div>
+				<!-- start welcome block -->
 				<ul>
 					<form class="link" action="{{script_name}}/session/delete" method="post">
 						<li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
 					</form>
 				</ul>
-				<!-- End Welcome -->
+				<!-- end welcome block -->
 			</div>
 			<div id="conteudo">	
 				<div id="sidebar">
+				    <!-- start computers block -->
+				    {% block computers %}
 					<ul>
 						{% for c in comps %}
 						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %}</li>
 						{% endfor %}
 					</ul>
+					{% endblock %}
+					<!-- end computers block -->
 				</div>
 				<div id="main_content">
-				{% block content %}{% endblock %}
+				    <!-- start messages block -->
+				    {% if messages %}
+				        <div id="mensagens">
+				            {% for msg in messages %}
+				                <p>{{ msg }}</p>
+				            {% endfor %}
+				        </div>
+				    {% endif %}
+				    <!-- end messages block -->
+				    
+				    <!-- start content block -->
+		    		{% block content %}
+		    		    -- Aqui fica o conteúdo principal --
+		    		{% endblock %}
+		    		<!-- end content block -->
 				</div>
 			</div>
 			<div id="rodape">
+			    <p>Todos os direitos reservados à Linconet Ltda.</p>
 			</div>
 		</div>
 	</body>
