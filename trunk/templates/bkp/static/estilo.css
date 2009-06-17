@@ -24,7 +24,6 @@ float: left;
 }
 
 #main_content {
-background: #FAFAFA;
 float: right;
 width: 720px;
 }
@@ -32,4 +31,40 @@ width: 720px;
 hr {
 padding-bottom: 20px;
 border: 0;
+}
+
+h2 {
+margin-bottom: 20px;
+color: #333;
+}
+
+h3 {
+margin-bottom: 10px;
+color: #1E92A2;
+}
+
+.fieldWrapper {
+padding: 5px;
+border-bottom: 1px solid #eee;
+width: 710px;
+overflow: hidden
+}
+
+.fieldWrapper label {
+display: block;
+float: left;
+width: 100px;
+padding-right: 10px;
+line-height: 2em;
+}
+
+.errorlist {
+padding: 7px 10px;
+background: #A22;
+list-style: none;
+margin-bottom: 10px;
+}
+
+.errorlist li {
+color: #FFF;
 }

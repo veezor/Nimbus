@@ -1,10 +1,15 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+<h2>Add computer</h2>
+
 <form action="{{script_name}}/backup/create" method="post">
 	<h3>Detalhes Computador</h3>
 
     {% for field in compform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
 	
@@ -15,7 +20,7 @@
     {% for field in procform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
 	
@@ -26,7 +31,7 @@
     {% for field in fsetform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
 	
@@ -36,7 +41,7 @@
     {% for field in schedform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
 
@@ -48,10 +53,11 @@
     {% for field in wtriggform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
 
 
     <p><input type="submit" value="Salvar" /></p>
 </form>
+{% endblock %}
