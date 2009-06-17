@@ -12,7 +12,6 @@ import string
 TYPE_CHOICES = (
     ('Weekly', 'Semanal'),
     ('Monthly', 'Mensal'),
-#    ('Unique','Unique'),
 )
 
 LEVEL_CHOICES = (
@@ -50,12 +49,13 @@ class GlobalConfig(models.Model):
         self.storage_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
         self.director_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
         self.database_password = ''.join([choice(string.letters + string.digits) for i in range(size)])        
-        self.save()
 
     def system_configured(self):
         return GlobalConfig.objects.all().count() > 0
 
     def save(self):
+        if not self.id:
+            self.generate_passwords()
         self.id = 1 # always use the same row id at database to store the config
         super(GlobalConfig, self).save()
 
@@ -201,14 +201,6 @@ class MonthlyTrigger(models.Model):
     hour = models.TimeField("Horário")
     level = models.CharField("Nível", max_length=20,choices=LEVEL_CHOICES)
     target_days = cfields.ModelMonthDaysListField("Dias do Mês", max_length=100)
-
-
-### UniqueTrigger ###
-class UniqueTrigger(models.Model):
-    schedule = models.ForeignKey(Schedule)
-    target_date = models.DateField()
-    hour = models.TimeField()
-    level = models.CharField(max_length=20,choices=LEVEL_CHOICES)
 
 ### FileSet ###
 class FileSet(models.Model):

@@ -5,7 +5,7 @@ from backup_corporativo.bkp.models import Pool
 from backup_corporativo.bkp.models import Schedule
 from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
-from backup_corporativo.bkp.models import UniqueTrigger
+
 
 from django.contrib import admin
 
@@ -16,4 +16,3 @@ admin.site.register(Pool)
 admin.site.register(Schedule)
 admin.site.register(WeeklyTrigger)
 admin.site.register(MonthlyTrigger)
-admin.site.register(UniqueTrigger)

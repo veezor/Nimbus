@@ -12,7 +12,6 @@ from backup_corporativo.bkp.models import Procedure
 from backup_corporativo.bkp.models import Schedule
 from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
-from backup_corporativo.bkp.models import UniqueTrigger
 from backup_corporativo.bkp.models import FileSet
 # Forms
 from backup_corporativo.bkp.forms import GlobalConfigForm
@@ -22,11 +21,11 @@ from backup_corporativo.bkp.forms import ProcedureForm
 from backup_corporativo.bkp.forms import ScheduleForm
 from backup_corporativo.bkp.forms import WeeklyTriggerForm
 from backup_corporativo.bkp.forms import MonthlyTriggerForm
-from backup_corporativo.bkp.forms import UniqueTriggerForm
 from backup_corporativo.bkp.forms import FileSetForm
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
@@ -45,46 +44,56 @@ import os
 
 
 def new_backup(request):
-    f = {}
-    f['compform'] = ComputerForm()
-    f['procform'] = ProcedureForm()
-    f['fsetform'] = FileSetForm()
-    f['schedform'] = ScheduleForm()
-    f['wtriggform'] = WeeklyTriggerForm()
-    f['mtriggform'] = MonthlyTriggerForm()
-    return_dict = {}
+    vars_dict = {}; forms_dict = {}; return_dict = {}
     return_dict['script_name'] = request.META['SCRIPT_NAME']
     return_dict['current_user'] = request.user
-    return_dict.update(f)
-    return render_to_response('bkp/new_backup.html', return_dict)
+
+    if request.user.is_authenticated():
+        if request.method == 'GET':
+            forms_dict['compform'] = ComputerForm()
+            forms_dict['procform'] = ProcedureForm()
+            forms_dict['fsetform'] = FileSetForm()
+            forms_dict['schedform'] = ScheduleForm()
+            forms_dict['wtriggform'] = WeeklyTriggerForm()
+            forms_dict['mtriggform'] = MonthlyTriggerForm()
+            # Load forms and vars
+            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/new_backup.html', return_dict, context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 def create_backup(request):
-    if request.method == 'POST':
-        f = {}
-        f['compform'] = ComputerForm(request.POST, instance=Computer())
-        f['procform'] = ProcedureForm(request.POST, instance=Procedure())
-        f['fsetform'] = FileSetForm(request.POST, instance=FileSet())
-        f['schedform'] = ScheduleForm(request.POST, instance=Schedule())
-        f['wtriggform'] = WeeklyTriggerForm(request.POST, instance=WeeklyTrigger())
-        forms_list = f.values()
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
 
-        if all([form.is_valid() for form in forms_list]): # If all forms inside forms_list are valid
-            comp = f['compform'].save(commit=False)
-            proc = f['procform'].save(commit=False)
-            fset = f['fsetform'].save(commit=False)
-            sched = f['schedform'].save(commit=False)
-            wtrigg = f['wtriggform'].save(commit=False)
+    if request.user.is_authenticated():
+        if request.method == 'POST':
+            forms_dict['compform'] = ComputerForm(request.POST, instance=Computer())
+            forms_dict['procform'] = ProcedureForm(request.POST, instance=Procedure())
+            forms_dict['fsetform'] = FileSetForm(request.POST, instance=FileSet())
+            forms_dict['schedform'] = ScheduleForm(request.POST, instance=Schedule())
+            forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST, instance=WeeklyTrigger())
+            forms_list = forms_dict.values()
+    
+            if all([form.is_valid() for form in forms_list]): # If all forms inside forms_list are valid
+                comp = forms_dict['compform'].save(commit=False)
+                proc = forms_dict['procform'].save(commit=False)
+                fset = forms_dict['fsetform'].save(commit=False)
+                sched = forms_dict['schedform'].save(commit=False)
+                wtrigg = forms_dict['wtriggform'].save(commit=False)
+                comp.save()
+                comp.build_backup(proc,fset,sched,wtrigg)
+                request.user.message_set.create(message="Backup adicionado com sucesso.")
+                return HttpResponseRedirect("%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],})        
+            else:
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                return render_to_response('bkp/new_backup.html', return_dict, context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
-            comp.save()
-            comp.build_backup(proc,fset,sched,wtrigg)
-            
-            return HttpResponseRedirect("%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],})
-        else: # Form error
-            return_dict = {}
-            return_dict['script_name'] = request.META['SCRIPT_NAME']
-            return_dict.update(f)
-            return render_to_response('bkp/new_backup.html', return_dict)
 
 #                   ##############
 # Old Definitions   ##############
@@ -94,138 +103,171 @@ def create_backup(request):
 ### Dump ###
 
 def create_dump(request):
-
-    from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
-    cmd = '''mysqldump --user=root --password=mysqladmin --add-drop-database --create-options --disable-keys --databases backup_corporativo bacula -r "%s"''' % absolute_file_path('tmpdump','custom')
-  
-    os.system(cmd)
-    encrypt(absolute_file_path('tmpdump','custom'),absolute_file_path('systemdump.ninmbus','custom'),'lalala',15,True)
-    return HttpResponseRedirect("%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],})        
+    if request.user.is_authenticated():
+        from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
+        cmd = '''mysqldump --user=root --password=mysqladmin --add-drop-database --create-options --disable-keys --databases backup_corporativo bacula -r "%s"''' % absolute_file_path('tmpdump','custom')
+        os.system(cmd)
+        encrypt(absolute_file_path('tmpdump','custom'),absolute_file_path('systemdump.ninmbus','custom'),'lalala',15,True)
+        request.user.message_set.create(message="Dump gerado com sucesso.")
+        return HttpResponseRedirect("%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],})        
+    else:
+        return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 def restore_dump(request):
-
-    from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
-    dec = absolute_file_path('dec_systemdump','custom')
-    cmd =   '''mysql --user=root --password=mysqladmin < "%s"''' % dec
-            
-    decrypt(absolute_file_path('systemdump.ninmbus','custom'),dec,'lalala',15)  
-    os.system(cmd)
-    remove_or_leave(dec)
-
-    return HttpResponseRedirect("%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],})        
+    if request.user.is_authenticated():
+        from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
+        dec = absolute_file_path('dec_systemdump','custom')
+        cmd =   '''mysql --user=root --password=mysqladmin < "%s"''' % dec
+        decrypt(absolute_file_path('systemdump.ninmbus','custom'),dec,'lalala',15)  
+        os.system(cmd)
+        remove_or_leave(dec)
+        request.user.message_set.create(message="Restauração executada com sucesso.")        
+        return HttpResponseRedirect("%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],})        
+    else:
+        return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 ### Stats ###
 def view_stats(request):
-    import MySQLdb
-    
-    runningjobs_query = ''' select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime, \
-                        j.JobFiles, j.JobBytes , JobErrors, JobStatus from Job as j \
-                        INNER JOIN Client as jc on j.ClientId = jc.ClientId \
-                        WHERE j.JobStatus = 'R' or j.JobStatus = 'p' or j.JobStatus = 'j' \
-                        or j.JobStatus = 'c' or j.JobStatus = 'd' or j.JobStatus = 's' \
-                        or j.JobStatus = 'M' or j.JobStatus = 'm' or j.JobStatus = 'S' \
-                        or j.JobStatus = 'F' or j.JobStatus = 'B'; \
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
+    if request.user.is_authenticated():
+        # TODO: remove following chunk of code from view!
+        import MySQLdb
+        runningjobs_query = ''' select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime, \
+                            j.JobFiles, j.JobBytes , JobErrors, JobStatus from Job as j \
+                            INNER JOIN Client as jc on j.ClientId = jc.ClientId \
+                            WHERE j.JobStatus = 'R' or j.JobStatus = 'p' or j.JobStatus = 'j' \
+                            or j.JobStatus = 'c' or j.JobStatus = 'd' or j.JobStatus = 's' \
+                            or j.JobStatus = 'M' or j.JobStatus = 'm' or j.JobStatus = 'S' \
+                            or j.JobStatus = 'F' or j.JobStatus = 'B'; \
+                            '''
+        lastjobs_query =   ''' select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime, \
+                            j.JobFiles, j.JobBytes , JobErrors, JobStatus \
+                            from Job as j INNER JOIN Client as jc \
+                            on j.ClientId = jc.ClientId; \
+                            '''
+        dbsize_query =  ''' SELECT table_schema, 
+                        sum( data_length + index_length ) / (1024 * 1024) "DBSIZE" \
+                        FROM information_schema.TABLES \
+                        WHERE table_schema = 'bacula' \
+                        GROUP BY table_schema; \
                         '''
-            
-
-    lastjobs_query =   ''' select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime, \
-                        j.JobFiles, j.JobBytes , JobErrors, JobStatus \
-                        from Job as j INNER JOIN Client as jc \
-                        on j.ClientId = jc.ClientId; \
+        numproc_query = '''select count(*) "Procedimentos" \
+                        from backup_corporativo.bkp_procedure; \
                         '''
-    
-    dbsize_query =  ''' SELECT table_schema, 
-                    sum( data_length + index_length ) / (1024 * 1024) "DBSIZE" \
-                    FROM information_schema.TABLES \
-                    WHERE table_schema = 'bacula' \
-                    GROUP BY table_schema; \
-                    '''
-                    
-    numproc_query = '''select count(*) "Procedimentos" \
-                    from backup_corporativo.bkp_procedure; \
-                    '''
-                    
-    numcli_query =  '''select count(*) "Computadores" \
-                    from backup_corporativo.bkp_computer; \
-                    '''
-
-    totalbytes_query =  '''select sum(JobBytes) "Bytes" \
-                        from Job where Job.JobStatus = 'T'; \
+        numcli_query =  '''select count(*) "Computadores" \
+                        from backup_corporativo.bkp_computer; \
                         '''
-                    
-   
-    db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
-    cursor = db.cursor()
-
-    cursor.execute(runningjobs_query)
-    runningjobs = cursor.fetchall()
-  
-    
-    cursor.execute(lastjobs_query)
-    lastjobs = cursor.fetchall()
-    
-    cursor.execute(dbsize_query)    
-    dbsize = cursor.fetchall()[0][1]
-    
-    cursor.execute(numproc_query)
-    numproc = int(cursor.fetchall()[0][0])
-    
-    cursor.execute(numcli_query)
-    numcli = int(cursor.fetchall()[0][0])
-
-    cursor.execute(totalbytes_query)
-    tbytes = cursor.fetchall()[0][0]
-
-        
-    return render_to_response('bkp/view_stats.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'runningjobs':runningjobs,'lastjobs':lastjobs,'dbsize':dbsize,'numproc':numproc,'numcli':numcli, 'tbytes':tbytes})
+        totalbytes_query =  '''select sum(JobBytes) "Bytes" \
+                            from Job where Job.JobStatus = 'T'; \
+                            '''
+        db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
+        cursor = db.cursor()
+        cursor.execute(runningjobs_query)
+        vars_dict['runningjobs'] = cursor.fetchall()
+        cursor.execute(lastjobs_query)
+        vars_dict['lastjobs'] = cursor.fetchall()
+        cursor.execute(dbsize_query)    
+        vars_dict['dbsize'] = cursor.fetchall()[0][1]
+        cursor.execute(numproc_query)
+        vars_dict['numproc'] = int(cursor.fetchall()[0][0])
+        cursor.execute(numcli_query)
+        vars_dict['numcli'] = int(cursor.fetchall()[0][0])
+        cursor.execute(totalbytes_query)
+        vars_dict['tbytes'] = cursor.fetchall()[0][0]
+        # Load forms and vars
+        return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/view_stats.html', return_dict, context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 
 ### Global Config ###
 
 def edit_config(request):
-    try:
-        gconfig = GlobalConfig.objects.get(pk=1)    
-    except GlobalConfig.DoesNotExist:
-        gconfig = None
-    if request.method == 'GET':
-        gconfig = gconfig or GlobalConfig()
-        gconfigform = GlobalConfigForm(instance=gconfig)
-        return render_to_response('bkp/edit_config.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'gconfig':gconfig,'gconfigform':gconfigform})
-    elif request.method == 'POST':
-        gconfigform = GlobalConfigForm(request.POST, instance=gconfig)
-        if gconfigform.is_valid():
-            if not gconfig:
-                gconfig = gconfigform.save()
-                gconfig.generate_passwords()
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+    
+    if request.user.is_authenticated():
+        try:
+            vars_dict['gconfig'] = GlobalConfig.objects.get(pk=1)    
+        except GlobalConfig.DoesNotExist:
+            vars_dict['gconfig'] = None
+    
+        if request.method == 'GET':
+            vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
+            forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
+            # Load forms and vars
+            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/edit_config.html',return_dict, context_instance=RequestContext(request))
+        elif request.method == 'POST':
+            forms_dict['gconfigform'] = GlobalConfigForm(request.POST, instance=vars_dict['gconfig'])
+    
+            if forms_dict['gconfigform'].is_valid():
+                vars_dict['gconfig'] = forms_dict['gconfigform'].save()
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                return render_to_response('bkp/edit_config.html', return_dict, context_instance=RequestContext(request))
             else:
-                gconfig = gconfigform.save()
-        return render_to_response('bkp/edit_config.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'gconfig':gconfig,'gconfigform':gconfigform})
-
-
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="Existem erros e a configuração não foi alterada.")
+                return render_to_response('bkp/edit_config.html', return_dict, context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 ### Sessions ###
 
 def new_session(request):
-    loginform = LoginForm()
-    return render_to_response('bkp/new_session.html', {'script_name':request.META['SCRIPT_NAME'],'loginform':loginform,})
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
+    if not request.user.is_authenticated():
+        forms_dict['loginform'] = LoginForm()
+        # Load forms and vars
+        return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))
+    else:
+        default = "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
+        return __redirect_back_or_default(request, default)
+    
 
 def create_session(request):
-    if request.method == 'POST':
-        loginform = LoginForm(request.POST)
-        if loginform.is_valid():
-            auth_login = loginform.cleaned_data['auth_login']
-            auth_passwd = loginform.cleaned_data['auth_password']
-            user = authenticate(username=auth_login, password=auth_passwd)
-            if user:
-                login(request, user)
-                default = GlobalConfig.system_configured(GlobalConfig()) and "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],} or "%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],}
-                return __redirect_back_or_default(request, default)
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
+    if not request.user.is_authenticated():
+        if request.method == 'POST':
+            forms_dict['loginform'] = LoginForm(request.POST)
+        
+            if forms_dict['loginform'].is_valid():
+                auth_login = forms_dict['loginform'].cleaned_data['auth_login']
+                auth_passwd = forms_dict['loginform'].cleaned_data['auth_password']
+                user = authenticate(username=auth_login, password=auth_passwd)
+                
+                if user:
+                    login(request, user)
+                    default = GlobalConfig.system_configured(GlobalConfig()) and "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],} or "%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],}
+                    request.user.message_set.create(message="Bem-vindo ao Sistema de Backups Corporativo.")
+                    return __redirect_back_or_default(request, default)
+                else:
+                    # Load forms and vars
+                    return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                    return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))                
             else:
-                return render_to_response('bkp/new_session.html', {'script_name':request.META['SCRIPT_NAME'],'loginform':loginform,})                
-        else:
-            return render_to_response('bkp/new_session.html', {'script_name':request.META['SCRIPT_NAME'],'loginform':loginform,})
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))
+    else:
+        default = "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
+        return __redirect_back_or_default(request, default)
 
 
 def delete_session(request):
@@ -240,44 +282,68 @@ def delete_session(request):
 ### Computers ###
 
 def list_computers(request):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+    
+    __store_location(request)
     if request.user.is_authenticated():
-        comps = Computer.objects.all()
-        compform = ComputerForm()
-        return render_to_response('bkp/list_computers.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'comps':comps,'compform':compform})
+        vars_dict['comps'] = Computer.objects.all()
+        forms_dict['compform'] = ComputerForm()
+        # Load forms and vars
+        return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/list_computers.html', return_dict, context_instance=RequestContext(request))
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 def edit_computer(request, computer_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
     if request.user.is_authenticated():
         comp = get_object_or_404(Computer, pk=computer_id)
+        
         if request.method == 'GET': # Edit computer
-            compform = ComputerForm(instance=comp)
-            return render_to_response('bkp/edit_computer.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'comp':comp,'compform': compform,})
-        elif request.method == 'POST': # Update computer
-            compform = ComputerForm(request.POST,instance=comp)
-            if compform.is_valid():
-                compform.save()
+            forms_dict['compform'] = ComputerForm(instance=comp)
+            # Load forms and vars
+            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/edit_computer.html', return_dict, context_instance=RequestContext(request))
+        elif request.method == 'POST':
+            forms_dict['compform'] = ComputerForm(request.POST,instance=comp)
+            
+            if forms_dict['compform'].is_valid():
+                forms_dict['compform'].save()
+                request.user.message_set.create(message="Computador foi alterado com sucesso.")
                 return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':comp.id})
-            else:   # Update failed re-render
-                return render_to_response('bkp/edit_computer.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'comp':comp,'compform': compform,})
+            else:
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="Existem erros e o computador não foi alterado.")
+                return render_to_response('bkp/edit_computer.html', return_dict, context_instance=RequestContext(request))
     else:
         __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
-            
+
 
 def view_computer(request, computer_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
+    __store_location(request)
     if request.user.is_authenticated():
-        __store_location(request)
-        if request.method == 'GET':  # View computer
-            comp = get_object_or_404(Computer,pk=computer_id)
-            compform = ComputerForm()
-            comps = Computer.objects.all()
-            procs = comp.procedures_list()
-            procform = ProcedureForm() # An unbound form
-            return render_to_response('bkp/view_computer.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procs':procs,'procform':procform})
+
+        if request.method == 'GET':
+            vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
+            vars_dict['comps'] = Computer.objects.all()
+            vars_dict['procs'] = vars_dict['comp'].procedures_list()
+            forms_dict['compform'] = ComputerForm()
+            forms_dict['procform'] = ProcedureForm()
+            # Load forms and vars
+            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/view_computer.html', return_dict, context_instance=RequestContext(request))
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
     
@@ -288,89 +354,124 @@ def delete_computer(request, computer_id):
             comp.delete()
             except_pattern = "computer/%s" % (computer_id)
             default = "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
+            request.user.message_set.create(message="Computador removido permanentemente.")            
             return __redirect_back_or_default(request, default, except_pattern)
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 def create_computer(request):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
     if request.user.is_authenticated():
-        if request.method == 'POST':  # If the form has been submitted...
-                compform = ComputerForm(request.POST)
-                if compform.is_valid():
-                    computer = compform.save()
+        if request.method == 'POST':
+                forms_dict['compform'] = ComputerForm(request.POST)
+
+                if forms_dict['compform'].is_valid():
+                    computer = forms_dict['compform'].save()
+                    request.user.message_set.create(message="Computador cadastrado com sucesso.")
                     return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':computer.id})
                 else:
-                    comps = Computer.objects.all()
-                    return render_to_response('bkp/list_computers.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'comps':comps,'compform':compform})
+                    vars_dict['comps'] = Computer.objects.all()
+                    # Load forms and vars
+                    return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                    request.user.message_set.create(message="Existem erros e o computador não foi adicionado.")
+                    return render_to_response('bkp/list_computers.html', return_dict, context_instance=RequestContext(request))
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 ### Procedure ###
 
 def edit_procedure(request, computer_id, procedure_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
     if request.user.is_authenticated():
-        comp = get_object_or_404(Computer, pk=computer_id)
-        proc = get_object_or_404(Procedure, pk=procedure_id)
-        if request.method == 'GET': # Edit computer
-            procform = ProcedureForm(instance=proc)
-            return render_to_response('bkp/edit_procedure.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'comp':comp,'proc':proc,'procform': procform,})
-        elif request.method == 'POST': # Update procedure
-            procform = ProcedureForm(request.POST,instance=proc)
-            import pdb;pdb.set_trace()
-            if procform.is_valid():
-    
-                procform.save()
-                return HttpResponseRedirect("%(script_name)s/computer/%(comp_id)i/procedure/%(proc_id)i" % {'script_name':request.META['SCRIPT_NAME'],'comp_id':comp.id,'proc_id':proc.id})
-            else:   # Update failed re-render
-                return render_to_response('bkp/edit_procedure.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'comp':comp,'proc':proc,'procform': procform,})
+        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+        vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+        
+        if request.method == 'GET':
+            forms_dict['procform'] = ProcedureForm(instance=vars_dict['proc'])
+            # Load forms and vars
+            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/edit_procedure.html', return_dict, context_instance=RequestContext(request))
+        elif request.method == 'POST':
+            forms_dict['procform'] = ProcedureForm(request.POST,instance=vars_dict['proc'])
+            
+            if forms_dict['procform'].is_valid():
+                forms_dict['procform'].save()
+                comp_id = vars_dict['comp'].id
+                proc_id = vars_dict['proc'].id
+                request.user.message_set.create(message="O procedimento foi alterado com sucesso.")
+                return HttpResponseRedirect("%(script_name)s/computer/%(comp_id)i/procedure/%(proc_id)i" % {'script_name':request.META['SCRIPT_NAME'],'comp_id':comp_id,'proc_id':proc_id})
+            else:
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="Existem erros e o procedimento não foi alterado.")
+                return render_to_response('bkp/edit_procedure.html', return_dict, context_instance=RequestContext(request))
     else:
         __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 def view_procedure(request, computer_id, procedure_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
+    __store_location(request)
     if request.user.is_authenticated():
         __store_location(request)
+        
         if request.method == 'GET':
             if procedure_id:
-                comp = get_object_or_404(Computer, pk=computer_id)
-                compform = ComputerForm()
-                comps = Computer.objects.all()
-                proc = get_object_or_404(Procedure, pk=procedure_id)
-                procform = ProcedureForm()
-                procs = comp.procedures_list()
-                fsets = proc.filesets_list()
-                fsetform = FileSetForm() # An unbound form
-                scheds = proc.schedules_list()
-                schedform = ScheduleForm() # An unbound form
-                return render_to_response('bkp/view_procedure.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'schedform':schedform})
+                vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+                vars_dict['comps'] = Computer.objects.all()
+                vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+                vars_dict['procs'] = vars_dict['comp'].procedures_list()
+                vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+                vars_dict['scheds'] = vars_dict['proc'].schedules_list()
+                forms_dict['compform'] = ComputerForm()
+                forms_dict['procform'] = ProcedureForm()
+                forms_dict['fsetform'] = FileSetForm()
+                forms_dict['schedform'] = ScheduleForm()
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                return render_to_response('bkp/view_procedure.html', return_dict, context_instance=RequestContext(request))
             else:
                 return HttpResponseRedirect("%(script_name)s/computer/%(computer_id)i", {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id})
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
     
     
 def create_procedure(request, computer_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
     if request.user.is_authenticated():
-        if request.method == 'POST': # If the form has been submitted...
-            procform = ProcedureForm(request.POST)
-            if procform.is_valid():
+        if request.method == 'POST':
+            forms_dict['procform'] = ProcedureForm(request.POST)
+            if forms_dict['procform'].is_valid():
                 procedure = Procedure()
                 procedure.computer_id = computer_id
-                procedure.procedure_name = procform.cleaned_data['procedure_name']
-                procedure.restore_path = procform.cleaned_data['restore_path']
+                procedure.procedure_name = forms_dict['procform'].cleaned_data['procedure_name']
+                procedure.restore_path = forms_dict['procform'].cleaned_data['restore_path']
                 procedure.save()
+                request.user.message_set.create(message="Procedimento cadastrado com sucesso.")
                 return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure.id})
             else:
-                comp = get_object_or_404(Computer, pk=computer_id)
-                compform = ComputerForm()
-                comps = Computer.objects.all()
-                procs = comp.procedures_list()
-                return render_to_response('bkp/view_computer.html', {'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procs':procs,'procform':procform})
+                vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+                vars_dict['comps'] = Computer.objects.all()
+                vars_dict['procs'] = vars_dict['comp'].procedures_list()
+                forms_dict['compform'] = ComputerForm()
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="Existem erros e o procedimento não foi cadastrado.")
+                return render_to_response('bkp/view_computer.html', return_dict, context_instance=RequestContext(request))
     else:
         __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
@@ -383,6 +484,7 @@ def delete_procedure(request, computer_id, procedure_id):
             proc.delete()
             except_pattern = "procedure/%s" % (procedure_id)
             default = "%(script_name)s/computer/%(computer_id)s" % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,}
+            request.user.message_set.create(message="Procedimento removido permanentemente.")
             return __redirect_back_or_default(request, default, except_pattern)
     else:
         __store_location(request)
@@ -394,89 +496,95 @@ def delete_procedure(request, computer_id, procedure_id):
 ### Schedule ###
 
 def view_schedule(request, computer_id, procedure_id, schedule_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
+    __store_location(request)
     if request.user.is_authenticated():
         __store_location(request)
+
         if request.method == 'GET':
-            comp = get_object_or_404(Computer, pk=computer_id)
-            comps = Computer.objects.all()
-            compform = ComputerForm()
-            proc = get_object_or_404(Procedure, pk=procedure_id)
-            procs = Procedure.objects.filter(computer=comp)
-            procform = ProcedureForm()
-            sched = get_object_or_404(Schedule, pk=schedule_id)
-            sched_lower_type = sched.type.lower()
-            scheds = Schedule.objects.filter(procedure=proc)
-            fsets = proc.filesets_list()
-            fsetform = FileSetForm() # An unbound form
-            schedform = ScheduleForm() # An unbound form
+            vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+            vars_dict['comps'] = Computer.objects.all()
+            vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+            vars_dict['procs'] = Procedure.objects.filter(computer=vars_dict['comp'])
+            vars_dict['sched'] = get_object_or_404(Schedule, pk=schedule_id)
+            vars_dict['sched_lower_type'] = vars_dict['sched'].type.lower()
+            vars_dict['scheds'] = Schedule.objects.filter(procedure=vars_dict['proc'])
+            vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+            forms_dict['compform'] = ComputerForm()
+            forms_dict['procform'] = ProcedureForm()
+            forms_dict['fsetform'] = FileSetForm()
+            forms_dict['schedform'] = ScheduleForm()
             # TODO: optmize following chunk of code
-            if (sched.type == 'Weekly'):
+            if (vars_dict['sched'].type == 'Weekly'):
                 try:
-                    trigger = WeeklyTrigger.objects.get(schedule=sched)
-                    triggerform = WeeklyTriggerForm(instance=trigger)
-                    triggerformempty = False
+                    vars_dict['trigger'] = WeeklyTrigger.objects.get(schedule=vars_dict['sched'])
+                    forms_dict['triggerform'] = WeeklyTriggerForm(instance=vars_dict['trigger'])
+                    vars_dict['triggerformempty'] = False
                 except WeeklyTrigger.DoesNotExist:
-                    triggerform = WeeklyTriggerForm()
-                    triggerformempty = True
-            elif (sched.type == 'Monthly'):
+                    forms_dict['triggerform'] = WeeklyTriggerForm()
+                    vars_dict['triggerformempty'] = True
+            elif (vars_dict['sched'].type == 'Monthly'):
                 try:
-                    trigger = MonthlyTrigger.objects.get(schedule=sched)
-                    triggerform = MonthlyTriggerForm(instance=trigger)                
-                    triggerformempty = False
+                    vars_dict['trigger'] = MonthlyTrigger.objects.get(schedule=vars_dict['sched'])
+                    forms_dict['triggerform'] = MonthlyTriggerForm(instance=vars_dict['trigger'])                
+                    vars_dict['triggerformempty'] = False
                 except MonthlyTrigger.DoesNotExist:
-                    triggerform = MonthlyTriggerForm()
-                    triggerformempty = True
-            elif (sched.type == 'Unique'):
-                try:
-                    trigger = UniqueTrigger.objects.get(schedule=sched)
-                    triggerform = UniqueTriggerForm(instance=trigger)
-                    triggerformempty = False
-                except UniqueTrigger.DoesNotExist:
-                    triggerform = UniqueTriggerForm()
-                    triggerformempty = True
-            return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})
+                    forms_dict['triggerform'] = MonthlyTriggerForm()
+                    vars_dict['triggerformempty'] = True
+            # Load forms and vars
+            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/view_schedule.html', return_dict, context_instance=RequestContext(request))
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 def create_schedule(request, computer_id, procedure_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
     if request.user.is_authenticated():
-        if request.method == 'POST': # If the form has been submitted...
-            schedform = ScheduleForm(request.POST)
-            if schedform.is_valid():
+        if request.method == 'POST':
+            forms_dict['schedform'] = ScheduleForm(request.POST)
+            
+            if forms_dict['schedform'].is_valid():
                 schedule = Schedule()
                 schedule.procedure_id = procedure_id
-                schedule.type = schedform.cleaned_data['type']
+                schedule.type = forms_dict['schedform'].cleaned_data['type']
                 schedule.save()
+                request.user.message_set.create(message="Agendamento cadastrado com sucesso.")
                 return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule.id})
             else:
-                comp = get_object_or_404(Computer, pk=computer_id)
-                compform = ComputerForm()
-                comps = Computer.objects.all()
-                proc = get_object_or_404(Procedure, pk=procedure_id)
-                procform = ProcedureForm()
-                procs = comp.procedures_list()
-                fsets = proc.filesets_list()
-                fsetform = FileSetForm() # An unbound form            
-                scheds = proc.schedules_list()
-    
-                return render_to_response('bkp/view_procedure.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'schedform':schedform})
+                vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+                vars_dict['comps'] = Computer.objects.all()
+                vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+                vars_dict['procs'] = vars_dict['comp'].procedures_list()
+                vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+                vars_dict['scheds'] = vars_dict['proc'].schedules_list()
+                forms_dict['compform'] = ComputerForm()
+                forms_dict['procform'] = ProcedureForm()
+                forms_dict['fsetform'] = FileSetForm()
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="Existem erros e o agendamento não foi cadastrado.")
+                return render_to_response('bkp/view_procedure.html', return_dict, context_instance=RequestContext(request))
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 def delete_schedule(request, computer_id, procedure_id, schedule_id):
     if request.user.is_authenticated():
-        if request.method == 'POST': # If the form has been submitted...
+        if request.method == 'POST':
             sched = get_object_or_404(Schedule, pk=schedule_id)
             sched.delete()
             except_pattern = "schedule/%s" % (schedule_id)
             default = '%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,}
+            request.user.message_set.create(message="Agendamento foi removido permanentemente.")
             return __redirect_back_or_default(request, default, except_pattern)
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
         
@@ -484,145 +592,134 @@ def delete_schedule(request, computer_id, procedure_id, schedule_id):
 ### Triggers ###
 
 def weeklytrigger(request, computer_id, procedure_id, schedule_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
     if request.user.is_authenticated():
-        if request.method == 'POST': # If the form has been submitted...
-            sched = get_object_or_404(Schedule, pk=schedule_id)
-            triggerform = WeeklyTriggerForm(request.POST)
-            if triggerform.is_valid():
+        if request.method == 'POST':
+            vars_dict['sched'] = get_object_or_404(Schedule, pk=schedule_id)
+            forms_dict['triggerform'] = WeeklyTriggerForm(request.POST)
+            
+            if forms_dict['triggerform'].is_valid():
                 try:
-                    wtrigger = WeeklyTrigger.objects.get(schedule=sched)
+                    wtrigger = WeeklyTrigger.objects.get(schedule=vars_dict['sched'])
                 except WeeklyTrigger.DoesNotExist:
                     wtrigger = WeeklyTrigger()
                 wtrigger.schedule_id = schedule_id
-                wtrigger.sunday = triggerform.cleaned_data['sunday']
-                wtrigger.monday = triggerform.cleaned_data['monday']
-                wtrigger.tuesday = triggerform.cleaned_data['tuesday']
-                wtrigger.wednesday = triggerform.cleaned_data['wednesday']
-                wtrigger.thursday = triggerform.cleaned_data['thursday']
-                wtrigger.friday = triggerform.cleaned_data['friday']
-                wtrigger.saturday = triggerform.cleaned_data['saturday']
-                wtrigger.hour = triggerform.cleaned_data['hour']
-                wtrigger.level = triggerform.cleaned_data['level']
+                wtrigger.sunday = forms_dict['triggerform'].cleaned_data['sunday']
+                wtrigger.monday = forms_dict['triggerform'].cleaned_data['monday']
+                wtrigger.tuesday = forms_dict['triggerform'].cleaned_data['tuesday']
+                wtrigger.wednesday = forms_dict['triggerform'].cleaned_data['wednesday']
+                wtrigger.thursday = forms_dict['triggerform'].cleaned_data['thursday']
+                wtrigger.friday = forms_dict['triggerform'].cleaned_data['friday']
+                wtrigger.saturday = forms_dict['triggerform'].cleaned_data['saturday']
+                wtrigger.hour = forms_dict['triggerform'].cleaned_data['hour']
+                wtrigger.level = forms_dict['triggerform'].cleaned_data['level']
                 wtrigger.save()
+                request.user.message_set.create(message="Agendamento configurado com sucesso.")
                 return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
             else:
-                comp = get_object_or_404(Computer, pk=computer_id)
-                comps = Computer.objects.all()
-                compform = ComputerForm()
-                proc = get_object_or_404(Procedure, pk=procedure_id)
-                procs = Procedure.objects.filter(computer=comp)
-                procform = ProcedureForm()
-                sched = get_object_or_404(Schedule, pk=schedule_id)
-                sched_lower_type = sched.type.lower()
-                scheds = Schedule.objects.filter(procedure=proc)
-                fsets = proc.filesets_list()
-                fsetform = FileSetForm() # An unbound form
-                schedform = ScheduleForm() # An unbound form
-                triggerformempty = True
-            
-                return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})        
+                vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+                vars_dict['comps'] = Computer.objects.all()
+                vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+                vars_dict['procs'] = Procedure.objects.filter(computer=vars_dict['comp'])
+                vars_dict['sched'] = get_object_or_404(Schedule, pk=schedule_id)
+                vars_dict['sched_lower_type'] = vars_dict['sched'].type.lower()
+                vars_dict['scheds'] = Schedule.objects.filter(procedure=vars_dict['proc'])
+                vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+                vars_dict['fsetform'] = FileSetForm()
+                vars_dict['triggerformempty'] = True
+                forms_dict['compform'] = ComputerForm()
+                forms_dict['procform'] = ProcedureForm()
+                forms_dict['schedform'] = ScheduleForm()
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="Existem erros e o agendamento não foi configurado.")
+                return render_to_response('bkp/view_schedule.html', return_dict, context_instance=RequestContext(request))        
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 
 def monthlytrigger(request, computer_id, procedure_id, schedule_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
     if request.user.is_authenticated():
-        sched = get_object_or_404(Schedule, pk=schedule_id)
-        if request.method == 'POST': # If the form has been submitted...
-            triggerform = MonthlyTriggerForm(request.POST)
-            if triggerform.is_valid():
+        vars_dict['sched'] = get_object_or_404(Schedule, pk=schedule_id)
+        
+        if request.method == 'POST':
+            forms_dict['triggerform'] = MonthlyTriggerForm(request.POST)
+            
+            if forms_dict['triggerform'].is_valid():
                 try:
-                    mtrigger = MonthlyTrigger.objects.get(schedule=sched)
+                    mtrigger = MonthlyTrigger.objects.get(schedule=vars_dict['sched'])
                 except MonthlyTrigger.DoesNotExist:
                     mtrigger = MonthlyTrigger()
                 mtrigger.schedule_id = schedule_id
-                mtrigger.hour = triggerform.cleaned_data['hour']
-                mtrigger.level = triggerform.cleaned_data['level']
-                mtrigger.target_days = triggerform.cleaned_data['target_days']
+                mtrigger.hour = forms_dict['triggerform'].cleaned_data['hour']
+                mtrigger.level = forms_dict['triggerform'].cleaned_data['level']
+                mtrigger.target_days = forms_dict['triggerform'].cleaned_data['target_days']
                 mtrigger.save()
+                request.user.message_set.create(message="Agendamento configurado com sucesso.")
                 return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
             else:
-                comp = get_object_or_404(Computer, pk=computer_id)
-                comps = Computer.objects.all()
-                compform = ComputerForm()
-                proc = get_object_or_404(Procedure, pk=procedure_id)
-                procs = Procedure.objects.filter(computer=comp)
-                procform = ProcedureForm()
-                sched_lower_type = sched.type.lower()
-                scheds = Schedule.objects.filter(procedure=proc)
-                fsets = proc.filesets_list()
-                fsetform = FileSetForm() # An unbound form
-                schedform = ScheduleForm() # An unbound form
-                triggerformempty = True
-                return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})        
+                vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+                vars_dict['comps'] = Computer.objects.all()
+                forms_dict['compform'] = ComputerForm()
+                vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+                vars_dict['procs'] = Procedure.objects.filter(computer=vars_dict['comp'])
+                forms_dict['procform'] = ProcedureForm()
+                vars_dict['sched_lower_type'] = vars_dict['sched'].type.lower()
+                vars_dict['scheds'] = Schedule.objects.filter(procedure=vars_dict['proc'])
+                vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+                forms_dict['fsetform'] = FileSetForm()
+                forms_dict['schedform'] = ScheduleForm()
+                vars_dict['triggerformempty'] = True
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="Existem erros e o agendamento não foi configurado.")
+                return render_to_response('bkp/view_schedule.html', return_dict, context_instance=RequestContext(request))        
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
             
-def uniquetrigger(request, computer_id, procedure_id, schedule_id):
-    if request.user.is_authenticated():
-        sched = get_object_or_404(Schedule, pk=schedule_id)
-        if request.method == 'POST': # If the form has been submitted...
-            triggerform = UniqueTriggerForm(request.POST)
-            if triggerform.is_valid():
-                try:
-                    utrigger = UniqueTrigger.objects.get(schedule=sched)
-                except UniqueTrigger.DoesNotExist:
-                    utrigger = UniqueTrigger()
-                utrigger.schedule_id = schedule_id
-                utrigger.target_date = triggerform.cleaned_data['target_date']
-                utrigger.hour = triggerform.cleaned_data['hour']
-                utrigger.level = triggerform.cleaned_data['level']
-                utrigger.save()
-                return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
-            else:
-                comp = get_object_or_404(Computer, pk=computer_id)
-                comps = Computer.objects.all()
-                compform = ComputerForm()
-                proc = get_object_or_404(Procedure, pk=procedure_id)
-                procs = Procedure.objects.filter(computer=comp)
-                procform = ProcedureForm()
-                sched_lower_type = sched.type.lower()
-                scheds = Schedule.objects.filter(procedure=proc)
-                fsets = proc.filesets_list()
-                fsetform = FileSetForm() # An unbound form
-                schedform = ScheduleForm() # An unbound form
-                triggerformempty = True      
-                
-                return render_to_response('bkp/view_schedule.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'sched':sched,'schedform':schedform,'triggerform':triggerform,'triggerformempty':triggerformempty,'sched_lower_type':sched_lower_type,})        
-    else:
-        __store_location(request)
-        return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
         
         
 ### FileSets ###
 
 def create_fileset(request, computer_id, procedure_id):
+    vars_dict = {}; forms_dict = {}; return_dict = {}
+    return_dict['script_name'] = request.META['SCRIPT_NAME']
+    return_dict['current_user'] = request.user
+
     if request.user.is_authenticated():
-        if request.method == 'POST': # If the form has been submitted...
-            fsetform = FileSetForm(request.POST)
-            if fsetform.is_valid():
+        if request.method == 'POST':
+            forms_dict['fsetform'] = FileSetForm(request.POST)
+            
+            if forms_dict['fsetform'].is_valid():
                 fileset = FileSet()
                 fileset.procedure_id = procedure_id
-                fileset.path = fsetform.cleaned_data['path']
+                fileset.path = forms_dict['fsetform'].cleaned_data['path']
                 fileset.save()
+                request.user.message_set.create(message="Local cadastrado com sucesso.")
                 return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id})
             else:
-                comp = get_object_or_404(Computer, pk=computer_id)
-                compform = ComputerForm()
-                comps = Computer.objects.all()
-                proc = get_object_or_404(Procedure, pk=procedure_id)
-                procform = ProcedureForm()
-                procs = comp.procedures_list()
-                fsets = proc.filesets_list()
-                scheds = proc.schedules_list()
-                schedform = ScheduleForm() # An unbound form
-    
-                return render_to_response('bkp/view_procedure.html',{'script_name':request.META['SCRIPT_NAME'],'current_user':request.user,'compform':compform,'comps':comps,'comp':comp,'procform':procform,'procs':procs,'proc':proc,'fsets':fsets,'fsetform':fsetform,'scheds':scheds,'schedform':schedform})
+                vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+                vars_dict['comps'] = Computer.objects.all()
+                vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+                vars_dict['procs'] = vars_dict['comp'].procedures_list()
+                vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+                vars_dict['scheds'] = vars_dict['proc'].schedules_list()
+                forms_dict['compform'] = ComputerForm()
+                forms_dict['procform'] = ProcedureForm()
+                forms_dict['schedform'] = ScheduleForm()
+                # Load forms and vars
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="Existem erros e o local não foi cadastrado.")
+                return render_to_response('bkp/view_procedure.html', return_dict, context_instance=RequestContext(request))
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 def delete_fileset(request, computer_id, procedure_id, fileset_id):
@@ -631,16 +728,20 @@ def delete_fileset(request, computer_id, procedure_id, fileset_id):
             fset = get_object_or_404(FileSet, pk=fileset_id)
             fset.delete()
             default = '%(script_name)s/computer/%(comp_id)s/procedure/%(proc_id)s' % {'script_name':request.META['SCRIPT_NAME'],'comp_id':computer_id,'proc_id':procedure_id}
+            request.user.message_set.create(message="Local foi removido permanentemente.")
             return __redirect_back_or_default(request, default)
     else:
-        __store_location(request)
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
-
-        
 ###
 ###   Auxiliar Definitions
 ###
+
+
+def __merge_dicts(main_dict, *dicts_list):
+    for dict in dicts_list:
+        main_dict.update(dict)
+    return main_dict        
 
 def __store_location(request):
     request.session["location"] = request.build_absolute_uri()
@@ -653,8 +754,7 @@ def __redirect_back_or_default(request, default, except_pattern=None):
     
     redirect = ("location" in request.session) and request.session["location"] or default
     return HttpResponseRedirect(redirect)
-    
-    
+
 
 def absolute_file_path(filepath,rel_dir):
     root_dir = absolute_dir_path(rel_dir)
@@ -671,4 +771,3 @@ def remove_or_leave(filepath):
     except os.error:
         # Leave
         pass
-

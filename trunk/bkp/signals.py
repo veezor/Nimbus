@@ -13,7 +13,6 @@ from backup_corporativo.bkp.models import Procedure
 from backup_corporativo.bkp.models import Schedule
 from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
-from backup_corporativo.bkp.models import UniqueTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import Pool
 
@@ -43,7 +42,7 @@ def update_rel_statuses(sender, instance, signal, *args, **kwargs):
     "updates statuses for procedure and schedule objects"
     if sender == FileSet:
         instance.procedure.update_status()
-    elif ((sender == WeeklyTrigger) or (sender == MonthlyTrigger) or (sender == UniqueTrigger)):
+    elif ((sender == WeeklyTrigger) or (sender == MonthlyTrigger)):
         instance.schedule.update_status()
 
 def update_files(sender, instance, signal, *args, **kwargs):
@@ -525,9 +524,6 @@ models.signals.post_delete.connect(update_rel_statuses, sender=WeeklyTrigger)
 # MonthlyTrigger
 models.signals.post_save.connect(update_rel_statuses, sender=MonthlyTrigger)
 models.signals.post_delete.connect(update_rel_statuses, sender=MonthlyTrigger)
-# UniqueTrigger
-models.signals.post_save.connect(update_rel_statuses, sender=UniqueTrigger)
-models.signals.post_delete.connect(update_rel_statuses, sender=UniqueTrigger)
 # Pool
 models.signals.post_save.connect(update_files, sender=Pool)
 models.signals.post_delete.connect(remove_files, sender=Pool)
