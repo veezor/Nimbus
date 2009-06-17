@@ -3,21 +3,16 @@
 
 {% block content %}
 <!-- Begin Computers -->
+{% if comp %}
+	<h2>Computador <em>{{ comp.computer_name }}</em></h2>
+	<p>IP: {{ comp.ip }}<br/>
+	Descrição: {{ comp.description }}</p>
+{% else %}
 	<h2>Computadores</h2>
-	<ul>
-	{% for c in comps %}
-		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  
-		{{ c.fd_password }} | <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
-	    <button type="submit">Remover</button> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} 
-		</li></form>
-	{% endfor %}
-	</ul>
-	
 	<hr />
 <!--  Expandable/Collapsible Area -->
 	<h3>Adicionar Computador</h3>
-	
+
 <form action="{{script_name}}/computer/" method="post">
     {% for field in compform %}
         <div class="fieldWrapper">
@@ -27,9 +22,10 @@
     {% endfor %}
     <p><input type="submit" value="Salvar" /></p>
 </form>
-	
 	<hr />
 <!-- End Computers -->
+
+{% endif %}
 
 
 <!-- Begin Procedures -->
