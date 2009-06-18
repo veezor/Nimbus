@@ -43,10 +43,20 @@ import os
 #                   ##############
 
 
-def new_backup(request):
+
+def global_vars(request):
+    """Declare system-wide variables."""
     vars_dict = {}; forms_dict = {}; return_dict = {}
     return_dict['script_name'] = request.META['SCRIPT_NAME']
     return_dict['current_user'] = request.user
+    
+    vars_dict['comps'] = Computer.objects.all()
+    
+    return vars_dict, forms_dict, return_dict
+
+
+def new_backup(request):
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         if request.method == 'GET':
@@ -64,9 +74,7 @@ def new_backup(request):
 
 
 def create_backup(request):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -129,9 +137,7 @@ def restore_dump(request):
 
 ### Stats ###
 def view_stats(request):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         # TODO: remove following chunk of code from view!
@@ -189,9 +195,7 @@ def view_stats(request):
 ### Global Config ###
 
 def edit_config(request):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
     
     if request.user.is_authenticated():
         try:
@@ -224,9 +228,7 @@ def edit_config(request):
 ### Sessions ###
 
 def new_session(request):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if not request.user.is_authenticated():
         forms_dict['loginform'] = LoginForm()
@@ -239,9 +241,7 @@ def new_session(request):
     
 
 def create_session(request):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if not request.user.is_authenticated():
         if request.method == 'POST':
@@ -282,9 +282,7 @@ def delete_session(request):
 ### Computers ###
 
 def list_computers(request):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
     
     __store_location(request)
     if request.user.is_authenticated():
@@ -297,9 +295,7 @@ def list_computers(request):
         return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
 
 def edit_computer(request, computer_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         comp = get_object_or_404(Computer, pk=computer_id)
@@ -327,9 +323,7 @@ def edit_computer(request, computer_id):
 
 
 def view_computer(request, computer_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     __store_location(request)
     if request.user.is_authenticated():
@@ -361,9 +355,7 @@ def delete_computer(request, computer_id):
 
 
 def create_computer(request):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -385,9 +377,7 @@ def create_computer(request):
 ### Procedure ###
 
 def edit_procedure(request, computer_id, procedure_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
@@ -418,9 +408,7 @@ def edit_procedure(request, computer_id, procedure_id):
 
 
 def view_procedure(request, computer_id, procedure_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     __store_location(request)
     if request.user.is_authenticated():
@@ -448,9 +436,7 @@ def view_procedure(request, computer_id, procedure_id):
     
     
 def create_procedure(request, computer_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -496,9 +482,7 @@ def delete_procedure(request, computer_id, procedure_id):
 ### Schedule ###
 
 def view_schedule(request, computer_id, procedure_id, schedule_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     __store_location(request)
     if request.user.is_authenticated():
@@ -542,9 +526,7 @@ def view_schedule(request, computer_id, procedure_id, schedule_id):
 
 
 def create_schedule(request, computer_id, procedure_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -592,9 +574,7 @@ def delete_schedule(request, computer_id, procedure_id, schedule_id):
 ### Triggers ###
 
 def weeklytrigger(request, computer_id, procedure_id, schedule_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -642,9 +622,7 @@ def weeklytrigger(request, computer_id, procedure_id, schedule_id):
 
 
 def monthlytrigger(request, computer_id, procedure_id, schedule_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         vars_dict['sched'] = get_object_or_404(Schedule, pk=schedule_id)
@@ -690,9 +668,7 @@ def monthlytrigger(request, computer_id, procedure_id, schedule_id):
 ### FileSets ###
 
 def create_fileset(request, computer_id, procedure_id):
-    vars_dict = {}; forms_dict = {}; return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.user.is_authenticated():
         if request.method == 'POST':
