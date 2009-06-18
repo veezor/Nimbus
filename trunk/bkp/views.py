@@ -338,7 +338,7 @@ def view_computer(request, computer_id):
     if request.method == 'GET':
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
         vars_dict['comps'] = Computer.objects.all()
-        vars_dict['procs'] = vars_dict['comp'].procedures_list()
+        vars_dict['procs'] = vars_dict['comp'].procedure_set.all()
         forms_dict['compform'] = ComputerForm()
         forms_dict['procform'] = ProcedureForm()
         # Load forms and vars
