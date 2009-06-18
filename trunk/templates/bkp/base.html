@@ -31,6 +31,7 @@
 						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %}</li>
 						{% endfor %}
 					</ul>
+					<p><a href="/backup/new">Adicionar computador</a></p>
 					{% endblock %}
 					<!-- end computers block -->
 				</div>
