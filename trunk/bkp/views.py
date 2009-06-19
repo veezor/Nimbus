@@ -61,7 +61,7 @@ def global_vars(request):
 
 def require_authentication(request):
     """Redirect user to authentication page."""
-    return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name': request.META['SCRIPT_NAME'],})
+    return HttpResponseRedirect(__login_path(request))
 
 
 def authentication_required(view_def):
@@ -93,7 +93,7 @@ def do_restore(request, computer_id):
             import pdb; pdb.set_trace()
             comp.run_restore_job(client_source, client_restore, job_id, 'c:/restore/')
         else:
-            __redirect_back_or_default(request,'/')
+            __redirect_back_or_default(request,__root_path(request))
     
         return HttpResponse("restaura aí, vai!")
 
@@ -121,7 +121,7 @@ def create_device(request):
         if forms_dict['devform'].is_valid():
             forms_dict['devform'].save()
             request.user.message_set.create(message="Device adicionado com sucesso.")            
-            return HttpResponseRedirect("%s/" % request.META['SCRIPT_NAME'])
+            return HttpResponseRedirect(__root_path(request))
         else:
             return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
             return render_to_response('bkp/new_device.html', return_dict, context_instance=RequestContext(request))
@@ -323,9 +323,7 @@ def delete_session(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
             logout(request)
-            return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})
-    else:
-        return HttpResponseRedirect("%(script_name)s/session/new" % {'script_name':request.META['SCRIPT_NAME'],})        
+    return HttpResponseRedirect(__login_path(request))        
 
 
 ### Computers ###
@@ -713,7 +711,11 @@ def __redirect_back_or_default(request, default, except_pattern=None):
 
 def __root_path(request):
     """Return root path."""
-    return "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
+    return "%s/" % request.META['SCRIPT_NAME']
+    
+def __login_path(request):
+    """Returns login path."""
+    return "%s/session/new" % request.META['SCRIPT_NAME']
 
 def absolute_file_path(filename,rel_dir):
     """Return full path to a file from script file location and given directory."""
