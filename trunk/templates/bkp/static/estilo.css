@@ -4,8 +4,17 @@ padding:0;
 }
 
 body {
-font-size: 12px;
-font-family: Arial, sans-serif;
+font-size: 13px;
+font-family: Arial, Verdana, Tahoma, sans-serif;
+}
+
+p {
+line-height: 1.3em;
+margin-bottom: 1em;
+}
+
+ul {
+margin: 5px 0 5px 20px;
 }
 
 #site {
@@ -132,3 +141,11 @@ margin-bottom: 10px;
 .errorlist li {
 color: #FFF;
 }
+
+#rodape {
+background: #EEE;
+padding: 10px;
+margin-top: 20px;
+color: #999;
+}
+
