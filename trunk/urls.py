@@ -1,3 +1,5 @@
+from os.path import dirname
+
 from django.conf.urls.defaults import *
 
 # Uncomment the next two lines to enable the admin:
@@ -18,7 +20,7 @@ urlpatterns = patterns('',
     (r'^$', 'backup_corporativo.bkp.views.list_computers'),
     # Arquivos estaticos.
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
-    {'document_root': '/home/jonatas/Projects/bc-devel/backup_corporativo/templates/bkp/static'}),
+        {'document_root': '%s/templates/bkp/static' % dirname(__file__)}),
     # Global Config
     (r'^config/edit$', 'backup_corporativo.bkp.views.edit_config'),
     # Dump
