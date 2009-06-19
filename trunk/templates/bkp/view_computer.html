@@ -1,5 +1,5 @@
 {% extends "bkp/base.html" %}
-
+{% load bkp_extras %}
 {% block content %}
 <!-- Begin Computers -->
 
@@ -7,6 +7,49 @@
 	<h2>Computador <em>{{ comp.computer_name }}</em></h2>
 	<p>IP: {{ comp.ip }}<br/>
 	Descrição: {{ comp.description }}</p>
+
+<h3>Últimos Procedimentos Executados</h3>
+
+<table>
+<thead>
+	<tr>
+	<th scope='col'>Job Id</th>
+	<th scope='col'>FSet Id</th>
+	<th scope='col'>Client</th>
+	<th scope='col'>Job</th>
+	<th scope='col'>Level</th>
+	<th scope='col'>Status</th>
+	<th scope='col'>Start</th>
+	<th scope='col'>End</th>
+	<th scope='col'>JobFiles</th>
+	<th scope='col'>JobBytes</th>
+	<th scope='col'>Errors</th>
+	<th scope='col'></th>
+	</tr>
+</thead>
+<tbody>
+{% for job in lastjobs %}
+<tr> 
+{% for item in job %}
+<td> {{ item }} </td>
+{% endfor %}
+
+{% if job|successful %}
+<td> <form action="{{script_name}}/computer/{{comp.id}}/restore/" method="POST">
+<input type="hidden" id="job_id" name="job_id" value="{{job|get_id}}" />
+<input type="hidden" id="client_source" name="client_source" value="{{job|get_client_source}}" />
+<input type="hidden" id="client_restore" name="client_restore" value="{{job|get_client_restore}}" />
+<input type="hidden" id="client_restore" name="client_restore" value="{{job|get_fileset}}" />
+
+<input type="submit" value="restaurar" />
+</form> </td>
+{% endif %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+
 {% else %}
 	<h2>Computadores</h2>
 	<hr />

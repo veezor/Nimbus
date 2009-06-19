@@ -13,18 +13,22 @@ from backup_corporativo.bkp.models import Schedule
 from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
+from backup_corporativo.bkp.models import ExternalDevice
 
 #
 #   Forms
 #
 
+class RestoreForm(forms.Form):
+    job_id = forms.CharField(max_length=50)
+    client_source = forms.CharField(max_length=50)
+    client_restore = forms.CharField(max_length=50)
+
+
 class GlobalConfigForm(ModelForm):
     class Meta:
         model = GlobalConfig
         fields = ('bacula_name','storage_ip','storage_port','director_port','admin_mail')
-        
-
-
 
 class LoginForm(forms.Form):
     auth_login = forms.CharField(label=u'Usuário',max_length=20)
@@ -59,3 +63,8 @@ class FileSetForm(ModelForm):
     class Meta:
         model = FileSet
         fields = ('path')
+
+class ExternalDeviceForm(ModelForm):
+    class Meta:
+        model = ExternalDevice
+        fields = ('device_name')

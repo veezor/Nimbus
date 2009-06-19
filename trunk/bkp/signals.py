@@ -266,8 +266,6 @@ def update_procedure_file(instance):
     comp_name = instance.computer.get_computer_name()
     jdict = procedure_dict(proc_name,'Backup',comp_name,fset_name,sched_name,pool_name)
     generate_procedure(proc_name,jdict)
-    rdict = procedure_dict(restore_name,'Restore',comp_name,fset_name,sched_name,pool_name,instance.restore_path)
-    generate_procedure(restore_name,rdict)
 
     
 def procedure_dict(proc_name, type, computer_name, fset_name, sched_name, pool_name, where=None):
@@ -300,8 +298,6 @@ def generate_procedure(proc_name,attr_dict):
 def remove_procedure_file(instance):
     "remove procedure file"
     base_dir,filepath = mount_path(instance.get_procedure_name(),'custom/jobs')
-    remove_or_leave(filepath)
-    base_dir,filepath = mount_path(instance.get_restore_name(),'custom/jobs')
     remove_or_leave(filepath)
     
 #### Computer #####

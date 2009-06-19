@@ -40,17 +40,16 @@ class GlobalConfig(models.Model):
     director_password = models.CharField(max_length=50,default='defaultpw')
     database_password = models.CharField(max_length=50, default='defaultpw')
     admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
+    max_upload_bandwidth = models.CharField("Limite de Upload", max_length=15, default='100 mbps')
 
     def generate_passwords(self):
-        "generate random passwords"
-        import string
-        from random import choice
-        size = 50
-        self.storage_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
-        self.director_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
-        self.database_password = ''.join([choice(string.letters + string.digits) for i in range(size)])        
+        """Generate random passwords."""
+        self.storage_password = random_password(50)
+        self.director_password = random_password(50)
+        self.database_password = random_password(50)
 
     def system_configured(self):
+        """Returns True if system is configured, False otherwise."""
         return GlobalConfig.objects.all().count() > 0
 
     def save(self):
@@ -61,15 +60,15 @@ class GlobalConfig(models.Model):
 
  
 ### Computer ###
-
 class Computer(models.Model):
     computer_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     ip = models.IPAddressField("Endereço IP")
     description = models.CharField("Descrição",max_length=100, blank=True)
     fd_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
+    DEFAULT_LOCATION="/tmp/bacula-restore"
     
     def build_backup(self, proc, fset, sched, wtrigg):
-        "save child objects in correct order"
+        """Save child objects in correct order."""
 
         proc.computer = self
         proc.save()
@@ -81,34 +80,51 @@ class Computer(models.Model):
         wtrigg.schedule = sched
         wtrigg.save()
  
+    def run_job(self, jobid):
+        import os
+
+    def run_restore_job(self, client_source, client_restore, job_id, where=DEFAULT_LOCATION):
+        """Run restore for retrieve last backups for a given client.
+        client_name: is the client owner of the files
+        client_restore: is the client that will hold the restored files
+        where: is the folder in client_restore that files will be restored
+        jobid: a jobid or a comma separated list of jobids
+        """
+        #TODO validates existance of client_name and client_restore
+        cmd = "bconsole << BACULAEOF \nrestore client=%s restoreclient=%s select all done yes where=%s jobid=%s \n12\nBACULAEOF" % (client_source, client_restore, where, job_id)
+        import pdb;pdb.set_trace()
+        os.system(cmd)
+  
 
     def procedures_list(self):
-        "get list of associated procedure"
+        """Get list of associated procedure."""
         return Procedure.objects.filter(computer=self.id)
 
     def get_computer_name(self):
-        "return computer name lower string"
+        """Return computer name lower string."""
         return str.lower(str(self.computer_name))
         
+    def change_password(self, size):
+        """Changes the password to a new random password."""
+        self.__generate_password(size)
+        self.save()
 
     def save(self):
         if not self.id: # If this record is not at database yet
             self.__generate_password()
         super(Computer, self).save()
-
-    def __generate_password(self):
-        "generate custom password"
-        import string
-        from random import choice
-        size = 20
-        self.fd_password = ''.join([choice(string.letters + string.digits) for i in range(size)])
+    
+    
+    def __generate_password(self, size=20):
+        """Sets a new random password to the computer."""
+        self.fd_password = random_password(size)
 
 
     def __unicode__(self):
         return self.computer_name
         
 ### Procedure ###
-
+# TODO remove list definitions and replace it for default <child>_set definition
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
@@ -116,40 +132,40 @@ class Procedure(models.Model):
     status = models.CharField(max_length=10, default="Invalid")
 
     def update_status(self):
-        "change status to valid or invalid depending if filesets_list() returns the list or an empty set"
+        """Change status to valid or invalid depending if filesets_list() returns the list or an empty set."""
         self.status = self.filesets_list() and 'Valid' or 'Invalid'
         self.save()
     
     def filesets_list(self):
-        "get list of associated file sets"
+        """Get list of associated file sets."""
         return FileSet.objects.filter(procedure=self.id)
 
     def schedules_list(self):
-        "get list of associated schedules"
+        """Get list of associated schedules."""
         return Schedule.objects.filter(procedure=self.id)
 
     def pools_list(self):
-        "get list of associated pools"
+        """Get list of associated pools."""
         return Pool.objects.filter(procedure=self.id)
     
     def get_fileset_name(self):
-        "get fileset name for bacula file"
+        """Get fileset name for bacula file."""
         return "%s_Set" % (self.procedure_name)
         
     def get_procedure_name(self):
-        "get procedure name for bacula file"
+        """Get procedure name for bacula file."""
         return "%s_Job" % (self.procedure_name)
     
     def get_restore_name(self):
-        "get restore procedure name for bacula"
+        """Get restore procedure name for bacula."""
         return "%s_RestoreJob" % (self.procedure_name)
         
     def get_schedule_name(self):
-        "get schedule name for bacula file       "
+        """Get schedule name for bacula file."""
         return "%s_Sched" % (self.procedure_name)
 
     def get_pool_name(self):
-        "get pool name for bacula file"
+        """Get pool name for bacula file."""
         return "%s_Pool" % (self.procedure_name)
 
     def __unicode__(self):
@@ -157,19 +173,18 @@ class Procedure(models.Model):
 
 
 ### Schedule ###
-
 class Schedule(models.Model):
     procedure = models.ForeignKey(Procedure)
     type = models.CharField("Nível",max_length=20,choices=TYPE_CHOICES)
     status = models.CharField(max_length=10, default="Invalid")
 
     def update_status(self):
-        "change status to valid or invalid depending if get_trigger() returns the trigger of False"
+        """Changes status to valid or invalid depending if get_trigger() returns the trigger of False."""
         self.status = (self.get_trigger()) and 'Valid' or 'Invalid'
         self.save()
 
     def get_trigger(self):
-        "return the associated trigger or False in case of it doesnt exist"
+        """Returns the associated trigger or False in case of it doesnt exist."""
         cmd = "trigger = %sTrigger.objects.get(schedule=self)" % (self.type)
         try:
             exec(cmd)
@@ -185,7 +200,6 @@ class Schedule(models.Model):
 
 
 ### WeeklyTrigger ###
-
 class WeeklyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
     for day in DAYS_OF_THE_WEEK.keys():
@@ -195,7 +209,6 @@ class WeeklyTrigger(models.Model):
 
 
 ### MonthlyTrigger ###
-
 class MonthlyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
     hour = models.TimeField("Horário")
@@ -213,7 +226,28 @@ class Pool(models.Model):
     # pools are created when Procedure is created through signals
     procedure = models.ForeignKey(Procedure)
     
+### External Device ###
+class ExternalDevice(models.Model):
+    device_name = models.CharField("Nome",max_length=50)
+    uuid = models.CharField(max_length=50, blank=True)
+    status = models.CharField(max_length=15, default="Inválido")
+    
+    def __unicode__(self):
+        return self.device_name
+    
+
 ###
 ###   Signals
 ###
 import backup_corporativo.bkp.signals
+
+
+###
+###   Auxiliar Definitions
+###
+
+def random_password(size):
+    """Generates random password of a given size."""
+    import string
+    from random import choice
+    return ''.join([choice(string.letters + string.digits) for i in range(size)])

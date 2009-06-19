@@ -33,3 +33,62 @@ def get_trigger_hour(obj):
        return trigg.hour
     else:
         return ''
+
+
+@register.filter
+def get_id(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        return  obj[0]
+    else:
+        return ''
+
+@register.filter
+def get_client_source(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        return  obj[2]
+    else:
+        return ''
+
+@register.filter
+def get_client_restore(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        return  obj[2]
+    else:
+        return ''
+        
+        
+@register.filter
+def get_fileset(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        return  obj[1]
+    else:
+        return ''
+
+
+@register.filter
+def successful(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+    """
+    if obj:
+        return  obj[5] == 'T'
+    else:
+        return ''
+
+
