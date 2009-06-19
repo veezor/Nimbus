@@ -17,6 +17,10 @@ ul {
 margin: 5px 0 5px 20px;
 }
 
+table {
+margin-bottom: 20px;
+}
+
 #site {
 width: 960px;
 margin: 0 auto;
