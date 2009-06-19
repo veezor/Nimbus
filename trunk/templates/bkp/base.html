@@ -7,16 +7,16 @@
 
 		<title>{% block title %}{% endblock %} Backup corporativo</title>
 
-		<link href="/static/estilo.css" rel="stylesheet" />
+		<link href="{{ request.META.SCRIPT_NAME }}/static/estilo.css" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="site">
 			<div id="topo">
-                            <h1><a href="/" title="Home">Linconet - Tencnologia Estratégica</a></h1>
+                            <h1><a href="{{ request.META.SCRIPT_NAME }}" title="Home">Linconet - Tencnologia Estratégica</a></h1>
                             <div id="main_menu" class="menu">
                                 <ul class="links">
-                                    <li class="first"><a href="/backup" title="">Backup</a></li>
-                                    <li class=""><a href="/stats" title="">Estatísticas</a></li>
+                                    <li class="first"><a href="{{ request.META.SCRIPT_NAME }}/backup" title="">Backup</a></li>
+                                    <li class=""><a href="{{ request.META.SCRIPT_NAME }}/stats" title="">Estatísticas</a></li>
                                 </ul>
                             </div>
 			</div>
