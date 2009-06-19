@@ -34,7 +34,11 @@
 				    {% block computers %}
 					<ul>
 						{% for c in comps %}
-						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %}</li>
+						{% ifequal c.id comp.id %}
+						<li><strong><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }}</strong></li>
+						{% else %}
+						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }}</li>
+						{% endifequal %}
 						{% endfor %}
 					</ul>
 					<p><a href="/backup/new">Adicionar computador</a></p>
