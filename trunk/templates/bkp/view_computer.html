@@ -70,55 +70,38 @@
 
 {% endif %}
 
-<!-- Begin Procedures -->
-	<h3>Procedimentos</h3>
-	{% if comp.procedure_set.count %}
-    	<ul>
-        	{% for p in comp.procedure_set.all %}
-            	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
-            	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.procedure_name }}</a> | 
-            	<a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/edit">Alterar</a>  |
-            	<button type="submit">Remover</button>
-            	</li></form>
-        	{% endfor %}
-    	</ul>
-	{% else %}
-	<p>Não há procedimentos para este computador.</p>
-<!--  Expandable/Collapsible Area -->
-	<h3>Adicionar Procedimento</h3>
 
-	<form action="{{script_name}}/computer/{{comp.id}}/procedure/" method="post">
-	    {% for field in procform %}
-	        <div class="fieldWrapper">
-	            {{ field.errors }}
-	            {{ field.label_tag }}: {{ field }}
-	        </div>
-	    {% endfor %}
-	    <p><input type="submit" value="Salvar" /></p>
-	</form>
+{% for p in comp.procedure_set.all %}
+    <div class="procedure">
+    <h3>Procedimento <strong>{{ p.procedure_name }}</strong></h3>
+    <p>Caminho para recuperação: {{ p.restore_path }}</p>
+    <p>Caminhos do backup: {% for fs in p.fileset_set.all %}{{ fs.path }}{% endfor %}</p>
+    <p>Agendamentos:
+        {% for sc in p.schedule_set.all %}
+        <div class="agendamento">
+            Tipo: {{ sc.type }}
+            <ul>
+            {% for scwt in sc.weeklytrigger_set.all %}
+                <li>Nível: {{ scwt.level }}</li>
+                <li>Hora: {{ scwt.hour }}</li>
+                <li>Dias da semana:
+                {% for day, day_br in DAYS_OF_THE_WEEK.items %}
+                    {% if scwt|get_method:day %}
+                        {{ day_br }}
+                    {% endif %}
+                {% endfor %}
+                </li>
+            {% endfor %}
+            {% for scmt in sc.monthlytrigger_set.all %}
+                <li>Nível: {{ scmt.level }}</li>
+                <li>Hora: {{ scmt.hour }}</li>
+                <li>Dias: {{ scmt.target_days }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </p>
+    </div>
+{% endfor %}
 
-	<hr />
-<!-- End Procedures -->
-	{% endif %}
-	
-	<hr />
-
-<!-- Begin FileSets -->
-	<h2>Locais</h2>
-	<p>Não há procedimento selecionado.</p>
-	
-	<hr />
-<!-- End FileSets -->
-
-<!-- Begin Schedules -->
-	<h2>Agendamentos</h2>
-	<p>Não há procedimento selecionado.</p>
-	
-	<hr />
-<!-- End Schedules -->
-
-<!-- Begin Triggers-->
-	<h2>Detalhe Agendamento</h2>
-	<p>Não há agendamento selecionado.</p>
-<!-- End Triggers -->
 {% endblock %}
