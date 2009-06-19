@@ -55,8 +55,6 @@ def global_vars(request):
     forms_dict['procform'] = ProcedureForm()
     forms_dict['fsetform'] = FileSetForm()
     forms_dict['schedform'] = ScheduleForm()
-    forms_dict['wtriggform'] = WeeklyTriggerForm()
-    forms_dict['mtriggform'] = MonthlyTriggerForm()
     
     return vars_dict, forms_dict, return_dict
 
@@ -140,8 +138,6 @@ def new_backup(request):
         # Load forms and vars
         return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_backup.html', return_dict, context_instance=RequestContext(request))
-    else:
-        return 'bla'
 
 
 @authentication_required
@@ -165,7 +161,7 @@ def create_backup(request):
             comp.save()
             comp.build_backup(proc,fset,sched,wtrigg)
             request.user.message_set.create(message="Backup adicionado com sucesso.")
-            return HttpResponseRedirect("%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],})        
+            return HttpResponseRedirect(__root_path(request))
         else:
             # Load forms and vars
             return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
@@ -289,7 +285,7 @@ def new_session(request):
         return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))
     else:
-        default = "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
+        default = __root_path(request)
         return __redirect_back_or_default(request, default)
     
 
@@ -307,7 +303,7 @@ def create_session(request):
                 
                 if user:
                     login(request, user)
-                    default = GlobalConfig.system_configured(GlobalConfig()) and "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],} or "%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],}
+                    default = GlobalConfig.system_configured(GlobalConfig()) and __root_path(request) or "%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],}
                     request.user.message_set.create(message="Bem-vindo ao Sistema de Backups Corporativo.")
                     return __redirect_back_or_default(request, default)
                 else:
@@ -319,7 +315,7 @@ def create_session(request):
                 return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
                 return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))
     else:
-        default = "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
+        default = __root_path(request)
         return __redirect_back_or_default(request, default)
 
 
@@ -397,7 +393,7 @@ def delete_computer(request, computer_id):
         comp = get_object_or_404(Computer,pk=computer_id)
         comp.delete()
         except_pattern = "computer/%s" % (computer_id)
-        default = "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
+        default = __root_path(request)
         request.user.message_set.create(message="Computador removido permanentemente.")            
         return __redirect_back_or_default(request, default, except_pattern)  
 
@@ -517,6 +513,7 @@ def view_schedule(request, computer_id, procedure_id, schedule_id):
         vars_dict['sched_lower_type'] = vars_dict['sched'].type.lower()
         vars_dict['scheds'] = Schedule.objects.filter(procedure=vars_dict['proc'])
         vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+        
         # TODO: optmize following chunk of code
         if (vars_dict['sched'].type == 'Weekly'):
             try:
@@ -524,6 +521,7 @@ def view_schedule(request, computer_id, procedure_id, schedule_id):
                 forms_dict['triggerform'] = WeeklyTriggerForm(instance=vars_dict['trigger'])
                 vars_dict['triggerformempty'] = False
             except WeeklyTrigger.DoesNotExist:
+                forms_dict['triggerform'] = WeeklyTriggerForm()
                 vars_dict['triggerformempty'] = True
         elif (vars_dict['sched'].type == 'Monthly'):
             try:
@@ -531,6 +529,7 @@ def view_schedule(request, computer_id, procedure_id, schedule_id):
                 forms_dict['triggerform'] = MonthlyTriggerForm(instance=vars_dict['trigger'])                
                 vars_dict['triggerformempty'] = False
             except MonthlyTrigger.DoesNotExist:
+                forms_dict['triggerform'] = MonthlyTriggerForm()                
                 vars_dict['triggerformempty'] = True
         # Load forms and vars
         return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
@@ -711,6 +710,10 @@ def __redirect_back_or_default(request, default, except_pattern=None):
     redirect = ("location" in request.session) and request.session["location"] or default
     return HttpResponseRedirect(redirect)
 
+
+def __root_path(request):
+    """Return root path."""
+    return "%(script_name)s/" % {'script_name':request.META['SCRIPT_NAME'],}
 
 def absolute_file_path(filename,rel_dir):
     """Return full path to a file from script file location and given directory."""

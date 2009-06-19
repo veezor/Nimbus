@@ -43,7 +43,7 @@ class GlobalConfig(models.Model):
     max_upload_bandwidth = models.CharField("Limite de Upload", max_length=15, default='100 mbps')
 
     def generate_passwords(self):
-        """Generate random passwords."""
+        """Generates random passwords."""
         self.storage_password = random_password(50)
         self.director_password = random_password(50)
         self.database_password = random_password(50)
@@ -68,7 +68,7 @@ class Computer(models.Model):
     DEFAULT_LOCATION="/tmp/bacula-restore"
     
     def build_backup(self, proc, fset, sched, wtrigg):
-        """Save child objects in correct order."""
+        """Saves child objects in correct order."""
 
         proc.computer = self
         proc.save()
@@ -97,11 +97,11 @@ class Computer(models.Model):
   
 
     def procedures_list(self):
-        """Get list of associated procedure."""
+        """Gets list of associated procedure."""
         return Procedure.objects.filter(computer=self.id)
 
     def get_computer_name(self):
-        """Return computer name lower string."""
+        """Returns computer name lower string."""
         return str.lower(str(self.computer_name))
         
     def change_password(self, size):
