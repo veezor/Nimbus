@@ -91,4 +91,12 @@ def successful(obj):
     else:
         return ''
 
+@register.filter
+def get_method(obj, value):
+    """ Try to get an attribute from an object.
+    Example: 
+    """
+    return getattr(obj, value)
+
+
 
