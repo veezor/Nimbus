@@ -1,7 +1,6 @@
 from os.path import dirname
 
 from django.conf.urls.defaults import *
-from backup_corporativo.settings import APP_PREFIX
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -20,7 +19,7 @@ urlpatterns = patterns('',
     # Index
     (r'^$', 'backup_corporativo.bkp.views.list_computers'),
     # Arquivos estaticos.
-    (r'^%sstatic/(?P<path>.*)' % APP_PREFIX, 'django.views.static.serve',
+    (r'^static/(?P<path>.*)', 'django.views.static.serve',
         {'document_root': '%s/templates/bkp/static' % dirname(__file__)}),
     # Global Config
     (r'^config/edit$', 'backup_corporativo.bkp.views.edit_config'),
