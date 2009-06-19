@@ -83,16 +83,25 @@ class Computer(models.Model):
     def run_job(self, jobid):
         import os
 
+    def run_test_job(self, client_source, job_id):
+        """Run testjob for test communication between bacula's dir and client's fd.
+        client_source: is the client that needs to be tested
+        jobid: a jobid of the testjob
+        """
+        #TODO validates existance of client_name and client_restore
+        cmd = "bconsole << BACULAEOF \n%s%sBACULAEOF" % (client_source, job_id)
+        os.system(cmd)
+
+
     def run_restore_job(self, client_source, client_restore, job_id, where=DEFAULT_LOCATION):
         """Run restore for retrieve last backups for a given client.
-        client_name: is the client owner of the files
+        client_source: is the client owner of the files
         client_restore: is the client that will hold the restored files
         where: is the folder in client_restore that files will be restored
         jobid: a jobid or a comma separated list of jobids
         """
         #TODO validates existance of client_name and client_restore
         cmd = "bconsole << BACULAEOF \nrestore client=%s restoreclient=%s select all done yes where=%s jobid=%s \n12\nBACULAEOF" % (client_source, client_restore, where, job_id)
-        import pdb;pdb.set_trace()
         os.system(cmd)
   
 

@@ -402,10 +402,8 @@ def delete_computer(request, computer_id):
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=computer_id)
         comp.delete()
-        except_pattern = "computer/%s" % (computer_id)
-        default = __root_path(request)
         request.user.message_set.create(message="Computador removido permanentemente.")            
-        return __redirect_back_or_default(request, default, except_pattern)  
+        return __redirect_back_or_default(request, default=__root_path(request))  
 
 
 @authentication_required
@@ -503,10 +501,8 @@ def delete_procedure(request, computer_id, procedure_id):
     if request.method == 'POST':
         proc = get_object_or_404(Procedure, pk=procedure_id)
         proc.delete()
-        except_pattern = "procedure/%s" % (procedure_id)
-        default = "%(script_name)s/computer/%(computer_id)s" % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,}
         request.user.message_set.create(message="Procedimento removido permanentemente.")
-        return __redirect_back_or_default(request, default, except_pattern)
+        return __redirect_back_or_default(request, default=__computer_path(computer_id))
 
 
 ### Schedule ###
@@ -576,10 +572,8 @@ def delete_schedule(request, computer_id, procedure_id, schedule_id):
     if request.method == 'POST':
         sched = get_object_or_404(Schedule, pk=schedule_id)
         sched.delete()
-        except_pattern = "schedule/%s" % (schedule_id)
-        default = '%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,}
         request.user.message_set.create(message="Agendamento foi removido permanentemente.")
-        return __redirect_back_or_default(request, default, except_pattern)
+        return __redirect_back_or_default(request, default=__schedule_path(computer_id,procedure_id,schedule_id))
         
         
 ### Triggers ###
@@ -711,11 +705,26 @@ def __store_location(request):
     request.session["location"] = request.build_absolute_uri()
 
 def __redirect_back_or_default(request, default, except_pattern=None):
-    """Redirects user back or to a given default place"""
-    if except_pattern and ("location" in request.session):
+    """Redirects user back or to a given default place
+    unless default place matches an except_pattern
+    """
+    if "location" in request.session:
         import re
-        if re.search(except_pattern,request.session["location"]):
-            del(request.session["location"]) # use default location
+        
+        if except_pattern:
+            if re.search(except_pattern,request.session["location"]):
+                del(request.session["location"]) # use default location
+        else:   
+            # Try to find redirect error
+            referer_full_path = request.META['HTTP_REFERER']
+            request_path = request.META['PATH_INFO']
+            slice_path_re = 'https?://(www\.)?[\w\d\-_ ]+?(:\d+)?(?P<short_path>/.*)'
+            try: 
+                referer_path = re.search(slice_path_re,referer_full_path).group('short_path')
+                if re.search(referer_path, request_path):
+                    del(request.session["location"])
+            except Exception:
+                pass
     
     redirect = ("location" in request.session) and request.session["location"] or default
     return HttpResponseRedirect(redirect)
@@ -728,6 +737,13 @@ def __root_path(request):
 def __login_path(request):
     """Returns login path."""
     return "%s/session/new" % request.META['SCRIPT_NAME']
+
+def __computer_path(request):
+    """Returns computer path."""
+    return "%s/computer/%s" % (request.META['SCRIPT_NAME'],computer_id)
+
+def __schedule_path(request):
+    return "%s/computer/%s/procedure/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id)
 
 def absolute_file_path(filename,rel_dir):
     """Return full path to a file from script file location and given directory."""
