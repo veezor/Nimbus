@@ -12,15 +12,21 @@
 	<body>
 		<div id="site">
 			<div id="topo">
-				<h1>Linconet - Tecnologia Estratégica</h1>
-				<div id="menu">{% block menu %}{% endblock %}</div>
-				<!-- start welcome block -->
-				<ul>
-					<form class="link" action="{{script_name}}/session/delete" method="post">
-						<li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
-					</form>
-				</ul>
-				<!-- end welcome block -->
+                            <h1><a href="/" title="Home">Linconet - Tencnologia Estratégica</a></h1>
+                            <div id="main_menu" class="menu">
+                                <ul class="links">
+                                    <li class="first"><a href="/backup" title="">Backup</a></li>
+                                    <li class=""><a href="/stats" title="">Estatísticas</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- start welcome block -->
+                            <ul>
+                                <form class="link" action="{{script_name}}/session/delete" method="post">
+                                    <li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
+                                </form>
+                            </ul>
+                            <!-- end welcome block -->
 			</div>
 			<div id="conteudo">	
 				<div id="sidebar">
