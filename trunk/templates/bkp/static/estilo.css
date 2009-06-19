@@ -64,7 +64,16 @@ color:#4B5555;
 display:block;
 font-size:12px;
 padding:13px 9px;
+text-decoration:none;
 }
+
+#topo .menu ul li a:hover,
+#topo .menu ul li.active a {
+background:transparent url(/static/imagens/bg_menu_selected.gif) repeat-x scroll left top;
+color:#D4D6D6;
+text-decoration:none;
+}
+
 
 
 

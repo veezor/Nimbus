@@ -19,17 +19,17 @@
                                     <li class=""><a href="/stats" title="">Estatísticas</a></li>
                                 </ul>
                             </div>
-
-                            <!-- start welcome block -->
-                            <ul>
-                                <form class="link" action="{{script_name}}/session/delete" method="post">
-                                    <li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
-                                </form>
-                            </ul>
-                            <!-- end welcome block -->
 			</div>
 			<div id="conteudo">	
 				<div id="sidebar">
+                    <!-- start welcome block -->
+                    <ul>
+                        <form class="link" action="{{script_name}}/session/delete" method="post">
+                            <li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
+                        </form>
+                    </ul>
+                    <!-- end welcome block -->
+                    
 				    <!-- start computers block -->
 				    {% block computers %}
 					<ul>
