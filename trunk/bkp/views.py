@@ -14,6 +14,8 @@ from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import ExternalDevice
+from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_THE_WEEK
+
 # Forms
 from backup_corporativo.bkp.forms import GlobalConfigForm
 from backup_corporativo.bkp.forms import LoginForm
@@ -55,6 +57,10 @@ def global_vars(request):
     forms_dict['procform'] = ProcedureForm()
     forms_dict['fsetform'] = FileSetForm()
     forms_dict['schedform'] = ScheduleForm()
+    
+    vars_dict['TYPE_CHOICES'] = TYPE_CHOICES
+    vars_dict['LEVEL_CHOICES'] = LEVEL_CHOICES
+    vars_dict['DAYS_OF_THE_WEEK'] = DAYS_OF_THE_WEEK
     
     return vars_dict, forms_dict, return_dict
 
