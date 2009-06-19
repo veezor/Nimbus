@@ -225,20 +225,23 @@ def view_stats(request):
     totalbytes_query =  '''select sum(JobBytes) "Bytes" \
                         from Job where Job.JobStatus = 'T'; \
                         '''
-    db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
-    cursor = db.cursor()
-    cursor.execute(runningjobs_query)
-    vars_dict['runningjobs'] = cursor.fetchall()
-    cursor.execute(lastjobs_query)
-    vars_dict['lastjobs'] = cursor.fetchall()
-    cursor.execute(dbsize_query)    
-    vars_dict['dbsize'] = cursor.fetchall()[0][1]
-    cursor.execute(numproc_query)
-    vars_dict['numproc'] = int(cursor.fetchall()[0][0])
-    cursor.execute(numcli_query)
-    vars_dict['numcli'] = int(cursor.fetchall()[0][0])
-    cursor.execute(totalbytes_query)
-    vars_dict['tbytes'] = cursor.fetchall()[0][0]
+    try:
+        db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
+        cursor = db.cursor()
+        cursor.execute(runningjobs_query)
+        vars_dict['runningjobs'] = cursor.fetchall()
+        cursor.execute(lastjobs_query)
+        vars_dict['lastjobs'] = cursor.fetchall()
+        cursor.execute(dbsize_query)    
+        vars_dict['dbsize'] = cursor.fetchall()[0][1]
+        cursor.execute(numproc_query)
+        vars_dict['numproc'] = int(cursor.fetchall()[0][0])
+        cursor.execute(numcli_query)
+        vars_dict['numcli'] = int(cursor.fetchall()[0][0])
+        cursor.execute(totalbytes_query)
+        vars_dict['tbytes'] = cursor.fetchall()[0][0]
+    except:
+        db = object()
     # Load forms and vars
     return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
     return render_to_response('bkp/view_stats.html', return_dict, context_instance=RequestContext(request))
@@ -375,10 +378,13 @@ def view_computer(request, computer_id):
                             WHERE Client.Name = '%s'
                             ''' % vars_dict['comp'].computer_name
         import MySQLdb
-        db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
-        cursor = db.cursor()
-        cursor.execute(lastjobs_query)
-        vars_dict['lastjobs'] = cursor.fetchall()
+        try:
+            db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
+            cursor = db.cursor()
+            cursor.execute(lastjobs_query)
+            vars_dict['lastjobs'] = cursor.fetchall()
+        except:
+            db = object()
 
         # Load forms and vars
         return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
