@@ -1,15 +1,5 @@
-<h1> <a href="{{script_name}}/">Prototipo Backup Corporativo</a> </h1>
-<hr />
-
-<!-- Welcome -->
-
-<ul><form class="link" action="{{script_name}}/session/delete" method="post">
-<li>Welcome, {{current_user.username}} | <button type="submit">Sair</button> | 
-</li></form>
-</ul>
-
-<!-- End Welcome -->
-
+{% extends "bkp/base.html" %}
+{% block content %}
 
 <h2> Alterar Computador </h2>
 
@@ -27,3 +17,4 @@
 <a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
 <br />
 
+{% endblock %}

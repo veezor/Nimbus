@@ -27,6 +27,8 @@ from backup_corporativo.bkp.forms import MonthlyTriggerForm
 from backup_corporativo.bkp.forms import FileSetForm
 from backup_corporativo.bkp.forms import ExternalDeviceForm
 from backup_corporativo.bkp.forms import RestoreForm
+from backup_corporativo.bkp.forms import ProcedureAuxForm
+from backup_corporativo.bkp.forms import ComputerAuxForm
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -48,16 +50,14 @@ def global_vars(request):
     vars_dict = {}; forms_dict = {}; return_dict = {}
     return_dict['script_name'] = request.META['SCRIPT_NAME']
     return_dict['current_user'] = request.user
-    
     # List of computers.
     vars_dict['comps'] = Computer.objects.all()
-    
     # List of forms.
     forms_dict['compform'] = ComputerForm()
     forms_dict['procform'] = ProcedureForm()
     forms_dict['fsetform'] = FileSetForm()
     forms_dict['schedform'] = ScheduleForm()
-    
+    # List of vars.    
     vars_dict['TYPE_CHOICES'] = TYPE_CHOICES
     vars_dict['LEVEL_CHOICES'] = LEVEL_CHOICES
     vars_dict['DAYS_OF_THE_WEEK'] = DAYS_OF_THE_WEEK
@@ -149,30 +149,39 @@ def new_backup(request):
 @authentication_required
 def create_backup(request):
     vars_dict, forms_dict, return_dict = global_vars(request)
+    temp_dict = {}
 
     if request.method == 'POST':
-        forms_dict['compform'] = ComputerForm(request.POST, instance=Computer())
-        forms_dict['procform'] = ProcedureForm(request.POST, instance=Procedure())
-        forms_dict['fsetform'] = FileSetForm(request.POST, instance=FileSet())
-        forms_dict['schedform'] = ScheduleForm(request.POST, instance=Schedule())
-        forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST, instance=WeeklyTrigger())
-        forms_list = forms_dict.values()
+        temp_dict['compauxform'] = ComputerAuxForm(request.POST)
 
-        if all([form.is_valid() for form in forms_list]): # If all forms inside forms_list are valid
-            comp = forms_dict['compform'].save(commit=False)
-            proc = forms_dict['procform'].save(commit=False)
-            fset = forms_dict['fsetform'].save(commit=False)
-            sched = forms_dict['schedform'].save(commit=False)
-            wtrigg = forms_dict['wtriggform'].save(commit=False)
-            comp.save()
-            comp.build_backup(proc,fset,sched,wtrigg)
-            request.user.message_set.create(message="Backup adicionado com sucesso.")
-            return HttpResponseRedirect(__root_path(request))
-        else:
-            # Load forms and vars
-            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/new_backup.html', return_dict, context_instance=RequestContext(request))     
+        if temp_dict['compauxform'].is_valid():
+            forms_dict['compform'] = ComputerForm(request.POST)
+            if temp_dict['procform']:
+                forms_dict['procform'] = ProcedureForm(request.POST)
+            if temp_dict['procauxform'].cleaned_data['FileSet']:
+                forms_dict['fsetform'] = FileSetForm(request.POST)
+            if temp_dict['procauxform'].cleaned_data['Schedule']:
+                forms_dict['schedform'] = ScheduleForm(request.POST)
+            if temp_dict['procauxform'].cleaned_data['Trigger']:
+                triggclass = globals()["%sTriggerForm" % forms_dict['procauxform'].cleaned_data['schedule_type']]
+                forms_dict['triggform'] = triggclass(request.POST)
+            forms_list = forms_dict.values()
 
+            if all([form.is_valid() for form in forms_list]):
+                comp = forms_dict['compform'].save(commit=False)
+                proc = forms_dict['procform'].save(commit=False)
+                fset = forms_dict['fsetform'].save(commit=False)
+                sched = forms_dict['schedform'].save(commit=False)
+                trigg = forms_dict['triggform'].save(commit=False)
+                comp.save()
+                comp.build_backup(proc, fset, sched, trigg)
+                request.user.message_set.create(message="Computador cadastrado com sucesso.")
+                return HttpResponseRedirect(__computer_path(request, computer_id)
+            else:
+                # Load forms and vars
+                request.user.message_set.create(message="Existem erros e o computador não foi cadastrado.")
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
+                return render_to_response('bkp/new_procedure.html', return_dict, context_instance=RequestContext(request))
 
 ### Dump ###
 @authentication_required
@@ -180,20 +189,20 @@ def create_dump(request):
     from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
     cmd = '''mysqldump --user=root --password=mysqladmin --add-drop-database --create-options --disable-keys --databases backup_corporativo bacula -r "%s"''' % absolute_file_path('tmpdump','custom')
     os.system(cmd)
-    encrypt(absolute_file_path('tmpdump','custom'),absolute_file_path('systemdump.ninmbus','custom'),'lalala',15,True)
+    encrypt(absolute_file_path('tmpdump','custom'),absolute_file_path('systemdump.nimbus','custom'),'secretkeyword',15,True)
     request.user.message_set.create(message="Dump gerado com sucesso.")
-    return HttpResponseRedirect("%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],})
+    return HttpResponseRedirect(__edit_config_path(request))
 
 @authentication_required
 def restore_dump(request):
     from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
     dec = absolute_file_path('dec_systemdump','custom')
     cmd =   '''mysql --user=root --password=mysqladmin < "%s"''' % dec
-    decrypt(absolute_file_path('systemdump.ninmbus','custom'),dec,'lalala',15)  
+    decrypt(absolute_file_path('systemdump.nimbus','custom'),dec,'secretkeyword',15)  
     os.system(cmd)
     remove_or_leave(dec)
     request.user.message_set.create(message="Restauração executada com sucesso.")        
-    return HttpResponseRedirect("%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],})
+    return HttpResponseRedirect(__edit_config_path(request))
 
 
 ### Stats ###
@@ -312,7 +321,7 @@ def create_session(request):
                 
                 if user:
                     login(request, user)
-                    default = GlobalConfig.system_configured(GlobalConfig()) and __root_path(request) or "%(script_name)s/config/edit" % {'script_name':request.META['SCRIPT_NAME'],}
+                    default = GlobalConfig.system_configured(GlobalConfig()) and __root_path(request) or __edit_config_path(request)
                     request.user.message_set.create(message="Bem-vindo ao Sistema de Backups Corporativo.")
                     return __redirect_back_or_default(request, default)
                 else:
@@ -324,8 +333,7 @@ def create_session(request):
                 return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
                 return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))
     else:
-        default = __root_path(request)
-        return __redirect_back_or_default(request, default)
+        return __redirect_back_or_default(request, default=__root_path(request))
 
 
 def delete_session(request):
@@ -361,7 +369,7 @@ def edit_computer(request, computer_id):
         if forms_dict['compform'].is_valid():
             forms_dict['compform'].save()
             request.user.message_set.create(message="Computador foi alterado com sucesso.")
-            return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':comp.id})
+            return HttpResponseRedirect(__computer_path(request, comp.id))
         else:
             # Load forms and vars
             return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
@@ -416,7 +424,7 @@ def create_computer(request):
             if forms_dict['compform'].is_valid():
                 computer = forms_dict['compform'].save()
                 request.user.message_set.create(message="Computador cadastrado com sucesso.")
-                return HttpResponseRedirect("%(script_name)s/computer/%(id)i" % {'script_name':request.META['SCRIPT_NAME'],'id':computer.id})
+                return HttpResponseRedirect(__computer_path(request, computer.id))
             else:
                 # Load forms and vars
                 return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
@@ -428,8 +436,6 @@ def create_computer(request):
 @authentication_required
 def edit_procedure(request, computer_id, procedure_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
-
-    vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
     vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
     
     if request.method == 'GET':
@@ -442,10 +448,8 @@ def edit_procedure(request, computer_id, procedure_id):
         
         if forms_dict['procform'].is_valid():
             forms_dict['procform'].save()
-            comp_id = vars_dict['comp'].id
-            proc_id = vars_dict['proc'].id
             request.user.message_set.create(message="O procedimento foi alterado com sucesso.")
-            return HttpResponseRedirect("%(script_name)s/computer/%(comp_id)i/procedure/%(proc_id)i" % {'script_name':request.META['SCRIPT_NAME'],'comp_id':comp_id,'proc_id':proc_id})
+            return HttpResponseRedirect(__procedure_id(request, procedure_id, computer_id))
         else:
             # Load forms and vars
             return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
@@ -470,30 +474,56 @@ def view_procedure(request, computer_id, procedure_id):
             return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
             return render_to_response('bkp/view_procedure.html', return_dict, context_instance=RequestContext(request))
         else:
-            return HttpResponseRedirect("%(script_name)s/computer/%(computer_id)i", {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id})      
+            return HttpResponseRedirect(__computer_path(request, computer_id))
     
+
+@authentication_required
+def new_procedure(request, computer_id):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+    forms_dict['triggform'] = MonthlyTriggerForm()
+    forms_dict['procauxform'] = ProcedureAuxForm()
+
+    if request.method == 'GET':
+        # Load forms and vars
+        return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/new_procedure.html', return_dict, context_instance=RequestContext(request))
+
 
 @authentication_required
 def create_procedure(request, computer_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
-
+    temp_dict = {}
+
     if request.method == 'POST':
-        forms_dict['procform'] = ProcedureForm(request.POST)
-        if forms_dict['procform'].is_valid():
-            procedure = Procedure()
-            procedure.computer_id = computer_id
-            procedure.procedure_name = forms_dict['procform'].cleaned_data['procedure_name']
-            procedure.restore_path = forms_dict['procform'].cleaned_data['restore_path']
-            procedure.save()
-            request.user.message_set.create(message="Procedimento cadastrado com sucesso.")
-            return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure.id})
-        else:
-            vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
-            vars_dict['procs'] = vars_dict['comp'].procedures_list()
-            # Load forms and vars
-            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
-            request.user.message_set.create(message="Existem erros e o procedimento não foi cadastrado.")
-            return render_to_response('bkp/view_computer.html', return_dict, context_instance=RequestContext(request))
+        temp_dict['procauxform'] = ProcedureAuxForm(request.POST)
+
+        if temp_dict['procauxform'].is_valid():
+            forms_dict['procform'] = ProcedureForm(request.POST)
+            if temp_dict['procauxform'].cleaned_data['FileSet']:
+                forms_dict['fsetform'] = FileSetForm(request.POST)
+            if temp_dict['procauxform'].cleaned_data['Schedule']:
+                forms_dict['schedform'] = ScheduleForm(request.POST)
+            if temp_dict['procauxform'].cleaned_data['Trigger']:
+                triggclass = globals()["%sTriggerForm" % forms_dict['procauxform'].cleaned_data['schedule_type']]
+                forms_dict['triggform'] = triggclass(request.POST)
+            forms_list = forms_dict.values()
+
+            if all([form.is_valid() for form in forms_dict.values()]):
+                proc = forms_dict['procform'].save(commit=False)
+                fset = forms_dict['fsetform'].save(commit=False)
+                sched = forms_dict['schedform'].save(commit=False)
+                trigg = forms_dict['triggform'].save(commit=False)
+                proc.save()
+                proc.build_backup(fset, sched, trigg)
+                request.user.message_set.create(message="Procedimento cadastrado com sucesso.")
+                return HttpResponseRedirect(__procedure_path(request, proc.id, computer_id)
+            else:
+                # Load forms and vars
+                vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+                request.user.message_set.create(message="Existem erros e o procedimento não foi cadastrado.")
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
+                return render_to_response('bkp/new_procedure.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -502,7 +532,7 @@ def delete_procedure(request, computer_id, procedure_id):
         proc = get_object_or_404(Procedure, pk=procedure_id)
         proc.delete()
         request.user.message_set.create(message="Procedimento removido permanentemente.")
-        return __redirect_back_or_default(request, default=__computer_path(computer_id))
+        return __redirect_back_or_default(request, default=__computer_path(request, computer_id))
 
 
 ### Schedule ###
@@ -554,7 +584,7 @@ def create_schedule(request, computer_id, procedure_id):
             schedule.type = forms_dict['schedform'].cleaned_data['type']
             schedule.save()
             request.user.message_set.create(message="Agendamento cadastrado com sucesso.")
-            return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule.id})
+            return HttpResponseRedirect(__schedule_path(request, schedule_id, procedure_id, computer_id))
         else:
             vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
             vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
@@ -573,7 +603,7 @@ def delete_schedule(request, computer_id, procedure_id, schedule_id):
         sched = get_object_or_404(Schedule, pk=schedule_id)
         sched.delete()
         request.user.message_set.create(message="Agendamento foi removido permanentemente.")
-        return __redirect_back_or_default(request, default=__schedule_path(computer_id,procedure_id,schedule_id))
+        return __redirect_back_or_default(request, default=__procedure_path(request, computer_id,procedure_id))
         
         
 ### Triggers ###
@@ -602,7 +632,7 @@ def weeklytrigger(request, computer_id, procedure_id, schedule_id):
             wtrigger.level = forms_dict['triggerform'].cleaned_data['level']
             wtrigger.save()
             request.user.message_set.create(message="Agendamento configurado com sucesso.")
-            return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
+            return HttpResponseRedirect(__schedule_path(request, schedule_id, procedure_id, computer_id)
         else:
             vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
             vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
@@ -638,7 +668,7 @@ def monthlytrigger(request, computer_id, procedure_id, schedule_id):
             mtrigger.target_days = forms_dict['triggerform'].cleaned_data['target_days']
             mtrigger.save()
             request.user.message_set.create(message="Agendamento configurado com sucesso.")
-            return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s/schedule/%(schedule_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id,'schedule_id':schedule_id})
+            return HttpResponseRedirect(__schedule_path(request, schedule_id, procedure_id, computer_id))
         else:
             vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
             vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
@@ -666,7 +696,7 @@ def create_fileset(request, computer_id, procedure_id):
             fileset.path = forms_dict['fsetform'].cleaned_data['path']
             fileset.save()
             request.user.message_set.create(message="Local cadastrado com sucesso.")
-            return HttpResponseRedirect('%(script_name)s/computer/%(computer_id)s/procedure/%(procedure_id)s' % {'script_name':request.META['SCRIPT_NAME'],'computer_id':computer_id,'procedure_id':procedure_id})
+            return HttpResponseRedirect(__procedure_path(request,procedure_id, computer_id))
         else:
             vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
             vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
@@ -684,9 +714,8 @@ def delete_fileset(request, computer_id, procedure_id, fileset_id):
     if request.method == 'POST':
         fset = get_object_or_404(FileSet, pk=fileset_id)
         fset.delete()
-        default = '%(script_name)s/computer/%(comp_id)s/procedure/%(proc_id)s' % {'script_name':request.META['SCRIPT_NAME'],'comp_id':computer_id,'proc_id':procedure_id}
         request.user.message_set.create(message="Local foi removido permanentemente.")
-        return __redirect_back_or_default(request, default)
+        return __redirect_back_or_default(request, default=__procedure_path(request, procedure_id, computer_id))
 
 
 ###
@@ -722,30 +751,38 @@ def __redirect_back_or_default(request, default, except_pattern=None):
             try: 
                 referer_path = re.search(slice_path_re,referer_full_path).group('short_path')
                 if re.search(referer_path, request_path):
-                    del(request.session["location"])
+                    del(request.session["location"]) # use default location
             except Exception:
                 pass
-    
     redirect = ("location" in request.session) and request.session["location"] or default
     return HttpResponseRedirect(redirect)
 
 
 def __root_path(request):
     """Return root path."""
-    return "%s/" % request.META['SCRIPT_NAME']
+    return "%s/" % (request.META['SCRIPT_NAME'])
     
 def __login_path(request):
     """Returns login path."""
-    return "%s/session/new" % request.META['SCRIPT_NAME']
+    return "%s/session/new" % (request.META['SCRIPT_NAME'])
 
-def __computer_path(request):
+def __computer_path(request, computer_id):
     """Returns computer path."""
     return "%s/computer/%s" % (request.META['SCRIPT_NAME'],computer_id)
 
-def __schedule_path(request):
-    return "%s/computer/%s/procedure/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id)
+def __procedure_path(request, procedure_id, computer_id):
+    """Returns procedure path."""
+    return "%s/computer/%s/procedure/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure.id)
 
-def absolute_file_path(filename,rel_dir):
+def __schedule_path(request, schedule_id, procedure_id, computer_id):
+    """Returns schedule path."""
+    return "%s/computer/%s/procedure/%s/schedule/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id,schedule_id)
+
+def __edit_config_path(request):
+    """Returns edit config path."""
+    return "%s/config/edit" % (request.META['SCRIPT_NAME'])
+
+def absolute_file_path(filename, rel_dir):
     """Return full path to a file from script file location and given directory."""
     root_dir = absolute_dir_path(rel_dir)
     return os.path.join(root_dir, filename)

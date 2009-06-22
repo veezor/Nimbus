@@ -140,6 +140,15 @@ class Procedure(models.Model):
     restore_path = cfields.ModelPathField("Recuperar Em", max_length="255")
     status = models.CharField(max_length=10, default="Invalid")
 
+    def build_backup(self, fset, sched, trigg):
+        """Saves child objects in correct order."""
+
+        fset.procedure = sched.procedure = self
+        fset.save()
+        sched.save()
+        trigg.schedule = sched
+        trigg.save()
+
     def update_status(self):
         """Change status to valid or invalid depending if filesets_list() returns the list or an empty set."""
         self.status = self.filesets_list() and 'Valid' or 'Invalid'
@@ -243,7 +252,6 @@ class ExternalDevice(models.Model):
     
     def __unicode__(self):
         return self.device_name
-    
 
 ###
 ###   Signals

@@ -44,6 +44,20 @@ class ProcedureForm(ModelForm):
         model = Procedure
         fields = ('procedure_name','restore_path')
 
+class ProcedureAuxForm(forms.Form):
+    FileSet = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+    Schedule = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+    schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")
+    Trigger = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+
+class ComputerAuxForm(forms.Form):
+    Procedure = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+    FileSet = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+    Schedule = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+    schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")
+    Trigger = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+
+
 class ScheduleForm(ModelForm):
     class Meta:
         model = Schedule
@@ -68,3 +82,4 @@ class ExternalDeviceForm(ModelForm):
     class Meta:
         model = ExternalDevice
         fields = ('device_name')
+        

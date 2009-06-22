@@ -1,12 +1,47 @@
 {% extends "bkp/base.html" %}
 {% load bkp_extras %}
 {% block content %}
-<!-- Begin Computers -->
 
-{% if comp %}
 	<h2>Computador <em>{{ comp.computer_name }}</em></h2>
 	<p>IP: {{ comp.ip }}<br/>
 	Descrição: {{ comp.description }}</p>
+
+
+	<h3>Procedimentos <a href="{{script_name}}/computer/{{comp.id}}/procedure/new">(+)</a></h3>
+{% for p in comp.procedure_set.all %}
+    <div class="procedure">
+    <h4><strong>{{ p.procedure_name }}</strong></h4>
+    <p>Caminho para recuperação: {{ p.restore_path }}</p>
+    <p>Caminhos do backup: {% for fs in p.fileset_set.all %}{{ fs.path }}{% endfor %}</p>
+    <p>Agendamentos:
+        {% for sc in p.schedule_set.all %}
+        <div class="agendamento">
+            Tipo: {{ sc.type }}
+            <ul>
+            {% for scwt in sc.weeklytrigger_set.all %}
+                <li>Nível: {{ scwt.level }}</li>
+                <li>Hora: {{ scwt.hour }}</li>
+                <li>Dias da semana:
+                {% for day, day_br in DAYS_OF_THE_WEEK.items %}
+                    {% if scwt|get_method:day %}
+                        {{ day_br }}
+                    {% endif %}
+                {% endfor %}
+                </li>
+            {% endfor %}
+            {% for scmt in sc.monthlytrigger_set.all %}
+                <li>Nível: {{ scmt.level }}</li>
+                <li>Hora: {{ scmt.hour }}</li>
+                <li>Dias: {{ scmt.target_days }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </p>
+    </div>
+{% endfor %}
+
+
 
 <h3>Últimos Procedimentos Executados</h3>
 
@@ -48,60 +83,5 @@
 {% endfor %}
 </tbody>
 </table>
-
-
-{% else %}
-	<h2>Computadores</h2>
-	<hr />
-<!--  Expandable/Collapsible Area -->
-	<h3>Adicionar Computador</h3>
-
-<form action="{{script_name}}/computer/" method="post">
-    {% for field in compform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Salvar" /></p>
-</form>
-	<hr />
-<!-- End Computers -->
-
-{% endif %}
-
-
-{% for p in comp.procedure_set.all %}
-    <div class="procedure">
-    <h3>Procedimento <strong>{{ p.procedure_name }}</strong></h3>
-    <p>Caminho para recuperação: {{ p.restore_path }}</p>
-    <p>Caminhos do backup: {% for fs in p.fileset_set.all %}{{ fs.path }}{% endfor %}</p>
-    <p>Agendamentos:
-        {% for sc in p.schedule_set.all %}
-        <div class="agendamento">
-            Tipo: {{ sc.type }}
-            <ul>
-            {% for scwt in sc.weeklytrigger_set.all %}
-                <li>Nível: {{ scwt.level }}</li>
-                <li>Hora: {{ scwt.hour }}</li>
-                <li>Dias da semana:
-                {% for day, day_br in DAYS_OF_THE_WEEK.items %}
-                    {% if scwt|get_method:day %}
-                        {{ day_br }}
-                    {% endif %}
-                {% endfor %}
-                </li>
-            {% endfor %}
-            {% for scmt in sc.monthlytrigger_set.all %}
-                <li>Nível: {{ scmt.level }}</li>
-                <li>Hora: {{ scmt.hour }}</li>
-                <li>Dias: {{ scmt.target_days }}</li>
-            {% endfor %}
-            </ul>
-        </div>
-        {% endfor %}
-    </p>
-    </div>
-{% endfor %}
 
 {% endblock %}
