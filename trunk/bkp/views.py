@@ -176,7 +176,7 @@ def create_backup(request):
                 comp.save()
                 comp.build_backup(proc, fset, sched, trigg)
                 request.user.message_set.create(message="Computador cadastrado com sucesso.")
-                return HttpResponseRedirect(__computer_path(request, computer_id)
+                return HttpResponseRedirect(__computer_path(request, computer_id))
             else:
                 # Load forms and vars
                 request.user.message_set.create(message="Existem erros e o computador não foi cadastrado.")
@@ -517,7 +517,7 @@ def create_procedure(request, computer_id):
                 proc.save()
                 proc.build_backup(fset, sched, trigg)
                 request.user.message_set.create(message="Procedimento cadastrado com sucesso.")
-                return HttpResponseRedirect(__procedure_path(request, proc.id, computer_id)
+                return HttpResponseRedirect(__procedure_path(request, proc.id, computer_id))
             else:
                 # Load forms and vars
                 vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
@@ -632,7 +632,7 @@ def weeklytrigger(request, computer_id, procedure_id, schedule_id):
             wtrigger.level = forms_dict['triggerform'].cleaned_data['level']
             wtrigger.save()
             request.user.message_set.create(message="Agendamento configurado com sucesso.")
-            return HttpResponseRedirect(__schedule_path(request, schedule_id, procedure_id, computer_id)
+            return HttpResponseRedirect(__schedule_path(request, schedule_id, procedure_id, computer_id))
         else:
             vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
             vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
