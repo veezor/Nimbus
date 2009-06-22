@@ -96,7 +96,6 @@ def do_restore(request, computer_id):
             job_id = restore_form.cleaned_data['job_id']
             client_source = restore_form.cleaned_data['client_source']
             client_restore = restore_form.cleaned_data['client_restore']
-            import pdb; pdb.set_trace()
             comp.run_restore_job(client_source, client_restore, job_id, 'c:/restore/')
         else:
             __redirect_back_or_default(request,__root_path(request))
@@ -142,6 +141,7 @@ def new_backup(request):
 
     if request.method == 'GET':
         # Load forms and vars
+        forms_dict['procauxform'] = ProcedureAuxForm()
         return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_backup.html', return_dict, context_instance=RequestContext(request))
 
@@ -181,7 +181,7 @@ def create_backup(request):
                 # Load forms and vars
                 request.user.message_set.create(message="Existem erros e o computador não foi cadastrado.")
                 return_dict = __merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
-                return render_to_response('bkp/new_procedure.html', return_dict, context_instance=RequestContext(request))
+                return render_to_response('bkp/new_backup.html', return_dict, context_instance=RequestContext(request))
 
 ### Dump ###
 @authentication_required
