@@ -189,7 +189,7 @@ def create_dump(request):
     from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
     cmd = '''mysqldump --user=root --password=mysqladmin --add-drop-database --create-options --disable-keys --databases backup_corporativo bacula -r "%s"''' % absolute_file_path('tmpdump','custom')
     os.system(cmd)
-    encrypt(absolute_file_path('tmpdump','custom'),absolute_file_path('systemdump.nimbus','custom'),'secretkeyword',15,True)
+    encrypt(absolute_file_path('tmpdump','custom'),absolute_file_path('systemdump.nimbus','custom'),'lala',15,True)
     request.user.message_set.create(message="Dump gerado com sucesso.")
     return HttpResponseRedirect(__edit_config_path(request))
 
@@ -198,7 +198,7 @@ def restore_dump(request):
     from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
     dec = absolute_file_path('dec_systemdump','custom')
     cmd =   '''mysql --user=root --password=mysqladmin < "%s"''' % dec
-    decrypt(absolute_file_path('systemdump.nimbus','custom'),dec,'secretkeyword',15)  
+    decrypt(absolute_file_path('systemdump.nimbus','custom'),dec,'lala',15)  
     os.system(cmd)
     remove_or_leave(dec)
     request.user.message_set.create(message="Restauração executada com sucesso.")        
