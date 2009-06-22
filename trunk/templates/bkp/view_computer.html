@@ -11,6 +11,7 @@
 {% for p in comp.procedure_set.all %}
     <div class="procedure">
     <h4><strong>{{ p.procedure_name }}</strong></h4>
+	<p><a href="{{script_name}}/{{p.edit_url}}">Alterar</a></p>
     <p>Caminho para recuperação: {{ p.restore_path }}</p>
     <p>Caminhos do backup: {% for fs in p.fileset_set.all %}{{ fs.path }}{% endfor %}</p>
     <p>Agendamentos:

@@ -480,6 +480,7 @@ def prepare_to_write(filename,rel_dir):
     "make sure base_dir exists and open filename"
     base_dir,filepath = mount_path(filename,rel_dir)
     create_or_leave(base_dir)
+    remove_or_leave(filepath)
     return open(filepath, 'w')
 
 def mount_path(filename,rel_dir):

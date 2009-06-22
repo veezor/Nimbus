@@ -141,7 +141,8 @@ def new_backup(request):
 
     if request.method == 'GET':
         # Load forms and vars
-        forms_dict['procauxform'] = ProcedureAuxForm()
+        forms_dict['compauxform'] = ComputerAuxForm()
+        forms_dict['mtriggform'] = MonthlyTriggerForm()
         return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_backup.html', return_dict, context_instance=RequestContext(request))
 
@@ -156,27 +157,26 @@ def create_backup(request):
 
         if temp_dict['compauxform'].is_valid():
             forms_dict['compform'] = ComputerForm(request.POST)
-            if temp_dict['procform']:
+            if temp_dict['compauxform'].cleaned_data['Procedure']:
                 forms_dict['procform'] = ProcedureForm(request.POST)
-            if temp_dict['procauxform'].cleaned_data['FileSet']:
+            if temp_dict['compauxform'].cleaned_data['FileSet']:
                 forms_dict['fsetform'] = FileSetForm(request.POST)
-            if temp_dict['procauxform'].cleaned_data['Schedule']:
+            if temp_dict['compauxform'].cleaned_data['Schedule']:
                 forms_dict['schedform'] = ScheduleForm(request.POST)
-            if temp_dict['procauxform'].cleaned_data['Trigger']:
-                triggclass = globals()["%sTriggerForm" % forms_dict['procauxform'].cleaned_data['schedule_type']]
-                forms_dict['triggform'] = triggclass(request.POST)
+            if temp_dict['compauxform'].cleaned_data['Trigger']:
+                triggclass = globals()["%sTriggerForm" % temp_dict['compauxform'].cleaned_data['schedule_type']]
+                forms_dict['mtriggform'] = triggclass(request.POST)
             forms_list = forms_dict.values()
-
-            if all([form.is_valid() for form in forms_list]):
+            if all([form.is_valid() for form in forms_dict.values()]):
                 comp = forms_dict['compform'].save(commit=False)
                 proc = forms_dict['procform'].save(commit=False)
                 fset = forms_dict['fsetform'].save(commit=False)
                 sched = forms_dict['schedform'].save(commit=False)
-                trigg = forms_dict['triggform'].save(commit=False)
+                trigg = forms_dict['mtriggform'].save(commit=False)
                 comp.save()
                 comp.build_backup(proc, fset, sched, trigg)
                 request.user.message_set.create(message="Computador cadastrado com sucesso.")
-                return HttpResponseRedirect(__computer_path(request, computer_id))
+                return HttpResponseRedirect(__computer_path(request, comp.id))
             else:
                 # Load forms and vars
                 request.user.message_set.create(message="Existem erros e o computador não foi cadastrado.")
@@ -303,8 +303,7 @@ def new_session(request):
         return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))
     else:
-        default = __root_path(request)
-        return __redirect_back_or_default(request, default)
+        return __redirect_back_or_default(request, default=__root_path(request))
     
 
 def create_session(request):
@@ -436,8 +435,9 @@ def create_computer(request):
 @authentication_required
 def edit_procedure(request, computer_id, procedure_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
     vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
-    
+
     if request.method == 'GET':
         forms_dict['procform'] = ProcedureForm(instance=vars_dict['proc'])
         # Load forms and vars
@@ -449,7 +449,7 @@ def edit_procedure(request, computer_id, procedure_id):
         if forms_dict['procform'].is_valid():
             forms_dict['procform'].save()
             request.user.message_set.create(message="O procedimento foi alterado com sucesso.")
-            return HttpResponseRedirect(__procedure_id(request, procedure_id, computer_id))
+            return HttpResponseRedirect(__computer_path(request, computer_id))
         else:
             # Load forms and vars
             return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
@@ -496,6 +496,7 @@ def create_procedure(request, computer_id):
     temp_dict = {}
 
     if request.method == 'POST':
+        del(forms_dict['compform']) # remove form
         temp_dict['procauxform'] = ProcedureAuxForm(request.POST)
 
         if temp_dict['procauxform'].is_valid():
@@ -505,19 +506,19 @@ def create_procedure(request, computer_id):
             if temp_dict['procauxform'].cleaned_data['Schedule']:
                 forms_dict['schedform'] = ScheduleForm(request.POST)
             if temp_dict['procauxform'].cleaned_data['Trigger']:
-                triggclass = globals()["%sTriggerForm" % forms_dict['procauxform'].cleaned_data['schedule_type']]
+                triggclass = globals()["%sTriggerForm" % temp_dict['procauxform'].cleaned_data['schedule_type']]
                 forms_dict['triggform'] = triggclass(request.POST)
             forms_list = forms_dict.values()
-
             if all([form.is_valid() for form in forms_dict.values()]):
                 proc = forms_dict['procform'].save(commit=False)
                 fset = forms_dict['fsetform'].save(commit=False)
                 sched = forms_dict['schedform'].save(commit=False)
                 trigg = forms_dict['triggform'].save(commit=False)
+                proc.computer_id = computer_id
                 proc.save()
                 proc.build_backup(fset, sched, trigg)
                 request.user.message_set.create(message="Procedimento cadastrado com sucesso.")
-                return HttpResponseRedirect(__procedure_path(request, proc.id, computer_id))
+                return HttpResponseRedirect(__computer_path(request, computer_id))
             else:
                 # Load forms and vars
                 vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
@@ -772,7 +773,7 @@ def __computer_path(request, computer_id):
 
 def __procedure_path(request, procedure_id, computer_id):
     """Returns procedure path."""
-    return "%s/computer/%s/procedure/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure.id)
+    return "%s/computer/%s/procedure/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id)
 
 def __schedule_path(request, schedule_id, procedure_id, computer_id):
     """Returns schedule path."""
@@ -799,4 +800,3 @@ def remove_or_leave(filepath):
     except os.error:
         # Leave
         pass
-

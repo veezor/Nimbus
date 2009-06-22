@@ -186,6 +186,10 @@ class Procedure(models.Model):
         """Get pool name for bacula file."""
         return "%s_Pool" % (self.procedure_name)
 
+    def edit_url(self):
+        """Returns edit url."""
+        return "computer/%s/procedure/%s/edit" % (self.computer_id, self.id)
+
     def __unicode__(self):
         return self.procedure_name
 
