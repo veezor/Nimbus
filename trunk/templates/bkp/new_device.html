@@ -3,6 +3,7 @@
 {% block content %}
 <hr />
 
+{% if dev_dict %}
 <form action="{{script_name}}/device/create" method="post">
     {% for field in devform %}
         <div class="fieldWrapper">
@@ -10,8 +11,24 @@
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
+
+
+<div class="fieldWrapper">
+<label for="id_type">Dispositivo</label> <select name="type" id="id_type">
+<option value="" selected="selected">---------</option>
+{% for key in dev_dict.keys %}
+<option value="{{key}}">{{key}}</option>
+{% endfor %}
+</select>
+</div>
     <p><input type="submit" value="Salvar" /></p>
 </form>
+
+{% else %}
+<p>Nenhum dispositivo externo foi detectado. Favor, reconecte o dispositivo e recarregue a página.</p>
+{% endif %}
+
+
 
 
 <hr />

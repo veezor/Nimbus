@@ -1,7 +1,20 @@
 {% extends "bkp/base.html" %}
-{% block content %}
 
-<form action="{{script_name}}/computer/{{comp.id}}/procedure/" method="post">
+{% block content %}
+<h2>Adicionar Computador</h2>
+
+<form action="{{script_name}}/computer/" method="post">
+	<h3>Detalhes Computador</h3>
+
+    {% for field in compform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+	
+	<hr />
+
 	<h3>Detalhes Procedimento</h3>
 
     {% for field in procform %}
@@ -35,20 +48,18 @@
 
 	<hr />
 
-	<h3>Detalhes Agendamento {{ sched.type }}</h3>
+	<h3>Detalhes Agendamento</h3>
 
-    {% for field in triggform %}
+    {% for field in mtriggform %}
         <div class="fieldWrapper">
             {{ field.errors }}
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
 
-    {% for field in procauxform %}
+    {% for field in compauxform %}
 		{{ field }}
     {% endfor %}
-
-
 
     <p><input type="submit" value="Salvar" /></p>
 </form>

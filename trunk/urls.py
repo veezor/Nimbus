@@ -8,56 +8,49 @@ admin.autodiscover()
 base_url = 'backup_corporativo'
 
 urlpatterns = patterns('',
-    # Restore
-    (r'^computer/(?P<computer_id>\d+)/restore/(.*)', 'backup_corporativo.bkp.views.do_restore'),
-    # Cadastro Completo
-    (r'^backup/new$', 'backup_corporativo.bkp.views.new_backup'),
-    (r'^backup/create$', 'backup_corporativo.bkp.views.create_backup'),
-    # Device externo
-    (r'^device/new$', 'backup_corporativo.bkp.views.new_device'),
-    (r'^device/create$', 'backup_corporativo.bkp.views.create_device'),
-    # Index
-    (r'^$', 'backup_corporativo.bkp.views.list_computers'),
-    # Arquivos estaticos.
+    (r'^$', 'backup_corporativo.bkp.views.view_stats'),
     (r'^static/(?P<path>.*)', 'django.views.static.serve',
         {'document_root': '%s/templates/bkp/static' % dirname(__file__)}),
-    # Global Config
+    # views_app/configs.py
     (r'^config/edit$', 'backup_corporativo.bkp.views.edit_config'),
-    # Dump
-    (r'^dump/create$', 'backup_corporativo.bkp.views.create_dump'),        
-    (r'^dump/restore$', 'backup_corporativo.bkp.views.restore_dump'),
-    # Stats
+    # views_app/stats.py
     (r'^stats$', 'backup_corporativo.bkp.views.view_stats'),
-    # session [NEW, DELETE, CREATE]
+    # views_app/authentications.py
+    (r'^session/$', 'backup_corporativo.bkp.views.create_session'),
     (r'^session/new$', 'backup_corporativo.bkp.views.new_session'),
     (r'^session/delete$', 'backup_corporativo.bkp.views.delete_session'),
-    (r'^session/$', 'backup_corporativo.bkp.views.create_session'),
-    # computer [VIEW, EDIT, DELETE, CREATE]
+    (r'^password/new$', 'backup_corporativo.bkp.views.new_password'),
+    (r'^password/$', 'backup_corporativo.bkp.views.change_password'),
+    # views_app/devices.py
+    (r'^device/new$', 'backup_corporativo.bkp.views.new_device'),
+    (r'^device/create$', 'backup_corporativo.bkp.views.create_device'),
+    # views_app/dumps.py
+    (r'^dump/create$', 'backup_corporativo.bkp.views.create_dump'),        
+    (r'^dump/restore$', 'backup_corporativo.bkp.views.restore_dump'),
+    # views_app/computers.py
+    (r'^computer/$', 'backup_corporativo.bkp.views.create_computer'),
+    (r'^computer/new$', 'backup_corporativo.bkp.views.new_computer'),
     (r'^computer/(?P<computer_id>\d+)$', 'backup_corporativo.bkp.views.view_computer'),
     (r'^computer/(?P<computer_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_computer'),
     (r'^computer/(?P<computer_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_computer'),
-    (r'^computer/$', 'backup_corporativo.bkp.views.create_computer'),
-    # procedure [NEW, VIEW, EDIT, DELETE, CREATE]
+    (r'^computer/(?P<computer_id>\d+)/restore/(.*)', 'backup_corporativo.bkp.views.do_restore'),
+    # views_app/procedures.py
+    (r'^computer/(?P<computer_id>\d+)/procedure/$', 'backup_corporativo.bkp.views.create_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/new$', 'backup_corporativo.bkp.views.new_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)$', 'backup_corporativo.bkp.views.view_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_procedure'),
-    (r'^computer/(?P<computer_id>\d+)/procedure/$', 'backup_corporativo.bkp.views.create_procedure'),
-    # fileset [CREATE]
+    # views_app/filesets.py
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/fileset/$', 'backup_corporativo.bkp.views.create_fileset'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/fileset/(?P<fileset_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_fileset'),
-    # schedule [VIEW, CREATE, DELETE]
+    # views_app/schedules.py
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)$', 'backup_corporativo.bkp.views.view_schedule'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/$', 'backup_corporativo.bkp.views.create_schedule'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_schedule'),
-    # trigger [CREATE WTRIGGER, CREATE MTRIGGER]
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/weeklytrigger/$', 'backup_corporativo.bkp.views.weeklytrigger'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/monthlytrigger/$', 'backup_corporativo.bkp.views.monthlytrigger'),
-    # bandwidth restriction 
+    # views_app/restrictions.py
     (r'^restriction/new$', 'backup_corporativo.bkp.views.new_restriction'),
-    (r'^restriction/create$', 'backup_corporativo.bkp.views.create_restriction'),
-    # user password
-    (r'^password/new$', 'backup_corporativo.bkp.views.new_password'),
-    (r'^password/change$', 'backup_corporativo.bkp.views.change_password'),
+    (r'^restriction/$', 'backup_corporativo.bkp.views.create_restriction'),
     (r'^admin/(.*)', admin.site.root),
 )
