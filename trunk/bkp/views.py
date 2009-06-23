@@ -197,14 +197,14 @@ def create_dump(request):
 	# Create dump file and encrypt 
     date = strftime("%Y-%m-%d_%H:%M:%S")
     tmpdump_file = absolute_file_path('tmpdump','custom')
-    dump_file = absolute_file_path('systemdump.nimbus.%s' % date,'custom')
+    dump_file = absolute_file_path('%s.nimbus' % date,'custom')
     cmd = '''mysqldump --user=%s --password=%s --add-drop-database --create-options --disable-keys --databases %s bacula -r "%s"''' % (DATABASE_USER,DATABASE_PASSWORD,DATABASE_NAME,tmpdump_file)
     os.system(cmd)
     encrypt(tmpdump_file,dump_file,'lala',15,True)
     
 	# Return file for download
     response = HttpResponse(mimetype='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=systemdump.nimbus.%s' % date
+    response['Content-Disposition'] = 'attachment; filename=%s.nimbus' % date
     fileHandle = open(dump_file,'r')
     response.write(fileHandle.read())
     fileHandle.close()
@@ -214,6 +214,12 @@ def create_dump(request):
 
 @authentication_required
 def restore_dump(request):
+	vars_dict, forms_dict, return_dict = global_vars(request)
+    	try:
+        	vars_dict['gconfig'] = GlobalConfig.objects.get(pk=1)
+	except GlobalConfig.DoesNotExist:
+        	vars_dict['gconfig'] = None
+
 	from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
 	from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
 	if request.method == 'POST':
@@ -241,8 +247,12 @@ def restore_dump(request):
 				request.user.message_set.create(message="Falha ao realizar UPLOAD do arquivo")        
 				return HttpResponseRedirect(__edit_config_path(request))
 		else:
-			request.user.message_set.create(message="Formulário inválido")
-			return HttpResponseRedirect(__edit_config_path(request))
+			request.user.message_set.create(message="Formulário 'Restaurar Sistema' inválido")
+        		vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
+		        forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
+        		forms_dict['restoredumpform'] = restore_dump_form
+		        return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+        		return render_to_response('bkp/edit_config.html',return_dict, context_instance=RequestContext(request))
 
 
 ### Stats ###

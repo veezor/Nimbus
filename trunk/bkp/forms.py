@@ -15,6 +15,8 @@ from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import ExternalDevice
 from backup_corporativo.bkp.models import BandwidthRestriction
+# Custom
+from backup_corporativo.bkp import customfields as cfields
 
 #
 #   Forms
@@ -26,7 +28,7 @@ class RestoreForm(forms.Form):
     client_restore = forms.CharField(max_length=50)
 
 class RestoreDumpForm(forms.Form):
-	file = forms.FileField(label=u'Arquivo para restaurar configurações')
+	file = cfields.FormFileNimbusField(label=u'Arquivo para restaurar configurações')
 
 class GlobalConfigForm(ModelForm):
     class Meta:

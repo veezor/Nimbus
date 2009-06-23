@@ -53,3 +53,13 @@ class ModelMonthDaysListField(models.CharField):
         "Changing standard FormField"
         kwargs['form_class'] = FormMonthDaysListField
         return super(ModelMonthDaysListField, self).formfield(*args, **kwargs)
+
+class FormFileNimbusField(forms.FileField):
+	def clean(self, value, initial=None):
+		if not value:
+			raise forms.ValidationError, u'Nenhum arquivo selecionado.'
+
+		extension = value.name.split(".")[-1]
+		if extension != 'nimbus':
+			raise forms.ValidationError, u'Extensão inválida, apenas arquivos \'.nimbus\' são aceitos.'
+		return value
