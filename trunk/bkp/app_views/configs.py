@@ -3,6 +3,9 @@
 
 # Application
 from backup_corporativo.bkp.utils import *
+from backup_corporativo.bkp.models import GlobalConfig
+from backup_corporativo.bkp.forms import GlobalConfigForm
+from backup_corporativo.bkp.forms import RestoreDumpForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
 from django.http import HttpResponse
