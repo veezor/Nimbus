@@ -1,4 +1,3 @@
-from __future__ import with_statement
 import os
 
 def remove_or_leave(filepath):
@@ -37,16 +36,17 @@ def encrypt(input, output, key, factor, del_original=False):
         startPos=startPos-endPos
     fcode.seek( startPos )
     fout = open( output, 'w')
-    with open(input) as fin:
-        for line in fin:
-            for ch in line:
-                val = ord(ch)
-                ch1 = fcode.read(1)
-                if ch1:
-                    val = ( val + ord(ch1) ) % 256
-                    fout.write(chr(val))
-                    if ch1 == '':
-                        fcode.seek( 0 )            
+    fin = open(input)
+    for line in fin:
+        for ch in line:
+            val = ord(ch)
+            ch1 = fcode.read(1)
+            if ch1:
+                val = ( val + ord(ch1) ) % 256
+                fout.write(chr(val))
+                if ch1 == '':
+                    fcode.seek( 0 )            
+    fin.close()
     fout.close()
     fcode.close()
     if del_original:
@@ -69,15 +69,16 @@ def decrypt(input, output, key, factor, del_original=False):
         startPos=startPos-endPos
     fcode.seek( startPos )
     fout = open( output, 'w')
-    with open(input) as fin:
-        for line in fin:
-            for ch in line:
-                val = ord(ch)
-                ch2 = fcode.read(1)
-                val = ( val - ord(ch2) ) % 256
-                fout.write(chr(val))
-                if ch2 == '':
-                    fcode.seek( 0 )      
+    fin = open(input)
+    for line in fin:
+        for ch in line:
+            val = ord(ch)
+            ch2 = fcode.read(1)
+            val = ( val - ord(ch2) ) % 256
+            fout.write(chr(val))
+            if ch2 == '':
+                fcode.seek( 0 )      
+    fin.close()
     fout.close()
     fcode.close()
     if del_original:
