@@ -19,11 +19,15 @@
     {% endfor %}
     <p><input type="submit" value="Salvar" /></p>
 </form>
+<br />
+<h2>Gerar Dump do Sistema</h2>
 
 <form action="{{script_name}}/dump/create" method="post">
 <p><input type="submit" value="Dump" /></p>
 </form>
+<br />
 
+<h2>Restaurar Sistema</h2>
 <form action="{{script_name}}/dump/restore" method="post" enctype="multipart/form-data">
 	{% for field in restoredumpform %}
 		<div class="fieldWrapper">
@@ -31,9 +35,11 @@
             {{ field.label_tag }}: {{ field }}
         </div>
 	{% endfor %}
+
 <p><input type="submit" value="Restore" /></p>
 </form>
 
+<h2>Alterar Senha do Administrador</h2>
 
 <a href="{{script_name}}/password/new">Alterar Senha</a>
 
