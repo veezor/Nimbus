@@ -8,9 +8,10 @@
 <p>Procedimentos: {{ numproc }}</p>
 <p>Computadores: {{ numcli }}</p>
 <p>Total Armazenado: {{ tbytes }} MB</p>
+<br />
 
 <h2>Procedimentos Executando</h2>
-
+{% if runningjobs %}
 <table>
 <thead>
 	<tr>
@@ -35,9 +36,14 @@
 {% endfor %}
 </tbody>
 </table>
+{% else %}
+<p>Nenhum procedimento executando.</p>
+{% endif %}
 
-
+<br />
 <h2>Últimos Procedimentos Executados</h2>
+
+{% if lastjobs %}
 
 <table>
 <thead>
@@ -63,6 +69,11 @@
 {% endfor %}
 </tbody>
 </table>
+
+{% else %}
+<p>Nenhum procedimento recente.</p>
+{% endif %}
+
 
 <!-- End Stats -->
 {% endblock %}
