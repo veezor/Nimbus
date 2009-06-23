@@ -14,6 +14,7 @@ from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import ExternalDevice
+from backup_corporativo.bkp.models import BandwidthRestriction
 
 #
 #   Forms
