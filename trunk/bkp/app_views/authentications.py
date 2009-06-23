@@ -3,12 +3,15 @@
 
 # Application
 from backup_corporativo.bkp.utils import *
+from backup_corporativo.bkp.forms import LoginForm
+from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Auth
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib.auth.forms import PasswordChangeForm
+
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
