@@ -118,6 +118,18 @@ class Computer(models.Model):
         self.__generate_password(size)
         self.save()
 
+    def absolute_url(self):
+        """Returns absolute url."""
+        return "computer/%s" % (self.id)
+
+    def edit_url(self):
+        """Returns absolute url."""
+        return "computer/%s/edit" % (self.id)
+
+    def delete_url(self):
+        """Returns delete url."""
+        return "computer/%s/delete" % (self.id)
+
     def save(self):
         if not self.id: # If this record is not at database yet
             self.__generate_password()
@@ -189,6 +201,10 @@ class Procedure(models.Model):
     def edit_url(self):
         """Returns edit url."""
         return "computer/%s/procedure/%s/edit" % (self.computer_id, self.id)
+    
+    def delete_url(self):
+        """Returns delete url."""
+        return "computer/%s/procedure/%s/delete" % (self.computer_id, self.id)
 
     def __unicode__(self):
         return self.procedure_name
@@ -256,6 +272,17 @@ class ExternalDevice(models.Model):
     
     def __unicode__(self):
         return self.device_name
+
+### Bandwidth Restriction ###
+class BandwidthRestriction(models.Model):
+    restriction_begin = models.TimeField("Horário de Início")
+    restriction_value = models.IntegerField("Limite de Upload")
+
+    def save(self):
+        if not (BandwidthRestriction.objects.all().count() > 3):
+            super(BandwidthRestriction, self).save()
+        else:
+            raise Exception("Number of restrictions exceeded")
 
 ###
 ###   Signals

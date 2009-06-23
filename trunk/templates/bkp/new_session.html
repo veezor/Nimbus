@@ -8,7 +8,7 @@
     {% for field in loginform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
     <p><input type="submit" value="Entrar" /></p>

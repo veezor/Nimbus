@@ -53,5 +53,11 @@ urlpatterns = patterns('',
     # trigger [CREATE WTRIGGER, CREATE MTRIGGER]
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/weeklytrigger/$', 'backup_corporativo.bkp.views.weeklytrigger'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/monthlytrigger/$', 'backup_corporativo.bkp.views.monthlytrigger'),
+    # bandwidth restriction 
+    (r'^restriction/new$', 'backup_corporativo.bkp.views.new_restriction'),
+    (r'^restriction/create$', 'backup_corporativo.bkp.views.create_restriction'),
+    # user password
+    (r'^password/new$', 'backup_corporativo.bkp.views.new_password'),
+    (r'^password/change$', 'backup_corporativo.bkp.views.change_password'),
     (r'^admin/(.*)', admin.site.root),
 )

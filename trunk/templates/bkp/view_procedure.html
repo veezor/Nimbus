@@ -17,7 +17,7 @@
     {% for field in compform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
     <p><input type="submit" value="Salvar" /></p>
@@ -49,7 +49,7 @@
     {% for field in procform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
     <p><input type="submit" value="Salvar" /></p>
@@ -80,7 +80,7 @@
     {% for field in fsetform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
     <p><input type="submit" value="Salvar" /></p>
@@ -113,7 +113,7 @@
     {% for field in schedform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
     <p><input type="submit" value="Salvar" /></p>
