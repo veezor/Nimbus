@@ -84,4 +84,8 @@ class ExternalDeviceForm(ModelForm):
     class Meta:
         model = ExternalDevice
         fields = ('device_name')
-        
+
+class BandwidthRestrictionForm(ModelForm):
+    class Meta:
+        model = BandwidthRestriction
+        fields = ('restriction_begin','restriction_value')

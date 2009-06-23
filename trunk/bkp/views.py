@@ -14,8 +14,7 @@ from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import ExternalDevice
-from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_THE_WEEK
-
+from backup_corporativo.bkp.forms import BandwidthRestriction
 # Forms
 from backup_corporativo.bkp.forms import GlobalConfigForm
 from backup_corporativo.bkp.forms import RestoreDumpForm
@@ -41,6 +40,9 @@ from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 import os
+# Vars
+from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_THE_WEEK
+
 
 ###
 ###   Decorators and Global Definitions
@@ -757,6 +759,72 @@ def delete_fileset(request, computer_id, procedure_id, fileset_id):
         fset.delete()
         request.user.message_set.create(message="Local foi removido permanentemente.")
         return __redirect_back_or_default(request, default=__procedure_path(request, procedure_id, computer_id))
+
+### Bandwidth Restriction ###
+@authentication_required
+def new_restriction(request):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict['rests'] = BandwidthRestriction.objects.all()
+
+    if request.method == 'GET':
+        forms_dict['restform'] = BandwidthRestrictionForm()
+        # Load forms and vars
+        return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/new_restriction.html', return_dict, context_instance=RequestContext(request))
+        
+@authentication_required
+def create_restriction(request):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict['rests'] = BandwidthRestriction.objects.all()
+    
+    if request.method == 'POST':
+        forms_dict['restform'] = BandwidthRestrictionForm(request.POST)
+        
+        if forms_dict['restform'].is_valid():
+            try:
+                rest =  forms_dict['restform'].save()
+                request.user.message_set.create(message="Restrição cadastrada com sucesso.")
+                return HttpResponseRedirect("%s/restriction/new" % (request.META['SCRIPT_NAME']))
+            except Exception:
+                return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+                request.user.message_set.create(message="O limite de restrições cadastradas foi atingido e a restrição não foi adicionada.")
+                return render_to_response('bkp/new_restriction.html', return_dict, context_instance=RequestContext(request))
+        else:
+            # Load forms and vars
+            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            request.user.message_set.create(message="Existem erros e a restrição não foi cadastrada.")
+            return render_to_response('bkp/new_restriction.html', return_dict, context_instance=RequestContext(request))
+        
+    
+### Password Management ###
+@authentication_required
+def new_password(request):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+
+    if request.method == 'GET':
+        forms_dict['pwdform'] = PasswordChangeForm(return_dict['current_user'])
+        # Load forms and vars
+        return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/new_password.html', return_dict, context_instance=RequestContext(request))
+
+@authentication_required
+def change_password(request):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+
+    if request.method == 'POST':
+        forms_dict['pwdform'] = PasswordChangeForm(return_dict['current_user'], request.POST)
+        
+        if forms_dict['pwdform'].is_valid():
+            request.user.set_password(forms_dict['pwdform'].cleaned_data['new_password1'])
+            request.user.save()
+            request.user.message_set.create(message="Senha foi alterada com sucesso.")
+            return __redirect_back_or_default(request, default=__root_path(request))
+        else:
+            # Load forms and vars
+            request.user.message_set.create(message="Houve um erro e a senha não foi alterada.")
+            return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/new_password.html', return_dict, context_instance=RequestContext(request))
+
 
 
 ###
