@@ -38,7 +38,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 import os
 # Vars
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_THE_WEEK
