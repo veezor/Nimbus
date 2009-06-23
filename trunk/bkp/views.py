@@ -18,6 +18,7 @@ from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_T
 
 # Forms
 from backup_corporativo.bkp.forms import GlobalConfigForm
+from backup_corporativo.bkp.forms import RestoreDumpForm
 from backup_corporativo.bkp.forms import LoginForm
 from backup_corporativo.bkp.forms import ComputerForm
 from backup_corporativo.bkp.forms import ProcedureForm
@@ -187,22 +188,58 @@ def create_backup(request):
 @authentication_required
 def create_dump(request):
     from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
-    cmd = '''mysqldump --user=root --password=mysqladmin --add-drop-database --create-options --disable-keys --databases backup_corporativo bacula -r "%s"''' % absolute_file_path('tmpdump','custom')
+    from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
+    from time import strftime
+   
+	# Create dump file and encrypt 
+    date = strftime("%Y-%m-%d_%H:%M:%S")
+    tmpdump_file = absolute_file_path('tmpdump','custom')
+    dump_file = absolute_file_path('systemdump.nimbus.%s' % date,'custom')
+    cmd = '''mysqldump --user=%s --password=%s --add-drop-database --create-options --disable-keys --databases %s bacula -r "%s"''' % (DATABASE_USER,DATABASE_PASSWORD,DATABASE_NAME,tmpdump_file)
     os.system(cmd)
-    encrypt(absolute_file_path('tmpdump','custom'),absolute_file_path('systemdump.nimbus','custom'),'lala',15,True)
-    request.user.message_set.create(message="Dump gerado com sucesso.")
-    return HttpResponseRedirect(__edit_config_path(request))
+    encrypt(tmpdump_file,dump_file,'lala',15,True)
+    
+	# Return file for download
+    response = HttpResponse(mimetype='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=systemdump.nimbus.%s' % date
+    fileHandle = open(dump_file,'r')
+    response.write(fileHandle.read())
+    fileHandle.close()
+    remove_or_leave(dump_file)
+    
+    return response
 
 @authentication_required
 def restore_dump(request):
-    from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
-    dec = absolute_file_path('dec_systemdump','custom')
-    cmd =   '''mysql --user=root --password=mysqladmin < "%s"''' % dec
-    decrypt(absolute_file_path('systemdump.nimbus','custom'),dec,'lala',15)  
-    os.system(cmd)
-    remove_or_leave(dec)
-    request.user.message_set.create(message="Restauração executada com sucesso.")        
-    return HttpResponseRedirect(__edit_config_path(request))
+	from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
+	from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
+	if request.method == 'POST':
+		restore_dump_form = RestoreDumpForm(request.POST, request.FILES)
+		if restore_dump_form.is_valid():
+			if 'file' in request.FILES:
+				file_upload = request.FILES['file']
+				crypt_file = absolute_file_path('crypt_dump','custom')
+				dec_file = absolute_file_path('dec_dump','custom')
+
+				# Save upload file
+				fileHandle = open(crypt_file,'wb')
+				fileHandle.write(file_upload.read())
+				fileHandle.close()
+
+				# Decrypt file and restore
+				decrypt(crypt_file,dec_file,'lala',15)
+				cmd = 'mysql --user=%s --password=%s < %s' % (DATABASE_USER, DATABASE_PASSWORD,dec_file)
+				os.system(cmd)
+				remove_or_leave(dec_file)
+				
+				request.user.message_set.create(message="Restauração executada com sucesso.")        
+				return HttpResponseRedirect(__edit_config_path(request))
+			else:
+				request.user.message_set.create(message="Falha ao realizar UPLOAD do arquivo")        
+				return HttpResponseRedirect(__edit_config_path(request))
+		else:
+			request.user.message_set.create(message="Formulário inválido")
+			return HttpResponseRedirect(__edit_config_path(request))
 
 
 ### Stats ###
@@ -275,16 +312,19 @@ def edit_config(request):
     if request.method == 'GET':
         vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
         forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
+        forms_dict['restoredumpform'] = RestoreDumpForm()
         # Load forms and vars
         return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/edit_config.html',return_dict, context_instance=RequestContext(request))
     elif request.method == 'POST':
         forms_dict['gconfigform'] = GlobalConfigForm(request.POST, instance=vars_dict['gconfig'])
+        forms_dict['restoredumpform'] = RestoreDumpForm()
 
         if forms_dict['gconfigform'].is_valid():
             vars_dict['gconfig'] = forms_dict['gconfigform'].save()
             # Load forms and vars
             return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
+            request.user.message_set.create(message="Configurações aplicadas com sucesso.")
             return render_to_response('bkp/edit_config.html', return_dict, context_instance=RequestContext(request))
         else:
             # Load forms and vars
@@ -575,7 +615,7 @@ def view_schedule(request, computer_id, procedure_id, schedule_id):
 
 @authentication_required
 def create_schedule(request, computer_id, procedure_id):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict, return_dict = global_vars(request)
     if request.method == 'POST':
         forms_dict['schedform'] = ScheduleForm(request.POST)
         
@@ -681,7 +721,7 @@ def monthlytrigger(request, computer_id, procedure_id, schedule_id):
             # Load forms and vars
             return_dict = __merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o agendamento não foi configurado.")
-            return render_to_response('bkp/view_schedule.html', return_dict, context_instance=RequestContext(request))                
+            return render_to_response('bkp/view_schedule.html', return_dict, context_instance=RequestContext(request))                
         
 ### FileSets ###
 @authentication_required

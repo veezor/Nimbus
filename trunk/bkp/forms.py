@@ -24,6 +24,8 @@ class RestoreForm(forms.Form):
     client_source = forms.CharField(max_length=50)
     client_restore = forms.CharField(max_length=50)
 
+class RestoreDumpForm(forms.Form):
+	file = forms.FileField(label=u'Arquivo para restaurar configurações')
 
 class GlobalConfigForm(ModelForm):
     class Meta:

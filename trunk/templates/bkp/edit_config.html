@@ -24,7 +24,13 @@
 <p><input type="submit" value="Dump" /></p>
 </form>
 
-<form action="{{script_name}}/dump/restore" method="post">
+<form action="{{script_name}}/dump/restore" method="post" enctype="multipart/form-data">
+	{% for field in restoredumpform %}
+		<div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+	{% endfor %}
 <p><input type="submit" value="Restore" /></p>
 </form>
 
