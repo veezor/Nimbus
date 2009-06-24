@@ -86,7 +86,7 @@ class FileSetForm(ModelForm):
 class ExternalDeviceForm(ModelForm):
     class Meta:
         model = ExternalDevice
-        fields = ('device_name')
+        fields = ('device_name','uuid')
 
 class BandwidthRestrictionForm(ModelForm):
     class Meta:

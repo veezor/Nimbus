@@ -25,6 +25,38 @@ DAYS_OF_THE_WEEK = {
     'saturday':'Sábado',
 }
 
+def device_choices():
+    dev_choices = []
+    import os
+    import re
+    label_re = '''LABEL="(?P<label>.*?)"'''
+    uuid_re = '''UUID="(?P<uuid>.*?)"'''
+    cmd = 'blkid'
+    output = os.popen(cmd).read()
+    lines = output.split('\n')
+
+    for line in lines:
+        label = uuid = None
+        label_se = re.search(label_re, line)
+        uuid_se = re.search(uuid_re, line)
+
+        if label_se:
+            label = label_se.group('label')
+        if uuid_se:
+            uuid = uuid_se.group('uuid')
+        if label and uuid:
+            dev_choices.append([uuid,label])
+    
+    # Stub this definition for now
+#    stub_choices = []
+#    stub_choices.append(['','---------'])
+#    stub_choices.append(['5Y3E6323','ROXO'])
+#    stub_choices.append(['1YAE635AB','luke'])
+#    stub_choices.append(['943255CB','preto'])
+    
+#    return stub_choices
+    return dev_choices
+
 ###
 ###   Models
 ###
@@ -266,8 +298,7 @@ class Pool(models.Model):
 ### External Device ###
 class ExternalDevice(models.Model):
     device_name = models.CharField("Nome",max_length=50)
-    uuid = models.CharField(max_length=50, blank=True)
-    status = models.CharField(max_length=15, default="Inválido")
+    uuid = models.CharField("Dispositivo", max_length=50, choices=device_choices())
     
     def __unicode__(self):
         return self.device_name
