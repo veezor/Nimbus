@@ -5,6 +5,7 @@ from django.core import serializers
 from django.db import models
 from django import forms
 from backup_corporativo.bkp import customfields as cfields
+from backup_corporativo.bkp.bandwidth_cron import bandwidth_cron
 import os
 import string
 
@@ -309,15 +310,29 @@ class ExternalDevice(models.Model):
 class DayOfTheWeek(models.Model):
     day_name = models.CharField("Name",max_length=10)
 
+    def __unicode__(self):
+		return self.day_name
+
 ### Restriction Time
 class RestrictionTime(models.Model):
     restriction_time = models.TimeField("Início Restrição")
+
+    def __unicode__(self):
+		return '%s' % self.restriction_time
 
 ### Bandwidth Restriction ###
 class BandwidthRestriction(models.Model):
     dayoftheweek = models.ForeignKey(DayOfTheWeek)
     restrictiontime = models.ForeignKey(RestrictionTime)
     restriction_value = models.IntegerField("Limite de Upload")
+
+    def save(self, force_insert=False, force_update=False):
+		super(BandwidthRestriction, self).save(force_insert, force_update)
+		if not(bandwidth_cron.make()):
+			return "Failed to open file"
+
+    def __unicode__(self):
+		return '%s %s %s' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
 
 # Trava
 #    def save(self):
