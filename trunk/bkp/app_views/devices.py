@@ -20,6 +20,7 @@ def new_device(request):
 
     if request.method == 'GET':
         forms_dict['devform'] = ExternalDeviceForm()
+        vars_dict['dev_choices'] = ExternalDevice.device_choices()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_device.html', return_dict, context_instance=RequestContext(request))
 
@@ -35,5 +36,6 @@ def create_device(request):
             request.user.message_set.create(message="Device adicionado com sucesso.")            
             return HttpResponseRedirect(root_path(request))
         else:
+            vars_dict['dev_choices'] = ExternalDevice.device_choices()
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             return render_to_response('bkp/new_device.html', return_dict, context_instance=RequestContext(request))

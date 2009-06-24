@@ -18,7 +18,6 @@ from backup_corporativo.bkp.models import Pool
 
 
 ### Constants ###
-
 DAYS_OF_THE_WEEK = (
     'sunday','monday','tuesday',
     'wednesday','thursday','friday',
@@ -29,6 +28,7 @@ DAYS_OF_THE_WEEK = (
 ###
 ###   Main Definitions
 ###
+
 
 
 def create_pools(sender, instance, signal, *args, **kwargs):
@@ -494,6 +494,7 @@ def absolute_path(rel_dir):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
     
     
+   
 ###
 ###   Dispatcher Connection
 ###
