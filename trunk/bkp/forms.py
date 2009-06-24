@@ -47,7 +47,7 @@ class ComputerForm(ModelForm):
 class ProcedureForm(ModelForm):
     class Meta:
         model = Procedure
-        fields = ('procedure_name','restore_path')
+        fields = ('procedure_name')
 
 class ProcedureAuxForm(forms.Form):
     FileSet = forms.BooleanField(widget=forms.HiddenInput, initial="True")

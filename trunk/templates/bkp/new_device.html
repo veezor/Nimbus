@@ -3,7 +3,7 @@
 {% block content %}
 <hr />
 
-{% if dev_dict %}
+{% if stub_dict %}
 <form action="{{script_name}}/device/create" method="post">
     {% for field in devform %}
         <div class="fieldWrapper">
@@ -16,7 +16,7 @@
 <div class="fieldWrapper">
 <label for="id_type">Dispositivo</label> <select name="type" id="id_type">
 <option value="" selected="selected">---------</option>
-{% for key in dev_dict.keys %}
+{% for key in stub_dict.keys %}
 <option value="{{key}}">{{key}}</option>
 {% endfor %}
 </select>

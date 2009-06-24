@@ -149,7 +149,6 @@ class Computer(models.Model):
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
-    restore_path = cfields.ModelPathField("Recuperar Em", max_length="255")
     status = models.CharField(max_length=10, default="Invalid")
 
     def build_backup(self, fset, sched, trigg):
@@ -273,16 +272,27 @@ class ExternalDevice(models.Model):
     def __unicode__(self):
         return self.device_name
 
+### Day of the Week
+class DayOfTheWeek(models.Model):
+    day_name = models.CharField("Name",max_length=10)
+
+### Restriction Time
+class RestrictionTime(models.Model):
+    restriction_time = models.TimeField("Início Restrição")
+
 ### Bandwidth Restriction ###
 class BandwidthRestriction(models.Model):
-    restriction_begin = models.TimeField("Horário de Início")
+    dayoftheweek = models.ForeignKey(DayOfTheWeek)
+    restrictiontime = models.ForeignKey(RestrictionTime)
     restriction_value = models.IntegerField("Limite de Upload")
 
-    def save(self):
-        if not (BandwidthRestriction.objects.all().count() > 3):
-            super(BandwidthRestriction, self).save()
-        else:
-            raise Exception("Number of restrictions exceeded")
+# Trava
+#    def save(self):
+#        if not (BandwidthRestriction.objects.all().count() > 3):
+#            super(BandwidthRestriction, self).save()
+#        else:
+#            raise Exception("Number of restrictions exceeded")
+
 
 ###
 ###   Signals

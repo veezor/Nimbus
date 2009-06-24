@@ -41,6 +41,11 @@ def new_device(request):
             if label and uuid:
                 vars_dict['dev_dict'][label] = uuid
 
+        vars_dict['stub_dict'] = {}
+        vars_dict['stub_dict']['ROXO'] = '5Y3E6323'
+        vars_dict['stub_dict']['luke'] = '1YAE635AB'
+        vars_dict['stub_dict']['preto'] = '943255CB'
+            
         forms_dict['devform'] = ExternalDeviceForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_device.html', return_dict, context_instance=RequestContext(request))
