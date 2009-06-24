@@ -58,7 +58,6 @@ def create_computer(request):
                 fset = forms_dict['fsetform'].save(commit=False)
                 sched = forms_dict['schedform'].save(commit=False)
                 trigg = forms_dict['mtriggform'].save(commit=False)
-                import pdb; pdb.set_trace()
                 comp.save()
                 comp.build_backup(proc, fset, sched, trigg)
                 request.user.message_set.create(message="Computador cadastrado com sucesso.")

@@ -45,6 +45,7 @@ class GlobalConfig(models.Model):
 
     def generate_passwords(self):
         """Generates random passwords."""
+        from backup_corporativo.bkp.utils import random_password
         self.storage_password = random_password(50)
         self.director_password = random_password(50)
         self.database_password = random_password(50)
@@ -139,6 +140,7 @@ class Computer(models.Model):
     
     def __generate_password(self, size=20):
         """Sets a new random password to the computer."""
+        from backup_corporativo.bkp.utils import random_password
         self.fd_password = random_password(size)
 
 
@@ -267,8 +269,17 @@ class Pool(models.Model):
 ### External Device ###
 class ExternalDevice(models.Model):
     device_name = models.CharField("Nome",max_length=50)
-    uuid = models.CharField("Dispositivo", max_length=50)
+    uuid = models.CharField("Dispositivo", max_length=50, unique=True)
+    mount_index = models.IntegerField(unique=True)
 
+    def mount_cmd(self):
+        """Returns unix mount command"""
+        return '''mount UUID=%s /mnt/%s''' % (self.uuid, self.mount_index)
+
+    def __unicode__(self):
+        return self.device_name
+
+    # ClassMethods
     def device_choices(cls):
         dev_choices = []
         dev_choices.append(['','---------'])
@@ -291,20 +302,36 @@ class ExternalDevice(models.Model):
                 uuid = uuid_se.group('uuid')
             if label and uuid:
                 dev_choices.append([uuid,label])
-        
-        # Stub this definition for now
-    #    stub_choices = []
-    #    stub_choices.append(['','---------'])
-    #    stub_choices.append(['5Y3E6323','ROXO'])
-    #    stub_choices.append(['1YAE635AB','luke'])
-    #    stub_choices.append(['943255CB','preto'])
-        
-    #    return stub_choices
+       
         return dev_choices
     device_choices = classmethod(device_choices)
-    
-    def __unicode__(self):
-        return self.device_name
+
+    def stub_device_choices(cls):
+        """Stub definition for returning a test set of usb devices"""
+        stub_choices = []
+        stub_choices.append(['','---------'])
+        stub_choices.append(['5Y3E6323','ROXO'])
+        stub_choices.append(['1YAE635AB','luke'])
+        stub_choices.append(['943255CB','preto'])
+        
+        return stub_choices
+    stub_device_choices = classmethod(stub_device_choices)
+
+    def next_device_index(cls):
+        import MySQLdb
+        from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_HOST
+        query = "select max(mount_index) from bkp_externaldevice;"
+        max_index = False
+        try:
+            db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=DATABASE_NAME)
+            cursor = db.cursor()
+            cursor.execute(query)
+            max_index = cursor.fetchall()[0][0]+1
+        except:
+            pass
+        return max_index and max_index or 0
+    next_device_index = classmethod(next_device_index)
+   
 
 ### Day of the Week
 class DayOfTheWeek(models.Model):
@@ -352,8 +379,4 @@ import backup_corporativo.bkp.signals
 ###   Auxiliar Definitions
 ###
 
-def random_password(size):
-    """Generates random password of a given size."""
-    import string
-    from random import choice
-    return ''.join([choice(string.letters + string.digits) for i in range(size)])
+

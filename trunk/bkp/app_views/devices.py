@@ -32,9 +32,13 @@ def create_device(request):
     if request.method == 'POST':
         forms_dict['devform'] = ExternalDeviceForm(request.POST)
         if forms_dict['devform'].is_valid():
-            forms_dict['devform'].save()
+            dev = ExternalDevice()
+            dev.device_name = forms_dict['devform'].cleaned_data['device_name']
+            dev.uuid = forms_dict['devform'].cleaned_data['uuid']
+            dev.mount_index = ExternalDevice.get_deviceindex()
+            dev.save()
             request.user.message_set.create(message="Device adicionado com sucesso.")            
-            return HttpResponseRedirect(root_path(request))
+            return HttpResponseRedirect(new_device_path(request))
         else:
             vars_dict['dev_choices'] = ExternalDevice.device_choices()
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)

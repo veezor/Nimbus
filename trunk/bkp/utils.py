@@ -70,31 +70,9 @@ def edit_config_path(request):
     """Returns edit config path."""
     return "%s/config/edit" % (request.META['SCRIPT_NAME'])
 
-def list_usb_devices():
-    """Returns a dictionary with uuid and label"""
-    import os
-    import re
-    
-    def main():
-        # (a)(?P<x>b)(c)(?P<y>d)
-        # /dev/sdb1: SEC_TYPE="msdos" LABEL="ROXO" UUID="7A12-0F01" TYPE="vfat"
-        label_re = '''LABEL="(?P<uuid>.*?)"'''
-        uuid_re = '''UUID="(?P<uuid>.*?)"'''
-        cmd = 'blkid'
-        output = os.popen(cmd).read()
-    
-        lines = output.split('\n')
-    
-        for line in lines:
-            a = re.search(dev_re, line)
-            if a:
-                print line
-                print "UUID: %s\n" % a.group('uuid')
-    
-    
-    if __name__ == "__main__":
-        main()    
-    
+def new_device_path(request):
+    """Returns new device path."""
+    return "%s/device/new" % (request.META['SCRIPT_NAME'])
 
 
 def absolute_file_path(filename, rel_dir):
@@ -114,3 +92,9 @@ def remove_or_leave(filepath):
     except os.error:
         # Leave
         pass
+        
+def random_password(size):
+    """Generates random password of a given size."""
+    import string
+    from random import choice
+    return ''.join([choice(string.letters + string.digits) for i in range(size)])
