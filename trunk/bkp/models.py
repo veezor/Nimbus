@@ -352,32 +352,9 @@ class BandwidthRestriction(models.Model):
     restrictiontime = models.ForeignKey(RestrictionTime)
     restriction_value = models.IntegerField("Limite de Upload")
 
-    def save(self, force_insert=False, force_update=False):
-		BandwidthRestriction.generate_cron()
-		super(BandwidthRestriction, self).save(force_insert, force_update)
 
     def __unicode__(self):
         return '%shs %s %s kbps' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
-
-    # Class Methods
-    def generate_cron(cls, filename="nimbus"):
-        """Generates cron file"""
-        from backup_corporativo.bkp.utils import prepare_to_write
-        import commands
-        import time
-        root_user = 'root'
-        script_name = 'speedctl.py'
-        f = prepare_to_write(filename,'custom/')
-        restrictions = BandwidthRestriction.objects.all()
-
-        for rest in restrictions:
-            hour = rest.restrictiontime.restriction_time.hour
-            minute = rest.restrictiontime.restriction_time.minute
-            week_day = rest.dayoftheweek.day_name[0:3]
-            rest_value = rest.restriction_value
-            f.write('%s %s * * %s %s %s %s\n' % (minute,hour,week_day,root_user,script_name,rest_value))
-        f.close()
-    generate_cron = classmethod(generate_cron)
 
 
 ###

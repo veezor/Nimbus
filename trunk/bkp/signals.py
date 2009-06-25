@@ -13,6 +13,7 @@ from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import Pool
+from backup_corporativo.bkp.models import BandwidthRestriction
 # Application
 from backup_corporativo.bkp.utils import prepare_to_write, remove_or_leave, absolute_path
 
@@ -62,7 +63,9 @@ def update_files(sender, instance, signal, *args, **kwargs):
     elif sender == GlobalConfig:
         update_config_file(instance)
         update_device_file(instance)        
-        update_console_file(instance)                
+        update_console_file(instance)
+    elif sender == BandwidthRestriction:
+        generate_cron()              
     else:
         raise # Oops!
 
@@ -451,6 +454,25 @@ def remove_schedule_file(procedure):
     remove_or_leave(filepath)
     
 
+### Cron file
+    def generate_cron(filename="nimbus"):
+        """Generates cron file"""
+        import commands
+        import time
+        root_user = 'root'
+        script_name = 'speedctl.py'
+        f = prepare_to_write(filename,'custom/')
+        restrictions = BandwidthRestriction.objects.all()
+    
+        for rest in restrictions:
+            hour = rest.restrictiontime.restriction_time.hour
+            minute = rest.restrictiontime.restriction_time.minute
+            week_day = rest.dayoftheweek.day_name[0:3]
+            rest_value = rest.restriction_value
+            f.write('%s %s * * %s %s %s %s\n' % (minute,hour,week_day,root_user,script_name,rest_value))
+        f.close()
+
+
    
 ###
 ###   Dispatcher Connection
@@ -482,3 +504,6 @@ models.signals.post_delete.connect(update_rel_statuses, sender=MonthlyTrigger)
 # Pool
 models.signals.post_save.connect(update_files, sender=Pool)
 models.signals.post_delete.connect(remove_files, sender=Pool)
+# Cron
+models.signals.post_save.connect(update_files, sender=BandwidthRestriction)
+models.signals.post_delete.connect(update_files, sender=BandwidthRestriction)
