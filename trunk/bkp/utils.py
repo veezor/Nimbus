@@ -77,23 +77,7 @@ def new_device_path(request):
     return "%s/device/new" % (request.META['SCRIPT_NAME'])
 
 
-def absolute_file_path(filename, rel_dir):
-    """Return full path to a file from script file location and given directory."""
-    root_dir = absolute_dir_path(rel_dir)
-    return os.path.join(root_dir, filename)
 
-
-def absolute_dir_path(rel_dir):
-    """Return full path to a directory from script file location."""
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
-
-def remove_or_leave(filepath):
-    """Remove file if exists."""
-    try:
-        os.remove(filepath)
-    except os.error:
-        # Leave
-        pass
         
 def random_password(size):
     """Generates random password of a given size."""
@@ -135,9 +119,16 @@ def prepare_to_write(filename,rel_dir):
 def mount_path(filename,rel_dir):
     "mount absolute dir path and filepath"
     filename = str(filename).lower()
-    base_dir = absolute_path(rel_dir)
-    filepath = os.path.join(base_dir,filename)
+    base_dir = absolute_dir_path(rel_dir)
+    filepath = absolute_file_path(filename, base_dir)
     return base_dir, filepath
     
-def absolute_path(rel_dir):
+def absolute_file_path(filename, rel_dir):
+    """Return full path to a file from script file location and given directory."""
+    root_dir = absolute_dir_path(rel_dir)
+    return os.path.join(root_dir, filename)
+
+def absolute_dir_path(rel_dir):
+    """Return full path to a directory from script file location."""
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
+

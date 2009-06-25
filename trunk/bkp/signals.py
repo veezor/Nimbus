@@ -14,8 +14,6 @@ from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import Pool
 from backup_corporativo.bkp.models import BandwidthRestriction
-# Application
-from backup_corporativo.bkp.utils import prepare_to_write, remove_or_leave, absolute_path
 
 
 ### Constants ###
