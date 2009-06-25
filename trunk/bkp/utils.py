@@ -4,6 +4,8 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
+import os
+import string
 
 
 ###
@@ -98,3 +100,44 @@ def random_password(size):
     import string
     from random import choice
     return ''.join([choice(string.letters + string.digits) for i in range(size)])
+    
+###
+###   File Handling Specific Definitions
+###
+
+def create_or_leave(dirpath):
+    "create dir if dont exists"
+    try:
+        os.makedirs(dirpath)
+    except OSError:
+        if os.path.isdir(dirpath):
+            # Leave
+            pass
+        else:
+            # There was an error on creation, so make sure we know about it
+            raise
+
+def remove_or_leave(filepath):
+    "remove file if exists"
+    try:
+        os.remove(filepath)
+    except os.error:
+        # Leave
+        pass
+
+def prepare_to_write(filename,rel_dir):
+    "make sure base_dir exists and open filename"
+    base_dir,filepath = mount_path(filename,rel_dir)
+    create_or_leave(base_dir)
+    remove_or_leave(filepath)
+    return open(filepath, 'w')
+
+def mount_path(filename,rel_dir):
+    "mount absolute dir path and filepath"
+    filename = str(filename).lower()
+    base_dir = absolute_path(rel_dir)
+    filepath = os.path.join(base_dir,filename)
+    return base_dir, filepath
+    
+def absolute_path(rel_dir):
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)

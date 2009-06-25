@@ -4,8 +4,6 @@
 
 # Misc
 from django.db import models
-import os
-import string
 # Models
 from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.models import Computer
@@ -15,6 +13,8 @@ from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import Pool
+# Application
+from backup_corporativo.bkp.utils import prepare_to_write, remove_or_leave, absolute_path
 
 
 ### Constants ###
@@ -451,49 +451,6 @@ def remove_schedule_file(procedure):
     remove_or_leave(filepath)
     
 
-
-###
-###   File Handling Specific Definitions
-###
-
-def create_or_leave(dirpath):
-    "create dir if dont exists"
-    try:
-        os.makedirs(dirpath)
-    except OSError:
-        if os.path.isdir(dirpath):
-            # Leave
-            pass
-        else:
-            # There was an error on creation, so make sure we know about it
-            raise
-
-def remove_or_leave(filepath):
-    "remove file if exists"
-    try:
-        os.remove(filepath)
-    except os.error:
-        # Leave
-        pass
-
-def prepare_to_write(filename,rel_dir):
-    "make sure base_dir exists and open filename"
-    base_dir,filepath = mount_path(filename,rel_dir)
-    create_or_leave(base_dir)
-    remove_or_leave(filepath)
-    return open(filepath, 'w')
-
-def mount_path(filename,rel_dir):
-    "mount absolute dir path and filepath"
-    filename = str(filename).lower()
-    base_dir = absolute_path(rel_dir)
-    filepath = os.path.join(base_dir,filename)
-    return base_dir, filepath
-    
-def absolute_path(rel_dir):
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
-    
-    
    
 ###
 ###   Dispatcher Connection

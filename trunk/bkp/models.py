@@ -5,7 +5,6 @@ from django.core import serializers
 from django.db import models
 from django import forms
 from backup_corporativo.bkp import customfields as cfields
-from backup_corporativo.bkp.bandwidth_cron import bandwidth_cron
 import os
 import string
 
@@ -354,29 +353,34 @@ class BandwidthRestriction(models.Model):
     restriction_value = models.IntegerField("Limite de Upload")
 
     def save(self, force_insert=False, force_update=False):
+		BandwidthRestriction.generate_cron()
 		super(BandwidthRestriction, self).save(force_insert, force_update)
-		if not(bandwidth_cron.make()):
-			return "Failed to open file"
 
     def __unicode__(self):
-		return '%s %s %s' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
+        return '%shs %s %s kbps' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
 
-# Trava
-#    def save(self):
-#        if not (BandwidthRestriction.objects.all().count() > 3):
-#            super(BandwidthRestriction, self).save()
-#        else:
-#            raise Exception("Number of restrictions exceeded")
+    # Class Methods
+    def generate_cron(cls, filename="nimbus"):
+        """Generates cron file"""
+        from backup_corporativo.bkp.utils import prepare_to_write
+        import commands
+        import time
+        root_user = 'root'
+        script_name = 'speedctl.py'
+        f = prepare_to_write(filename,'custom/')
+        restrictions = BandwidthRestriction.objects.all()
+
+        for rest in restrictions:
+            hour = rest.restrictiontime.restriction_time.hour
+            minute = rest.restrictiontime.restriction_time.minute
+            week_day = rest.dayoftheweek.day_name[0:3]
+            rest_value = rest.restriction_value
+            f.write('%s %s * * %s %s %s %s\n' % (minute,hour,week_day,root_user,script_name,rest_value))
+        f.close()
+    generate_cron = classmethod(generate_cron)
 
 
 ###
 ###   Signals
 ###
 import backup_corporativo.bkp.signals
-
-
-###
-###   Auxiliar Definitions
-###
-
-
