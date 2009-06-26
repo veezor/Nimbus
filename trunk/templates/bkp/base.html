@@ -23,7 +23,7 @@
 			<div id="conteudo">	
 				<div id="sidebar">
                     <!-- start welcome block -->
-                    <ul>
+                    <ul class="aux welcome">
                         <form class="link" action="{{script_name}}/session/delete" method="post">
                             <li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
                         </form>
@@ -32,16 +32,16 @@
                     
 				    <!-- start computers block -->
 				    {% block computers %}
-					<ul>
+					<ul class="aux list_computers">
 						{% for c in comps %}
 						{% ifequal c.id comp.id %}
-						<li><strong><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }}</strong></li>
+						<li><strong><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> <span>{{ c.ip }}</span></strong></li>
 						{% else %}
-						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }}</li>
+						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> <span>{{ c.ip }}</span></li>
 						{% endifequal %}
 						{% endfor %}
 					</ul>
-					<p><a href="{{script_name}}/computer/new">Adicionar computador</a></p>
+					<p><a href="{{script_name}}/computer/new">[+] Adicionar computador</a></p>
 					{% endblock %}
 					<!-- end computers block -->
 				</div>

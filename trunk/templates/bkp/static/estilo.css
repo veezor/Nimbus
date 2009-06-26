@@ -112,6 +112,36 @@ border-top-width: 3px;
 border-bottom-width: 2px;
 }
 
+#sidebar .welcome {
+margin-bottom: 20px;
+color: #666;
+}
+
+#sidebar .list_computers {
+margin-bottom: 20px;
+}
+
+#sidebar .list_computers li {
+padding-bottom: 5px;
+width: 100%;
+overflow: hidden;
+}
+
+#sidebar .list_computers li a {
+font-size: 15px;
+float: left;
+color: #666;
+}
+
+#sidebar .list_computers li strong a {
+color: #333;
+}
+
+#sidebar .list_computers li span {
+float: right;
+color: #999;
+}
+
 #main_content {
 float: right;
 width: 700px;
@@ -206,7 +236,9 @@ float: right;
 }
 
 .bloco_texto .titulo_topo .botao_acoes button,
-.bloco_texto .titulo_topo .botao_acoes form {
+.bloco_texto .titulo_topo .botao_acoes form,
+.titulo_botoes .botao_acoes button,
+.titulo_botoes .botao_acoes form {
 float: left;
 margin-left: 3px;
 }
