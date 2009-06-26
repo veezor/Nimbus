@@ -74,6 +74,7 @@ def edit_computer(request, computer_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
 
     comp = get_object_or_404(Computer, pk=computer_id)
+    vars_dict['comp'] = comp
     if request.method == 'GET': # Edit computer
         forms_dict['compform'] = ComputerForm(instance=comp)
         # Load forms and vars
