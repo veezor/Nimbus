@@ -2,87 +2,122 @@
 {% load bkp_extras %}
 {% block content %}
 
-	<h2>Computador <em>{{ comp.computer_name }}</em></h2>
-	<p>IP: {{ comp.ip }}<br/>
-	Descrição: {{ comp.description }}</p>
+    <div class="titulo_botoes">
+	    <h2>
+	        <span>Computador</span><br/>
+	        {{ comp.computer_name }}
+	    </h2>
+	    <div class="botao_acoes">
+	        <button><span class="">Editar</span></button>
+	        <button><span class="">Remover</span></button>
+	    </div>
+	</div>
+	
+	<div class="bloco_texto">
+	    <ul class="aux">
+	        <li><strong class="label">IP:</strong> <span class="value">{{ comp.ip }}</span></li>
+	        <li><strong class="label">Descrição:</strong> <span class="value">{{ comp.description }}</span></li>
+	    </ul>
+	</div>
 
-
-	<h3>Procedimentos <a href="{{script_name}}/computer/{{comp.id}}/procedure/new">(+)</a></h3>
-{% for p in comp.procedure_set.all %}
-    <div class="procedure">
-    <h4><strong>{{ p.procedure_name }}</strong></h4>
-	<p><a href="{{script_name}}/{{p.edit_url}}">Alterar</a></p>
-    <p>Caminho para recuperação: {{ p.restore_path }}</p>
-    <p>Caminhos do backup: {% for fs in p.fileset_set.all %}{{ fs.path }}{% endfor %}</p>
-    <p>Agendamentos:
-        {% for sc in p.schedule_set.all %}
-        <div class="agendamento">
-            Tipo: {{ sc.type }}
-            <ul>
-            {% for scwt in sc.weeklytrigger_set.all %}
-                <li>Nível: {{ scwt.level }}</li>
-                <li>Hora: {{ scwt.hour }}</li>
-                <li>Dias da semana:
-                {% for day, day_br in DAYS_OF_THE_WEEK.items %}
-                    {% if scwt|get_method:day %}
-                        {{ day_br }}
-                    {% endif %}
-                {% endfor %}
+    <div class="titulo_botoes">
+	    <h3>
+	        <span>Procedimentos</span>
+	    </h3>
+	    <div class="botao_acoes">
+	        <button onclick="location.href='{{script_name}}/computer/{{comp.id}}/procedure/new';"><span class="">Adicionar</span></button>
+	    </div>
+	</div>
+	<div class="bloco_texto">
+    {% for p in comp.procedure_set.all %}
+        <div class="procedure">
+            <div class="titulo_topo">
+                <h3><strong>{{ p.procedure_name }}</strong></h3>
+                <div class="botao_acoes">
+	                <button onclick="location.href='{{script_name}}/{{p.edit_url}}'"><span>Alterar</span></button>
+	            </div>
+	        </div>
+	        <ul class="aux">
+	            <li><strong class="label">Caminho para recuperação:</strong> <span class="value">{{ p.restore_path }}</span></li>
+	            <li><strong class="label">Caminhos do backup:</strong> <span class="value">{% for fs in p.fileset_set.all %}{{ fs.path }}{% endfor %}</span></li>
+	            <li>
+	                <strong class="label">Agendamentos:</strong>
+	                {% for sc in p.schedule_set.all %}
+	                <span class="value">
+	                    Tipo: {{ sc.type }}
+                        <ul>
+                        {% for scwt in sc.weeklytrigger_set.all %}
+                            <li>Nível: {{ scwt.level }}</li>
+                            <li>Hora: {{ scwt.hour }}</li>
+                            <li>Dias da semana:
+                            {% for day, day_br in DAYS_OF_THE_WEEK.items %}
+                                {% if scwt|get_method:day %}
+                                    {{ day_br }}
+                                {% endif %}
+                            {% endfor %}
+                            </li>
+                        {% endfor %}
+                        {% for scmt in sc.monthlytrigger_set.all %}
+                            <li>Nível: {{ scmt.level }}</li>
+                            <li>Hora: {{ scmt.hour }}</li>
+                            <li>Dias: {{ scmt.target_days }}</li>
+                        {% endfor %}
+                        </ul>
+                    </span>
+                    {% endfor %}
                 </li>
-            {% endfor %}
-            {% for scmt in sc.monthlytrigger_set.all %}
-                <li>Nível: {{ scmt.level }}</li>
-                <li>Hora: {{ scmt.hour }}</li>
-                <li>Dias: {{ scmt.target_days }}</li>
-            {% endfor %}
-            </ul>
+	        </ul>
+	        
         </div>
-        {% endfor %}
-    </p>
+    {% endfor %}
     </div>
-{% endfor %}
 
 
+    <div class="titulo_botoes">
+	    <h3>
+	        <span>Últimos Procedimentos Executados</span>
+	    </h3>
+	    <div class="botao_acoes"></div>
+	</div>
+	<div class="bloco_texto">
+        <table>
+        <thead>
+	        <tr>
+	        <th scope='col'>Job Id</th>
+	        <th scope='col'>FSet Id</th>
+	        <th scope='col'>Client</th>
+	        <th scope='col'>Job</th>
+	        <th scope='col'>Level</th>
+	        <th scope='col'>Status</th>
+	        <th scope='col'>Start</th>
+	        <th scope='col'>End</th>
+	        <th scope='col'>JobFiles</th>
+	        <th scope='col'>JobBytes</th>
+	        <th scope='col'>Errors</th>
+	        <th scope='col'></th>
+	        </tr>
+        </thead>
+        <tbody>
+        {% for job in lastjobs %}
+        <tr> 
+        {% for item in job %}
+        <td> {{ item }} </td>
+        {% endfor %}
 
-<h3>Últimos Procedimentos Executados</h3>
+        {% if job|successful %}
+        <td> <form action="{{script_name}}/computer/{{comp.id}}/restore/" method="POST">
+        <input type="hidden" id="job_id" name="job_id" value="{{job|get_id}}" />
+        <input type="hidden" id="client_source" name="client_source" value="{{job|get_client_source}}" />
+        <input type="hidden" id="client_restore" name="client_restore" value="{{job|get_client_restore}}" />
+        <input type="hidden" id="client_restore" name="client_restore" value="{{job|get_fileset}}" />
 
-<table>
-<thead>
-	<tr>
-	<th scope='col'>Job Id</th>
-	<th scope='col'>FSet Id</th>
-	<th scope='col'>Client</th>
-	<th scope='col'>Job</th>
-	<th scope='col'>Level</th>
-	<th scope='col'>Status</th>
-	<th scope='col'>Start</th>
-	<th scope='col'>End</th>
-	<th scope='col'>JobFiles</th>
-	<th scope='col'>JobBytes</th>
-	<th scope='col'>Errors</th>
-	<th scope='col'></th>
-	</tr>
-</thead>
-<tbody>
-{% for job in lastjobs %}
-<tr> 
-{% for item in job %}
-<td> {{ item }} </td>
-{% endfor %}
-
-{% if job|successful %}
-<td> <form action="{{script_name}}/computer/{{comp.id}}/restore/" method="POST">
-<input type="hidden" id="job_id" name="job_id" value="{{job|get_id}}" />
-<input type="hidden" id="client_source" name="client_source" value="{{job|get_client_source}}" />
-<input type="hidden" id="client_restore" name="client_restore" value="{{job|get_client_restore}}" />
-<input type="hidden" id="client_restore" name="client_restore" value="{{job|get_fileset}}" />
-
-<input type="submit" value="restaurar" />
-</form> </td>
-{% endif %}
-</tr>
-{% endfor %}
-</tbody>
-</table>
+        <input type="submit" value="restaurar" />
+        </form> </td>
+        {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
 
 {% endblock %}

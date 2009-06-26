@@ -17,6 +17,12 @@ ul {
 margin: 5px 0 5px 20px;
 }
 
+ul.aux {
+margin: 0;
+list-style: none;
+clear: both;
+}
+
 table {
 margin-bottom: 20px;
 }
@@ -89,6 +95,7 @@ text-decoration:none;
 
 
 
+/* CONTEUDO */
 
 #conteudo {
 width: 960px;
@@ -96,13 +103,23 @@ overflow: hidden;
 }
 
 #sidebar {
-width: 220px;
+width: 200px;
 float: left;
+padding: 10px;
+background: #F9FBFB;
+border: 1px solid #ECECEC;
+border-top-width: 3px;
+border-bottom-width: 2px;
 }
 
 #main_content {
 float: right;
-width: 720px;
+width: 700px;
+padding: 10px;
+background: #F9FBFB;
+border: 1px solid #ECECEC;
+border-top-width: 3px;
+border-bottom-width: 2px;
 }
 
 hr {
@@ -110,15 +127,84 @@ padding-bottom: 20px;
 border: 0;
 }
 
-h2 {
+#mensagens p {
+background: #1E92A2;
+color: #FFF;
+padding: 10px;
+font-weight: bold;
+}
+
+.titulo_botoes {
+width: 100%;
+overflow: hidden;
+margin-bottom: 10px;
+}
+
+.titulo_botoes h2 {
+font-size: 26px;
+color: #363d3d;
+float: left;
+letter-spacing: -0.05em;
+}
+
+.titulo_botoes h2 span,
+.titulo_botoes h3 {
+font-size: 14px;
+font-weight: normal;
+color: #939393;
+letter-spacing: 0em;
+}
+
+.titulo_botoes h3 {
+padding-top: 10px;
+float: left;
+margin: 0;
+}
+
+.titulo_botoes .botao_acoes {
+float: right;
+}
+
+.bloco_texto {
+padding: 10px;
+background: #F1F4F4;
+border: 1px solid #dadddd;
 margin-bottom: 20px;
+}
+
+.bloco_texto ul li {
+padding-bottom: 7px;
+width: 100%;
+overflow: hidden;
+}
+
+.bloco_texto ul li .label {
+display: block;
+float: left;
+width: 200px;
+}
+
+.bloco_texto ul li .value {
+float: left;
+}
+
+.bloco_texto .titulo_topo {
+width: 100%;
+float: left;
+overflow: hidden;
+}
+
+.bloco_texto .titulo_topo h3 {
+float: left;
+font-size: 16px;
+letter-spacing: -0.03em;
 color: #333;
 }
 
-h3 {
-margin-bottom: 10px;
-color: #1E92A2;
+.bloco_texto .titulo_topo .botao_acoes {
+float: right;
 }
+
 
 .fieldWrapper {
 padding: 5px;
@@ -152,4 +238,6 @@ padding: 10px;
 margin-top: 20px;
 color: #999;
 }
+
+
 
