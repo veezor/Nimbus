@@ -148,4 +148,20 @@ def do_restore(request, computer_id):
         return HttpResponse("restaura aí, vai!")
 
 
+def new_restore(request, computer_id):
+    if request.method == 'GET':
+        vars_dict, forms_dict, return_dict = global_vars(request)
+        if not request.GET.jid:
+            raise Exception('JobID parameter is missing.')
+        if not request.GET.dt:
+            raise Exception('Date parameter is missing.')
+        if not request.GET.src:
+            raise Exception('ClientName parameter is missing.')
+        if not request.GET.fset:
+            raise Exception('FileSetName parameter is missing.')
+            
 
+
+
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/new_restore.html', return_dict, context_instance=RequestContext(request))    

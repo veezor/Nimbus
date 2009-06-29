@@ -14,8 +14,7 @@ from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import Pool
 from backup_corporativo.bkp.models import BandwidthRestriction
-from backup_corporativo.bkp.utils import *
-
+from backup_corporativo.bkp.utils import prepare_to_write,absolute_dir_path,remove_or_leave,mount_path
 
 ### Constants ###
 DAYS_OF_THE_WEEK = (
@@ -165,7 +164,7 @@ def generate_config(filename,dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict)
     
     folders = ['computers','filesets','jobs','pools','schedules']
     for folder in folders:
-        import_dir = absolute_path("custom/%s" % folder)
+        import_dir = absolute_dir_path("custom/%s" % folder)
         f.write("@|\"sh -c 'for f in %s* ; do echo @${f} ; done'\"\n" % import_dir)
 
     f.close()
@@ -454,22 +453,22 @@ def remove_schedule_file(procedure):
     
 
 ### Cron file
-    def generate_cron(filename="nimbus"):
-        """Generates cron file"""
-        import commands
-        import time
-        root_user = 'root'
-        script_name = 'speedctl.py'
-        f = prepare_to_write(filename,'custom/')
-        restrictions = BandwidthRestriction.objects.all()
-    
-        for rest in restrictions:
-            hour = rest.restrictiontime.restriction_time.hour
-            minute = rest.restrictiontime.restriction_time.minute
-            week_day = rest.dayoftheweek.day_name[0:3]
-            rest_value = rest.restriction_value
-            f.write('%s %s * * %s %s %s %s\n' % (minute,hour,week_day,root_user,script_name,rest_value))
-        f.close()
+def generate_cron(filename="nimbus"):
+    """Generates cron file"""
+    import commands
+    import time
+    root_user = 'root'
+    script_name = 'speedctl.py'
+    f = prepare_to_write(filename,'custom/')
+    restrictions = BandwidthRestriction.objects.all()
+
+    for rest in restrictions:
+        hour = rest.restrictiontime.restriction_time.hour
+        minute = rest.restrictiontime.restriction_time.minute
+        week_day = rest.dayoftheweek.day_name[0:3]
+        rest_value = rest.restriction_value
+        f.write('%s %s * * %s %s %s %s\n' % (minute,hour,week_day,root_user,script_name,rest_value))
+    f.close()
 
 
    
