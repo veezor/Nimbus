@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404
 
 ### Global Config ###
 @authentication_required
-def edit_config(request, config_type=None):
+def edit_config(request, config_type='global'):
     vars_dict, forms_dict, return_dict = global_vars(request)
     
     vars_dict['config_type'] = config_type
