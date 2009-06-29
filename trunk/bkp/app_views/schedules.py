@@ -62,7 +62,7 @@ def create_schedule(request, computer_id, procedure_id):
             schedule.type = forms_dict['schedform'].cleaned_data['type']
             schedule.save()
             request.user.message_set.create(message="Agendamento cadastrado com sucesso.")
-            return HttpResponseRedirect(schedule_path(request, schedule_id, procedure_id, computer_id))
+            return HttpResponseRedirect(computer_path(request, computer_id))
         else:
             vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
             vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
@@ -72,7 +72,15 @@ def create_schedule(request, computer_id, procedure_id):
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o agendamento não foi cadastrado.")
-            return render_to_response('bkp/view_procedure.html', return_dict, context_instance=RequestContext(request))   
+            return render_to_response('bkp/new_schedule.html', return_dict, context_instance=RequestContext(request))
+    else:
+        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+        vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+        vars_dict['procs'] = vars_dict['comp'].procedures_list()
+        vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+        vars_dict['scheds'] = vars_dict['proc'].schedules_list()
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/new_schedule.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -81,4 +89,4 @@ def delete_schedule(request, computer_id, procedure_id, schedule_id):
         sched = get_object_or_404(Schedule, pk=schedule_id)
         sched.delete()
         request.user.message_set.create(message="Agendamento foi removido permanentemente.")
-        return redirect_back_or_default(request, default=procedure_path(request, computer_id,procedure_id))
+        return redirect_back_or_default(request, default=computer_path(request, computer_id))

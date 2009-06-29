@@ -3,10 +3,8 @@
 
 # Application
 from backup_corporativo.bkp.utils import *
-from backup_corporativo.bkp.models import WeeklyTrigger
-from backup_corporativo.bkp.forms import WeeklyTriggerForm
-from backup_corporativo.bkp.models import MonthlyTrigger
-from backup_corporativo.bkp.forms import MonthlyTriggerForm
+from backup_corporativo.bkp.models import Schedule, Computer, Procedure, WeeklyTrigger, MonthlyTrigger
+from backup_corporativo.bkp.forms import ScheduleForm, ComputerForm, ProcedureForm, WeeklyTriggerForm, MonthlyTriggerForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
 from django.http import HttpResponse

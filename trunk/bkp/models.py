@@ -237,6 +237,21 @@ class Schedule(models.Model):
         elif self.type == "Monthly":
             return "Mensal"
 
+    def add_url(self):
+        """Returns add url."""
+        return "computer/%s/procedure/%s/schedule/" % (
+                self.procedure.computer_id, self.procedure_id)
+
+    def edit_url(self):
+        """Returns edit url."""
+        return "computer/%s/procedure/%s/schedule/%s" % (
+                self.procedure.computer_id, self.procedure_id, self.id)
+
+    def delete_url(self):
+        """Returns delete url."""
+        return "computer/%s/procedure/%s/schedule/%s/delete" % (
+                self.procedure.computer_id, self.procedure_id, self.id)
+
 
 ### WeeklyTrigger ###
 class WeeklyTrigger(models.Model):

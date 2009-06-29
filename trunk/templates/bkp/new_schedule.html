@@ -1,0 +1,32 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/" method="post">
+	
+	<h3>Tipo Agendamento</h3>
+
+    {% for field in schedform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+
+	<hr />
+
+	<h3>Detalhes Agendamento {{ sched.type }}</h3>
+
+    {% for field in triggform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+
+    {% for field in procauxform %}
+		{{ field }}
+    {% endfor %}
+
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+{% endblock %}

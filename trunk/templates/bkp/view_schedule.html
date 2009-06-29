@@ -2,118 +2,15 @@
 {% load bkp_extras %}
 
 {% block content %}
-<!-- Begin Computers -->
-	<h2>Computadores</h2>
-	<ul>
-	{% for c in comps %}
-		<form class="link" action="{{script_name}}/computer/{{c.id}}/delete" method="post">
-		<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> | {{ c.ip }} | {{ c.description }} |  
-		{{ c.fd_password }} | <a href="{{script_name}}/computer/{{c.id}}/edit">Alterar</a> | 
-	    <button type="submit">Remover</button> | {% ifequal c.id comp.id %} (Selecao Atual) {% endifequal %} 
-		</li></form>
-	{% endfor %}
-	</ul>
-	
-	<hr />
-<!--  Expandable/Collapsible Area -->
-	<h3>Adicionar Computador</h3>
-
-<form action="{{script_name}}/computer/" method="post">
-    {% for field in compform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Salvar" /></p>
-</form>
-	
-	<hr />
-<!-- End Computers -->
-
-<!-- Begin Procedures -->
-	<h2>Procedimentos</h2>
-	<ul>
-	{% for p in procs %}
-	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/delete" method="post">
-	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}">{{ p.procedure_name }}</a> | 
-	<a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/edit">Alterar</a>  |
-	<button type="submit">Remover</button> | {% ifequal p.id proc.id %} (Selecao Atual) {% endifequal %}
-	</li></form>
-	{% endfor %}
-	</ul>
-
-	<hr />
-<!--  Expandable/Collapsible Area -->
-
-	<h3>Adicionar Procedimento</h3>
-
-<form action="{{script_name}}/computer/{{comp.id}}/procedure/" method="post">
-    {% for field in procform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Salvar" /></p>
-</form>
-	
-	<hr />
-<!-- End Procedures -->
-
-<!-- Begin FileSets -->
-	<h2>Locais</h2>
-	{% if fsets %}
-	<ul>
-	{% for fset in fsets %}
-	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/{{fset.id}}/delete" method="post">
-	<li>{{ fset.path }} | <button type="submit">remover</button> | 
-	</li></form>
-	{% endfor %}
-	</ul>
-	{% else %}
-	<p>Não há locais para este procedimento.</p>
-	{% endif %}
-
-<!--  Expandable/Collapsible Area -->
-	<hr>
-	
-	<h3>Adicionar Local</h3>
-
-<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/" method="post">
-    {% for field in fsetform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Salvar" /></p>
-</form>
-	
-	<hr />
-<!-- End FileSets -->
 
 <!-- Begin Schedules -->
 	<h2>Agendamentos</h2>
-	{% if scheds %}
-	<ul>
-	{% for s in scheds %}
-	<form class="link" action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{s.id}}/delete" method="post">
-	<li><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/{{s.id}}">{{ s }}</a> |
-	{{ s|get_trigger_hour }} | {{ s|get_trigger_level }} |
-    <button type="submit">Remover</button> | {% ifequal s.id sched.id %} (Selecao Atual) {% endifequal %}
-	</li></form>
-	{% endfor %}
-	</ul>
-	{% else %}
-	<p>Não há agendamentos para este computador.</p>
-	{% endif %}
-	<hr />
+
 	<!--  Expandable/Collapsible Area -->
 	<h3>Adicionar Agendamento</h3>
+	
 	{% ifequal proc.status 'Valid' %}
-
-<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/" method="post">
+	<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/" method="post">
     {% for field in schedform %}
         <div class="fieldWrapper">
             {{ field.errors }}

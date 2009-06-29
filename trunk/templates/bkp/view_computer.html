@@ -59,9 +59,11 @@
 	                </span>
 	            </li>
 	            <li>
-	                <span class="label">Agendamentos:</span>
+	                <span class="label">Agendamentos:<br/>
+	                    <a href="/computer/{{comp.id}}/procedure/{{p.id}}/schedule/">adicionar</a></span>
 	                {% for sc in p.schedule_set.all %}
 	                <span class="value">
+	                <form action="{{script_name}}/{{sc.delete_url}}" method="post">
 	                    Tipo: {{ sc.type }}
                         <ul>
                         {% for scwt in sc.weeklytrigger_set.all %}
@@ -81,6 +83,9 @@
                             <li>Dias: {{ scmt.target_days }}</li>
                         {% endfor %}
                         </ul>
+	                    <button type="submit"><span>Remover</span></button>
+	                    <button onclick="location.href='{{script_name}}/{{sc.edit_url}}';return false"><span>Editar</span></button>
+	                </form>
                     </span>
                     {% endfor %}
                 </li>
