@@ -3,8 +3,8 @@
 
 # Application
 from backup_corporativo.bkp.utils import *
-from backup_corporativo.bkp.models import FileSet
-from backup_corporativo.bkp.forms import FileSetForm
+from backup_corporativo.bkp.models import FileSet, Computer, Procedure
+from backup_corporativo.bkp.forms import FileSetForm, ComputerForm, ProcedureForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
 from django.http import HttpResponse
@@ -28,7 +28,7 @@ def create_fileset(request, computer_id, procedure_id):
             fileset.path = forms_dict['fsetform'].cleaned_data['path']
             fileset.save()
             request.user.message_set.create(message="Local cadastrado com sucesso.")
-            return HttpResponseRedirect(procedure_path(request,procedure_id, computer_id))
+            return HttpResponseRedirect(computer_path(request, computer_id))
         else:
             vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
             vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
@@ -39,6 +39,14 @@ def create_fileset(request, computer_id, procedure_id):
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o local não foi cadastrado.")
             return render_to_response('bkp/view_procedure.html', return_dict, context_instance=RequestContext(request))
+    else:
+        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+        vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+        vars_dict['procs'] = vars_dict['comp'].procedures_list()
+        vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+        vars_dict['scheds'] = vars_dict['proc'].schedules_list()
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/new_fileset.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -47,5 +55,5 @@ def delete_fileset(request, computer_id, procedure_id, fileset_id):
         fset = get_object_or_404(FileSet, pk=fileset_id)
         fset.delete()
         request.user.message_set.create(message="Local foi removido permanentemente.")
-        return redirect_back_or_default(request, default=procedure_path(request, procedure_id, computer_id))
+        return redirect_back_or_default(request, default=computer_path(request, procedure_id))
 

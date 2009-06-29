@@ -47,7 +47,17 @@
 	        </div>
 	        <ul class="aux">
 	            <!--li><span class="label">Caminho para recuperação:</span> <span class="value">{{ p.restore_path }}</span></li-->
-	            <li><span class="label">Caminhos do backup:</span> <span class="value">{% for fs in p.fileset_set.all %}{{ fs.path }}{% endfor %}</span></li>
+	            <li>
+	                <span class="label">Caminhos do backup:<br/>
+	                    <a href="/computer/{{comp.id}}/procedure/{{p.id}}/fileset/">adicionar</a></span>
+	                <span class="value">{% for fs in p.fileset_set.all %}
+    	                <form action="{{script_name}}/{{fs.delete_url}}" method="post">
+	                        {{ fs.path }}
+	                        <button type="submit"><span>Remover</span></button>
+	                    </form>
+	                {% endfor %}
+	                </span>
+	            </li>
 	            <li>
 	                <span class="label">Agendamentos:</span>
 	                {% for sc in p.schedule_set.all %}

@@ -259,6 +259,16 @@ class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
     path = cfields.ModelPathField("Local", max_length="255")
 
+    def add_url(self):
+        """Returns add url."""
+        return "computer/%s/procedure/%s/fileset/" % (
+                self.procedure.computer_id, self.procedure_id)
+
+    def delete_url(self):
+        """Returns delete url."""
+        return "computer/%s/procedure/%s/fileset/%s/delete" % (
+                self.procedure.computer_id, self.procedure_id, self.id)
+
 
 ### Pool ###
 class Pool(models.Model):
