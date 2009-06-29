@@ -16,19 +16,28 @@ from django.shortcuts import get_object_or_404
 
 ### Global Config ###
 @authentication_required
-def edit_config(request):
+def edit_config(request, config_type=None):
     vars_dict, forms_dict, return_dict = global_vars(request)
     
+    vars_dict['config_type'] = config_type
+    vars_dict['request'] = request
     try:
         vars_dict['gconfig'] = GlobalConfig.objects.get(pk=1)    
     except GlobalConfig.DoesNotExist:
         vars_dict['gconfig'] = None
 
     if request.method == 'GET':
-        vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
-        forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
-        forms_dict['restoredumpform'] = RestoreDumpForm()
-        # Load forms and vars
+        if config_type:
+            if config_type == 'global':
+                vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
+                forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
+            elif config_type == 'dump_restore':
+                forms_dict['restoredumpform'] = RestoreDumpForm()
+        else:
+            vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
+            forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
+            forms_dict['restoredumpform'] = RestoreDumpForm()
+            # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/edit_config.html',return_dict, context_instance=RequestContext(request))
     elif request.method == 'POST':

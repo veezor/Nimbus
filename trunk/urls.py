@@ -13,6 +13,7 @@ urlpatterns = patterns('',
         {'document_root': '%s/templates/bkp/static' % dirname(__file__)}),
     # views_app/configs.py
     (r'^config/edit$', 'backup_corporativo.bkp.views.edit_config'),
+    (r'^config/(?P<config_type>.*?)/edit$', 'backup_corporativo.bkp.views.edit_config'),
     # views_app/stats.py
     (r'^stats$', 'backup_corporativo.bkp.views.view_stats'),
     # views_app/authentications.py
