@@ -1,0 +1,19 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+
+<h3>Confirmar remo&ccedil;&atilde;o de restri&ccedil;&atilde;o de banda</h3>
+
+<p>Dejesa realmente remover a restri&ccedil;&atilde;o de banda '{{ bandwidthrestriction }}' ?</p>
+
+<form name="delete_bandwidthrestriction" action="{{script_name}}/bandwidthrestriction/{{bandwidthrestriction.id}}/delete" method="POST">
+
+	<input type="submit" value="Sim">
+
+</form>
+
+<br />
+
+<a href="{{script_name}}/bandwidthrestriction/new">Cancelar</a>
+
+{% endblock %}

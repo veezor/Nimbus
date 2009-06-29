@@ -1,0 +1,64 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+<hr />
+
+<h3>Adicionar Nova Restrição</h3>
+<form action="{{script_name}}/bandwidthrestriction/new" method="post">
+
+	<table>
+		<tr>
+			<td>
+			{{ bandrest_form.restrictiontime.errors }}
+			{{ bandrest_form.restrictiontime.label_tag }} : {{ bandrest_form.restrictiontime }}
+			</td>
+		</tr>
+		<tr>
+			<td>
+			{{ bandrest_form.restriction_value.errors }}
+			{{ bandrest_form.restriction_value.label_tag }} : {{ bandrest_form.restriction_value }}
+			</td>
+		</tr>
+		<tr>
+			{% if bandrest_form.days.errors %}
+				<tr><td>{{ bandrest_form.days.errors }}</td></tr>
+			{% endif %}</tr>
+			<td>Dias de Restri&ccedil;&atilde;o : &nbsp;</td>
+		</tr>
+		<tr>
+			<td>
+			<table>
+				<tr>
+				{% for choice_id, choice_label in bandrest_form.fields.days.choices %}
+				<td>{{ choice_label }}</td>
+				{% endfor %}
+				</tr>
+				<tr>
+				{% for choice_id, choice_label in bandrest_form.fields.days.choices %}
+				<td><input type="checkbox" name="days" value="{{ choice_id }}"></td>
+				{% endfor %}
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
+<br />
+
+<h3>Restrições de Banda Atuais</h3>
+{% if bandrests %}
+<ol>
+{% for rest in bandrests %}
+	<li>{{ rest }} | <a href='{{script_name}}/bandwidthrestriction/{{rest.id}}/delete'>Delete</a></li>
+{% endfor %}
+<ol>
+{% else %}
+<p>Não existem restrições cadastradas.</p>
+{% endif %}
+
+
+
+<hr />
+{% endblock %}

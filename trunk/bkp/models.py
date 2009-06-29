@@ -354,6 +354,8 @@ class BandwidthRestriction(models.Model):
 
 
     def __unicode__(self):
+	day = DAYS_OF_THE_WEEK[self.dayoftheweek.day_name]
+        #return '%shs %s %s kbps' % (self.restrictiontime,day,self.restriction_value)
         return '%shs %s %s kbps' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
 
 

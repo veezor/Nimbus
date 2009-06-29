@@ -70,3 +70,4 @@ from backup_corporativo.bkp.app_views.restrictions import *
 from backup_corporativo.bkp.app_views.schedules import *
 from backup_corporativo.bkp.app_views.stats import *
 from backup_corporativo.bkp.app_views.triggers import *
+from backup_corporativo.bkp.app_views.bandwidthrestriction import *

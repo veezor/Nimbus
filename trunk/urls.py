@@ -49,8 +49,8 @@ urlpatterns = patterns('',
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_schedule'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/weeklytrigger/$', 'backup_corporativo.bkp.views.weeklytrigger'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/monthlytrigger/$', 'backup_corporativo.bkp.views.monthlytrigger'),
-    # views_app/restrictions.py
-    (r'^restriction/new$', 'backup_corporativo.bkp.views.new_restriction'),
-    (r'^restriction/$', 'backup_corporativo.bkp.views.create_restriction'),
+	# views_app/bandwidthrestriction
+	(r'bandwidthrestriction/new$', 'backup_corporativo.bkp.views.new_bandwidth_restriction'),
+	(r'bandwidthrestriction/(?P<bandwidthrestriction_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_bandwidth_restriction'),
     (r'^admin/(.*)', admin.site.root),
 )

@@ -4,6 +4,7 @@
 
 # Misc
 from django.db import models
+from backup_corporativo.bkp.utils import *
 # Models
 from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.models import Computer
@@ -454,22 +455,21 @@ def remove_schedule_file(procedure):
 
 ### Cron file
 def generate_cron(filename="nimbus"):
-    """Generates cron file"""
-    import commands
-    import time
-    root_user = 'root'
-    script_name = 'speedctl.py'
-    f = prepare_to_write(filename,'custom/')
-    restrictions = BandwidthRestriction.objects.all()
+	"""Generates cron file"""
+	import commands
+	import time
+	root_user = 'root'
+	script_name = 'speedctl.py'
+	f = prepare_to_write(filename,'custom/')
+	restrictions = BandwidthRestriction.objects.all()
 
-    for rest in restrictions:
-        hour = rest.restrictiontime.restriction_time.hour
-        minute = rest.restrictiontime.restriction_time.minute
-        week_day = rest.dayoftheweek.day_name[0:3]
-        rest_value = rest.restriction_value
-        f.write('%s %s * * %s %s %s %s\n' % (minute,hour,week_day,root_user,script_name,rest_value))
-    f.close()
-
+	for rest in restrictions:
+		hour = rest.restrictiontime.restriction_time.hour
+		minute = rest.restrictiontime.restriction_time.minute
+		week_day = rest.dayoftheweek.day_name[0:3]
+		rest_value = rest.restriction_value
+		f.write('%s %s * * %s %s %s %s\n' % (minute,hour,week_day,root_user,script_name,rest_value))
+	f.close()
 
    
 ###

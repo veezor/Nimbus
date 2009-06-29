@@ -15,6 +15,7 @@ from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import ExternalDevice
 from backup_corporativo.bkp.models import BandwidthRestriction
+from backup_corporativo.bkp.models import DayOfTheWeek
 # Custom
 from backup_corporativo.bkp import customfields as cfields
 
@@ -88,7 +89,20 @@ class ExternalDeviceForm(ModelForm):
         model = ExternalDevice
         fields = ('device_name','uuid')
 
-class BandwidthRestrictionForm(ModelForm):
-    class Meta:
-        model = BandwidthRestriction
-        fields = ('restriction_begin','restriction_value')
+class BandwidthRestrictionForm(forms.Form):
+
+	DAYS_OF_THE_WEEK = (
+		('monday','Segunda'),
+		('tuesday','Terça'),
+		('wednesday','Quarta'),
+		('thursday','Quinta'),
+		('friday','Sexta'),
+		('saturday','Sábado'),
+		('sunday','Domingo')
+	)
+
+	#DAYS_LIST = DayOfTheWeek.objects.all()
+
+	restrictiontime = forms.TimeField(label=u'Hora de Restrição',input_formats=['%H:%M'])
+	restriction_value =  forms.IntegerField(label=u'Limite de Upload')
+	days = forms.MultipleChoiceField(choices=DAYS_OF_THE_WEEK,widget=forms.CheckboxSelectMultiple())
