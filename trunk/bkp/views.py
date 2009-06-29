@@ -66,7 +66,6 @@ from backup_corporativo.bkp.app_views.devices import *
 from backup_corporativo.bkp.app_views.dumps import *
 from backup_corporativo.bkp.app_views.filesets import *
 from backup_corporativo.bkp.app_views.procedures import *
-from backup_corporativo.bkp.app_views.restrictions import *
 from backup_corporativo.bkp.app_views.schedules import *
 from backup_corporativo.bkp.app_views.stats import *
 from backup_corporativo.bkp.app_views.triggers import *

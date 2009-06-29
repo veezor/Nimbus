@@ -454,7 +454,7 @@ def remove_schedule_file(procedure):
     
 
 ### Cron file
-def generate_cron(filename="nimbus"):
+def generate_cron(filename="nimbus.cron"):
 	"""Generates cron file"""
 	import commands
 	import time
