@@ -55,5 +55,5 @@ def delete_fileset(request, computer_id, procedure_id, fileset_id):
         fset = get_object_or_404(FileSet, pk=fileset_id)
         fset.delete()
         request.user.message_set.create(message="Local foi removido permanentemente.")
-        return redirect_back_or_default(request, default=computer_path(request, procedure_id))
+        return redirect_back_or_default(request, default=computer_path(request, computer_id))
 
