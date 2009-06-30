@@ -49,7 +49,7 @@
 	            <!--li><span class="label">Caminho para recuperação:</span> <span class="value">{{ p.restore_path }}</span></li-->
 	            <li>
 	                <span class="label">Caminhos do backup:<br/>
-	                    <a href="/computer/{{comp.id}}/procedure/{{p.id}}/fileset/">adicionar</a></span>
+	                    <a href="/computer/{{comp.id}}/procedure/{{p.id}}/fileset/new">adicionar</a></span>
 	                <span class="value">{% for fs in p.fileset_set.all %}
     	                <form action="{{script_name}}/{{fs.delete_url}}" method="post">
 	                        {{ fs.path }}
@@ -60,7 +60,7 @@
 	            </li>
 	            <li>
 	                <span class="label">Agendamentos:<br/>
-	                    <a href="/computer/{{comp.id}}/procedure/{{p.id}}/schedule/">adicionar</a></span>
+	                    <a href="/computer/{{comp.id}}/procedure/{{p.id}}/schedule/new">adicionar</a></span>
 	                {% for sc in p.schedule_set.all %}
 	                <span class="value">
 	                <form action="{{script_name}}/{{sc.delete_url}}" method="post">
@@ -128,15 +128,10 @@
         {% endfor %}
 
         {% if job|successful %}
-        <td> <form action="{{script_name}}/computer/{{comp.id}}/restore/" method="POST">
-        <input type="hidden" id="job_id" name="job_id" value="{{job|get_id}}" />
-        <input type="hidden" id="client_source" name="client_source" value="{{job|get_client_source}}" />
-        <input type="hidden" id="client_restore" name="client_restore" value="{{job|get_client_restore}}" />
-        <input type="hidden" id="client_restore" name="client_restore" value="{{job|get_fileset}}" />
-
-        <input type="submit" value="restaurar" />
-        </form> </td>
-        {% endif %}
+	<td>
+	<a href="{{script_name}}/computer/{{comp.id}}/restore/new?jid={{job|get_id}}&src={{job|get_client_source}}&dt={{job|get_date}}">restaurar</a>
+	</td>
+	{% endif %}
         </tr>
         {% endfor %}
         </tbody>

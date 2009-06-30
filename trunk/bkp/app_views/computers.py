@@ -11,6 +11,8 @@ from backup_corporativo.bkp.forms import MonthlyTriggerForm
 from backup_corporativo.bkp.forms import WeeklyTriggerForm
 from backup_corporativo.bkp.forms import FileSetForm
 from backup_corporativo.bkp.forms import ScheduleForm
+from backup_corporativo.bkp.forms import RestoreForm
+from backup_corporativo.bkp.forms import HiddenRestoreForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
 from django.http import HttpResponse
@@ -26,8 +28,13 @@ def new_computer(request):
 
     if request.method == 'GET':
         # Load forms and vars
+        forms_dict['compform'] = ComputerForm()
+        forms_dict['procform'] = ProcedureForm()
+        forms_dict['fsetform'] = FileSetForm()
+        forms_dict['schedform'] = ScheduleForm()
         forms_dict['compauxform'] = ComputerAuxForm()
         forms_dict['mtriggform'] = MonthlyTriggerForm()
+        forms_dict['wtriggform'] = WeeklyTriggerForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_computer.html', return_dict, context_instance=RequestContext(request))
 
@@ -72,15 +79,23 @@ def create_computer(request):
 @authentication_required
 def edit_computer(request, computer_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
-
     comp = get_object_or_404(Computer, pk=computer_id)
     vars_dict['comp'] = comp
+
     if request.method == 'GET': # Edit computer
         forms_dict['compform'] = ComputerForm(instance=comp)
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/edit_computer.html', return_dict, context_instance=RequestContext(request))
-    elif request.method == 'POST':
+
+
+@authentication_required
+def update_computer(request, computer_id):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+    comp = get_object_or_404(Computer, pk=computer_id)
+    vars_dict['comp'] = comp
+
+    if request.method == 'POST':
         forms_dict['compform'] = ComputerForm(request.POST,instance=comp)
         
         if forms_dict['compform'].is_valid():
@@ -134,34 +149,41 @@ def delete_computer(request, computer_id):
 @authentication_required
 def do_restore(request, computer_id):
     if request.method == 'POST':
-        comp = get_object_or_404(Computer, pk=computer_id)
-        restore_form = RestoreForm(request.POST)
+        vars_dict, forms_dict, return_dict = global_vars(request)    
+        forms_dict['restore_form'] = RestoreForm(request.POST)
+        forms_dict['hidden_restore_form'] = HiddenRestoreForm(request.POST)
+        forms_list = forms_dict.values()
 
-        if restore_form.is_valid():
-            job_id = restore_form.cleaned_data['job_id']
-            client_source = restore_form.cleaned_data['client_source']
-            client_restore = restore_form.cleaned_data['client_restore']
-            comp.run_restore_job(client_source, client_restore, job_id, 'c:/restore/')
+        if all([form.is_valid() for form in forms_list]):
+            job_id = forms_dict['hid_restore_form'].cleaned_data['job_id']
+            target_dt = forms_dict['hid_restore_form'].cleaned_data['target_dt']
+            client_restore = forms_dict['hid_restore_form'].cleaned_data['client_restore']
+            src_client = forms_dict['restore_form'].cleaned_data['client_source']
+            restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
+            #comp.run_restore_job()
+            return HttpResponse('Pode restaurar!')
         else:
-            redirect_back_or_default(request,root_path(request))
-    
-        return HttpResponse("restaura aí, vai!")
+            vars_dict['comp_id'] = computer_id
+            vars_dict['computer_choices'] = Computer.computer_choices()
+            return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/new_restore.html', return_dict, context_instance=RequestContext(request))
 
 
 def new_restore(request, computer_id):
     if request.method == 'GET':
         vars_dict, forms_dict, return_dict = global_vars(request)
-        if not request.GET.jid:
+        if not 'jid' in request.GET:
             raise Exception('JobID parameter is missing.')
-        if not request.GET.dt:
+        if not 'dt' in request.GET:
             raise Exception('Date parameter is missing.')
-        if not request.GET.src:
+        if not 'src' in request.GET:
             raise Exception('ClientName parameter is missing.')
-        if not request.GET.fset:
-            raise Exception('FileSetName parameter is missing.')
-            
-
-
-
+        
+        vars_dict['computer_choices'] = Computer.computer_choices()
+        vars_dict['src_client'] = request.GET['src']
+        vars_dict['target_dt'] = request.GET['dt']
+        vars_dict['job_id'] = request.GET['jid']
+        vars_dict['comp_id'] = computer_id
+        forms_dict['restore_form'] = RestoreForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_restore.html', return_dict, context_instance=RequestContext(request))    
+        return render_to_response('bkp/new_restore.html', return_dict, context_instance=RequestContext(request))

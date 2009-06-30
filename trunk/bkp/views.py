@@ -29,11 +29,8 @@ def global_vars(request):
     return_dict['current_user'] = request.user
     # List of computers.
     vars_dict['comps'] = Computer.objects.all()
-    # List of forms.
-    forms_dict['compform'] = ComputerForm()
-    forms_dict['procform'] = ProcedureForm()
-    forms_dict['fsetform'] = FileSetForm()
-    forms_dict['schedform'] = ScheduleForm()
+    # List of forms has been removed! 
+    # (Please declare only forms the views)
     # List of vars.    
     vars_dict['TYPE_CHOICES'] = TYPE_CHOICES
     vars_dict['LEVEL_CHOICES'] = LEVEL_CHOICES

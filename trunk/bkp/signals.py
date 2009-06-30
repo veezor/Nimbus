@@ -38,13 +38,6 @@ def create_pools(sender, instance, signal, *args, **kwargs):
             fpool = Pool(procedure=instance)
             fpool.save()
 
-def update_rel_statuses(sender, instance, signal, *args, **kwargs):
-    "updates statuses for procedure and schedule objects"
-    if sender == FileSet:
-        instance.procedure.update_status()
-    elif ((sender == WeeklyTrigger) or (sender == MonthlyTrigger)):
-        instance.schedule.update_status()
-
 def update_files(sender, instance, signal, *args, **kwargs):
     "entry point for update files"
     if sender == FileSet:
@@ -406,6 +399,9 @@ def remove_pool_file(instance):
 
 ### Schedule ###
 
+# TODO: refactore this piece of code.
+# Because this is not beein called when new trigger is been added
+# It used to work on legacy codes
 def run_dict(schedules_list):
     "build a dict with bacula run specification"
     dict = {}
@@ -486,19 +482,11 @@ models.signals.post_save.connect(create_pools, sender=Procedure)
 models.signals.post_save.connect(update_files, sender=Procedure)
 models.signals.post_delete.connect(remove_files, sender=Procedure)
 # FileSet
-models.signals.post_save.connect(update_rel_statuses, sender=FileSet)
 models.signals.post_save.connect(update_files, sender=FileSet)
-models.signals.post_delete.connect(update_rel_statuses, sender=FileSet)
 models.signals.post_delete.connect(update_files, sender=FileSet)
 # Schedule
 models.signals.post_save.connect(update_files, sender=Schedule)
 models.signals.post_delete.connect(remove_files, sender=Schedule)
-# WeeklyTrigger
-models.signals.post_save.connect(update_rel_statuses, sender=WeeklyTrigger)
-models.signals.post_delete.connect(update_rel_statuses, sender=WeeklyTrigger)
-# MonthlyTrigger
-models.signals.post_save.connect(update_rel_statuses, sender=MonthlyTrigger)
-models.signals.post_delete.connect(update_rel_statuses, sender=MonthlyTrigger)
 # Pool
 models.signals.post_save.connect(update_files, sender=Pool)
 models.signals.post_delete.connect(remove_files, sender=Pool)

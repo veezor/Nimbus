@@ -31,7 +31,15 @@ def edit_procedure(request, computer_id, procedure_id):
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/edit_procedure.html', return_dict, context_instance=RequestContext(request))
-    elif request.method == 'POST':
+
+
+@authentication_required
+def update_procedure(request, computer_id, procedure_id):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+    vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+
+    if request.method == 'POST':
         forms_dict['procform'] = ProcedureForm(request.POST,instance=vars_dict['proc'])
         
         if forms_dict['procform'].is_valid():
@@ -46,30 +54,14 @@ def edit_procedure(request, computer_id, procedure_id):
 
 
 @authentication_required
-def view_procedure(request, computer_id, procedure_id):
-    vars_dict, forms_dict, return_dict = global_vars(request)
-
-    store_location(request)
-    
-    if request.method == 'GET':
-        if procedure_id:
-            vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
-            vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
-            vars_dict['procs'] = vars_dict['comp'].procedures_list()
-            vars_dict['fsets'] = vars_dict['proc'].filesets_list()
-            vars_dict['scheds'] = vars_dict['proc'].schedules_list()
-            # Load forms and vars
-            return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/view_procedure.html', return_dict, context_instance=RequestContext(request))
-        else:
-            return HttpResponseRedirect(computer_path(request, computer_id))
-    
-
-@authentication_required
 def new_procedure(request, computer_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
     vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+    forms_dict['procform'] = ProcedureForm()
+    forms_dict['schedform'] = ScheduleForm()
+    forms_dict['fsetform'] = FileSetForm()
     forms_dict['triggform'] = MonthlyTriggerForm()
+    forms_dict['mtriggform'] = WeeklyTriggerForm()
     forms_dict['procauxform'] = ProcedureAuxForm()
 
     if request.method == 'GET':
@@ -84,7 +76,6 @@ def create_procedure(request, computer_id):
     temp_dict = {}
 
     if request.method == 'POST':
-        del(forms_dict['compform']) # remove form
         temp_dict['procauxform'] = ProcedureAuxForm(request.POST)
 
         if temp_dict['procauxform'].is_valid():

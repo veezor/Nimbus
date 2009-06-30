@@ -68,6 +68,17 @@ def get_client_restore(obj):
     else:
         return ''
         
+@register.filter
+def get_date(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        return  obj[6]
+    else:
+        return ''
+
         
 @register.filter
 def get_fileset(obj):

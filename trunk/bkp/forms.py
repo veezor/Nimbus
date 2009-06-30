@@ -24,9 +24,18 @@ from backup_corporativo.bkp import customfields as cfields
 #
 
 class RestoreForm(forms.Form):
-    job_id = forms.CharField(max_length=50)
-    client_source = forms.CharField(max_length=50)
-    client_restore = forms.CharField(max_length=50)
+    def __init__(self, *args, **kwargs):
+        super(RestoreForm, self).__init__(*args, **kwargs)
+        self.fields['client_restore'].choices = [('', '----------')] + [(comp.computer_name, '%s (%s)' %(comp.computer_name, comp.ip)) for comp in Computer.objects.all()]
+
+    client_restore = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())
+    restore_path = cfields.FormPathField(label="Diretório", max_length=50)
+
+class HiddenRestoreForm(forms.Form):
+    job_id = forms.CharField(max_length=50, widget=forms.HiddenInput)
+    client_source = forms.CharField(max_length=50, widget=forms.HiddenInput)
+    target_dt = forms.CharField(max_length=50, widget=forms.HiddenInput)
+
 
 class RestoreDumpForm(forms.Form):
 	file = cfields.FormFileNimbusField(label=u'Arquivo para restaurar configurações')
@@ -49,6 +58,10 @@ class ProcedureForm(ModelForm):
     class Meta:
         model = Procedure
         fields = ('procedure_name')
+
+class ScheduleAuxForm(forms.Form):
+    schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")
+
 
 class ProcedureAuxForm(forms.Form):
     FileSet = forms.BooleanField(widget=forms.HiddenInput, initial="True")
@@ -90,7 +103,7 @@ class ExternalDeviceForm(ModelForm):
         fields = ('device_name','uuid')
 
 class BandwidthRestrictionForm(forms.Form):
-
+    # TODO: import days of the week from its original place
 	DAYS_OF_THE_WEEK = (
 		('monday','Segunda'),
 		('tuesday','Terça'),

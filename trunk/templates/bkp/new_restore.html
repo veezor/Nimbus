@@ -1,0 +1,36 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+<hr />
+
+<h3>Restaurar Em: </h3>
+
+<form action="{{script_name}}/computer/{{comp_id}}/restore/" method="POST">
+
+
+{% for field in restore_form %}
+    <div class="fieldWrapper">
+	{{field.errors}}
+	{{field.label_tag}} {{field}}
+    </div>
+{% endfor %}
+
+{% if hidden_restore_form %}
+{# we have an valid object, so render it #}
+	{% for field in hidden_restore_form %}
+		{{ field }}
+	{% endfor %}
+{% else %}
+{# build fields from scratch #}
+	 <input type="hidden" name="job_id" value="{{job_id}}" id="id_job_id" />
+	 <input type="hidden" name="client_source" value="{{src_client}}" id="id_client_source" />
+	 <input type="hidden" name="target_dt" value="{{target_dt}}" id="id_target_dt" />
+{% endif %}
+
+
+<input type="submit" value="restaurar" />
+</form>
+
+
+<hr />
+{% endblock %}

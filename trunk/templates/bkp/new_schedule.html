@@ -3,8 +3,6 @@
 
 <form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/" method="post">
 	
-	<h3>Tipo Agendamento</h3>
-
     {% for field in schedform %}
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -23,7 +21,8 @@
         </div>
     {% endfor %}
 
-    {% for field in procauxform %}
+
+    {% for field in schedauxform %}
 		{{ field }}
     {% endfor %}
 

@@ -16,6 +16,19 @@ from django.shortcuts import get_object_or_404
 
 ### FileSets ###
 @authentication_required
+def new_fileset(request, computer_id, procedure_id):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+
+    if request.method == 'GET':
+        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+        vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+        forms_dict['fsetform'] = FileSetForm()
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/new_fileset.html', return_dict, context_instance=RequestContext(request))
+
+
+
+@authentication_required
 def create_fileset(request, computer_id, procedure_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
 
@@ -32,21 +45,10 @@ def create_fileset(request, computer_id, procedure_id):
         else:
             vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
             vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
-            vars_dict['procs'] = vars_dict['comp'].procedures_list()
-            vars_dict['fsets'] = vars_dict['proc'].filesets_list()
-            vars_dict['scheds'] = vars_dict['proc'].schedules_list()
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o local não foi cadastrado.")
-            return render_to_response('bkp/view_procedure.html', return_dict, context_instance=RequestContext(request))
-    else:
-        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
-        vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
-        vars_dict['procs'] = vars_dict['comp'].procedures_list()
-        vars_dict['fsets'] = vars_dict['proc'].filesets_list()
-        vars_dict['scheds'] = vars_dict['proc'].schedules_list()
-        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_fileset.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/new_fileset.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required

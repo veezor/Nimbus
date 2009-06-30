@@ -145,6 +145,7 @@ class Computer(models.Model):
 
     def __unicode__(self):
         return self.computer_name
+
         
 ### Procedure ###
 # TODO remove list definitions and replace it for default <child>_set definition
@@ -214,13 +215,7 @@ class Procedure(models.Model):
 ### Schedule ###
 class Schedule(models.Model):
     procedure = models.ForeignKey(Procedure)
-    type = models.CharField("Nível",max_length=20,choices=TYPE_CHOICES)
-    status = models.CharField(max_length=10, default="Invalid")
-
-    def update_status(self):
-        """Changes status to valid or invalid depending if get_trigger() returns the trigger of False."""
-        self.status = (self.get_trigger()) and 'Valid' or 'Invalid'
-        self.save()
+    type = models.CharField("Tipo",max_length=20,choices=TYPE_CHOICES)
 
     def get_trigger(self):
         """Returns the associated trigger or False in case of it doesnt exist."""
@@ -229,7 +224,13 @@ class Schedule(models.Model):
             exec(cmd)
         except Exception, e: # DoesNotExist Exception means there's no trigger
             trigger = False
+            #raise Exception("Agendamento inválido, não possui detalhes.")
         return trigger
+
+    def build_backup(self, trigg):
+        """Saves child objects in correct order."""
+        trigg.schedule = self
+        trigg.save()
 
     def __unicode__(self):
         if self.type == "Weekly":
@@ -244,7 +245,12 @@ class Schedule(models.Model):
 
     def edit_url(self):
         """Returns edit url."""
-        return "computer/%s/procedure/%s/schedule/%s" % (
+        return "computer/%s/procedure/%s/schedule/%s/edit" % (
+                self.procedure.computer_id, self.procedure_id, self.id)
+
+    def update_url(self):
+        """Returns edit url."""
+        return "computer/%s/procedure/%s/schedule/%s/update" % (
                 self.procedure.computer_id, self.procedure_id, self.id)
 
     def delete_url(self):
@@ -306,7 +312,6 @@ class ExternalDevice(models.Model):
     # ClassMethods
     def device_choices(cls):
         dev_choices = []
-        dev_choices.append(['','---------'])
         import os
         import re
         label_re = '''LABEL="(?P<label>.*?)"'''
