@@ -101,7 +101,7 @@ def update_computer(request, computer_id):
         if forms_dict['compform'].is_valid():
             forms_dict['compform'].save()
             request.user.message_set.create(message="Computador foi alterado com sucesso.")
-            return HttpResponseRedirect(computer_path(request, comp.id))
+            return HttpResponseRedirect(computer_path(request, computer_id))
         else:
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
@@ -186,3 +186,10 @@ def new_restore(request, computer_id):
         forms_dict['restore_form'] = RestoreForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new_restore.html', return_dict, context_instance=RequestContext(request))
+        
+def test_computer(request, computer_id):
+    if request.method == 'POST':
+        comp = get_object_or_404(Computer,pk=computer_id)
+        comp.run_test_job()
+        request.user.message_set.create(message="Uma requisição teste foi enviada para ser executado no computador.")
+        return HttpResponseRedirect(computer_path(request, computer_id))

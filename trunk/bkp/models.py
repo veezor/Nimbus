@@ -81,6 +81,11 @@ class Computer(models.Model):
         wtrigg.schedule = sched
         wtrigg.save()
 
+    def run_test_job(self):
+        """Sends an empty job running requisition to bacula for this computer"""
+        from backup_corporativo.bkp.bacula import Bacula;
+        Bacula.run_backup('empty_job')
+        
     def procedures_list(self):
         """Gets list of associated procedure."""
         return Procedure.objects.filter(computer=self.id)
@@ -105,6 +110,10 @@ class Computer(models.Model):
     def delete_url(self):
         """Returns delete url."""
         return "computer/%s/delete" % (self.id)
+
+    def run_test_url(self):
+        """Returns run test url."""
+        return "computer/%s/test/" % (self.id)
 
     def save(self):
         if not self.id: # If this record is not at database yet

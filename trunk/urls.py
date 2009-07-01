@@ -37,6 +37,7 @@ urlpatterns = patterns('',
     (r'^computer/(?P<computer_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_computer'),
     (r'^computer/(?P<computer_id>\d+)/restore/$', 'backup_corporativo.bkp.views.do_restore'),
     (r'^computer/(?P<computer_id>\d+)/restore/new?(.*)', 'backup_corporativo.bkp.views.new_restore'),
+    (r'^computer/(?P<computer_id>\d+)/test/$', 'backup_corporativo.bkp.views.test_computer'),
     # views_app/procedures.py
     (r'^computer/(?P<computer_id>\d+)/procedure/$', 'backup_corporativo.bkp.views.create_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/new$', 'backup_corporativo.bkp.views.new_procedure'),
