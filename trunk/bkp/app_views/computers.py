@@ -155,16 +155,16 @@ def do_restore(request, computer_id):
         forms_list = forms_dict.values()
 
         if all([form.is_valid() for form in forms_list]):
-            job_id = forms_dict['hid_restore_form'].cleaned_data['job_id']
-            target_dt = forms_dict['hid_restore_form'].cleaned_data['target_dt']
-            client_restore = forms_dict['hid_restore_form'].cleaned_data['client_restore']
-            src_client = forms_dict['restore_form'].cleaned_data['client_source']
+            job_id = forms_dict['hidden_restore_form'].cleaned_data['job_id']
+            target_dt = forms_dict['hidden_restore_form'].cleaned_data['target_dt']
+            src_client = forms_dict['hidden_restore_form'].cleaned_data['client_source']
+            client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
             restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
-            #comp.run_restore_job()
+            from backup_corporativo.bkp.bacula import Bacula
+            Bacula.run_restore(ClientName=src_client, JobId=job_id, Date=target_dt, ClientRestore=client_restore, Where=restore_path)
             return HttpResponse('Pode restaurar!')
         else:
             vars_dict['comp_id'] = computer_id
-            vars_dict['computer_choices'] = Computer.computer_choices()
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             return render_to_response('bkp/new_restore.html', return_dict, context_instance=RequestContext(request))
 
@@ -179,7 +179,6 @@ def new_restore(request, computer_id):
         if not 'src' in request.GET:
             raise Exception('ClientName parameter is missing.')
         
-        vars_dict['computer_choices'] = Computer.computer_choices()
         vars_dict['src_client'] = request.GET['src']
         vars_dict['target_dt'] = request.GET['dt']
         vars_dict['job_id'] = request.GET['jid']

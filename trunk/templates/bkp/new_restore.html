@@ -3,8 +3,17 @@
 {% block content %}
 <hr />
 
-<h3>Restaurar Em: </h3>
+<h3>Informações</h3>
+<br />
+	<div class="bloco_texto">
+	    <ul class="aux">
+	        <li><strong class="label">Computador de Origem:</strong> <span class="value">{{src_client}}</span></li>
+	        <li><strong class="label">Data do Backup:</strong> <span class="value">{{target_dt}}</span></li>
+	    </ul>
+	</div>
 
+<h3>Restaurar Em: </h3>
+<br />
 <form action="{{script_name}}/computer/{{comp_id}}/restore/" method="POST">
 
 
