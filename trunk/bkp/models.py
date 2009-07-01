@@ -113,7 +113,7 @@ class Computer(models.Model):
 
     def run_test_url(self):
         """Returns run test url."""
-        return "computer/%s/test/" % (self.id)
+        return "computer/%s/test" % (self.id)
 
     def save(self):
         if not self.id: # If this record is not at database yet
@@ -191,6 +191,14 @@ class Procedure(models.Model):
     def delete_url(self):
         """Returns delete url."""
         return "computer/%s/procedure/%s/delete" % (self.computer_id, self.id)
+
+    def new_run_url(self):
+        """Returns run url."""
+        return "computer/%s/procedure/%s/run/new" % (self.computer_id, self.id)
+
+    def create_run_url(self):
+        """Returns run url."""
+        return "computer/%s/procedure/%s/run/" % (self.computer_id, self.id)
 
     def __unicode__(self):
         return self.procedure_name

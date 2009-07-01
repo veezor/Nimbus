@@ -62,12 +62,21 @@ class ProcedureForm(ModelForm):
 class ScheduleAuxForm(forms.Form):
     schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")
 
-
 class ProcedureAuxForm(forms.Form):
     FileSet = forms.BooleanField(widget=forms.HiddenInput, initial="True")
     Schedule = forms.BooleanField(widget=forms.HiddenInput, initial="True")
     schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")
     Trigger = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+
+
+BR_DATES = ['%d/%m/%Y']   #sim, eh uma lista
+
+class RunProcedureForm(forms.Form):
+    target_date = forms.DateField(label="Data", input_formats=BR_DATES)
+    target_hour = forms.TimeField(label="Hora")
+
+class RunProcedureAuxForm(forms.Form):
+    is_scheduled = forms.BooleanField(label="Agendado?")
 
 class ComputerAuxForm(forms.Form):
     Procedure = forms.BooleanField(widget=forms.HiddenInput, initial="True")

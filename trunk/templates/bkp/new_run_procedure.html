@@ -1,0 +1,30 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+<hr />
+<h2>Procedimento: {{proc.procedure_name}}<h2>
+<br />
+<h3>Detalhes de Execução</h3>
+<br />
+
+<form action="{{script_name}}/{{proc.create_run_url}}" method="post">
+    {% for field in runauxform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+
+
+    {% for field in runform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
+
+<hr />
+{% endblock %}

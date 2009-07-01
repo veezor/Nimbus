@@ -1,6 +1,7 @@
+import os
+import datetime
+
 class Bacula:
-    import os
-    import datetime
     WHERE_DEFAULT="/tmp/bacula-restore"
 
     def __run_restore_last(ClientName, ClientRestore="", Where=WHERE_DEFAULT):
@@ -44,6 +45,6 @@ class Bacula:
             sum_seconds = datetime.timedelta(seconds=10)
             now = datetime.datetime.now() + sum_seconds
             Date = now.strftime("%Y-%m-%d %H:%M:%S")
-        cmd = "bconsole << BACULAEOF \nrun job=%(job_name)s level=%(job_level)s when=%(tg_date)s yes\nBACULAEOF" % {'job_name':JobName, 'job_level':Level, 'td_date':Date}
+        cmd = "bconsole << BACULAEOF \nrun job=%(job_name)s level=%(job_level)s when=%(tg_date)s yes\nBACULAEOF" % {'job_name':JobName, 'job_level':Level, 'tg_date':Date}
         os.system(cmd)
     run_backup = classmethod(run_backup)
