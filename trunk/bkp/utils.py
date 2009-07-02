@@ -75,9 +75,6 @@ def edit_config_path(request):
 def new_device_path(request):
     """Returns new device path."""
     return "%s/device/new" % (request.META['SCRIPT_NAME'])
-
-
-
         
 def random_password(size):
     """Generates random password of a given size."""
@@ -85,6 +82,19 @@ def random_password(size):
     from random import choice
     return ''.join([choice(string.letters + string.digits) for i in range(size)])
     
+def dictfetch(cursor):
+    """Does some blackmagic to return a python generator with dicts of a MySLQ cursor"""
+    from itertools import izip
+    col_names = [desc[0] for desc in cursor.description]
+    while True:
+        row = cursor.fetchone()
+        if row is None:
+            break
+        row_dict = dict(izip(col_names, row))
+        yield row_dict
+    return
+
+
 ###
 ###   File Handling Specific Definitions
 ###

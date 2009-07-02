@@ -105,7 +105,6 @@
     {% endfor %}
     </div>
 
-
     <div class="titulo_botoes">
 	    <h3>
 	        <span>Últimos Procedimentos Executados</span>
@@ -116,9 +115,6 @@
         <table>
         <thead>
 	        <tr>
-	        <th scope='col'>Job Id</th>
-	        <th scope='col'>FSet Id</th>
-	        <th scope='col'>Client</th>
 	        <th scope='col'>Job</th>
 	        <th scope='col'>Level</th>
 	        <th scope='col'>Status</th>
@@ -131,21 +127,25 @@
 	        </tr>
         </thead>
         <tbody>
-        {% for job in lastjobs %}
+		{% for job in lastjobs %}
         <tr> 
-        {% for item in job %}
-        <td> {{ item }} </td>
-        {% endfor %}
+	        <td> {{ job.Name }} </td>
+	        <td> {{ job.Level|friendly_level }} </td>
+	        <td> {{ job.JobStatus }} </td>
+	        <td> {{ job.StartTime }} </td>
+	        <td> {{ job.EndTime }} </td>
+	        <td> {{ job.JobFiles }} </td>
+	        <td> {{ job.JobBytes }} </td>
+	        <td> {{ job.JobErrors }} </td>
 
-        {% if job|successful %}
-	<td>
-	<a href="{{script_name}}/computer/{{comp.id}}/restore/new?jid={{job|get_id}}&src={{job|get_client_source}}&dt={{job|get_date}}">restaurar</a>
-	</td>
-	{% endif %}
-        </tr>
+		    {% ifequal job.JobStatus "T" %}
+			<td>
+			<a href="{{script_name}}/computer/{{comp.id}}/restore/new?jid={{job.JobID}}&src={{job.cName}}&dt={{job.StartTime}}">restaurar</a>
+			</td>
+			{% endifequal %}
+		</tr>
         {% endfor %}
-        </tbody>
-        </table>
+		</tbody>
+		</table>
     </div>
-
 {% endblock %}
