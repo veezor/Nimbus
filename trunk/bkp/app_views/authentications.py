@@ -28,7 +28,7 @@ def new_session(request):
         forms_dict['loginform'] = LoginForm()
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_session.html', return_dict, context_instance=RequestContext(request))
     else:
         return redirect_back_or_default(request, default=root_path(request))
     
@@ -53,11 +53,11 @@ def create_session(request):
                 else:
                     # Load forms and vars
                     return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-                    return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))                
+                    return render_to_response('bkp/new/new_session.html', return_dict, context_instance=RequestContext(request))                
             else:
                 # Load forms and vars
                 return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-                return render_to_response('bkp/new_session.html', return_dict, context_instance=RequestContext(request))
+                return render_to_response('bkp/new/new_session.html', return_dict, context_instance=RequestContext(request))
     else:
         return redirect_back_or_default(request, default=root_path(request))
 
@@ -77,7 +77,7 @@ def new_password(request):
         forms_dict['pwdform'] = PasswordChangeForm(return_dict['current_user'])
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_password.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_password.html', return_dict, context_instance=RequestContext(request))
 
 @authentication_required
 def change_password(request):
@@ -95,4 +95,4 @@ def change_password(request):
             # Load forms and vars
             request.user.message_set.create(message="Houve um erro e a senha não foi alterada.")
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/new_password.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/new/new_password.html', return_dict, context_instance=RequestContext(request))

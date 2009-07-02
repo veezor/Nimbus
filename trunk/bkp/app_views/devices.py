@@ -22,7 +22,7 @@ def new_device(request):
         forms_dict['devform'] = ExternalDeviceForm()
         vars_dict['dev_choices'] = ExternalDevice.device_choices()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_device.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_device.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -42,4 +42,4 @@ def create_device(request):
         else:
             vars_dict['dev_choices'] = ExternalDevice.device_choices()
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/new_device.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/new/new_device.html', return_dict, context_instance=RequestContext(request))

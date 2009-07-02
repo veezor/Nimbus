@@ -41,7 +41,7 @@ def create_schedule(request, computer_id, procedure_id):
                 vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
                 return_dict = merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
                 request.user.message_set.create(message="Existem erros e o agendamento não foi cadastrado.")
-                return render_to_response('bkp/new_schedule.html', return_dict, context_instance=RequestContext(request))
+                return render_to_response('bkp/new/new_schedule.html', return_dict, context_instance=RequestContext(request))
             
 @authentication_required
 def new_schedule(request, computer_id, procedure_id):
@@ -53,7 +53,7 @@ def new_schedule(request, computer_id, procedure_id):
         forms_dict['triggform'] = MonthlyTriggerForm()
         forms_dict['schedauxform'] = ScheduleAuxForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_schedule.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_schedule.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -68,7 +68,7 @@ def edit_schedule(request, computer_id, procedure_id, schedule_id):
         forms_dict['triggform'] = triggclass(instance=vars_dict['trigg'])
         forms_dict['schedauxform'] = ScheduleAuxForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/edit_schedule.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/edit/edit_schedule.html', return_dict, context_instance=RequestContext(request))
 
 def update_schedule(request, computer_id, procedure_id, schedule_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
@@ -87,7 +87,7 @@ def update_schedule(request, computer_id, procedure_id, schedule_id):
         else:
             request.user.message_set.create(message="Existem erros e o agendamento não foi alterado.")
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/edit_schedule.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/edit/edit_schedule.html', return_dict, context_instance=RequestContext(request))
             
 
 
@@ -100,7 +100,7 @@ def delete_schedule(request, computer_id, procedure_id, schedule_id):
         vars_dict['sched'] = get_object_or_404(Schedule, pk=schedule_id)
         request.user.message_set.create(message="Confirme a remoção do agendamento.")
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/delete_schedule.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/delete/delete_schedule.html', return_dict, context_instance=RequestContext(request))
 
     
     elif request.method == 'POST':

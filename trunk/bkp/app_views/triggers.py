@@ -52,7 +52,7 @@ def weeklytrigger(request, computer_id, procedure_id, schedule_id):
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o agendamento não foi configurado.")
-            return render_to_response('bkp/view_schedule.html', return_dict, context_instance=RequestContext(request))        
+            return render_to_response('bkp/view/view_schedule.html', return_dict, context_instance=RequestContext(request))        
 
 
 @authentication_required
@@ -87,4 +87,4 @@ def monthlytrigger(request, computer_id, procedure_id, schedule_id):
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o agendamento não foi configurado.")
-            return render_to_response('bkp/view_schedule.html', return_dict, context_instance=RequestContext(request))                
+            return render_to_response('bkp/view/view_schedule.html', return_dict, context_instance=RequestContext(request))                

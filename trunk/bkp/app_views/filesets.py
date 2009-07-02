@@ -24,7 +24,7 @@ def new_fileset(request, computer_id, procedure_id):
         vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
         forms_dict['fsetform'] = FileSetForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_fileset.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_fileset.html', return_dict, context_instance=RequestContext(request))
 
 
 
@@ -48,7 +48,7 @@ def create_fileset(request, computer_id, procedure_id):
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o local não foi cadastrado.")
-            return render_to_response('bkp/new_fileset.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/new/new_fileset.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -60,7 +60,7 @@ def delete_fileset(request, computer_id, procedure_id, fileset_id):
         vars_dict['fset'] = get_object_or_404(FileSet, pk=fileset_id)
         request.user.message_set.create(message="Confirme a remoção do local.")
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/delete_fileset.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/delete/delete_fileset.html', return_dict, context_instance=RequestContext(request))
         
         
     elif request.method == 'POST':

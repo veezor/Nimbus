@@ -32,7 +32,7 @@ def edit_procedure(request, computer_id, procedure_id):
         forms_dict['procform'] = ProcedureForm(instance=vars_dict['proc'])
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/edit_procedure.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/edit/edit_procedure.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -52,7 +52,7 @@ def update_procedure(request, computer_id, procedure_id):
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o procedimento não foi alterado.")
-            return render_to_response('bkp/edit_procedure.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/edit/edit_procedure.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -69,7 +69,7 @@ def new_procedure(request, computer_id):
     if request.method == 'GET':
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_procedure.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_procedure.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -105,7 +105,7 @@ def create_procedure(request, computer_id):
                 vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
                 request.user.message_set.create(message="Existem erros e o procedimento não foi cadastrado.")
                 return_dict = merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
-                return render_to_response('bkp/new_procedure.html', return_dict, context_instance=RequestContext(request))
+                return render_to_response('bkp/new/new_procedure.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -116,7 +116,7 @@ def delete_procedure(request, computer_id, procedure_id):
         vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
         request.user.message_set.create(message="Confirme a remoção do procedimento.")
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/delete_procedure.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/delete/delete_procedure.html', return_dict, context_instance=RequestContext(request))
         
     elif request.method == 'POST':
         proc = get_object_or_404(Procedure, pk=procedure_id)
@@ -128,13 +128,14 @@ def delete_procedure(request, computer_id, procedure_id):
 @authentication_required
 def new_run_procedure(request, computer_id, procedure_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
 
     if request.method == 'GET':
         vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
         forms_dict['runform'] = RunProcedureForm()
         forms_dict['runauxform'] = RunProcedureAuxForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_run_procedure.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_run_procedure.html', return_dict, context_instance=RequestContext(request))
        
 
 @authentication_required
@@ -159,7 +160,7 @@ def create_run_procedure(request, computer_id, procedure_id):
             else:
                 request.user.message_set.create(message="Existem erros e a execução não foi agendada.")                
                 return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-                return render_to_response('bkp/new_run_procedure.html', return_dict, context_instance=RequestContext(request))
+                return render_to_response('bkp/new/new_run_procedure.html', return_dict, context_instance=RequestContext(request))
         else:
             Bacula.run_backup(vars_dict['proc'].procedure_name, Level="Full", Date="")
             request.user.message_set.create(message="Execução requisitada com sucesso.")

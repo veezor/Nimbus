@@ -66,4 +66,4 @@ def view_stats(request):
         db = object()
     # Load forms and vars
     return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-    return render_to_response('bkp/view_stats.html', return_dict, context_instance=RequestContext(request))
+    return render_to_response('bkp/view/view_stats.html', return_dict, context_instance=RequestContext(request))

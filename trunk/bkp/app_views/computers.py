@@ -36,7 +36,7 @@ def new_computer(request):
         forms_dict['mtriggform'] = MonthlyTriggerForm()
         forms_dict['wtriggform'] = WeeklyTriggerForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_computer.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_computer.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -73,7 +73,7 @@ def create_computer(request):
                 # Load forms and vars
                 request.user.message_set.create(message="Existem erros e o computador não foi cadastrado.")
                 return_dict = merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
-                return render_to_response('bkp/new_computer.html', return_dict, context_instance=RequestContext(request))
+                return render_to_response('bkp/new/new_computer.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -86,7 +86,7 @@ def edit_computer(request, computer_id):
         forms_dict['compform'] = ComputerForm(instance=comp)
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/edit_computer.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/edit/edit_computer.html', return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -106,7 +106,7 @@ def update_computer(request, computer_id):
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o computador não foi alterado.")
-            return render_to_response('bkp/edit_computer.html', return_dict, context_instance=RequestContext(request))   
+            return render_to_response('bkp/edit/edit_computer.html', return_dict, context_instance=RequestContext(request))   
 
 
 @authentication_required
@@ -121,7 +121,7 @@ def view_computer(request, computer_id):
         vars_dict['last_jobs'] = vars_dict['comp'].last_jobs()
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/view_computer.html', return_dict, context_instance=RequestContext(request))    
+        return render_to_response('bkp/view/view_computer.html', return_dict, context_instance=RequestContext(request))    
 
 
 @authentication_required
@@ -132,7 +132,7 @@ def delete_computer(request, computer_id):
         request.user.message_set.create(message="Confirme a remoção do computador.")
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/delete_computer.html', return_dict, context_instance=RequestContext(request))    
+        return render_to_response('bkp/delete/delete_computer.html', return_dict, context_instance=RequestContext(request))    
         
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=computer_id)
@@ -161,26 +161,27 @@ def do_restore(request, computer_id):
         else:
             vars_dict['comp_id'] = computer_id
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/new_restore.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/new/new_restore.html', return_dict, context_instance=RequestContext(request))
 
 
 def new_restore(request, computer_id):
     if request.method == 'GET':
         vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
         if not 'jid' in request.GET:
             raise Exception('JobID parameter is missing.')
         if not 'dt' in request.GET:
             raise Exception('Date parameter is missing.')
         if not 'src' in request.GET:
             raise Exception('ClientName parameter is missing.')
-        
+
         vars_dict['src_client'] = request.GET['src']
         vars_dict['target_dt'] = request.GET['dt']
         vars_dict['job_id'] = request.GET['jid']
         vars_dict['comp_id'] = computer_id
         forms_dict['restore_form'] = RestoreForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new_restore.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/new/new_restore.html', return_dict, context_instance=RequestContext(request))
         
 def test_computer(request, computer_id):
     if request.method == 'POST':

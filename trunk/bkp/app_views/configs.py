@@ -39,7 +39,7 @@ def edit_config(request, config_type='global'):
             forms_dict['restoredumpform'] = RestoreDumpForm()
             # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/edit_config.html',return_dict, context_instance=RequestContext(request))
+        return render_to_response('bkp/edit/edit_config.html',return_dict, context_instance=RequestContext(request))
     elif request.method == 'POST':
         forms_dict['gconfigform'] = GlobalConfigForm(request.POST, instance=vars_dict['gconfig'])
         forms_dict['restoredumpform'] = RestoreDumpForm()
@@ -49,9 +49,9 @@ def edit_config(request, config_type='global'):
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Configurações aplicadas com sucesso.")
-            return render_to_response('bkp/edit_config.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/edit/edit_config.html', return_dict, context_instance=RequestContext(request))
         else:
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e a configuração não foi alterada.")
-            return render_to_response('bkp/edit_config.html', return_dict, context_instance=RequestContext(request))
+            return render_to_response('bkp/edit/edit_config.html', return_dict, context_instance=RequestContext(request))

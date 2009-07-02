@@ -82,4 +82,4 @@ def restore_dump(request):
 		        forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
         		forms_dict['restoredumpform'] = restore_dump_form
 		        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        		return render_to_response('bkp/edit_config.html',return_dict, context_instance=RequestContext(request))
+        		return render_to_response('bkp/edit/edit_config.html',return_dict, context_instance=RequestContext(request))

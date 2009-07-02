@@ -24,7 +24,7 @@ def new_bandwidth_restriction(request):
 		vars_dict['bandrests'] = BandwidthRestriction.objects.all().order_by('dayoftheweek','restrictiontime')
 		forms_dict['bandrest_form'] = BandwidthRestrictionForm()
 		return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-		return render_to_response('bkp/new_bandwidthrestriction.html', return_dict, context_instance=RequestContext(request))
+		return render_to_response('bkp/new/new_bandwidthrestriction.html', return_dict, context_instance=RequestContext(request))
 	if request.method == 'POST':
 		bandrest_form = BandwidthRestrictionForm(request.POST)
 		if bandrest_form.is_valid():
@@ -56,7 +56,7 @@ def new_bandwidth_restriction(request):
 			vars_dict['bandrests'] = BandwidthRestriction.objects.all()
 			forms_dict['bandrest_form'] = bandrest_form
 			return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-			return render_to_response('bkp/new_bandwidthrestriction.html', return_dict, context_instance=RequestContext(request))
+			return render_to_response('bkp/new/new_bandwidthrestriction.html', return_dict, context_instance=RequestContext(request))
 
 @authentication_required
 def delete_bandwidth_restriction(request,bandwidthrestriction_id):
@@ -66,7 +66,7 @@ def delete_bandwidth_restriction(request,bandwidthrestriction_id):
 		vars_dict['bandwidthrestriction'] = bandwidthrestriction
 		request.user.message_set.create(message="Confirme a remoção da restrição.")
 		return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-		return render_to_response('bkp/delete_bandwidthrestriction.html', return_dict, context_instance=RequestContext(request))
+		return render_to_response('bkp/delete/delete_bandwidthrestriction.html', return_dict, context_instance=RequestContext(request))
 	if request.method == 'POST':
 		request.user.message_set.create(message="Restrição de Banda '%s' removida com sucesso." % bandwidthrestriction)
 		bandwidthrestriction.delete()
