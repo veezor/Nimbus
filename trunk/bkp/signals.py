@@ -430,7 +430,7 @@ def run_dict(schedules_list):
 
 def update_schedule_file(procedure):
     sched_name = procedure.get_schedule_name()
-    scheds = procedure.schedules_list()
+    scheds = procedure.schedule_set.all()
     rdict = run_dict(scheds)
     generate_schedule(sched_name,rdict)
 

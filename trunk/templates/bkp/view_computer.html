@@ -107,27 +107,70 @@
 
     <div class="titulo_botoes">
 	    <h3>
+	        <span>Procedimentos Executando</span>
+	    </h3>
+	    <div class="botao_acoes"></div>
+	</div>
+	<div class="bloco_texto">
+		{% for job in running_jobs %}
+			{% if forloop.first %}
+		        <table>
+		        <thead>
+			        <tr>
+			        <th scope='col'>Job</th>
+			        <th scope='col'>Level</th>
+			        <th scope='col'>Status</th>
+			        <th scope='col'>Start</th>
+			        <th scope='col'>End</th>
+			        <th scope='col'>JobFiles</th>
+			        <th scope='col'>JobBytes</th>
+			        <th scope='col'>Errors</th>
+			        </tr>
+		        </thead>
+		        <tbody>
+			{% endif %}
+        <tr> 
+	        <td> {{ job.Name }} </td>
+	        <td> {{ job.Level|friendly_level }} </td>
+	        <td> {{ job.JobStatus }} </td>
+	        <td> {{ job.StartTime }} </td>
+	        <td> {{ job.EndTime }} </td>
+	        <td> {{ job.JobFiles }} </td>
+	        <td> {{ job.JobBytes }} </td>
+	        <td> {{ job.JobErrors }} </td>
+		</tr>
+        {% endfor %}
+		</tbody>
+		</table>
+    </div>
+
+
+
+    <div class="titulo_botoes">
+	    <h3>
 	        <span>Últimos Procedimentos Executados</span>
 	    </h3>
 	    <div class="botao_acoes"></div>
 	</div>
 	<div class="bloco_texto">
-        <table>
-        <thead>
-	        <tr>
-	        <th scope='col'>Job</th>
-	        <th scope='col'>Level</th>
-	        <th scope='col'>Status</th>
-	        <th scope='col'>Start</th>
-	        <th scope='col'>End</th>
-	        <th scope='col'>JobFiles</th>
-	        <th scope='col'>JobBytes</th>
-	        <th scope='col'>Errors</th>
-	        <th scope='col'></th>
-	        </tr>
-        </thead>
-        <tbody>
-		{% for job in lastjobs %}
+		{% for job in last_jobs %}
+			{% if forloop.first %}
+		        <table>
+		        <thead>
+			        <tr>
+			        <th scope='col'>Job</th>
+			        <th scope='col'>Level</th>
+			        <th scope='col'>Status</th>
+			        <th scope='col'>Start</th>
+			        <th scope='col'>End</th>
+			        <th scope='col'>JobFiles</th>
+			        <th scope='col'>JobBytes</th>
+			        <th scope='col'>Errors</th>
+			        <th scope='col'></th>
+			        </tr>
+		        </thead>
+		        <tbody>
+			{% endif %}
         <tr> 
 	        <td> {{ job.Name }} </td>
 	        <td> {{ job.Level|friendly_level }} </td>

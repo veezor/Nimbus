@@ -81,27 +81,30 @@ class Computer(models.Model):
         wtrigg.schedule = sched
         wtrigg.save()
 
+    def running_jobs(self):
+        from backup_corporativo.bkp.bacula import Bacula
+        running_jobs_query =    '''
+                                select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime,
+                                j.JobFiles, j.JobBytes , JobErrors, JobStatus from Job as j
+                                INNER JOIN Client as jc on j.ClientId = jc.ClientId
+                                WHERE (j.JobStatus = 'R' or j.JobStatus = 'p' or j.JobStatus = 'j'
+                                or j.JobStatus = 'c' or j.JobStatus = 'd' or j.JobStatus = 's'
+                                or j.JobStatus = 'M' or j.JobStatus = 'm' or j.JobStatus = 'S'
+                                or j.JobStatus = 'F' or j.JobStatus = 'B') and j.Name = '%s'
+                                ''' % self.computer_name
+        running_jobs = Bacula.db_query(running_jobs_query)
+        return running_jobs
+
     def last_jobs(self):
-        import MySQLdb
-    	from backup_corporativo.settings import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD
-    	try:
-    	    from backup_corporativo.settings import BACULA_DB_NAME
-    	except:
-    	    raise('Could not import BACULA_DB_NAME from settings.py')
-        lastjobs_query =   ''' SELECT DISTINCT JobID, FileSet.FileSetId, Client.Name as cName, Job.Name, 
+        from backup_corporativo.bkp.bacula import Bacula
+        last_jobs_query =   '''
+                            SELECT DISTINCT JobID, FileSet.FileSetId, Client.Name as cName, Job.Name, 
                             Level, JobStatus, StartTime, EndTime, JobFiles, JobBytes , JobErrors
                             from Job, Client, FileSet
                             WHERE Client.Name = '%s'
                             ''' % self.computer_name
-        from backup_corporativo.bkp.utils import dictfetch
-        try:
-            db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=BACULA_DB_NAME)
-            cursor = db.cursor()
-            cursor.execute(lastjobs_query)
-            lastjobs = dictfetch(cursor)
-        except:
-            raise Exception('Error in connect to bacula database')
-        return lastjobs
+        last_jobs = Bacula.db_query(last_jobs_query)
+        return last_jobs
 
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
