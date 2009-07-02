@@ -176,7 +176,7 @@
 
 		    {% ifequal job.JobStatus "T" %}
 			<td>
-			<a href="{{script_name}}/computer/{{comp.id}}/restore/new?jid={{job.JobID}}&src={{job.cName}}&dt={{job.StartTime}}">restaurar</a>
+			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/restore/new?jid={{job.JobID}}&src={{job.cName}}&dt={{job.StartTime}}';return false"><span>Restaurar</span></button>
 			</td>
 			{% endifequal %}
 		</tr>
