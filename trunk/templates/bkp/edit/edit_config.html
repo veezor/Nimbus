@@ -5,11 +5,8 @@
     <li><a href="/config/global/edit"{% ifequal config_type 'global' %} class="ativo"{% endifequal %}>Configurações globais</a></li>
     <li><a href="/config/dump_restore/edit"{% ifequal config_type 'dump_restore' %} class="ativo"{% endifequal %}>Dump e restauração</a></li>
     <li><a href="/config/password/edit"{% ifequal config_type 'password' %} class="ativo"{% endifequal %}>Senha</a></li>
+    <li><a href="/config/devices/edit"{% ifequal config_type 'devices' %} class="ativo"{% endifequal %}>Dispositivos Externos</a></li>
 </ul>
-
-{% if not gconfig %}
-    <h3>Por favor, defina as configurações iniciais do seu sistema.</h3>
-{% endif %}
 
 {% ifequal config_type 'global' %}
 	    <h2>Configurações Globais</h2>
@@ -47,9 +44,55 @@
 {% endifequal %}
 
 {% ifequal config_type 'password' %}
-    <h2>Alterar Senha do Administrador</h2>
+<h2>Alterar Senha do Administrador</h2>
 
-    <a href="{{script_name}}/password/new">Alterar Senha</a>
+<form action="{{script_name}}/password/" method="post">
+    {% for field in pwdform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+{% endifequal %}
+
+
+{% ifequal config_type 'devices' %}
+<h2>Dispositivos Cadastrados</h2>
+<div class="bloco_texto">
+{% if not devices %}
+<p> Não existem dispositivos cadastrados.</p>
+{% else %}
+<ul>
+{% for dev in devices %}
+	<li>{{dev}}</li>
+{% endfor %}
+</ul>
+{% endif %}
+</div>
+
+
+<h2>Cadastrar Dispositivo</h2>
+
+<form action="{{script_name}}/device/" method="post">
+    <div class="fieldWrapper">
+        {{ devform.device_name.errors }}
+        {{ devform.device_name.label_tag }} {{ devform.device_name }}
+    </div>
+
+    <div class="fieldWrapper">
+        {{ devform.uuid.errors }}
+		{{ devform.uuid.label_tag }}	
+		<select name="uuid" id="id_uuid">
+			{% for value,choice in dev_choices %}
+			<option value="{{value}}" selected="selected">{{choice}} (UUID {{value}})</option>
+			{% endfor %}
+		</select>
+    </div>
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
 {% endifequal %}
 
 {% endblock %}

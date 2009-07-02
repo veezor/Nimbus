@@ -311,7 +311,7 @@ class ExternalDevice(models.Model):
         return '''mount UUID=%s /mnt/%s''' % (self.uuid, self.mount_index)
 
     def __unicode__(self):
-        return self.device_name
+        return "%s (UUID %s)" % (self.device_name,self.uuid)
 
     # ClassMethods
     def device_choices(cls):
@@ -346,6 +346,7 @@ class ExternalDevice(models.Model):
         stub_choices.append(['5Y3E6323','ROXO'])
         stub_choices.append(['1YAE635AB','luke'])
         stub_choices.append(['943255CB','preto'])
+        stub_choices.append(['555DDA3B','novo'])
         
         return stub_choices
     stub_device_choices = classmethod(stub_device_choices)

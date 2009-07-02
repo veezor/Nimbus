@@ -10,8 +10,6 @@ from backup_corporativo.bkp.views import global_vars, require_authentication, au
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
-from django.contrib.auth.forms import PasswordChangeForm
-
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -66,33 +64,4 @@ def delete_session(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
             logout(request)
-    return HttpResponseRedirect(login_path(request))        
-    
-### Password Management ###
-@authentication_required
-def new_password(request):
-    vars_dict, forms_dict, return_dict = global_vars(request)
-
-    if request.method == 'GET':
-        forms_dict['pwdform'] = PasswordChangeForm(return_dict['current_user'])
-        # Load forms and vars
-        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new/new_password.html', return_dict, context_instance=RequestContext(request))
-
-@authentication_required
-def change_password(request):
-    vars_dict, forms_dict, return_dict = global_vars(request)
-
-    if request.method == 'POST':
-        forms_dict['pwdform'] = PasswordChangeForm(return_dict['current_user'], request.POST)
-        
-        if forms_dict['pwdform'].is_valid():
-            request.user.set_password(forms_dict['pwdform'].cleaned_data['new_password1'])
-            request.user.save()
-            request.user.message_set.create(message="Senha foi alterada com sucesso.")
-            return redirect_back_or_default(request, default=root_path(request))
-        else:
-            # Load forms and vars
-            request.user.message_set.create(message="Houve um erro e a senha não foi alterada.")
-            return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/new/new_password.html', return_dict, context_instance=RequestContext(request))
+    return HttpResponseRedirect(login_path(request))

@@ -74,7 +74,7 @@ def edit_config_path(request):
 
 def new_device_path(request):
     """Returns new device path."""
-    return "%s/device/new" % (request.META['SCRIPT_NAME'])
+    return "%s/config/devices/" % (request.META['SCRIPT_NAME'])
         
 def new_restriction_path(request):
     """Returns new restriction path."""        

@@ -23,8 +23,7 @@ urlpatterns = patterns('',
     (r'^password/new$', 'backup_corporativo.bkp.views.new_password'),
     (r'^password/$', 'backup_corporativo.bkp.views.change_password'),
     # views_app/devices.py
-    (r'^device/new$', 'backup_corporativo.bkp.views.new_device'),
-    (r'^device/create$', 'backup_corporativo.bkp.views.create_device'),
+    (r'^device/$', 'backup_corporativo.bkp.views.create_device'),
     # views_app/dumps.py
     (r'^dump/create$', 'backup_corporativo.bkp.views.create_dump'),        
     (r'^dump/restore$', 'backup_corporativo.bkp.views.restore_dump'),
