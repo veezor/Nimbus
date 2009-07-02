@@ -86,10 +86,6 @@ class Computer(models.Model):
         from backup_corporativo.bkp.bacula import Bacula;
         Bacula.run_backup('empty_job')
         
-    def procedures_list(self):
-        """Gets list of associated procedure."""
-        return Procedure.objects.filter(computer=self.id)
-
     def get_computer_name(self):
         """Returns computer name lower string."""
         return str.lower(str(self.computer_name))
@@ -148,21 +144,9 @@ class Procedure(models.Model):
         trigg.save()
 
     def update_status(self):
-        """Change status to valid or invalid depending if filesets_list() returns the list or an empty set."""
-        self.status = self.filesets_list() and 'Valid' or 'Invalid'
+        """Change status to valid or invalid depending if fileset_set.all() returns the list or an empty set."""
+        self.status = self.fileset_set.all() and 'Valid' or 'Invalid'
         self.save()
-    
-    def filesets_list(self):
-        """Get list of associated file sets."""
-        return FileSet.objects.filter(procedure=self.id)
-
-    def schedules_list(self):
-        """Get list of associated schedules."""
-        return Schedule.objects.filter(procedure=self.id)
-
-    def pools_list(self):
-        """Get list of associated pools."""
-        return Pool.objects.filter(procedure=self.id)
     
     def get_fileset_name(self):
         """Get fileset name for bacula file."""

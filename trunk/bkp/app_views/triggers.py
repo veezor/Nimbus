@@ -47,7 +47,7 @@ def weeklytrigger(request, computer_id, procedure_id, schedule_id):
             vars_dict['sched'] = get_object_or_404(Schedule, pk=schedule_id)
             vars_dict['sched_lower_type'] = vars_dict['sched'].type.lower()
             vars_dict['scheds'] = Schedule.objects.filter(procedure=vars_dict['proc'])
-            vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+            vars_dict['fsets'] = vars_dict['proc'].fileset_set.all()
             vars_dict['triggerformempty'] = True
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
@@ -82,7 +82,7 @@ def monthlytrigger(request, computer_id, procedure_id, schedule_id):
             vars_dict['procs'] = Procedure.objects.filter(computer=vars_dict['comp'])
             vars_dict['sched_lower_type'] = vars_dict['sched'].type.lower()
             vars_dict['scheds'] = Schedule.objects.filter(procedure=vars_dict['proc'])
-            vars_dict['fsets'] = vars_dict['proc'].filesets_list()
+            vars_dict['fsets'] = vars_dict['proc'].fileset_set.all()
             vars_dict['triggerformempty'] = True
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
