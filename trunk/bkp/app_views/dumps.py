@@ -15,15 +15,19 @@ from django.shortcuts import get_object_or_404
 ### Dump ###
 @authentication_required
 def create_dump(request):
+    from time import strftime
     from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
     from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
-    from time import strftime
+    try:
+        from backup_corporativo.settings import BACULA_DB_NAME
+    except:
+        raise('Could not import BACULA_DB_NAME from settings.py')
    
 	# Create dump file and encrypt 
     date = strftime("%Y-%m-%d_%H:%M:%S")
     tmpdump_file = absolute_file_path('tmpdump','custom')
     dump_file = absolute_file_path('%s.nimbus' % date,'custom')
-    cmd = '''mysqldump --user=%s --password=%s --add-drop-database --create-options --disable-keys --databases %s bacula -r "%s"''' % (DATABASE_USER,DATABASE_PASSWORD,DATABASE_NAME,tmpdump_file)
+    cmd = '''mysqldump --user=%s --password=%s --add-drop-database --create-options --disable-keys --databases %s %s -r "%s"''' % (DATABASE_USER,DATABASE_PASSWORD,DATABASE_NAME,BACULA_DB_NAME,tmpdump_file)
     os.system(cmd)
     encrypt(tmpdump_file,dump_file,'lala',15,True)
     
@@ -47,6 +51,7 @@ def restore_dump(request):
 
 	from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
 	from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
+
 	if request.method == 'POST':
 		restore_dump_form = RestoreDumpForm(request.POST, request.FILES)
 		if restore_dump_form.is_valid():

@@ -117,22 +117,7 @@ def view_computer(request, computer_id):
     if request.method == 'GET':
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
         vars_dict['procs'] = vars_dict['comp'].procedure_set.all()
-
-        lastjobs_query =   ''' SELECT DISTINCT JobID, FileSet.FileSetId, Client.Name as cName, Job.Name, 
-                            Level, JobStatus, StartTime, EndTime, JobFiles, JobBytes , JobErrors
-                            from Job, Client, FileSet
-                            WHERE Client.Name = '%s'
-                            ''' % vars_dict['comp'].computer_name
-        import MySQLdb
-        from backup_corporativo.bkp.utils import dictfetch
-        try:
-            db = MySQLdb.connect(host="localhost", user="root", passwd="mysqladmin", db="bacula")
-            cursor = db.cursor()
-            cursor.execute(lastjobs_query)
-            vars_dict['lastjobs'] = dictfetch(cursor)
-        except:
-            db = object()
-
+        vars_dict['lastjobs'] = vars_dict['comp'].last_jobs()
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/view_computer.html', return_dict, context_instance=RequestContext(request))    
