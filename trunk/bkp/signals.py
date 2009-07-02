@@ -327,7 +327,7 @@ def remove_computer_file(instance):
 
 def update_fileset_file(procedure):
     "FileSet update filesets to a procedure instance"
-    fsets = procedure.filesets_list()
+    fsets = procedure.fileset_set.all()
     name = procedure.get_fileset_name()
     farray = generate_file_array(fsets)
     generate_fileset_file(name,farray)

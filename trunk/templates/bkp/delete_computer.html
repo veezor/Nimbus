@@ -1,0 +1,15 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+
+<p>Dejesa realmente remover o computador '{{comp}}' ?</p>
+
+<form name="delete_computer" action="{{script_name}}/computer/{{comp.id}}/delete" method="POST">
+	<input type="submit" value="Sim">
+</form>
+
+<br />
+
+<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+
+{% endblock %}

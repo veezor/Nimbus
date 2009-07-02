@@ -4,7 +4,7 @@
 <hr />
 
 <h3>Adicionar Nova Restrição</h3>
-<form action="{{script_name}}/bandwidthrestriction/new" method="post">
+<form action="{{script_name}}/restriction/new" method="post">
 
 	<table>
 		<tr>
@@ -51,7 +51,7 @@
 {% if bandrests %}
 <ol>
 {% for rest in bandrests %}
-	<li>{{ rest }} | <a href='{{script_name}}/bandwidthrestriction/{{rest.id}}/delete'>Delete</a></li>
+	<li>{{ rest }} | <a href='{{script_name}}/restriction/{{rest.id}}/delete'>Delete</a></li>
 {% endfor %}
 <ol>
 {% else %}

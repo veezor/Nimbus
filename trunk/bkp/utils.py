@@ -76,6 +76,10 @@ def new_device_path(request):
     """Returns new device path."""
     return "%s/device/new" % (request.META['SCRIPT_NAME'])
         
+def new_restriction_path(request):
+    """Returns new restriction path."""        
+    return "%s/restriction/new" % (request.META['SCRIPT_NAME'])
+    
 def random_password(size):
     """Generates random password of a given size."""
     import string

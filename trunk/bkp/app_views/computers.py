@@ -126,6 +126,14 @@ def view_computer(request, computer_id):
 
 @authentication_required
 def delete_computer(request, computer_id):
+    if request.method == 'GET':
+        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
+        request.user.message_set.create(message="Confirme a remoção do computador.")
+        # Load forms and vars
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/delete_computer.html', return_dict, context_instance=RequestContext(request))    
+        
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=computer_id)
         comp.delete()

@@ -149,7 +149,7 @@ class Computer(models.Model):
 
 
     def __unicode__(self):
-        return self.computer_name
+        return "%s (%s)" % (self.computer_name, self.ip)
 
         
 ### Procedure ###
@@ -290,6 +290,9 @@ class FileSet(models.Model):
         """Returns delete url."""
         return "computer/%s/procedure/%s/fileset/%s/delete" % (
                 self.procedure.computer_id, self.procedure_id, self.id)
+
+    def __unicode__(self):
+        return self.path
 
 
 ### Pool ###

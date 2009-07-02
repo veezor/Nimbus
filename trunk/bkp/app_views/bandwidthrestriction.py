@@ -50,7 +50,7 @@ def new_bandwidth_restriction(request):
 					bandwidthrestriction = BandwidthRestriction(dayoftheweek=dayoftheweek,restrictiontime=rest_time,restriction_value=restriction_value).save()
 
 			request.user.message_set.create(message="Restrição de Banda adicionada com sucesso.")
-			return HttpResponseRedirect('/bandwidthrestriction/new')
+			return HttpResponseRedirect(new_restriction_path(request))
 		else:
 			request.user.message_set.create(message="O Formulário contém erros.")
 			vars_dict['bandrests'] = BandwidthRestriction.objects.all()
@@ -64,9 +64,11 @@ def delete_bandwidth_restriction(request,bandwidthrestriction_id):
 	bandwidthrestriction = get_object_or_404(BandwidthRestriction,pk=bandwidthrestriction_id)
 	if request.method == 'GET':
 		vars_dict['bandwidthrestriction'] = bandwidthrestriction
+		request.user.message_set.create(message="Confirme a remoção da restrição.")
 		return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-		return render_to_response('bkp/delete_confirm_bandwidthrestriction.html', return_dict, context_instance=RequestContext(request))
+		return render_to_response('bkp/delete_bandwidthrestriction.html', return_dict, context_instance=RequestContext(request))
 	if request.method == 'POST':
 		request.user.message_set.create(message="Restrição de Banda '%s' removida com sucesso." % bandwidthrestriction)
 		bandwidthrestriction.delete()
-		return HttpResponseRedirect('/bandwidthrestriction/new')
+		return HttpResponseRedirect(new_restriction_path(request))
+

@@ -110,7 +110,15 @@ def create_procedure(request, computer_id):
 
 @authentication_required
 def delete_procedure(request, computer_id, procedure_id):
-    if request.method == 'POST':
+    if request.method == 'GET': 
+        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+        vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+        request.user.message_set.create(message="Confirme a remoção do procedimento.")
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/delete_procedure.html', return_dict, context_instance=RequestContext(request))
+        
+    elif request.method == 'POST':
         proc = get_object_or_404(Procedure, pk=procedure_id)
         proc.delete()
         request.user.message_set.create(message="Procedimento removido permanentemente.")

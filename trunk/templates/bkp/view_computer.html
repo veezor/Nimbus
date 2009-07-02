@@ -8,10 +8,8 @@
 	        {{ comp.computer_name }}
 	    </h2>
 	    <div class="botao_acoes">
-	        <button onclick="location.href='{{script_name}}/{{comp.edit_url}}'"><span>Editar</span></button>
-	        <form action="{{script_name}}/{{comp.delete_url}}" method="post">
-                <button type="submit"><span>Remover</span></button>
-            </form>
+	        <button onclick="location.href='{{script_name}}/{{comp.edit_url}}'"><span>Alterar</span></button>
+		    <button onclick="location.href='{{script_name}}/{{comp.delete_url}}';"><span>Remover</span></button>
 	    </div>
 	</div>
 	
@@ -48,32 +46,28 @@
             <div class="titulo_topo">
                 <h3><strong>{{ p.procedure_name }}</strong></h3>
                 <div class="botao_acoes">
-	                <button onclick="location.href='{{script_name}}/{{p.edit_url}}'"><span>Alterar</span></button>
-	                <form action="{{script_name}}/{{p.delete_url}}" method="post">
-	                    <button type="submit"><span>Remover</span></button>
-	                </form>
 	                <button onclick="location.href='{{script_name}}/{{p.new_run_url}}'"><span>Executar</span></button>
+	                <button onclick="location.href='{{script_name}}/{{p.edit_url}}'"><span>Alterar</span></button>
+	                <button onclick="location.href='{{script_name}}/{{p.delete_url}}'"><span>Remover</span></button>
 	            </div>
 	        </div>
 	        <ul class="aux">
 	            <!--li><span class="label">Caminho para recuperação:</span> <span class="value">{{ p.restore_path }}</span></li-->
 	            <li>
 	                <span class="label">Caminhos do backup:<br/>
-	                    <a href="/computer/{{comp.id}}/procedure/{{p.id}}/fileset/new">adicionar</a></span>
-	                <span class="value">{% for fs in p.fileset_set.all %}
-    	                <form action="{{script_name}}/{{fs.delete_url}}" method="post">
-	                        {{ fs.path }}
-	                        <button type="submit"><span>Remover</span></button>
-	                    </form>
+	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/fileset/new">adicionar</a></span>
+	                <span class="value">
+					{% for fs in p.fileset_set.all %}
+	                	{{ fs.path }}
+			            <button onclick="location.href='{{script_name}}/{{fs.delete_url}}'"><span>Remover</span></button>
 	                {% endfor %}
 	                </span>
 	            </li>
 	            <li>
 	                <span class="label">Agendamentos:<br/>
-	                    <a href="/computer/{{comp.id}}/procedure/{{p.id}}/schedule/new">adicionar</a></span>
+	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/schedule/new">adicionar</a></span>
 	                {% for sc in p.schedule_set.all %}
 	                <span class="value">
-	                <form action="{{script_name}}/{{sc.delete_url}}" method="post">
 	                    Tipo: {{ sc.type }}
                         <ul>
                         {% for scwt in sc.weeklytrigger_set.all %}
@@ -93,9 +87,8 @@
                             <li>Dias: {{ scmt.target_days }}</li>
                         {% endfor %}
                         </ul>
-	                    <button type="submit"><span>Remover</span></button>
 	                    <button onclick="location.href='{{script_name}}/{{sc.edit_url}}';return false"><span>Editar</span></button>
-	                </form>
+	                    <button onclick="location.href='{{script_name}}/{{sc.delete_url}}';return false"><span>Remover</span></button>
                     </span>
                     {% endfor %}
                 </li>

@@ -53,7 +53,17 @@ def create_fileset(request, computer_id, procedure_id):
 
 @authentication_required
 def delete_fileset(request, computer_id, procedure_id, fileset_id):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+        vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
+        vars_dict['fset'] = get_object_or_404(FileSet, pk=fileset_id)
+        request.user.message_set.create(message="Confirme a remoção do local.")
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/delete_fileset.html', return_dict, context_instance=RequestContext(request))
+        
+        
+    elif request.method == 'POST':
         fset = get_object_or_404(FileSet, pk=fileset_id)
         fset.delete()
         request.user.message_set.create(message="Local foi removido permanentemente.")
