@@ -52,12 +52,16 @@ def update_files(sender, instance, signal, *args, **kwargs):
         update_pool_file(instance.procedure)
     elif sender == Schedule:
         update_schedule_file(instance.procedure)
+    elif sender == WeeklyTrigger:
+        update_schedule_file(instance.schedule.procedure)
+    elif sender == MonthlyTrigger:
+        update_schedule_file(instance.schedule.procedure)
     elif sender == GlobalConfig:
         update_config_file(instance)
         update_device_file(instance)        
         update_console_file(instance)
     elif sender == BandwidthRestriction:
-        generate_cron()              
+        generate_cron()
     else:
         raise # Oops!
 
@@ -129,7 +133,7 @@ def config_msg_dict(msg_name, admin_mail=None):
     
 def generate_config(filename,dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict):
     "generate config file"
-    f = prepare_to_write(filename,'custom/')
+    f = prepare_to_write(filename,'custom/config/')
 
     f.write("Director {\n")
     for k in dir_dict.keys():
@@ -200,7 +204,7 @@ def update_device_file(instance):
 
 def generate_device(filename,sto_dict, dir_dict, dev_dict, msg_dict):
     "generate config file"
-    f = prepare_to_write(filename,'custom/')
+    f = prepare_to_write(filename,'custom/config/')
 
     f.write("Storage {\n")
     for k in sto_dict.keys():
@@ -240,7 +244,7 @@ def update_console_file(instance):
 
 def generate_console(filename,dir_dict):
     "generate console file"
-    f = prepare_to_write(filename,'custom/')
+    f = prepare_to_write(filename,'custom/config/')
 
     f.write("Director {\n")
     for k in dir_dict.keys():
@@ -419,11 +423,7 @@ def run_dict(schedules_list):
                 for day in days:
                     key = "monthly %s at %s" % (day,str(trigg.hour.strftime("%H:%M")))
                     dict[key] = trigg.level
-            else:
-                # unique type still needs to be implemented
-                raise
         else:
-            # there's no trigger configured
             pass
     return dict
 
@@ -493,3 +493,8 @@ models.signals.post_delete.connect(remove_files, sender=Pool)
 # Cron
 models.signals.post_save.connect(update_files, sender=BandwidthRestriction)
 models.signals.post_delete.connect(update_files, sender=BandwidthRestriction)
+# Trigger
+models.signals.post_save.connect(update_files, sender=WeeklyTrigger)
+models.signals.post_delete.connect(update_files, sender=WeeklyTrigger)
+models.signals.post_save.connect(update_files, sender=MonthlyTrigger)
+models.signals.post_delete.connect(update_files, sender=MonthlyTrigger)
