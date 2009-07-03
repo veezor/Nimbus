@@ -6,6 +6,7 @@
     <li><a href="/config/dump_restore/edit"{% ifequal config_type 'dump_restore' %} class="ativo"{% endifequal %}>Dump e restauração</a></li>
     <li><a href="/config/password/edit"{% ifequal config_type 'password' %} class="ativo"{% endifequal %}>Senha</a></li>
     <li><a href="/config/devices/edit"{% ifequal config_type 'devices' %} class="ativo"{% endifequal %}>Dispositivos Externos</a></li>
+    <li><a href="/config/restrictions/edit"{% ifequal config_type 'devices' %} class="ativo"{% endifequal %}>Restrições de Banda</a></li>
 </ul>
 
 {% ifequal config_type 'global' %}
@@ -59,24 +60,6 @@
 
 
 {% ifequal config_type 'devices' %}
-<h2>Dispositivos Cadastrados</h2>
-<div class="bloco_texto">
-{% if not devices %}
-<p> Não existem dispositivos cadastrados.</p>
-{% else %}
-<ul>
-{% for dev in devices %}
-	<li>
-	{{dev}} 
-	<button onclick="location.href='{{script_name}}/{{dev.edit_url}}'"><span>Alterar</span></button>
-	<button onclick="location.href='{{script_name}}/{{dev.delete_url}}'"><span>Remover</span></button>
-    </li>
-{% endfor %}
-</ul>
-{% endif %}
-</div>
-
-
 <h2>Cadastrar Dispositivo</h2>
 
 <form action="{{script_name}}/device/" method="post">
@@ -96,6 +79,64 @@
     </div>
     <p><input type="submit" value="Salvar" /></p>
 </form>
+
+<h2>Dispositivos Cadastrados</h2>
+<div class="bloco_texto">
+{% if not devices %}
+<p> Não existem dispositivos cadastrados.</p>
+{% else %}
+<ul>
+{% for dev in devices %}
+	<li>
+	{{dev}} 
+	<button onclick="location.href='{{script_name}}/{{dev.edit_url}}'"><span>Alterar</span></button>
+	<button onclick="location.href='{{script_name}}/{{dev.delete_url}}'"><span>Remover</span></button>
+    </li>
+{% endfor %}
+</ul>
+{% endif %}
+</div>
+{% endifequal %}
+
+{% ifequal config_type 'restrictions' %}
+<h2>Adicionar Nova Restrição</h2>
+<form action="{{script_name}}/restriction/" method="post">
+
+	<div class="fieldWrapper">	
+	{{ restform.restrictiontime.errors }}
+	{{ restform.restrictiontime.label_tag }}  {{ restform.restrictiontime }}
+	</div>
+	<div class="fieldWrapper">	
+	{{ restform.restriction_value.errors }}
+	{{ restform.restriction_value.label_tag }}  {{ restform.restriction_value }}
+	</div>
+
+	{% if restform.days.errors %}
+		{{ restform.days.errors }}
+	{% endif %}
+
+	Dias de Restrição:
+		<div class="fieldWrapper">	
+		{% for choice_id, choice_label in restform.fields.days.choices %}
+		{{ choice_label }} <input type="checkbox" name="days" value="{{ choice_id }}">
+		{% endfor %}
+		</div>
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
+
+<h2>Restrições de Banda Atuais</h2>
+<div class="bloco_texto">
+{% if rests %}
+<ul>
+{% for rest in rests %}
+	<li>{{ rest }} <a href='{{script_name}}/restriction/{{rest.id}}/delete'>Delete</a></li>
+{% endfor %}
+<ul>
+{% else %}
+<p>Não existem restrições cadastradas.</p>
+{% endif %}
+</div>
 
 {% endifequal %}
 

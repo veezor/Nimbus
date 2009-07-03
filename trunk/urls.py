@@ -18,6 +18,8 @@ urlpatterns = patterns('',
     (r'^device/(?P<device_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_device'),
     (r'^device/(?P<device_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_device'),
     (r'^password/$', 'backup_corporativo.bkp.views.change_password'),
+	(r'restriction/$', 'backup_corporativo.bkp.views.create_restriction'),
+	(r'restriction/(?P<restriction_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_restriction'),
     # views_app/stats.py
     (r'^stats$', 'backup_corporativo.bkp.views.view_stats'),
     # views_app/authentications.py
@@ -58,8 +60,5 @@ urlpatterns = patterns('',
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_schedule'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/weeklytrigger/$', 'backup_corporativo.bkp.views.weeklytrigger'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/monthlytrigger/$', 'backup_corporativo.bkp.views.monthlytrigger'),
-	# views_app/bandwidthrestriction
-	(r'restriction/new$', 'backup_corporativo.bkp.views.new_bandwidth_restriction'),
-	(r'restriction/(?P<bandwidthrestriction_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_bandwidth_restriction'),
     (r'^admin/(.*)', admin.site.root),
 )

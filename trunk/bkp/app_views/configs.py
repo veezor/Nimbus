@@ -10,6 +10,10 @@ from backup_corporativo.bkp.forms import RestoreDumpForm
 from backup_corporativo.bkp.forms import ExternalDeviceForm
 from backup_corporativo.bkp.forms import ExternalDeviceEditForm
 from django.contrib.auth.forms import PasswordChangeForm
+from backup_corporativo.bkp.models import RestrictionTime
+from backup_corporativo.bkp.models import DayOfTheWeek
+from backup_corporativo.bkp.models import BandwidthRestriction
+from backup_corporativo.bkp.forms import BandwidthRestrictionForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
 from django.http import HttpResponse
@@ -43,6 +47,9 @@ def edit_config(request, config_type='global'):
                 forms_dict['devform'] = ExternalDeviceForm()
                 vars_dict['dev_choices'] = ExternalDevice.device_choices()
                 vars_dict['devices'] = ExternalDevice.objects.all()
+            elif config_type == 'restrictions':
+        		vars_dict['rests'] = BandwidthRestriction.objects.all().order_by('dayoftheweek','restrictiontime')
+        		forms_dict['restform'] = BandwidthRestrictionForm()
         else:
             vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
             forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
@@ -220,4 +227,55 @@ def restore_dump(request):
         		forms_dict['restoredumpform'] = restore_dump_form
 		        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         		return render_to_response('bkp/edit/edit_config.html',return_dict, context_instance=RequestContext(request))
+
+### Restrictions ###
+
+@authentication_required
+def create_restriction(request):
+	vars_dict, forms_dict, return_dict = global_vars(request)
+    
+	if request.method == 'POST':
+		restform = BandwidthRestrictionForm(request.POST)
+		if restform.is_valid():
+			user_rest_value = restform.cleaned_data['restriction_value']
+			user_rest_time = restform.cleaned_data['restrictiontime']
+			try:
+				rtime_object = RestrictionTime.objects.get(restriction_time=user_rest_time)
+			except RestrictionTime.DoesNotExist:
+				rtime_object = RestrictionTime(restriction_time=user_rest_time)
+				rtime_object.save()
+			for day in restform.cleaned_data['days']:
+				day_object = DayOfTheWeek.objects.get(day_name=day)
+				try:
+					rest = BandwidthRestriction.objects.get(restrictiontime=rtime_object,dayoftheweek=day_object)
+					rest.restriction_value = user_rest_value
+					rest.save()
+				except BandwidthRestriction.DoesNotExist:
+					rest = BandwidthRestriction(dayoftheweek=day_object,restrictiontime=rtime_object,restriction_value=user_rest_value)
+					rest.save()
+			request.user.message_set.create(message="Restrição de Banda adicionada com sucesso.")
+			return HttpResponseRedirect(new_restriction_path(request))
+		else:
+			request.user.message_set.create(message="O Formulário contém erros.")
+			vars_dict['rests'] = BandwidthRestriction.objects.all()
+			vars_dict['config_type'] = 'restrictions'
+			forms_dict['restform'] = restform
+			return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+			return render_to_response('bkp/edit/edit_config.html', return_dict, context_instance=RequestContext(request))
+
+
+@authentication_required
+def delete_restriction(request,restriction_id):
+	vars_dict, forms_dict, return_dict = global_vars(request)
+	rest = get_object_or_404(BandwidthRestriction,pk=restriction_id)
+	if request.method == 'GET':
+		vars_dict['rest'] = rest
+		request.user.message_set.create(message="Confirme a remoção da restrição.")
+		return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+		return render_to_response('bkp/delete/delete_restriction.html', return_dict, context_instance=RequestContext(request))
+	if request.method == 'POST':
+		request.user.message_set.create(message="Restrição de Banda '%s' removida com sucesso." % rest)
+		rest.delete()
+		return HttpResponseRedirect(new_restriction_path(request))
+		
 

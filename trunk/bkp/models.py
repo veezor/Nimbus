@@ -389,7 +389,7 @@ class DayOfTheWeek(models.Model):
 
 ### Restriction Time
 class RestrictionTime(models.Model):
-    restriction_time = models.TimeField("Início Restrição")
+    restriction_time = models.TimeField("Hora")
 
     def __unicode__(self):
 		return '%s' % self.restriction_time
@@ -398,11 +398,13 @@ class RestrictionTime(models.Model):
 class BandwidthRestriction(models.Model):
     dayoftheweek = models.ForeignKey(DayOfTheWeek)
     restrictiontime = models.ForeignKey(RestrictionTime)
-    restriction_value = models.IntegerField("Limite de Upload")
+    restriction_value = models.IntegerField("Restrição")
 
+    def delete_url(self):
+        return "restriction/%s/delete" % (self.id)
 
     def __unicode__(self):
-	day = DAYS_OF_THE_WEEK[self.dayoftheweek.day_name]
+        day = DAYS_OF_THE_WEEK[self.dayoftheweek.day_name]
         #return '%shs %s %s kbps' % (self.restrictiontime,day,self.restriction_value)
         return '%shs %s %s kbps' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
 

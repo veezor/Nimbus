@@ -78,7 +78,7 @@ def new_device_path(request):
         
 def new_restriction_path(request):
     """Returns new restriction path."""        
-    return "%s/restriction/new" % (request.META['SCRIPT_NAME'])
+    return "%s/config/restrictions/edit" % (request.META['SCRIPT_NAME'])
     
 def random_password(size):
     """Generates random password of a given size."""
