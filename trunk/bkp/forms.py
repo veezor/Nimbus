@@ -111,6 +111,11 @@ class ExternalDeviceForm(ModelForm):
         model = ExternalDevice
         fields = ('device_name','uuid')
 
+class ExternalDeviceEditForm(forms.Form):
+    device_name = forms.CharField(label='Nome',max_length=20)
+
+
+
 class BandwidthRestrictionForm(forms.Form):
     # TODO: import days of the week from its original place
 	DAYS_OF_THE_WEEK = (

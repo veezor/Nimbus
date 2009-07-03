@@ -66,7 +66,11 @@
 {% else %}
 <ul>
 {% for dev in devices %}
-	<li>{{dev}}</li>
+	<li>
+	{{dev}} 
+	<button onclick="location.href='{{script_name}}/{{dev.edit_url}}'"><span>Alterar</span></button>
+	<button onclick="location.href='{{script_name}}/{{dev.delete_url}}'"><span>Remover</span></button>
+    </li>
 {% endfor %}
 </ul>
 {% endif %}

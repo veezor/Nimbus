@@ -14,6 +14,10 @@ urlpatterns = patterns('',
     # views_app/configs.py
     (r'^config/edit$', 'backup_corporativo.bkp.views.edit_config'),
     (r'^config/(?P<config_type>.*?)/edit$', 'backup_corporativo.bkp.views.edit_config'),
+    (r'^device/$', 'backup_corporativo.bkp.views.create_device'),
+    (r'^device/(?P<device_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_device'),
+    (r'^device/(?P<device_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_device'),
+    (r'^password/$', 'backup_corporativo.bkp.views.change_password'),
     # views_app/stats.py
     (r'^stats$', 'backup_corporativo.bkp.views.view_stats'),
     # views_app/authentications.py
@@ -21,9 +25,6 @@ urlpatterns = patterns('',
     (r'^session/new$', 'backup_corporativo.bkp.views.new_session'),
     (r'^session/delete$', 'backup_corporativo.bkp.views.delete_session'),
     (r'^password/new$', 'backup_corporativo.bkp.views.new_password'),
-    (r'^password/$', 'backup_corporativo.bkp.views.change_password'),
-    # views_app/devices.py
-    (r'^device/$', 'backup_corporativo.bkp.views.create_device'),
     # views_app/dumps.py
     (r'^dump/create$', 'backup_corporativo.bkp.views.create_dump'),        
     (r'^dump/restore$', 'backup_corporativo.bkp.views.restore_dump'),

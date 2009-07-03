@@ -302,7 +302,7 @@ class Pool(models.Model):
     
 ### External Device ###
 class ExternalDevice(models.Model):
-    device_name = models.CharField("Nome",max_length=50)
+    device_name = models.CharField("Nome",max_length=20)
     uuid = models.CharField("Dispositivo", max_length=50, unique=True)
     mount_index = models.IntegerField(unique=True)
 
@@ -312,6 +312,19 @@ class ExternalDevice(models.Model):
 
     def __unicode__(self):
         return "%s (UUID %s)" % (self.device_name,self.uuid)
+
+    def edit_url(self):
+        """Returns edit url."""
+        return "device/%s/edit" % (self.id)
+
+    def update_url(self):
+        """Returns edit url."""
+        return "device/%s/edit" % (self.id)
+
+    def delete_url(self):
+        """Returns delete url."""
+        return "device/%s/delete" % (self.id)
+
 
     # ClassMethods
     def device_choices(cls):

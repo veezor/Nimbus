@@ -1,0 +1,33 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+
+<h2>Informações</h2>
+<div class="bloco_texto">
+    <ul class="aux">
+        <li><strong class="label">UUID:</strong> <span class="value">{{ dev.uuid }}</span></li>
+    </ul>
+</div>
+
+<h2> Alterar Dispositivo Externo </h2>
+<form action="{{script_name}}/{{dev.update_url}}" method="post">
+{% if devform %}
+	{% for field in devform %}
+		<div id="fieldWrapper">
+			{{field.errors}}
+			{{field.label_tag}} {{field}}
+		</div>
+	{% endfor %}
+{% else %}
+	<div id="fieldWrapper">
+		<label for="id_device_name">Nome</label> <input id="id_device_name" type="text" name="device_name" maxlength="20" value="{{dev.device_name}}" />
+	</div>
+{% endif %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
+
+<a href="{{script_name}}/config/edit">Cancelar</a>
+<br />
+
+{% endblock %}

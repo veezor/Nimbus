@@ -8,6 +8,7 @@ from backup_corporativo.bkp.models import ExternalDevice
 from backup_corporativo.bkp.forms import GlobalConfigForm
 from backup_corporativo.bkp.forms import RestoreDumpForm
 from backup_corporativo.bkp.forms import ExternalDeviceForm
+from backup_corporativo.bkp.forms import ExternalDeviceEditForm
 from django.contrib.auth.forms import PasswordChangeForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
@@ -40,7 +41,7 @@ def edit_config(request, config_type='global'):
                 forms_dict['pwdform'] = PasswordChangeForm(return_dict['current_user'])
             elif config_type == 'devices':
                 forms_dict['devform'] = ExternalDeviceForm()
-                vars_dict['dev_choices'] = ExternalDevice.stub_device_choices()
+                vars_dict['dev_choices'] = ExternalDevice.device_choices()
                 vars_dict['devices'] = ExternalDevice.objects.all()
         else:
             vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
@@ -103,13 +104,49 @@ def create_device(request):
             request.user.message_set.create(message="Dispositivo adicionado com sucesso.")            
             return HttpResponseRedirect(new_device_path(request))
         else:
-            vars_dict['dev_choices'] = ExternalDevice.stub_device_choices()
+            vars_dict['dev_choices'] = ExternalDevice.device_choices()
             vars_dict['devices'] = ExternalDevice.objects.all()
             vars_dict['config_type'] = 'devices'
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             return render_to_response('bkp/edit/edit_config.html', return_dict, context_instance=RequestContext(request))
             
+@authentication_required
+def edit_device(request, device_id):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+
+    if request.method == 'GET':
+        vars_dict['dev'] = get_object_or_404(ExternalDevice, pk=device_id)
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/edit/edit_device.html', return_dict, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        dev = get_object_or_404(ExternalDevice, pk=device_id)
+        forms_dict['devform'] = ExternalDeviceEditForm(request.POST)
+        if forms_dict['devform'].is_valid():
+            dev.device_name = forms_dict['devform'].cleaned_data['device_name']
+            dev.save()
+            request.user.message_set.create(message="Dispositivo alterado com sucesso.")
+            return HttpResponseRedirect(new_device_path(request))
+        else:
+            vars_dict['dev'] = get_object_or_404(ExternalDevice, pk=device_id)
+            request.user.message_set.create(message="Existem erros e o dispositivo não foi alterado.")
+            return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+            return render_to_response('bkp/edit/edit_device.html', return_dict, context_instance=RequestContext(request))
             
+
+@authentication_required
+def delete_device(request, device_id):
+    if request.method == 'GET':
+        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict['dev'] = get_object_or_404(ExternalDevice, pk=device_id)
+        request.user.message_set.create(message="Confirme a remoção do dispositivo.")
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/delete/delete_device.html', return_dict, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        dev = get_object_or_404(ExternalDevice, pk=device_id)
+        dev.delete()
+        request.user.message_set.create(message="Dispositivo foi permanentemente removido.")
+        return HttpResponseRedirect(new_device_path(request))
+
 
 ### Dump ###
 @authentication_required
