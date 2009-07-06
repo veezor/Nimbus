@@ -68,6 +68,34 @@ class Computer(models.Model):
     fd_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     DEFAULT_LOCATION="/tmp/bacula-restore"
     
+    def get_status(self):
+        """Gets client lastjob status"""
+        from backup_corporativo.bkp.bacula import Bacula
+        status_query = """ 
+                SELECT j.JobStatus
+                from Job as j INNER JOIN Client as jc
+                on j.ClientID = jc.ClientID
+                WHERE jc.Name = '%s'
+                ORDER BY j.EndTime desc
+                LIMIT 1;
+            """ % (self.computer_name)
+                
+        cursor = Bacula.db_query(status_query)
+        result = cursor.fetchall()
+
+        if result:
+            status = result[0][0]
+
+            if status == 'T':
+                return 'Ativo'
+            elif status == 'E':
+                return 'Erro'
+            else:
+                return 'Desconhecido'
+        else:
+            return 'Desconhecido'
+
+    
     def build_backup(self, proc, fset, sched, wtrigg):
         """Saves child objects in correct order."""
 
@@ -84,15 +112,17 @@ class Computer(models.Model):
     def running_jobs(self):
         from backup_corporativo.bkp.bacula import Bacula
         running_jobs_query =    '''
-                                select j.Name, jc.Name, j.Level, j.StartTime, j.EndTime,
+                                select DISTINCT j.Name, jc.Name, j.Level, j.StartTime, j.EndTime,
                                 j.JobFiles, j.JobBytes , JobErrors, JobStatus from Job as j
                                 INNER JOIN Client as jc on j.ClientId = jc.ClientId
                                 WHERE (j.JobStatus = 'R' or j.JobStatus = 'p' or j.JobStatus = 'j'
                                 or j.JobStatus = 'c' or j.JobStatus = 'd' or j.JobStatus = 's'
                                 or j.JobStatus = 'M' or j.JobStatus = 'm' or j.JobStatus = 'S'
                                 or j.JobStatus = 'F' or j.JobStatus = 'B') and j.Name = '%s'
+                                ORDER BY j.StartTime desc
+                                LIMIT 5
                                 ''' % self.computer_name
-        running_jobs = Bacula.db_query(running_jobs_query)
+        running_jobs = Bacula.dictfetch_query(running_jobs_query)
         return running_jobs
 
     def last_jobs(self):
@@ -102,8 +132,10 @@ class Computer(models.Model):
                             Level, JobStatus, StartTime, EndTime, JobFiles, JobBytes , JobErrors
                             from Job, Client, FileSet
                             WHERE Client.Name = '%s'
+                            ORDER BY EndTime desc
+                            LIMIT 15
                             ''' % self.computer_name
-        last_jobs = Bacula.db_query(last_jobs_query)
+        last_jobs = Bacula.dictfetch_query(last_jobs_query)
         return last_jobs
 
     def run_test_job(self):

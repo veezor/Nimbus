@@ -59,7 +59,6 @@ def authentication_required(view_def):
 from backup_corporativo.bkp.app_views.authentications import *
 from backup_corporativo.bkp.app_views.computers import *
 from backup_corporativo.bkp.app_views.configs import *
-from backup_corporativo.bkp.app_views.devices import *
 from backup_corporativo.bkp.app_views.dumps import *
 from backup_corporativo.bkp.app_views.filesets import *
 from backup_corporativo.bkp.app_views.procedures import *

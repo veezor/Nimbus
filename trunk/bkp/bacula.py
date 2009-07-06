@@ -51,9 +51,17 @@ class Bacula:
         os.system(cmd)
     run_backup = classmethod(run_backup)
     
+    
+    def dictfetch_query(cls, query):
+        from backup_corporativo.bkp.utils import dictfetch
+
+        cursor = cls.db_query(query)
+        return dictfetch(cursor)
+    dictfetch_query = classmethod(dictfetch_query)
+    
+    
     def db_query(cls, query):
         import MySQLdb
-        from backup_corporativo.bkp.utils import dictfetch
     	from backup_corporativo.settings import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD
     	try:
     	    from backup_corporativo.settings import BACULA_DB_NAME
@@ -64,8 +72,9 @@ class Bacula:
             db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=BACULA_DB_NAME)
             cursor = db.cursor()
             cursor.execute(query)
-            result = dictfetch(cursor)
         except:
             raise Exception('Error in connect to bacula database')
-        return result
+        finally:
+            db.close()
+        return cursor
     db_query = classmethod(db_query)
