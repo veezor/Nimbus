@@ -58,7 +58,7 @@ class Bacula:
     	try:
     	    from backup_corporativo.settings import BACULA_DB_NAME
     	except:
-    	    raise('Could not import BACULA_DB_NAME from settings.py')
+    	    raise Exception('Could not import BACULA_DB_NAME from settings.py')
 
         try:
             db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=BACULA_DB_NAME)
