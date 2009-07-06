@@ -13,6 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from backup_corporativo.bkp.models import RestrictionTime
 from backup_corporativo.bkp.models import DayOfTheWeek
 from backup_corporativo.bkp.models import BandwidthRestriction
+from backup_corporativo.bkp.models import RestrictionTime
 from backup_corporativo.bkp.forms import BandwidthRestrictionForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
@@ -48,8 +49,10 @@ def edit_config(request, config_type='global'):
                 vars_dict['dev_choices'] = ExternalDevice.device_choices()
                 vars_dict['devices'] = ExternalDevice.objects.all()
             elif config_type == 'restrictions':
-        		vars_dict['rests'] = BandwidthRestriction.objects.all().order_by('dayoftheweek','restrictiontime')
-        		forms_dict['restform'] = BandwidthRestrictionForm()
+                vars_dict['rtimes'] = RestrictionTime.objects.all().order_by('restriction_time')
+                vars_dict['rests'] = BandwidthRestriction.objects.all().order_by('dayoftheweek','restrictiontime')
+                forms_dict['restform'] = BandwidthRestrictionForm()
+                vars_dict['days_of_the_week'] = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
         else:
             vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
             forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])

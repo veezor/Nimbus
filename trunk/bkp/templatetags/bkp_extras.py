@@ -55,3 +55,34 @@ def get_method(obj, value):
     Example: 
     """
     return getattr(obj, value)
+    
+    
+@register.filter
+def restriction_value(rtime_object, day_name):
+    """ Get restriction value for day of the week if exists.
+    Example: 
+    """
+    from backup_corporativo.bkp.models import BandwidthRestriction, DayOfTheWeek, RestrictionTime
+    
+    try:
+        day_object = DayOfTheWeek.objects.get(day_name=day_name)
+        rest = rtime_object.bandwidthrestriction_set.filter(dayoftheweek=day_object)
+        rest = rest and rest[0] or False
+        return rest and rest.restriction_value or '----'
+    except Exception:
+        return ''
+        
+@register.filter
+def restriction_id(rtime_object, day_name):
+    """ Get restriction id for day of the week if exists.
+    Example: 
+    """
+    from backup_corporativo.bkp.models import BandwidthRestriction, DayOfTheWeek, RestrictionTime
+    
+    try:
+        day_object = DayOfTheWeek.objects.get(day_name=day_name)
+        rest = rtime_object.bandwidthrestriction_set.filter(dayoftheweek=day_object)
+        rest = rest and rest[0] or False
+        return rest and rest.id or ''
+    except Exception:
+        return ''

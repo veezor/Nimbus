@@ -1,4 +1,5 @@
 {% extends "bkp/base.html" %}
+{% load bkp_extras %}
 {% block content %}
 
 <ul class="aux menu_horizontal config">
@@ -125,19 +126,45 @@
 </form>
 
 
-<h2>Restrições de Banda Atuais</h2>
-<div class="bloco_texto">
-{% if rests %}
-<ul>
-{% for rest in rests %}
-	<li>{{ rest }} <a href='{{script_name}}/restriction/{{rest.id}}/delete'>Delete</a></li>
-{% endfor %}
-<ul>
-{% else %}
-<p>Não existem restrições cadastradas.</p>
-{% endif %}
+<div class="titulo_botoes">
+    <h3>
+        <span>Restrições Cadastradas</span>
+    </h3>
+    <div class="botao_acoes"></div>
 </div>
-
+<div class="bloco_texto">
+	{% if not rtimes %}
+	<p> Não existem restrições cadastradas. </p>
+	{% else %}
+    <table>
+    <thead>
+        <tr>
+        <th scope='col'>Hora</th>
+        <th scope='col'>Segunda</th>
+        <th scope='col'>Terça</th>
+        <th scope='col'>Quarta</th>
+        <th scope='col'>Quinta</th>
+        <th scope='col'>Sexta</th>
+        <th scope='col'>Sábado</th>
+        <th scope='col'>Domingo</th>
+        </tr>
+    </thead>
+	<tbody>
+	{% for rtime in rtimes %}
+    <tr> 
+        <td> {{ rtime.restriction_time }} </td>
+		{% for day in days_of_the_week %}
+        <td> {{ rtime|restriction_value:day }} {% if rtime|restriction_id:day %}
+			<button onclick="location.href='{{script_name}}/restriction/{{rtime|restriction_id:day}}/delete';">
+			<span>X</span></button>{% endif %}
+		</td>
+	{% endfor %}
+	</tr>
+    {% endfor %}
+	</tbody>
+	</table>
+	{% endif %}
+</div>
 {% endifequal %}
 
 {% endblock %}

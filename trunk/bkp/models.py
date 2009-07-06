@@ -275,6 +275,15 @@ class MonthlyTrigger(models.Model):
     hour = models.TimeField("Horário")
     level = models.CharField("Nível", max_length=20,choices=LEVEL_CHOICES)
     target_days = cfields.ModelMonthDaysListField("Dias do Mês", max_length=100)
+    
+    def save(self):
+        self.__sanitize_target_days()
+        super(MonthlyTrigger,self).save()
+        
+    def __sanitize_target_days(self):
+        """Removes duplicated day entries"""
+        s = set(self.target_days.split(';'))
+        self.target_days = ";".join(sorted(list(s)))
 
 ### FileSet ###
 class FileSet(models.Model):
