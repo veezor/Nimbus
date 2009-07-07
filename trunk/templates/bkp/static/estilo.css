@@ -37,14 +37,14 @@ margin: 0 auto;
 
 
 #topo {
-background:transparent url(/static/imagens/logo_linconet.gif) no-repeat scroll left center;
+background:transparent url(../static/imagens/logo_linconet.gif) no-repeat scroll left center;
 height:100px;
 margin-top:35px;
 padding:0;
 }
 
 #topo h1 {
-background:transparent url(/static/imagens/logo_linconet_nome.gif) no-repeat scroll left center;
+background:transparent url(../static/imagens/logo_linconet_nome.gif) no-repeat scroll left center;
 height:36px;
 margin:18px 0 0 120px;
 overflow:hidden;
@@ -64,7 +64,7 @@ margin:5px 0 0 120px;
 }
 
 #topo .menu ul {
-background:transparent url(/static/imagens/bg_menu.gif) no-repeat scroll left top;
+background:transparent url(../static/imagens/bg_menu.gif) no-repeat scroll left top;
 height:37px;
 margin:0;
 overflow:hidden;
@@ -88,7 +88,7 @@ text-decoration:none;
 
 #topo .menu ul li a:hover,
 #topo .menu ul li.active a {
-background:transparent url(/static/imagens/bg_menu_selected.gif) repeat-x scroll left top;
+background:transparent url(../static/imagens/bg_menu_selected.gif) repeat-x scroll left top;
 color:#D4D6D6;
 text-decoration:none;
 }
