@@ -132,9 +132,11 @@
 	        <td> {{ job.JobBytes }} </td>
 	        <td> {{ job.JobErrors }} </td>
 		</tr>
-        {% endfor %}
+			{% if forloop.last %}
 		</tbody>
 		</table>
+			{% endif %}
+        {% endfor %}
     </div>
 
 
@@ -180,8 +182,10 @@
 			</td>
 			{% endifequal %}
 		</tr>
-        {% endfor %}
+			{% if forloop.last %}
 		</tbody>
 		</table>
+			{% endif %}
+        {% endfor %}
     </div>
 {% endblock %}

@@ -152,7 +152,6 @@ def create_run_procedure(request, computer_id, procedure_id):
             if forms_dict['runform'].is_valid():
                 dt = forms_dict['runform'].cleaned_data['target_date']
                 time = forms_dict['runform'].cleaned_data['target_hour']
-                import pdb; pdb.set_trace()
                 dt_time = "%s %s" % (dt, time)
                 Bacula.run_backup(vars_dict['proc'].procedure_name, Date=dt_time)
                 request.user.message_set.create(message="Execução agendada com sucesso.")
