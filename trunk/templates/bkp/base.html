@@ -8,6 +8,8 @@
 		<title>{% block title %}{% endblock %} Backup corporativo</title>
 
 		<link href="{{script_name}}/static/estilo.css" rel="stylesheet" />
+		<script type="text/javascript" src="{{script_name}}/static/jquery.js"></script>
+		<script type="text/javascript" src="{{script_name}}/static/main.js"></script>
 	</head>
 	<body>
 		<div id="site">
@@ -23,15 +25,18 @@
 			<div id="conteudo">	
 				<div id="sidebar">
                     <!-- start welcome block -->
+                    {% if current_user.username %}
                     <ul class="aux welcome">
                         <form class="link" action="{{script_name}}/session/delete" method="post">
                             <li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
                         </form>
                     </ul>
+                    {% endif %}
                     <!-- end welcome block -->
                     
 				    <!-- start computers block -->
 				    {% block computers %}
+				    {% if comps.count %}
 					<ul class="aux list_computers">
 						{% for c in comps %}
 						{% ifequal c.id comp.id %}
@@ -41,6 +46,7 @@
 						{% endifequal %}
 						{% endfor %}
 					</ul>
+					{% endif %}
 					<p><a href="{{script_name}}/computer/new">[+] Adicionar computador</a></p>
 					{% endblock %}
 					<!-- end computers block -->

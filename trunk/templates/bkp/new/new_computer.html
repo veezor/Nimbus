@@ -50,12 +50,27 @@
 
 	<h3>Detalhes Agendamento</h3>
 
+    <div class="mtriggform">
     {% for field in mtriggform %}
         <div class="fieldWrapper">
             {{ field.errors }}
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
+    </div>
+    
+    <div class="wtriggform">
+    {% for field in wtriggform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    </div>
+    
+    <div class="triggform_message">
+        <p>Por favor selecione o tipo de agendamento no formulário acima.</p>
+    </div>
 
     {% for field in compauxform %}
 		{{ field }}

@@ -48,6 +48,14 @@ def create_computer(request):
         temp_dict['compauxform'] = ComputerAuxForm(request.POST)
 
         if temp_dict['compauxform'].is_valid():
+            triggclass = temp_dict['compauxform'].cleaned_data['schedule_type']
+            if triggclass == 'Weekly':
+                triggform = 'wtriggform'
+            elif triggclass == 'Monthly':
+                triggform = 'mtriggform'
+            else:
+                triggform = ''
+            
             forms_dict['compform'] = ComputerForm(request.POST)
             if temp_dict['compauxform'].cleaned_data['Procedure']:
                 forms_dict['procform'] = ProcedureForm(request.POST)
@@ -56,15 +64,17 @@ def create_computer(request):
             if temp_dict['compauxform'].cleaned_data['Schedule']:
                 forms_dict['schedform'] = ScheduleForm(request.POST)
             if temp_dict['compauxform'].cleaned_data['Trigger']:
-                triggclass = globals()["%sTriggerForm" % temp_dict['compauxform'].cleaned_data['schedule_type']]
-                forms_dict['mtriggform'] = triggclass(request.POST)
+                if triggclass.lower() == 'weekly':
+                    forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST)
+                elif triggclass.lower() == 'monthly':
+                    forms_dict['mtriggform'] = MonthlyTriggerForm(request.POST)
             forms_list = forms_dict.values()
             if all([form.is_valid() for form in forms_dict.values()]):
                 comp = forms_dict['compform'].save(commit=False)
                 proc = forms_dict['procform'].save(commit=False)
                 fset = forms_dict['fsetform'].save(commit=False)
                 sched = forms_dict['schedform'].save(commit=False)
-                trigg = forms_dict['mtriggform'].save(commit=False)
+                trigg = forms_dict[triggform].save(commit=False)
                 comp.save()
                 comp.build_backup(proc, fset, sched, trigg)
                 request.user.message_set.create(message="Computador cadastrado com sucesso.")
