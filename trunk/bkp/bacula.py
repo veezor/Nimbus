@@ -78,7 +78,6 @@ class Bacula:
     	    raise Exception('Could not import BACULA_DB_NAME from settings.py')
 
         try:
-            import pdb; pdb.set_trace()
             db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=BACULA_DB_NAME)
             cursor = db.cursor()
             cursor.execute(query)
