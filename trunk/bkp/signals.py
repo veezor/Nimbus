@@ -197,7 +197,7 @@ def update_device_file(instance):
     "Update Device File"
     i = instance
     sto_dict = device_sto_dict("%s-sd" % i.bacula_name, i.storage_port)
-    dir_dict = device_dir_dict("%s-dir" % i.bacula_name,i.director_password)
+    dir_dict = device_dir_dict("%s-dir" % i.bacula_name,i.storage_password)
     dev_dict = device_dev_dict("FileStorage")
     msg_dict = device_msg_dict("Standard","%s-dir" % i.bacula_name)
     generate_device("bacula-sd.conf", sto_dict, dir_dict, dev_dict, msg_dict)
