@@ -46,7 +46,7 @@ class Bacula:
             raise Exception("Invalid call of run_restore")
     run_restore = classmethod(run_restore)
    
-    def run_backup(cls, JobName, Level="Full", Date=""):
+    def run_backup(cls, JobName, Level="Full", client_name="", Date=""):
         """ Date Format:  YYYY-MM-DD HH:MM:SS
             Level: Full/Incremental
         """
@@ -55,7 +55,10 @@ class Bacula:
             now = datetime.datetime.now() + sum_seconds
             Date = now.strftime("%Y-%m-%d %H:%M:%S")
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
-        cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun job="%(job_name)s" level=%(job_level)s when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date}
+        if client_name:
+            cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun job="%(job_name)s" level=%(job_level)s when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date,'client_name':client_name}
+        else:
+            cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun job="%(job_name)s" level=%(job_level)s when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date}
         BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
     run_backup = classmethod(run_backup)
