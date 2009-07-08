@@ -100,7 +100,7 @@ def config_dir_dict(dir_name, dir_port, dir_passwd):
     "generate config director attributes dict"
     
     return {'Name':dir_name, 'DIRport':dir_port, 'QueryFile':'"/etc/bacula/query.sql"', 
-    'WorkingDirectory':'"var/bacula/working"','PidDirectory':'"/var/run"','Maximum Concurrent Jobs':'1',
+    'WorkingDirectory':'"/var/bacula/working"','PidDirectory':'"/var/run"','Maximum Concurrent Jobs':'1',
     'Password':'"%s"' % dir_passwd, 'Messages':'Daemon' }
 
 def config_sto_dict(sto_name, sto_ip, sto_port, sto_passwd):
@@ -162,7 +162,7 @@ def generate_config(filename,dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict)
     
     folders = ['computers','filesets','jobs','pools','schedules']
     for folder in folders:
-        import_dir = absolute_dir_path("custom/%s" % folder)
+        import_dir = absolute_dir_path("custom/%s/" % folder)
         f.write("@|\"sh -c 'for f in %s* ; do echo @${f} ; done'\"\n" % import_dir)
 
     f.close()
