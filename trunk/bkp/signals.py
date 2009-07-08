@@ -271,8 +271,10 @@ def procedure_dict(proc_name, type, computer_name, fset_name, sched_name, pool_n
     "generate procedure attributes dict"
     bootstrap = '/var/lib/bacula/%s.bsr' % (proc_name)
     
+    gconf = GlobalConfig.objects.get(pk=1)
+    
     return {'Name':proc_name, 'Client':computer_name, 'Level':'Incremental',
-    'FileSet':fset_name, 'Schedule':sched_name, 'Storage':'LinconetStorage', 'Pool':pool_name,
+    'FileSet':fset_name, 'Schedule':sched_name, 'Storage':'%sStorage' % (gconf.bacula_name), 'Pool':pool_name,
     'Write Bootstrap':bootstrap, 'Priority':'10', 'Messages':'Standard','Type':type,'Where':where}
 
 def generate_procedure(proc_name,attr_dict):
@@ -402,10 +404,6 @@ def remove_pool_file(instance):
     remove_or_leave(filepath)
 
 ### Schedule ###
-
-# TODO: refactore this piece of code.
-# Because this is not beein called when new trigger is been added
-# It used to work on legacy codes
 def run_dict(schedules_list):
     "build a dict with bacula run specification"
     dict = {}
