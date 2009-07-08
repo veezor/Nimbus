@@ -1,9 +1,9 @@
 Job {
 	Name = "empty job"
-	Type = "Backup"
+	Type = "Admin"
 	Messages = "Standard"
 	Pool = "empty pool"
 	Client = "empty client"
 	FileSet = "empty fileset"
-	Storage = "LinconetStorage"
+	Storage = "develStorage"
 }
