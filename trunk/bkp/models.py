@@ -110,13 +110,14 @@ class Computer(models.Model):
     def running_jobs(self):
         from backup_corporativo.bkp.bacula import Bacula
         running_jobs_query =    '''
+        select JobID, JobStatus from Job,Client where Client.Name = 'force-fd' and JobStatus = 'R'
                                 select DISTINCT j.Name, jc.Name, j.Level, j.StartTime, j.EndTime,
                                 j.JobFiles, j.JobBytes , JobErrors, JobStatus from Job as j
                                 INNER JOIN Client as jc on j.ClientId = jc.ClientId
                                 WHERE (j.JobStatus = 'R' or j.JobStatus = 'p' or j.JobStatus = 'j'
                                 or j.JobStatus = 'c' or j.JobStatus = 'd' or j.JobStatus = 's'
                                 or j.JobStatus = 'M' or j.JobStatus = 'm' or j.JobStatus = 'S'
-                                or j.JobStatus = 'F' or j.JobStatus = 'B') and j.Name = '%s'
+                                or j.JobStatus = 'F' or j.JobStatus = 'B') and jc.Name = '%s'
                                 ORDER BY j.StartTime desc
                                 LIMIT 5
                                 ''' % self.computer_name
