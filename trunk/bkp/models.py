@@ -38,7 +38,9 @@ class GlobalConfig(models.Model):
     storage_port = models.IntegerField("Porta do Storage",default='9103')
     director_port = models.IntegerField("Porta do Director",default='9101')
     director_password = models.CharField(max_length=50,default='defaultpw')
-    database_password = models.CharField(max_length=50, default='defaultpw')
+    database_name = models.CharField(max_length=50, default='bacula')    
+    database_user = models.CharField(max_length=50, default='root')
+    database_password = models.CharField(max_length=50)
     admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
     max_upload_bandwidth = models.CharField("Limite de Upload", max_length=15, default='100 mbps')
 
@@ -47,7 +49,6 @@ class GlobalConfig(models.Model):
         from backup_corporativo.bkp.utils import random_password
         self.storage_password = random_password(50)
         self.director_password = random_password(50)
-        self.database_password = random_password(50)
 
     def system_configured(self):
         """Returns True if system is configured, False otherwise."""

@@ -43,7 +43,7 @@ class RestoreDumpForm(forms.Form):
 class GlobalConfigForm(ModelForm):
     class Meta:
         model = GlobalConfig
-        fields = ('bacula_name','storage_ip','storage_port','director_port','admin_mail')
+        fields = ('bacula_name','storage_ip','storage_port','director_port','admin_mail','database_name','database_user','database_password')
 
 class LoginForm(forms.Form):
     auth_login = forms.CharField(label=u'Usuário',max_length=20)

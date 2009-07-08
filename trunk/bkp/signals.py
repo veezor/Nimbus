@@ -91,7 +91,7 @@ def update_config_file(instance):
     i = instance
     dir_dict = config_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
     sto_dict = config_sto_dict("%sStorage" % i.bacula_name, i.storage_ip, i.storage_port, i.storage_password)
-    cat_dict = config_cat_dict("MyCatalog",i.database_password)
+    cat_dict = config_cat_dict("MyCatalog",i.database_name, i.database_user, i.database_password)
     smsg_dict = config_msg_dict("Standard",i.admin_mail)
     dmsg_dict = config_msg_dict("Daemon",i.admin_mail)    
     generate_config("bacula-dir.conf", dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict)
@@ -109,10 +109,10 @@ def config_sto_dict(sto_name, sto_ip, sto_port, sto_passwd):
     return {'Name':sto_name, 'Address':sto_ip,'SDPort':sto_port, 'Password':'"%s"' % sto_passwd,
     'Device':'FileStorage','Media Type':'File'}
 
-def config_cat_dict(cat_name, db_passwd):
+def config_cat_dict(cat_name, db_name, db_user, db_passwd):
     "generate config storage attributes dict"
     
-    return {'Name':cat_name, 'dbname':'"bacula"', 'dbuser':'"bacula"', 'dbpassword':'"%s"' % db_passwd}
+    return {'Name':cat_name, 'dbname':'"%s"' % db_name, 'dbuser':'"%s"' % db_user, 'dbpassword':'"%s"' % db_passwd}
     
 def config_msg_dict(msg_name, admin_mail=None):
     "generate config message attributes dict"
