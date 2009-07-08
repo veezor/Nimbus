@@ -117,7 +117,7 @@ class Computer(models.Model):
                                 or JobStatus = 'M' or JobStatus = 'm' or JobStatus = 'S'
                                 or JobStatus = 'F' or JobStatus = 'B') and 
                                 Client.Name = '%s'
-                                ORDER BY j.StartTime desc
+                                ORDER BY StartTime desc
                                 LIMIT 5
                                 ''' % self.computer_name
         running_jobs = Bacula.dictfetch_query(running_jobs_query)
