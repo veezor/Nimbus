@@ -3,11 +3,11 @@ import datetime
 
 class Bacula:
     WHERE_DEFAULT="/tmp/bacula-restore"
-    BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
 
 
     # ClassMethods    
     def run_restore_last(cls, ClientName, ClientRestore="", Where=WHERE_DEFAULT):
+        BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         ClientRestore = ClientRestore and ClientRestore or ClientName
         cmd = "bconsole %(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select current all done yes where=%(restore_path)s\nBACULAEOF" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where}
         BaculaLog.notice(["command: %s" % cmd])
@@ -16,6 +16,7 @@ class Bacula:
     
     def run_restore_date(cls, ClientName, Date,ClientRestore="", Where=WHERE_DEFAULT):
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
+        BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         ClientRestore = ClientRestore and ClientRestore or ClientName
         cmd = "bconsole %(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select current all done yes where=%(restore_path)s before=%(tg_date)s\nBACULAEOF" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date}
         BaculaLog.notice(["command: %s" % cmd])
@@ -25,6 +26,7 @@ class Bacula:
     def run_restore_jobid(cls, ClientName, JobId,ClientRestore="", Where=WHERE_DEFAULT):
         """JobId Format: specify a JobId or comma separated list of JobIds to be restored."""
         ClientRestore = ClientRestore and ClientRestore or ClientName
+        BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = "bconsole %(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select all done yes where=%(restore_path)s jobid=%(job_id)s\nBACULAEOF" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'job_id':JobId}
         BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
@@ -52,6 +54,7 @@ class Bacula:
             sum_seconds = datetime.timedelta(seconds=10)
             now = datetime.datetime.now() + sum_seconds
             Date = now.strftime("%Y-%m-%d %H:%M:%S")
+        BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = "bconsole %(bconsole_conf)s <<BACULAEOF \nrun job=%(job_name)s level=%(job_level)s when=%(tg_date)s yes\nBACULAEOF" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date}
         BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
@@ -75,6 +78,7 @@ class Bacula:
     	    raise Exception('Could not import BACULA_DB_NAME from settings.py')
 
         try:
+            import pdb; pdb.set_trace()
             db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=BACULA_DB_NAME)
             cursor = db.cursor()
             cursor.execute(query)
