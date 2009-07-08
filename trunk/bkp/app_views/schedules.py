@@ -22,14 +22,26 @@ def create_schedule(request, computer_id, procedure_id):
     if request.method == 'POST':
         temp_dict['schedauxform'] = ScheduleAuxForm(request.POST, ScheduleAuxForm())
         if temp_dict['schedauxform'].is_valid():
+            triggclass = temp_dict['schedauxform'].cleaned_data['schedule_type']
+            if triggclass == 'Weekly':
+                triggform = 'wtriggform'
+            elif triggclass == 'Monthly':
+                triggform = 'mtriggform'
+            else:
+                triggform = ''
+        
             forms_dict['schedform'] = ScheduleForm(request.POST)
-            triggclass = globals()["%sTriggerForm" % temp_dict['schedauxform'].cleaned_data['schedule_type']]
-            forms_dict['triggform'] = triggclass(request.POST)
             forms_list = forms_dict.values()
+            
+            if triggclass.lower() == 'weekly':
+                forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST)
+            elif triggclass.lower() == 'monthly':
+                forms_dict['mtriggform'] = MonthlyTriggerForm(request.POST)
        
             if all([form.is_valid() for form in forms_list]):
                 sched = forms_dict['schedform'].save(commit=False)
-                trigg = forms_dict['triggform'].save(commit=False)
+                trigg = forms_dict[triggform].save(commit=False)
+                
                 sched.procedure_id = procedure_id
                 sched.save()
                 sched.build_backup(trigg)
@@ -50,7 +62,8 @@ def new_schedule(request, computer_id, procedure_id):
         vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
         vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
         forms_dict['schedform'] = ScheduleForm()
-        forms_dict['triggform'] = MonthlyTriggerForm()
+        forms_dict['mtriggform'] = MonthlyTriggerForm()
+        forms_dict['wtriggform'] = WeeklyTriggerForm()
         forms_dict['schedauxform'] = ScheduleAuxForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/new/new_schedule.html', return_dict, context_instance=RequestContext(request))
