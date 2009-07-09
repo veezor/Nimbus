@@ -127,7 +127,7 @@ class Computer(models.Model):
     def last_jobs(self):
         from backup_corporativo.bkp.bacula import Bacula
         last_jobs_query =   '''
-                            SELECT DISTINCT JobID, FileSet.FileSetId, Client.Name as cName, Job.Name, 
+                            SELECT DISTINCT JobID, Client.Name as cName, Job.Name, 
                             Level, JobStatus, StartTime, EndTime, JobFiles, JobBytes , JobErrors
                             FROM Job INNER JOIN Client
                             on Job.ClientId = Client.ClientId
