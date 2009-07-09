@@ -1,4 +1,7 @@
 function set_backup_type() {
+    if (!$('form select[name=type]')) {
+        return false;
+    }
     $('form select[name=type]').change(
         function() {
             backup_type = $(this).children().filter(':selected').val();
