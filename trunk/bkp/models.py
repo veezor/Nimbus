@@ -110,14 +110,15 @@ class Computer(models.Model):
     def running_jobs(self):
         from backup_corporativo.bkp.bacula import Bacula
         running_jobs_query =    '''
-                                select DISTINCT Job.Name, Level, StartTime, EndTime,
-                                JobFiles, JobBytes , JobErrors, JobStatus from Job,Client 
-                                where (JobStatus = 'R' or JobStatus = 'p' or JobStatus = 'j'
+                                SELECT Job.Name, Level, StartTime, EndTime,
+                                JobFiles, JobBytes , JobErrors, JobStatus 
+                                FROM Job INNER JOIN Client 
+                                on Job.ClientId = Client.ClientId
+                                WHERE Client.Name = '%s' AND (JobStatus = 'R' or JobStatus = 'p' or JobStatus = 'j'
                                 or JobStatus = 'c' or JobStatus = 'd' or JobStatus = 's'
                                 or JobStatus = 'M' or JobStatus = 'm' or JobStatus = 'S'
-                                or JobStatus = 'F' or JobStatus = 'B') and 
-                                Client.Name = '%s'
-                                ORDER BY StartTime desc
+                                or JobStatus = 'F' or JobStatus = 'B')
+                                ORDER BY StartTime DESC
                                 LIMIT 5
                                 ''' % self.computer_name
         running_jobs = Bacula.dictfetch_query(running_jobs_query)
@@ -128,9 +129,10 @@ class Computer(models.Model):
         last_jobs_query =   '''
                             SELECT DISTINCT JobID, FileSet.FileSetId, Client.Name as cName, Job.Name, 
                             Level, JobStatus, StartTime, EndTime, JobFiles, JobBytes , JobErrors
-                            from Job, Client, FileSet
+                            FROM Job INNER JOIN Client
+                            on Job.ClientId = Client.ClientId
                             WHERE Client.Name = '%s'
-                            ORDER BY EndTime desc
+                            ORDER BY EndTime DESC
                             LIMIT 15
                             ''' % self.computer_name
         last_jobs = Bacula.dictfetch_query(last_jobs_query)
