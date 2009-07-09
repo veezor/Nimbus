@@ -73,9 +73,11 @@ class Computer(models.Model):
         """Gets client lastjob status"""
         from backup_corporativo.bkp.bacula import Bacula
         status_query = """ 
-                            SELECT DISTINCT JobStatus, EndTime 
-                            from Job, Client WHERE Client.Name = '%s' 
-                            ORDER BY EndTime desc LIMIT 1;
+                            SELECT JobStatus
+                            FROM Job INNER JOIN Client 
+                            ON Job.ClientID = Client.ClientID
+                            WHERE Client.Name = '%s' 
+                            ORDER BY Job.EndTime DESC LIMIT 1;
                         """ % (self.computer_name)
                 
         cursor = Bacula.db_query(status_query)
