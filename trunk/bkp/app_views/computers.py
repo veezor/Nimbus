@@ -54,7 +54,7 @@ def create_computer(request):
             elif triggclass == 'Monthly':
                 triggform = 'mtriggform'
             else:
-                triggform = ''
+                raise Exception('Tipo de agendamento desconhecido ao adicionar computador.')
             
             forms_dict['compform'] = ComputerForm(request.POST)
             if temp_dict['compauxform'].cleaned_data['Procedure']:
@@ -66,7 +66,9 @@ def create_computer(request):
             if temp_dict['compauxform'].cleaned_data['Trigger']:
                 if triggclass.lower() == 'weekly':
                     forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST)
+                    forms_dict['mtriggform'] = MonthlyTriggerForm()
                 elif triggclass.lower() == 'monthly':
+                    forms_dict['wtriggform'] = WeeklyTriggerForm()
                     forms_dict['mtriggform'] = MonthlyTriggerForm(request.POST)
             forms_list = forms_dict.values()
             if all([form.is_valid() for form in forms_dict.values()]):
