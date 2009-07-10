@@ -165,11 +165,11 @@ def do_restore(request, computer_id):
         forms_list = forms_dict.values()
 
         if all([form.is_valid() for form in forms_list]):
+            fileset_name = forms_dict['hidden_restore_form'].cleaned_data['fileset_name']
             target_dt = forms_dict['hidden_restore_form'].cleaned_data['target_dt']
             src_client = forms_dict['hidden_restore_form'].cleaned_data['client_source']
             client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
             restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
-            fileset_name = forms_dict['restore_form'].cleaned_data['fileset_name']
             from backup_corporativo.bkp.bacula import Bacula
             Bacula.run_restore(ClientName=src_client, JobId=job_id, Date=target_dt, ClientRestore=client_restore, Where=restore_path, fileset_name=fileset_name)
             return HttpResponse('Pode restaurar!')
