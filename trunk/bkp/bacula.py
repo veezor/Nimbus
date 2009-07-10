@@ -14,10 +14,9 @@ class Bacula:
         os.system(cmd)
     run_restore_last = classmethod(run_restore_last)
     
-    def run_restore_date(cls, ClientName, Date,ClientRestore="", Where=WHERE_DEFAULT):
+    def run_restore_date(cls, ClientName, Date,ClientRestore, Where, fileset_name):
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
-        ClientRestore = ClientRestore and ClientRestore or ClientName
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select current all done yes where=%(restore_path)s before=%(tg_date)s\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date}
         BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
@@ -32,10 +31,12 @@ class Bacula:
         os.system(cmd)
     run_restore_jobid = classmethod(run_restore_jobid)
 
-    def run_restore(cls, ClientName, JobId="", Date="", ClientRestore="", Where=WHERE_DEFAULT, fileset_name=''):
+    def run_restore(cls, ClientName, JobId="", Date="", ClientRestore="", Where=WHERE_DEFAULT, fileset_name=""):
         """ClassMethod to restore a Job"""
         if ClientRestore == "":
             ClientRestore = ClientName
+        elif fileset_name and Date
+            cls.run_restore_date(ClientName,Date,ClientRestore,Where,fileset_name)
         elif JobId != "":
             cls.run_restore_jobid(ClientName,JobId,ClientRestore,Where)
         elif Date != "":
