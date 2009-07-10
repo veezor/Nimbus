@@ -216,9 +216,8 @@
 	        <td> {{ job.JobFiles }} </td>
 	        <td> {{ job.JobBytes }} </td>
 			<td>
-			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/restore/new?src={{job.cName}}&dt={{job.StartTime&fset=job.FileSet}}';return false"><span>Restaurar</span></button>
+			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/restore/new?src={{job.cName}}&dt={{job.StartTime}}&fset={{job.FileSet}}';return false"><span>Restaurar</span></button>
 			</td>
-			{% endifequal %}
 		</tr>
 			{% if forloop.last %}
 		</tbody>

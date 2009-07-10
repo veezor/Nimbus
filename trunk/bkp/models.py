@@ -153,7 +153,7 @@ class Computer(models.Model):
                             INNER JOIN FileSet
                             ON Job.FileSetID = FileSet.FileSetID
                             WHERE Client.Name = '%s' AND FileSet = '%s'
-                            AND JobStatus = 'T'
+                            AND JobStatus = 'T' AND JobFiles > 0
                             ORDER BY EndTime DESC LIMIT 15
                             ''' % (self.computer_name,self.procedure_set.all()[0].get_fileset_name())
         restore_jobs = Bacula.dictfetch_query(restore_jobs_query)
