@@ -131,6 +131,7 @@ def view_computer(request, computer_id):
         vars_dict['procs'] = vars_dict['comp'].procedure_set.all()
         vars_dict['running_jobs'] = vars_dict['comp'].running_jobs()
         vars_dict['last_jobs'] = vars_dict['comp'].last_jobs()
+        vars_dict['restore_jobs'] = vars_dict['comp'].restore_jobs()
         from backup_corporativo.bkp.bacula import Bacula
         vars_dict['compstatus'] = vars_dict['comp'].get_status()
         # Load forms and vars
@@ -169,8 +170,9 @@ def do_restore(request, computer_id):
             src_client = forms_dict['hidden_restore_form'].cleaned_data['client_source']
             client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
             restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
+            fileset_name = forms_dict['restore_form'].cleaned_data['fileset_name']
             from backup_corporativo.bkp.bacula import Bacula
-            Bacula.run_restore(ClientName=src_client, JobId=job_id, Date=target_dt, ClientRestore=client_restore, Where=restore_path)
+            Bacula.run_restore(ClientName=src_client, JobId=job_id, Date=target_dt, ClientRestore=client_restore, Where=restore_path, fileset_name=fileset_name)
             return HttpResponse('Pode restaurar!')
         else:
             vars_dict['comp_id'] = computer_id

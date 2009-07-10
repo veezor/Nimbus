@@ -32,7 +32,7 @@ class Bacula:
         os.system(cmd)
     run_restore_jobid = classmethod(run_restore_jobid)
 
-    def run_restore(cls, ClientName, JobId="", Date="", ClientRestore="", Where=WHERE_DEFAULT):
+    def run_restore(cls, ClientName, JobId="", Date="", ClientRestore="", Where=WHERE_DEFAULT, fileset_name=''):
         """ClassMethod to restore a Job"""
         if ClientRestore == "":
             ClientRestore = ClientName

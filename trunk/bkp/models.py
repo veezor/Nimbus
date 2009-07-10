@@ -130,15 +130,34 @@ class Computer(models.Model):
         from backup_corporativo.bkp.bacula import Bacula
         last_jobs_query =   '''
                             SELECT DISTINCT JobID, Client.Name as cName, Job.Name, 
-                            Level, JobStatus, StartTime, EndTime, JobFiles, JobBytes , JobErrors
-                            FROM Job INNER JOIN Client
-                            on Job.ClientId = Client.ClientId
+                            Level, JobStatus, StartTime, EndTime, JobFiles, JobBytes, 
+                            JobErrors, FileSet.FileSet FROM Job 
+                            INNER JOIN Client 
+                            ON Job.ClientId = Client.ClientId 
+                            INNER JOIN FileSet
+                            ON Job.FileSetID = FileSet.FileSetID 
                             WHERE Client.Name = '%s'
-                            ORDER BY EndTime DESC
-                            LIMIT 15
+                            ORDER BY EndTime DESC LIMIT 15
                             ''' % self.computer_name
         last_jobs = Bacula.dictfetch_query(last_jobs_query)
         return last_jobs
+        
+    def restore_jobs(self):
+        from backup_corporativo.bkp.bacula import Bacula
+        restore_jobs_query =   '''
+                            SELECT DISTINCT Client.Name as cName, Job.Name,
+                            StartTime, JobFiles, JobBytes,
+                            JobErrors, FileSet.FileSet FROM Job
+                            INNER JOIN Client
+                            ON Job.ClientId = Client.ClientId
+                            INNER JOIN FileSet
+                            ON Job.FileSetID = FileSet.FileSetID
+                            WHERE Client.Name = '%s' AND FileSet = '%s'
+                            AND JobStatus = 'T'
+                            ORDER BY EndTime DESC LIMIT 15
+                            ''' % (self.computer_name,self.procedure_set.all()[0].get_fileset_name())
+        restore_jobs = Bacula.dictfetch_query(restore_jobs_query)
+        return restore_jobs
 
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
