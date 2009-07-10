@@ -178,8 +178,9 @@
 	        <td> {{ job.JobErrors }} </td>
 
 		    {% ifequal job.JobStatus "T" %}
+
 			<td>
-			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/restore/new?jid={{job.JobID}}&src={{job.cName}}&dt={{job.StartTime}}';return false"><span>Restaurar</span></button>
+			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/restore/new?src={{job.cName}}&dt={{job.StartTime}}&fset={{fileset_name}}';return false"><span>Restaurar</span></button>
 			</td>
 			{% endifequal %}
 		</tr>

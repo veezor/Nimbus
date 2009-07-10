@@ -32,7 +32,7 @@ class RestoreForm(forms.Form):
     restore_path = cfields.FormPathField(label="Diretório", max_length=50)
 
 class HiddenRestoreForm(forms.Form):
-    job_id = forms.CharField(max_length=50, widget=forms.HiddenInput)
+    fileset_name = forms.CharField(max_length=50, widget=forms.HiddenInput)
     client_source = forms.CharField(max_length=50, widget=forms.HiddenInput)
     target_dt = forms.CharField(max_length=50, widget=forms.HiddenInput)
 

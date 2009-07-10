@@ -165,7 +165,6 @@ def do_restore(request, computer_id):
         forms_list = forms_dict.values()
 
         if all([form.is_valid() for form in forms_list]):
-            job_id = forms_dict['hidden_restore_form'].cleaned_data['job_id']
             target_dt = forms_dict['hidden_restore_form'].cleaned_data['target_dt']
             src_client = forms_dict['hidden_restore_form'].cleaned_data['client_source']
             client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
@@ -184,7 +183,7 @@ def new_restore(request, computer_id):
     if request.method == 'GET':
         vars_dict, forms_dict, return_dict = global_vars(request)
         vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
-        if not 'jid' in request.GET:
+        if not 'fset' in request.GET:
             raise Exception('JobID parameter is missing.')
         if not 'dt' in request.GET:
             raise Exception('Date parameter is missing.')
@@ -193,7 +192,7 @@ def new_restore(request, computer_id):
 
         vars_dict['src_client'] = request.GET['src']
         vars_dict['target_dt'] = request.GET['dt']
-        vars_dict['job_id'] = request.GET['jid']
+        vars_dict['fileset_name'] = request.GET['fset']
         vars_dict['comp_id'] = computer_id
         forms_dict['restore_form'] = RestoreForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
