@@ -172,7 +172,8 @@ def do_restore(request, computer_id):
             restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
             from backup_corporativo.bkp.bacula import Bacula
             Bacula.run_restore(ClientName=src_client, Date=target_dt, ClientRestore=client_restore, Where=restore_path, fileset_name=fileset_name)
-            return HttpResponse('Pode restaurar!')
+            request.user.message_set.create(message="Uma requisição teste foi enviada para ser executado no computador.")
+            return HttpResponseRedirect(computer_path(request, computer_id))
         else:
             vars_dict['comp_id'] = computer_id
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)

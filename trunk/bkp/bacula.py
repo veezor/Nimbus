@@ -35,12 +35,11 @@ class Bacula:
         """ClassMethod to restore a Job"""
         if ClientRestore == "":
             ClientRestore = ClientName
-        elif fileset_name and Date:
+
+        if fileset_name and Date:
             cls.run_restore_date(ClientName,Date,ClientRestore,Where,fileset_name)
         elif JobId != "":
             cls.run_restore_jobid(ClientName,JobId,ClientRestore,Where)
-        elif Date != "":
-            cls.run_restore_date(ClientName,Date,ClientRestore,Where)
         elif Date == "" and JobId == "":
             cls.run_restore_last(ClientName,ClientRestore,Where)
         else:
