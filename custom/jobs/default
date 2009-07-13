@@ -1,6 +1,6 @@
 Job {
 	Name = "empty job"
-	Type = "Admin"
+	Type = "backup"
 	Messages = "Standard"
 	Pool = "empty pool"
 	Client = "empty client"
