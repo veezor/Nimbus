@@ -50,6 +50,67 @@ def friendly_level(obj):
 
 
 @register.filter
+def friendly_date(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        return  obj.strftime("%d-%m-%y")
+    else:
+        return ''
+
+
+@register.filter
+def friendly_hour(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    import time
+    if obj:
+        return  obj.strftime("%H:%M")
+    else:
+        return ''
+
+
+@register.filter
+def friendly_size_mb(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        return  ("%s MB" % str(obj/(1024*1024)))
+    else:
+        return ''
+
+@register.filter
+def friendly_status(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        if obj == 'T': return "Sucesso"
+        elif obj == 'E': return "Erro"
+        else: return "Desconhecido"
+    else:
+        return ''
+
+@register.filter
+def friendly_duration_min(obj):
+    """ Try to get an attribute from an object.
+    Example: 
+
+    """
+    if obj:
+        return "%s Min" % str(round(obj/60,2))
+    else:
+        return ''
+
+
+@register.filter
 def get_method(obj, value):
     """ Try to get an attribute from an object.
     Example: 

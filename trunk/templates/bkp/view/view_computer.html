@@ -53,7 +53,6 @@
 	            </div>
 	        </div>
 	        <ul class="aux">
-	            <!--li><span class="label">Caminho para recuperação:</span> <span class="value">{{ p.restore_path }}</span></li-->
 	            <li>
 	                <span class="label">Caminhos do backup:<br/>
 	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/fileset/new">adicionar</a></span>
@@ -111,14 +110,12 @@
 		        <table>
 		        <thead>
 			        <tr>
-			        <th scope='col'>Job</th>
-			        <th scope='col'>Level</th>
+			        <th scope='col'>Nome</th>
+			        <th scope='col'>Tipo</th>
+			        <th scope='col'>Data Início</th>
+			        <th scope='col'>Hora Início</th>
+			        <th scope='col'>Duração</th>
 			        <th scope='col'>Status</th>
-			        <th scope='col'>Start</th>
-			        <th scope='col'>End</th>
-			        <th scope='col'>JobFiles</th>
-			        <th scope='col'>JobBytes</th>
-			        <th scope='col'>Errors</th>
 			        </tr>
 		        </thead>
 		        <tbody>
@@ -126,12 +123,10 @@
         <tr> 
 	        <td> {{ job.Name }} </td>
 	        <td> {{ job.Level|friendly_level }} </td>
-	        <td> {{ job.JobStatus }} </td>
-	        <td> {{ job.StartTime }} </td>
-	        <td> {{ job.EndTime }} </td>
-	        <td> {{ job.JobFiles }} </td>
-	        <td> {{ job.JobBytes }} </td>
-	        <td> {{ job.JobErrors }} </td>
+	        <td> {{ job.StartTime|friendly_date }} </td>
+	        <td> {{ job.StartTime|friendly_hour }} </td>
+	        <td> {{ job.StartTime|friendly_duration_min }} </td>
+	        <td> {{ job.JobStatus|friendly_status }} </td>
 		</tr>
 			{% if forloop.last %}
 		</tbody>
@@ -154,15 +149,14 @@
 		        <table>
 		        <thead>
 			        <tr>
-			        <th scope='col'>Job</th>
-			        <th scope='col'>Level</th>
+			        <th scope='col'>Nome</th>
+			        <th scope='col'>Tipo</th>
+			        <th scope='col'>Arquivos</th>
+			        <th scope='col'>Tamanho</th>
+			        <th scope='col'>Data Início</th>
+			        <th scope='col'>Hora Início</th>
+			        <th scope='col'>Duração</th>
 			        <th scope='col'>Status</th>
-			        <th scope='col'>Start</th>
-			        <th scope='col'>End</th>
-			        <th scope='col'>JobFiles</th>
-			        <th scope='col'>JobBytes</th>
-			        <th scope='col'>Errors</th>
-			        <th scope='col'></th>
 			        </tr>
 		        </thead>
 		        <tbody>
@@ -170,19 +164,12 @@
         <tr> 
 	        <td> {{ job.Name }} </td>
 	        <td> {{ job.Level|friendly_level }} </td>
-	        <td> {{ job.JobStatus }} </td>
-	        <td> {{ job.StartTime }} </td>
-	        <td> {{ job.EndTime }} </td>
 	        <td> {{ job.JobFiles }} </td>
-	        <td> {{ job.JobBytes }} </td>
-	        <td> {{ job.JobErrors }} </td>
-
-		    {% ifequal job.JobStatus "T" %}
-
-			<td>
-			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/restore/new?src={{job.cName}}&dt={{job.StartTime}}&fset={{fileset_name}}';return false"><span>Restaurar</span></button>
-			</td>
-			{% endifequal %}
+	        <td> {{ job.JobBytes|friendly_size_mb }} </td>
+	        <td> {{ job.StartTime|friendly_date }} </td>
+	        <td> {{ job.StartTime|friendly_hour }} </td>
+	        <td> {{ job.Duration|friendly_duration_min }} </td>
+	        <td> {{ job.JobStatus|friendly_status }} </td>
 		</tr>
 			{% if forloop.last %}
 		</tbody>

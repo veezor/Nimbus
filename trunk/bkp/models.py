@@ -112,7 +112,7 @@ class Computer(models.Model):
     def running_jobs(self):
         from backup_corporativo.bkp.bacula import Bacula
         running_jobs_query =    '''
-                                SELECT Job.Name, Level, StartTime, EndTime,
+                                SELECT Job.Name, Level, StartTime, (Now() - EndTime) as Duration,
                                 JobFiles, JobBytes , JobErrors, JobStatus 
                                 FROM Job INNER JOIN Client 
                                 on Job.ClientId = Client.ClientId
@@ -130,7 +130,7 @@ class Computer(models.Model):
         from backup_corporativo.bkp.bacula import Bacula
         last_jobs_query =   '''
                             SELECT DISTINCT JobID, Client.Name as cName, Job.Name, 
-                            Level, JobStatus, StartTime, EndTime, JobFiles, JobBytes, 
+                            Level, JobStatus, StartTime, (EndTime-StartTime) as Duration, JobFiles, JobBytes, 
                             JobErrors, FileSet.FileSet FROM Job 
                             INNER JOIN Client 
                             ON Job.ClientId = Client.ClientId 
