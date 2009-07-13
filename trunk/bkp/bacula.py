@@ -17,7 +17,7 @@ class Bacula:
     def run_restore_date(cls, ClientName, Date,ClientRestore, Where, fileset_name):
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
-        cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select current all done yes where=%(restore_path)s before=%(tg_date)s fileset=%(fileset_name)s\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date,'fileset_name':fileset_name}
+        cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select all done yes where=%(restore_path)s before=%(tg_date)s fileset=%(fileset_name)s\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date,'fileset_name':fileset_name}
         BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
     run_restore_date = classmethod(run_restore_date)
