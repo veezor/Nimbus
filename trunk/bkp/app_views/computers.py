@@ -66,12 +66,12 @@ def create_computer(request):
             if temp_dict['compauxform'].cleaned_data['Trigger']:
                 if triggclass.lower() == 'weekly':
                     forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST)
-                    forms_dict['mtriggform'] = MonthlyTriggerForm()
+                    temp_dict['mtriggform'] = MonthlyTriggerForm()
                 elif triggclass.lower() == 'monthly':
-                    forms_dict['wtriggform'] = WeeklyTriggerForm()
+                    temp_dict['wtriggform'] = WeeklyTriggerForm()
                     forms_dict['mtriggform'] = MonthlyTriggerForm(request.POST)
             forms_list = forms_dict.values()
-            if all([form.is_valid() for form in forms_dict.values()]):
+            if all([form.is_valid() for form in forms_list]):
                 comp = forms_dict['compform'].save(commit=False)
                 proc = forms_dict['procform'].save(commit=False)
                 fset = forms_dict['fsetform'].save(commit=False)

@@ -80,21 +80,34 @@ def create_procedure(request, computer_id):
     if request.method == 'POST':
         temp_dict['procauxform'] = ProcedureAuxForm(request.POST)
 
+        if temp_dict['compauxform'].is_valid():
+            triggclass = temp_dict['compauxform'].cleaned_data['schedule_type']
+            if triggclass == 'Weekly':
+                triggform = 'wtriggform'
+            elif triggclass == 'Monthly':
+                triggform = 'mtriggform'
+            else:
+                raise Exception('Tipo de agendamento desconhecido ao adicionar computador.')
+
         if temp_dict['procauxform'].is_valid():
             forms_dict['procform'] = ProcedureForm(request.POST)
             if temp_dict['procauxform'].cleaned_data['FileSet']:
                 forms_dict['fsetform'] = FileSetForm(request.POST)
             if temp_dict['procauxform'].cleaned_data['Schedule']:
                 forms_dict['schedform'] = ScheduleForm(request.POST)
-            if temp_dict['procauxform'].cleaned_data['Trigger']:
-                triggclass = globals()["%sTriggerForm" % temp_dict['procauxform'].cleaned_data['schedule_type']]
-                forms_dict['triggform'] = triggclass(request.POST)
+            if temp_dict['compauxform'].cleaned_data['Trigger']:
+                if triggclass.lower() == 'weekly':
+                    forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST)
+                    temp_dict['mtriggform'] = MonthlyTriggerForm()
+                elif triggclass.lower() == 'monthly':
+                    temp_dict['wtriggform'] = WeeklyTriggerForm()
+                    forms_dict['mtriggform'] = MonthlyTriggerForm(request.POST)
             forms_list = forms_dict.values()
-            if all([form.is_valid() for form in forms_dict.values()]):
+            if all([form.is_valid() for form in forms_list]):
                 proc = forms_dict['procform'].save(commit=False)
                 fset = forms_dict['fsetform'].save(commit=False)
                 sched = forms_dict['schedform'].save(commit=False)
-                trigg = forms_dict['triggform'].save(commit=False)
+                trigg = forms_dict[triggform].save(commit=False)
                 proc.computer_id = computer_id
                 proc.save()
                 proc.build_backup(fset, sched, trigg)
