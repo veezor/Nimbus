@@ -161,14 +161,14 @@ def create_run_procedure(request, computer_id, procedure_id):
         forms_dict['runauxform'] = RunProcedureAuxForm(request.POST)
         from backup_corporativo.bkp.bacula import Bacula
 
-        if forms_dict['runauxform'].is_valid() and forms_dict['runauxform']['run_now']:
+        if forms_dict['runauxform'].is_valid() and not forms_dict['runauxform']['run_now']:
             if forms_dict['runform'].is_valid():
                 dt = forms_dict['runform'].cleaned_data['target_date']
                 time = forms_dict['runform'].cleaned_data['target_hour']
                 dt_time = "%s %s" % (dt, time)
                 Bacula.run_backup(vars_dict['proc'].procedure_name, Date=dt_time)
                 request.user.message_set.create(message="Execução agendada com sucesso.")
-                HttpResponseRedirect(computer_path(request,computer_id))
+                return HttpResponseRedirect(computer_path(request,computer_id))
             else:
                 request.user.message_set.create(message="Existem erros e a execução não foi agendada.")                
                 return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
@@ -176,4 +176,4 @@ def create_run_procedure(request, computer_id, procedure_id):
         else:
             Bacula.run_backup(vars_dict['proc'].procedure_name, Level="Full", Date="")
             request.user.message_set.create(message="Execução requisitada com sucesso.")
-            HttpResponseRedirect(computer_path(request,computer_id))
+            return HttpResponseRedirect(computer_path(request,computer_id))
