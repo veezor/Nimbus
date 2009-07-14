@@ -4,6 +4,81 @@ import datetime
 class Bacula:
     WHERE_DEFAULT="/tmp/bacula-restore"
 
+    def last_jobs(cls):
+        """Returns list of dicts with  20 last jobs in overall system."""
+        lastjobs_query =   ''' SELECT j.Name, jc.Name as "cName", j.Level, j.StartTime, j.EndTime,
+                            j.JobFiles, j.JobBytes , JobErrors, JobStatus
+                            FROM Job AS j INNER JOIN Client AS jc
+                            ON j.ClientId = jc.ClientId;
+                            LIMIT 20
+                            '''
+        return cls.dictfetch_query(lastjobs_query)
+    last_jobs = classmethod(last_jobs)
+
+    def running_jobs(cls):
+        """Returns list of dicts with  10 running jobs in overall system."""
+        runningjobs_query = ''' SELECT j.Name, jc.Name as "cName", j.Level, j.StartTime
+                            FROM Job AS j INNER JOIN Client as jc ON j.ClientId = jc.ClientId
+                            WHERE j.JobStatus = 'R' OR j.JobStatus = 'p' OR j.JobStatus = 'j'
+                            OR j.JobStatus = 'c' OR j.JobStatus = 'd' OR j.JobStatus = 's'
+                            OR j.JobStatus = 'M' OR j.JobStatus = 'm' OR j.JobStatus = 'S'
+                            OR j.JobStatus = 'F' OR j.JobStatus = 'B'
+                            LIMIT 10
+                            '''
+        return cls.dictfetch_query(runningjobs_query)
+    running_jobs = classmethod(running_jobs)
+                        
+                        
+    def db_size(cls):
+        """Returns bacula's database size in MB."""
+        dbsize_query =  ''' SELECT (sum(data_length+index_length )/(1024 * 1024)) AS "DBSIZE"
+                        FROM information_schema.TABLES
+                        WHERE table_schema = 'bacula'
+                        GROUP BY table_schema
+                        '''
+        try:
+            result = cls.dictfetch_query(dbsize_query)[0]['DBSIZE']
+            return result
+        except Exception:
+            return ''
+    db_size = classmethod(db_size)                
+    
+    def num_procedures(cls):
+        """Returns generator of dict with number or total procedures stored at Nimbus."""
+        numproc_query = '''SELECT count(*) AS "Procedures"
+                        FROM backup_corporativo.bkp_procedure
+                        '''
+        try:
+            result = cls.dictfetch_query(numproc_query)[0]['Procedures']
+            return result
+        except Exception:
+            return ''
+    num_procedures = classmethod(num_procedures)
+                        
+    def num_clients(cls):
+        """Returns generator of dict with number of clients stored at Nimbus."""
+        numcli_query =  '''SELECT count(*) AS "Computers"
+                        FROM backup_corporativo.bkp_computer
+                        '''
+        try:
+            result = cls.dictfetch_query(numcli_query)[0]['Computers']
+            return result
+        except Exception:
+            return ''
+    num_clients = classmethod(num_clients)
+                        
+
+    def total_mbytes(cls):
+        """Returns generator of dict with total megabytes at bacula system backups."""
+        totalbytes_query =  '''SELECT (sum(JobBytes)/(1024*1024)) AS "MBytes"
+                            FROM Job WHERE Job.JobStatus = 'T';
+                            '''    
+        try:
+            result = cls.dictfetch_query(totalbytes_query)[0]['MBytes']
+            return result
+        except Exception:
+            return ''
+    total_mbytes = classmethod(total_mbytes)
 
     # ClassMethods    
     def run_restore_last(cls, ClientName, ClientRestore="", Where=WHERE_DEFAULT):
@@ -65,6 +140,7 @@ class Bacula:
     
     
     def dictfetch_query(cls, query):
+        """Returns generator of dicts from given query executed."""
         from backup_corporativo.bkp.utils import dictfetch
 
         cursor = cls.db_query(query)
@@ -73,6 +149,7 @@ class Bacula:
     
     
     def db_query(cls, query):
+        """Returns unfetched cursor with the given query executed."""
         import MySQLdb
     	from backup_corporativo.settings import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD
     	try:

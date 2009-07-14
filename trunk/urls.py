@@ -60,5 +60,8 @@ urlpatterns = patterns('',
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_schedule'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/weeklytrigger/$', 'backup_corporativo.bkp.views.weeklytrigger'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/monthlytrigger/$', 'backup_corporativo.bkp.views.monthlytrigger'),
+    # temp restore path
+    (r'^computer/(?P<computer_id>\d+)/tmp_restore/(?P<job_id>\d+)$', 'backup_corporativo.bkp.views.tmp_restore'),
+    
     (r'^admin/(.*)', admin.site.root),
 )

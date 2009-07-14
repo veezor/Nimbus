@@ -125,7 +125,7 @@
 	        <td> {{ job.Level|friendly_level }} </td>
 	        <td> {{ job.StartTime|friendly_date }} </td>
 	        <td> {{ job.StartTime|friendly_hour }} </td>
-	        <td> {{ job.StartTime|friendly_duration_min }} </td>
+	        <td> {{ job.Duration|friendly_duration_min }} </td>
 	        <td> {{ job.JobStatus|friendly_status }} </td>
 		</tr>
 			{% if forloop.last %}
@@ -162,7 +162,7 @@
 		        <tbody>
 			{% endif %}
         <tr> 
-	        <td> {{ job.Name }} </td>
+	        <td> <a href="{{script_name}}/computer/{{comp.id}}/tmp_restore/{{job.JobID}}">{{ job.Name }} </a></td>
 	        <td> {{ job.Level|friendly_level }} </td>
 	        <td> {{ job.JobFiles }} </td>
 	        <td> {{ job.JobBytes|friendly_size_mb }} </td>

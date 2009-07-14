@@ -7,7 +7,7 @@
 <p>Banco de Dados: {{ dbsize }} MB</p>
 <p>Procedimentos: {{ numproc }}</p>
 <p>Computadores: {{ numcli }}</p>
-<p>Total Armazenado: {{ tbytes }} MB</p>
+<p>Total Armazenado: {{ tmbytes }} MB</p>
 <br />
 
 <h2>Procedimentos Executando</h2>
@@ -20,18 +20,17 @@
 	<th scope='col'>Nível</th>
 	<th scope='col'>Início</th>
 	<th scope='col'>Fim</th>
-	<th scope='col'>Arquivos</th>
-	<th scope='col'>Bytes</th>
-	<th scope='col'>Erros</th>
-	<th scope='col'>Status</th>
 	</tr>
 </thead>
 <tbody>
 {% for job in runningjobs %}
 <tr> 
-{% for item in job %}
-<td> {{ item }} </td>
-{% endfor %}
+<td> {{job.Name}} </td>
+<td> {{job.cName}} </td>
+<td> {{job.Level}} </td>
+<td> {{job.Name}} </td>
+<td> {{job.StartTime}} </td>
+<td> {{job.EndTime}} </td>
 </tr>
 {% endfor %}
 </tbody>
@@ -52,7 +51,6 @@
 	<th scope='col'>Computador</th>
 	<th scope='col'>Nível</th>
 	<th scope='col'>Início</th>
-	<th scope='col'>Fim</th>
 	<th scope='col'>Arquivos</th>
 	<th scope='col'>Bytes</th>
 	<th scope='col'>Erros</th>
@@ -62,9 +60,15 @@
 <tbody>
 {% for job in lastjobs %}
 <tr> 
-{% for item in job %}
-<td> {{ item }} </td>
-{% endfor %}
+<td> {{job.Name}} </td>
+<td> {{job.cName}} </td>
+<td> {{job.Level}} </td>
+<td> {{job.StartTime}} </td>
+<td> {{job.JobFiles}} </td>
+<td> {{job.JobBytes}} </td>
+<td> {{job.JobErrors}} </td>
+<td> {{job.JobStatus}} </td>
+
 </tr>
 {% endfor %}
 </tbody>

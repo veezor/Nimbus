@@ -87,16 +87,17 @@ def random_password(size):
     return ''.join([choice(string.letters + string.digits) for i in range(size)])
     
 def dictfetch(cursor):
-    """Does some blackmagic to return a python generator with dicts of a MySLQ cursor"""
+    """Returns a list with dicts of an unfetched cursor"""
     from itertools import izip
     col_names = [desc[0] for desc in cursor.description]
+    result = []
     while True:
         row = cursor.fetchone()
         if row is None:
             break
         row_dict = dict(izip(col_names, row))
-        yield row_dict
-    return
+        result.append(row_dict)
+    return result
 
 
 ###
