@@ -76,7 +76,7 @@ class RunProcedureForm(forms.Form):
     target_hour = forms.TimeField(label="Hora")
 
 class RunProcedureAuxForm(forms.Form):
-    is_scheduled = forms.BooleanField(label="Agendado?")
+    run_now = forms.BooleanField(label="Executar agora?")
 
 class ComputerAuxForm(forms.Form):
     Procedure = forms.BooleanField(widget=forms.HiddenInput, initial="True")

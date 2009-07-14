@@ -7,7 +7,7 @@
 <h3>Detalhes de Execução</h3>
 <br />
 
-<form action="{{script_name}}/{{proc.create_run_url}}" method="post">
+<form action="{{script_name}}/{{proc.create_run_url}}" method="post" id="execute_procedure">
     {% for field in runauxform %}
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -15,14 +15,16 @@
         </div>
     {% endfor %}
 
-
+    <div class="runscheduledform">
     {% for field in runform %}
         <div class="fieldWrapper">
             {{ field.errors }}
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
-    <p><input type="submit" value="Salvar" /></p>
+    </div>
+    
+    <p><input type="submit" value="Executar" /></p>
 </form>
 
 <a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>

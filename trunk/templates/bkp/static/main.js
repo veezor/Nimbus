@@ -37,7 +37,31 @@ function change_backup_type(backup_type) {
     }
 }
 
+
+
+function set_schedule_procedure() {
+    $('#execute_procedure #id_run_now').change(
+        function() {
+            change_schedule_procedure();
+        }
+    );
+    $('#execute_procedure #id_run_now').change();
+}
+
+function change_schedule_procedure() {
+    run_now = $('#execute_procedure #id_run_now').attr('checked');
+    if (!run_now) {
+        $('.runscheduledform').show('fast');
+        $('#execute_procedure input[type=submit]').val('Agendar');
+    } else {
+        $('.runscheduledform').hide('fast');
+        $('#execute_procedure input[type=submit]').val('Executar');
+    }
+}
+
+
 $(document).ready(function() {
     // Execute function to start the application.
     set_backup_type();
+    set_schedule_procedure();
 });

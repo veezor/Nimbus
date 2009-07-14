@@ -161,7 +161,7 @@ def create_run_procedure(request, computer_id, procedure_id):
         forms_dict['runauxform'] = RunProcedureAuxForm(request.POST)
         from backup_corporativo.bkp.bacula import Bacula
 
-        if forms_dict['runauxform'].is_valid():
+        if forms_dict['runauxform'].is_valid() and forms_dict['runauxform']['run_now']:
             if forms_dict['runform'].is_valid():
                 dt = forms_dict['runform'].cleaned_data['target_date']
                 time = forms_dict['runform'].cleaned_data['target_hour']
