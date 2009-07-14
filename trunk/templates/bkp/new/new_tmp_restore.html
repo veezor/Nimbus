@@ -1,0 +1,46 @@
+{% extends "bkp/base.html" %}
+{% load bkp_extras %}
+{% block content %}
+<hr />
+
+    <div class="titulo_botoes">
+	    <h3>
+	        <span>Arquivos Disponíveis</span>
+	    </h3>
+	    <div class="botao_acoes"></div>
+	</div>
+	<div class="bloco_texto">
+		{% for file in file_tree %}
+			{% if forloop.first %}
+		        <table>
+		        <thead>
+			        <tr>
+			        <th scope='col'>Tipo</th>
+			        <th scope='col'>Caminho</th>
+			        <th scope='col'>Arquivo</th>
+			        </tr>
+		        </thead>
+		        <tbody>
+			{% endif %}
+        <tr> 
+			{% if file.Name %}
+	        <td> Arquivo </td>
+			{% else %}
+	        <td> Diretório </td>
+			{% endif %}
+	        <td> {{ file.Path }} </td>
+	        <td> {{ file.Name }} </td>
+		</tr>
+			{% if forloop.last %}
+		</tbody>
+		</table>
+			{% endif %}
+        {% endfor %}
+    </div>
+
+
+
+
+<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<hr />
+{% endblock %}
