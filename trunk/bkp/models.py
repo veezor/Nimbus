@@ -159,6 +159,21 @@ class Computer(models.Model):
         restore_jobs = Bacula.dictfetch_query(restore_jobs_query)
         return restore_jobs
 
+    def file_tree(self, jobid):
+        """Retrieves tree with files of a jobid"""
+        from backup_corporativo.bkp.bacula import Bacula
+        filetree_query =    """
+                            SELECT Path.Path, Filename.Name 
+                            FROM File INNER JOIN Filename 
+                            ON Filename.FileNameId = File.FileNameId 
+                            INNER JOIN Path 
+                            ON File.PathId = Path.PathId 
+                            WHERE JobId=%s
+                            ORDER BY Path.Path,Filename.Name
+                            """ % jobid
+        file_tree = Bacula.dictfetch_query(filetree_query)
+        return file_tree
+
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
         from backup_corporativo.bkp.bacula import Bacula;
