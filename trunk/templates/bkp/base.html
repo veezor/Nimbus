@@ -20,20 +20,15 @@
                                     <li class=""><a href="{{script_name}}/stats" title="">Estatísticas</a></li>
                                     <li class=""><a href="{{script_name}}/config/edit" title="">Configurações</a></li>
                                 </ul>
+                                {% if current_user.username %}
+                                <form class="link" action="{{script_name}}/session/delete" method="post">
+                                    <p>Bem-vindo, {{current_user.username}} | <button type="submit">Sair</button></p>
+                                </form>
+                                {% endif %}
                             </div>
 			</div>
 			<div id="conteudo">	
 				<div id="sidebar">
-                    <!-- start welcome block -->
-                    {% if current_user.username %}
-                    <ul class="aux welcome">
-                        <form class="link" action="{{script_name}}/session/delete" method="post">
-                            <li>Welcome, {{current_user.username}} | <button type="submit">Sair</button></li>
-                        </form>
-                    </ul>
-                    {% endif %}
-                    <!-- end welcome block -->
-                    
 				    <!-- start computers block -->
 				    {% block computers %}
 				    {% if comps.count %}
