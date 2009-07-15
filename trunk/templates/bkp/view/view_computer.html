@@ -42,53 +42,53 @@
 	{% if not comp.procedure_set.count %}
 	    <span>Não existem procedimentos cadastrados para este computador.</span>
 	{% endif %}
-    {% for p in comp.procedure_set.all %}
+    {% for proc in comp.procedure_set.all %}
         <div class="procedure">
             <div class="titulo_topo">
-                <h3><strong>{{ p.procedure_name }}</strong></h3>
+                <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a></h3>
                 <div class="botao_acoes">
-	                <button onclick="location.href='{{script_name}}/{{p.new_run_url}}'"><span>Executar</span></button>
-	                <button onclick="location.href='{{script_name}}/{{p.edit_url}}'"><span>Alterar</span></button>
-	                <button onclick="location.href='{{script_name}}/{{p.delete_url}}'"><span>Remover</span></button>
+	                <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
+	                <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
+	                <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'"><span>Remover</span></button>
 	            </div>
 	        </div>
 	        <ul class="aux">
 	            <li>
 	                <span class="label">Caminhos do backup:<br/>
-	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/fileset/new">adicionar</a></span>
+	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/new">adicionar</a></span>
 	                <span class="value">
-					{% for fs in p.fileset_set.all %}
-	                	{{ fs.path }}
-			            <button onclick="location.href='{{script_name}}/{{fs.delete_url}}'"><span>Remover</span></button>
+					{% for fset in proc.fileset_set.all %}
+	                	{{ fset.path }}
+			            <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'"><span>Remover</span></button>
 	                {% endfor %}
 	                </span>
 	            </li>
 	            <li>
 	                <span class="label">Agendamentos:<br/>
-	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{p.id}}/schedule/new">adicionar</a></span>
-	                {% for sc in p.schedule_set.all %}
+	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new">adicionar</a></span>
+	                {% for sched in p.schedule_set.all %}
 	                <span class="value">
-	                    Tipo: {{ sc.type }}
+	                    Tipo: {{ sched.type }}
                         <ul>
-                        {% for scwt in sc.weeklytrigger_set.all %}
-                            <li>Nível: {{ scwt.level }}</li>
-                            <li>Hora: {{ scwt.hour }}</li>
+                        {% for wtrigg in sched.weeklytrigger_set.all %}
+                            <li>Nível: {{ wtrigg.level }}</li>
+                            <li>Hora: {{ wtrigg.hour }}</li>
                             <li>Dias da semana:
                             {% for day, day_br in DAYS_OF_THE_WEEK.items %}
-                                {% if scwt|get_method:day %}
+                                {% if wtrigg|get_method:day %}
                                     {{ day_br }}
                                 {% endif %}
                             {% endfor %}
                             </li>
                         {% endfor %}
-                        {% for scmt in sc.monthlytrigger_set.all %}
-                            <li>Nível: {{ scmt.level }}</li>
-                            <li>Hora: {{ scmt.hour }}</li>
-                            <li>Dias: {{ scmt.target_days }}</li>
+                        {% for mtrigg in sched.monthlytrigger_set.all %}
+                            <li>Nível: {{ mtrigg.level }}</li>
+                            <li>Hora: {{ mtrigg.hour }}</li>
+                            <li>Dias: {{ mtrigg.target_days }}</li>
                         {% endfor %}
                         </ul>
-	                    <button onclick="location.href='{{script_name}}/{{sc.edit_url}}';return false"><span>Editar</span></button>
-	                    <button onclick="location.href='{{script_name}}/{{sc.delete_url}}';return false"><span>Remover</span></button>
+	                    <button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
+	                    <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false"><span>Remover</span></button>
                     </span>
                     {% endfor %}
                 </li>
@@ -162,7 +162,7 @@
 		        <tbody>
 			{% endif %}
         <tr> 
-	        <td> <a href="{{script_name}}/computer/{{comp.id}}/tmp_restore/{{job.JobID}}">{{ job.Name }} </a></td>
+	        <td> {{ job.Name }} </td>
 	        <td> {{ job.Level|friendly_level }} </td>
 	        <td> {{ job.JobFiles }} </td>
 	        <td> {{ job.JobBytes|friendly_size_mb }} </td>
