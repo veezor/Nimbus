@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os
 import datetime
 
@@ -6,78 +9,52 @@ class Bacula:
 
     def last_jobs(cls):
         """Returns list of dicts with  20 last jobs in overall system."""
-        lastjobs_query =   ''' SELECT j.Name, jc.Name as "cName", j.Level, j.StartTime, j.EndTime,
-                            j.JobFiles, j.JobBytes , JobErrors, JobStatus
-                            FROM Job AS j INNER JOIN Client AS jc
-                            ON j.ClientId = jc.ClientId;
-                            LIMIT 20
-                            '''
-        return cls.dictfetch_query(lastjobs_query)
+        from backup_corporativo.bkp.sql_queries import LAST_JOBS_QUERY
+        return cls.dictfetch_query(LAST_JOBS_QUERY)
     last_jobs = classmethod(last_jobs)
 
     def running_jobs(cls):
         """Returns list of dicts with  10 running jobs in overall system."""
-        runningjobs_query = ''' SELECT j.Name, jc.Name as "cName", j.Level, j.StartTime
-                            FROM Job AS j INNER JOIN Client as jc ON j.ClientId = jc.ClientId
-                            WHERE j.JobStatus = 'R' OR j.JobStatus = 'p' OR j.JobStatus = 'j'
-                            OR j.JobStatus = 'c' OR j.JobStatus = 'd' OR j.JobStatus = 's'
-                            OR j.JobStatus = 'M' OR j.JobStatus = 'm' OR j.JobStatus = 'S'
-                            OR j.JobStatus = 'F' OR j.JobStatus = 'B'
-                            LIMIT 10
-                            '''
-        return cls.dictfetch_query(runningjobs_query)
+        from backup_corporativo.bkp.sql_queries import RUNNING_JOBS_QUERY
+        return cls.dictfetch_query(RUNNING_JOBS_QUERY)
     running_jobs = classmethod(running_jobs)
                         
                         
     def db_size(cls):
         """Returns bacula's database size in MB."""
-        dbsize_query =  ''' SELECT (sum(data_length+index_length )/(1024 * 1024)) AS "DBSIZE"
-                        FROM information_schema.TABLES
-                        WHERE table_schema = 'bacula'
-                        GROUP BY table_schema
-                        '''
+        from backup_corporativo.bkp.sql_queries import DB_SIZE_RAW_QUERY
         try:
-            result = cls.dictfetch_query(dbsize_query)[0]['DBSIZE']
-            return result
-        except Exception:
-            return ''
+            from backup_corporativo.settings import BACULA_DB_NAME
+        except:
+            raise Exception('Não foi possível importar BACULA_DB_NAME do settings.py')
+        dbsize_query = DB_SIZE_RAW_QUERY % {'bacula_db_name':BACULA_DB_NAME,}
+        result = cls.dictfetch_query(dbsize_query)
+        result = result and result[0]['DBSIZE'] or ''
+        return result
     db_size = classmethod(db_size)                
     
     def num_procedures(cls):
         """Returns generator of dict with number or total procedures stored at Nimbus."""
-        numproc_query = '''SELECT count(*) AS "Procedures"
-                        FROM backup_corporativo.bkp_procedure
-                        '''
-        try:
-            result = cls.dictfetch_query(numproc_query)[0]['Procedures']
-            return result
-        except Exception:
-            return ''
+        from backup_corporativo.bkp.sql_queries import NUM_PROC_QUERY
+        result = cls.dictfetch_query(NUM_PROC_QUERY)
+        result = result and result[0]['Procedures'] or ''
+        return result
     num_procedures = classmethod(num_procedures)
                         
     def num_clients(cls):
         """Returns generator of dict with number of clients stored at Nimbus."""
-        numcli_query =  '''SELECT count(*) AS "Computers"
-                        FROM backup_corporativo.bkp_computer
-                        '''
-        try:
-            result = cls.dictfetch_query(numcli_query)[0]['Computers']
-            return result
-        except Exception:
-            return ''
+        from backup_corporativo.bkp.sql_queries import NUM_CLI_QUERY
+        result = cls.dictfetch_query(NUM_CLI_QUERY)
+        result = result and result[0]['Computers'] or ''
+        return result
     num_clients = classmethod(num_clients)
                         
-
     def total_mbytes(cls):
         """Returns generator of dict with total megabytes at bacula system backups."""
-        totalbytes_query =  '''SELECT (sum(JobBytes)/(1024*1024)) AS "MBytes"
-                            FROM Job WHERE Job.JobStatus = 'T';
-                            '''    
-        try:
-            result = cls.dictfetch_query(totalbytes_query)[0]['MBytes']
-            return result
-        except Exception:
-            return ''
+        from backup_corporativo.bkp.sql_queries import TOTAL_MBYTES_QUERY
+        result = cls.dictfetch_query(TOTAL_MBYTES_QUERY)
+        result = result and result[0]['MBytes'] or ''
+        return result
     total_mbytes = classmethod(total_mbytes)
 
     # ClassMethods    

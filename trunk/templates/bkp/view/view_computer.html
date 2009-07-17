@@ -177,42 +177,4 @@
 			{% endif %}
         {% endfor %}
     </div>
-
-
-    <div class="titulo_botoes">
-	    <h3>
-	        <span>Opções de Restore</span>
-	    </h3>
-	    <div class="botao_acoes"></div>
-	</div>
-	<div class="bloco_texto">
-		{% for job in restore_jobs %}
-			{% if forloop.first %}
-		        <table>
-		        <thead>
-			        <tr>
-			        <th scope='col'>Data</th>
-			        <th scope='col'>Arquivos</th>
-			        <th scope='col'>Bytes</th>
-			        <th scope='col'></th>
-			        </tr>
-		        </thead>
-		        <tbody>
-			{% endif %}
-        <tr> 
-	        <td> {{ job.StartTime }} </td>
-	        <td> {{ job.JobFiles }} </td>
-	        <td> {{ job.JobBytes }} </td>
-			<td>
-			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/restore/new?src={{job.cName}}&dt={{job.StartTime}}&fset={{job.FileSet}}';return false"><span>Restaurar</span></button>
-			</td>
-		</tr>
-			{% if forloop.last %}
-		</tbody>
-		</table>
-			{% endif %}
-        {% endfor %}
-    </div>
-
-
 {% endblock %}

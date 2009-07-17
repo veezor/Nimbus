@@ -131,7 +131,6 @@ def view_computer(request, computer_id):
         vars_dict['procs'] = vars_dict['comp'].procedure_set.all()
         vars_dict['running_jobs'] = vars_dict['comp'].running_jobs()
         vars_dict['last_jobs'] = vars_dict['comp'].last_jobs()
-        vars_dict['restore_jobs'] = vars_dict['comp'].restore_jobs()
         from backup_corporativo.bkp.bacula import Bacula
         vars_dict['compstatus'] = vars_dict['comp'].get_status()
         # Load forms and vars

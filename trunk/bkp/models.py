@@ -69,111 +69,47 @@ class Computer(models.Model):
     fd_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     DEFAULT_LOCATION="/tmp/bacula-restore"
     
+    # TODO: replace fetchall for custom dictfetch
     def get_status(self):
         """Gets client lastjob status"""
         from backup_corporativo.bkp.bacula import Bacula
-        status_query = """ 
-                            SELECT JobStatus
-                            FROM Job INNER JOIN Client 
-                            ON Job.ClientID = Client.ClientID
-                            WHERE Client.Name = '%s' 
-                            ORDER BY Job.EndTime DESC LIMIT 1;
-                        """ % (self.computer_name)
-                
+        from backup_corporativo.bkp.sql_queries import CLIENT_STATUS_RAW_QUERY
+        status_query = CLIENT_STATUS_RAW_QUERY % {'client_name':self.computer_name,}
         cursor = Bacula.db_query(status_query)
         result = cursor.fetchall()
+        status = result and result[0][0] or ''
 
-        if result:
-            status = result[0][0]
-
-            if status == 'T':
-                return 'Ativo'
-            elif status == 'E':
-                return 'Erro'
-            else:
-                return 'Desconhecido'
+        if status == 'T':
+            return 'Ativo'
+        elif status == 'E':
+            return 'Erro'
         else:
             return 'Desconhecido'
 
-    
     def build_backup(self, proc, fset, sched, wtrigg):
         """Saves child objects in correct order."""
-
         proc.computer = self
         proc.save()
-        
         fset.procedure = sched.procedure = proc
         fset.save()
         sched.save()
-        
         wtrigg.schedule = sched
         wtrigg.save()
 
     def running_jobs(self):
         from backup_corporativo.bkp.bacula import Bacula
-        running_jobs_query =    '''
-                                SELECT Job.Name, Level, StartTime, (Now() - EndTime) as Duration,
-                                JobFiles, JobBytes , JobErrors, JobStatus 
-                                FROM Job INNER JOIN Client 
-                                on Job.ClientId = Client.ClientId
-                                WHERE Client.Name = '%s' AND (JobStatus = 'R' or JobStatus = 'p' or JobStatus = 'j'
-                                or JobStatus = 'c' or JobStatus = 'd' or JobStatus = 's'
-                                or JobStatus = 'M' or JobStatus = 'm' or JobStatus = 'S'
-                                or JobStatus = 'F' or JobStatus = 'B')
-                                ORDER BY StartTime DESC
-                                LIMIT 5
-                                ''' % self.computer_name
+        from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY
+        running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {'client_name':self.computer_name,}
         running_jobs = Bacula.dictfetch_query(running_jobs_query)
         return running_jobs
 
     def last_jobs(self):
         from backup_corporativo.bkp.bacula import Bacula
-        last_jobs_query =   '''
-                            SELECT DISTINCT JobID, Client.Name as cName, Job.Name, 
-                            Level, JobStatus, StartTime, (EndTime-StartTime) as Duration, JobFiles, JobBytes, 
-                            JobErrors, FileSet.FileSet FROM Job 
-                            INNER JOIN Client 
-                            ON Job.ClientId = Client.ClientId 
-                            INNER JOIN FileSet
-                            ON Job.FileSetID = FileSet.FileSetID 
-                            WHERE Client.Name = '%s'
-                            ORDER BY EndTime DESC LIMIT 15
-                            ''' % self.computer_name
+        from backup_corporativo.bkp.sql_queries import CLIENT_LAST_JOBS_RAW_QUERY
+        last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {'client_name':self.computer_name,}
         last_jobs = Bacula.dictfetch_query(last_jobs_query)
         return last_jobs
         
-    def restore_jobs(self):
-        from backup_corporativo.bkp.bacula import Bacula
-        restore_jobs_query =   '''
-                            SELECT DISTINCT Client.Name as cName, Job.Name,
-                            StartTime, JobFiles, JobBytes,
-                            JobErrors, FileSet.FileSet FROM Job
-                            INNER JOIN Client
-                            ON Job.ClientId = Client.ClientId
-                            INNER JOIN FileSet
-                            ON Job.FileSetID = FileSet.FileSetID
-                            WHERE Client.Name = '%s' AND FileSet = '%s'
-                            AND JobStatus = 'T'
-                            ORDER BY EndTime DESC LIMIT 15
-                            ''' % (self.computer_name,self.procedure_set.all()[0].get_fileset_name())
-        restore_jobs = Bacula.dictfetch_query(restore_jobs_query)
-        return restore_jobs
-
-    def file_tree(self, jobid):
-        """Retrieves tree with files of a jobid"""
-        from backup_corporativo.bkp.bacula import Bacula
-        filetree_query =    """
-                            SELECT Path.Path, Filename.Name 
-                            FROM File INNER JOIN Filename 
-                            ON Filename.FileNameId = File.FileNameId 
-                            INNER JOIN Path 
-                            ON File.PathId = Path.PathId 
-                            WHERE JobId=%s
-                            ORDER BY Path.Path,Filename.Name
-                            """ % jobid
-        file_tree = Bacula.dictfetch_query(filetree_query)
-        return file_tree
-
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
         from backup_corporativo.bkp.bacula import Bacula;
@@ -221,7 +157,6 @@ class Computer(models.Model):
 
         
 ### Procedure ###
-# TODO remove list definitions and replace it for default <child>_set definition
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
@@ -229,17 +164,90 @@ class Procedure(models.Model):
 
     def build_backup(self, fset, sched, trigg):
         """Saves child objects in correct order."""
-
         fset.procedure = sched.procedure = self
         fset.save()
         sched.save()
         trigg.schedule = sched
         trigg.save()
 
-    def update_status(self):
-        """Change status to valid or invalid depending if fileset_set.all() returns the list or an empty set."""
-        self.status = self.fileset_set.all() and 'Valid' or 'Invalid'
-        self.save()
+    def restore_jobs(self):
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import CLIENT_RESTORE_JOBS_RAW_QUERY
+        restore_jobs_query = CLIENT_RESTORE_JOBS_RAW_QUERY %   {'client_name':self.computer.computer_name, 
+                                                        'file_set':self.get_fileset_name(),}
+        return Bacula.dictfetch_query(restore_jobs_query)
+
+  
+    def get_full_bkp_dict(self, last_inc_bkp):
+        """Returns dict of last full backup of some incremental backup job id"""
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import LAST_FULL_RAW_QUERY
+        if 'StartTime' in last_inc_bkp:
+            lastfull_query = LAST_FULL_RAW_QUERY %  {'client_name':self.computer.computer_name,
+                                                    'start_time':last_inc_bkp['StartTime'],
+                                                    'file_set':self.get_fileset_name,}
+            full_bkp_dict = Bacula.dictfetch_query(lastfull_query)
+            return full_bkp_dict and full_bkp_dict[0] or {}
+        else:
+            return {}
+            
+    def get_bkp_dict(self, bkp_jid):
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import JOB_START_TIME_RAW_QUERY
+        starttime_query = JOB_START_TIME_RAW_QUERY %    {'job_id':jobid,}
+        result = Bacula.dictfetch_query(starttime_query)
+        return result and result[0] or {}
+
+
+    def get_related_backups(self, first_full_bkp, last_inc_bkp):
+        """Returns list with all backups"""
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import CLIENT_DELTA_RAW_QUERY
+        if ('StartTime' in first_full_bkp) and ('StartTime' in last_inc_bkp):
+            delta_query = CLIENT_DELTA_RAW_QUERY %  {'client_name':self.computer.computer_name,
+                                                    'delta_begin':delta_begin,
+                                                    'delta_end':delta_end,
+                                                    'file_set':self.get_fileset_name,}
+            result = Bacula.dictfetch_query(delta_query)
+            print result
+            return result
+        else:
+            return []
+
+    def get_all_backups(self, last_inc_bkp_jid):
+        """Returns list of dicts with all backups from given jid"""
+        last_inc_bkp = self.get_bkp_dict(last_inc_bkp_jid)
+        first_full_bkp = self.get_full_bkp_dict(last_inc_bkp)
+        backups_list = self.get_related_backups(first_full_bkp, last_inc_bkp)
+        return 
+
+    def build_jid_list(bkp_list):
+        jid_list = []
+        for bkp in bkp_list:
+            jid_list.append(bkp['JobId'])
+        return jid_list
+
+    def get_file_tree(self, last_inc_bkp_jid):
+        """Retrieves tree with files from a job id list"""
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import FILE_TREE_RAW_QUERY
+        bkp_list = self.get_all_backups(last_inc_bkp_jid)
+        jid_list = self.build_jid_list(bkp_list)
+        filetree_query = FILE_TREE_RAW_QUERY %  {'file_set':self.get_fileset_name(),}
+
+        if jid_list: 
+            filetree_query += 'AND ('
+            itr = 0
+            # TODO use ITERTOOLS to eliminate itr variable
+            for jid in jid_list:
+                if itr > 0:
+                    filetree_query += 'OR '
+                filetree_query += """Job.JobId='%s' """ % jid
+                itr += 1
+            filetree_query += ') '
+        filetree_query += 'ORDER BY Path.Path,Filename.Name'
+        file_tree = Bacula.dictfetch_query(filetree_query)
+        return file_tree
     
     def get_fileset_name(self):
         """Get fileset name for bacula file."""
@@ -429,18 +437,7 @@ class ExternalDevice(models.Model):
         return dev_choices
     device_choices = classmethod(device_choices)
 
-    def stub_device_choices(cls):
-        """Stub definition for returning a test set of usb devices"""
-        stub_choices = []
-        stub_choices.append(['','---------'])
-        stub_choices.append(['5Y3E6323','ROXO'])
-        stub_choices.append(['1YAE635AB','luke'])
-        stub_choices.append(['943255CB','preto'])
-        stub_choices.append(['555DDA3B','novo'])
-        
-        return stub_choices
-    stub_device_choices = classmethod(stub_device_choices)
-
+    #TODO: improve next piece of code
     def next_device_index(cls):
         import MySQLdb
         from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_HOST
@@ -482,7 +479,6 @@ class BandwidthRestriction(models.Model):
 
     def __unicode__(self):
         day = DAYS_OF_THE_WEEK[self.dayoftheweek.day_name]
-        #return '%shs %s %s kbps' % (self.restrictiontime,day,self.restriction_value)
         return '%shs %s %s kbps' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
 
 
