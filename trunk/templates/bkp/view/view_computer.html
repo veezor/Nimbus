@@ -3,17 +3,18 @@
 {% block content %}
 
     <div class="titulo_botoes">
+        <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_comp.gif" />
 	    <h2>
 	        <span>Computador</span><br/>
-	        {{ comp.computer_name }}
+	        {{ comp.computer_name }} <span class="toggle pequeno" rel="detalhes_computador">detalhes</span>
 	    </h2>
 	    <div class="botao_acoes">
 	        <button onclick="location.href='{{script_name}}/{{comp.edit_url}}'"><span>Alterar</span></button>
-		    <button onclick="location.href='{{script_name}}/{{comp.delete_url}}';"><span>Remover</span></button>
+		    <button onclick="location.href='{{script_name}}/{{comp.delete_url}}';" class="red"><span>Remover</span></button>
 	    </div>
 	</div>
 	
-	<div class="bloco_texto">
+	<div class="bloco_texto escondido" id="detalhes_computador">
 	    <div class="titulo_botoes">
 		<div class="botao_acoes">
 	        <form action="{{script_name}}/{{comp.run_test_url}}" method="post">
@@ -45,11 +46,12 @@
     {% for proc in comp.procedure_set.all %}
         <div class="procedure">
             <div class="titulo_topo">
+                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_gear.gif" />
                 <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a></h3>
                 <div class="botao_acoes">
 	                <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
 	                <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
-	                <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'"><span>Remover</span></button>
+	                <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
 	            </div>
 	        </div>
 	        <ul class="aux">
@@ -59,11 +61,12 @@
 	                <span class="value">
 					{% for fset in proc.fileset_set.all %}
 	                	{{ fset.path }}
-			            <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'"><span>Remover</span></button>
+			            <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="red"><span>Remover</span></button>
 	                {% endfor %}
 	                </span>
 	            </li>
 	            <li>
+	                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_clock.gif" />
 	                <span class="label">Agendamentos:<br/>
 	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new">adicionar</a></span>
 	                {% for sched in p.schedule_set.all %}
@@ -88,7 +91,7 @@
                         {% endfor %}
                         </ul>
 	                    <button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
-	                    <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false"><span>Remover</span></button>
+	                    <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false" class="red"><span>Remover</span></button>
                     </span>
                     {% endfor %}
                 </li>

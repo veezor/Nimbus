@@ -14,24 +14,27 @@
 	<body>
 		<div id="site">
 			<div id="topo">
-                            <h1><a href="{{script_name}}/" title="Home">Linconet - Tencnologia Estratégica</a></h1>
-                            <div id="main_menu" class="menu">
-                                <ul class="links">
-                                    <li class=""><a href="{{script_name}}/stats" title="">Estatísticas</a></li>
-                                    <li class=""><a href="{{script_name}}/config/edit" title="">Configurações</a></li>
-                                </ul>
-                                {% if current_user.username %}
-                                <form class="link" action="{{script_name}}/session/delete" method="post">
-                                    <p>Bem-vindo, {{current_user.username}} | <button type="submit">Sair</button></p>
-                                </form>
-                                {% endif %}
-                            </div>
+                <h1><a href="{{script_name}}/" title="Home">Linconet - Tencnologia Estratégica</a></h1>
+                <div id="main_menu" class="menu">
+                    <ul class="links">
+                        <li class="active"><a href="{{script_name}}/backup" title="">Backup</a></li>
+                        <li class=""><a href="{{script_name}}/restore" title="">Restore</a></li>
+                        <li class=""><a href="{{script_name}}/stats" title="">Estatísticas</a></li>
+                        <li class=""><a href="{{script_name}}/config/edit" title="">Configurações</a></li>
+                    </ul>
+                    {% if current_user.username %}
+                    <form class="link" action="{{script_name}}/session/delete" method="post">
+                        <p>Bem-vindo, {{current_user.username}} | <button type="submit">Sair</button></p>
+                    </form>
+                    {% endif %}
+                </div>
 			</div>
 			<div id="conteudo">	
 				<div id="sidebar">
 				    <!-- start computers block -->
 				    {% block computers %}
 				    {% if comps.count %}
+				    <h3>Computadores</h3>
 					<ul class="aux list_computers">
 						{% for c in comps %}
 						{% ifequal c.id comp.id %}

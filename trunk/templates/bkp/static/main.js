@@ -1,3 +1,11 @@
+function set_toggles() {
+    $('.toggle').click(
+        function () {
+            $('#' + $(this).attr('rel')).toggle('fast');
+        }
+    )
+}
+
 function set_backup_type() {
     if (!$('form select[name=type]')) {
         return false;
@@ -62,6 +70,7 @@ function change_schedule_procedure() {
 
 $(document).ready(function() {
     // Execute function to start the application.
+    set_toggles();
     set_backup_type();
     set_schedule_procedure();
 });

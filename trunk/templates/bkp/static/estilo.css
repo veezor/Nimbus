@@ -27,8 +27,32 @@ table {
 margin-bottom: 20px;
 }
 
+button {
+background: transparent url(/static/imagens/button_gray.gif) top left no-repeat;
+border: 0;
+padding: 0;
+margin: 0;
+font-size: 11px;
+color: #FFF;
+cursor: pointer;
+}
+
+button span {
+background: transparent url(/static/imagens/button_gray.gif) top right no-repeat;
+padding: 4px 5px 5px 8px;
+float: right;
+}
+
+button.red { background: transparent url(/static/imagens/button_red.gif) top left no-repeat; }
+button.red span { background: transparent url(/static/imagens/button_red.gif) top right no-repeat; }
+
+
+.escondido {
+display: none;
+}
+
 #site {
-width: 960px;
+width: 940px;
 margin: 0 auto;
 }
 
@@ -37,62 +61,66 @@ margin: 0 auto;
 
 
 #topo {
-background:transparent url(../static/imagens/logo_linconet.gif) no-repeat scroll left center;
-height:100px;
+background:transparent url(../static/imagens/topo_nimbus.jpg) top left no-repeat;
+height:108px;
 margin-top:35px;
-padding:0;
+width: 940px;
 }
 
 #topo h1 {
-background:transparent url(../static/imagens/logo_linconet_nome.gif) no-repeat scroll left center;
-height:36px;
-margin:18px 0 0 120px;
-overflow:hidden;
-padding:0;
-text-indent:-9999em;
-width:321px;
+overflow: hidden;
+padding: 0;
+text-indent: -9999em;
+width: 215px;
+height: 95px;
+margin-left: 10px;
+float: left;
 }
 
 #topo h1 a {
-display:block;
-height:36px;
-width:321px;
+display: block;
+width: 220px;
+height: 95px;
 }
 
 #topo .menu {
-margin: 7px 0 0 120px;
-background:transparent url(../static/imagens/bg_menu.gif) repeat-x scroll left top;
-width: 840px;
 overflow: hidden;
+padding-top: 61px;
 }
 
 #topo .menu ul {
-height:37px;
-margin:0;
-overflow:hidden;
-padding:0 0 0 5px;
+height: 40px;
+margin: 0;
+overflow: hidden;
+padding: 0 0 0 19px;
 float: left;
 }
 
 #topo .menu ul li {
-display:inline;
-float:left;
-padding:0;
+display: inline;
+float: left;
+padding: 0 0 0 3px;
+margin-right: 5px;
 }
 
 #topo .menu ul li a {
-color:#4B5555;
-display:block;
-font-size:12px;
-padding:12px 9px 14px;
-text-decoration:none;
+display: block;
+font-size: 14px;
+padding: 9px 12px 30px 9px;
+text-decoration: none;
+float: right;
+color: #FFF;
+}
+
+#topo .menu ul li:hover,
+#topo .menu ul li.active {
+background: url(/static/imagens/bg_menu.gif) top left no-repeat;
 }
 
 #topo .menu ul li a:hover,
 #topo .menu ul li.active a {
-background:transparent url(../static/imagens/bg_menu_selected.gif) repeat-x scroll left top;
-color:#D4D6D6;
-text-decoration:none;
+background: url(/static/imagens/bg_menu.gif) top right no-repeat;
+color: #4B5555;
 }
 
 #topo .menu form {
@@ -107,23 +135,26 @@ font-size: 11px;
 /* CONTEUDO */
 
 #conteudo {
-width: 960px;
+width: 912px;
 overflow: hidden;
+background: #FAFCFB;
+border-left: 4px solid #F4F4F4;
+border-right: 4px solid #F4F4F4;
+border-bottom: 7px solid #F4F4F4;
+padding: 6px 10px;
 }
 
 #sidebar {
 width: 200px;
 float: left;
-padding: 10px;
-background: #F9FBFB;
-border: 1px solid #ECECEC;
-border-top-width: 3px;
-border-bottom-width: 2px;
 }
 
-#sidebar .welcome {
-margin-bottom: 20px;
-color: #666;
+#sidebar h3 {
+color: #1e91a3;
+font-weight: normal;
+font-size: 18px;
+margin-bottom: 10px;
+letter-spacing: -0.05em;
 }
 
 #sidebar .list_computers {
@@ -153,12 +184,7 @@ color: #999;
 
 #main_content {
 float: right;
-width: 700px;
-padding: 10px;
-background: #F9FBFB;
-border: 1px solid #ECECEC;
-border-top-width: 3px;
-border-bottom-width: 2px;
+width: 680px;
 }
 
 hr {
@@ -204,11 +230,32 @@ overflow: hidden;
 margin-bottom: 10px;
 }
 
+.titulo_botoes .pequeno {
+font-size: 11px;
+cursor: pointer;
+}
+
+img.ico_secao {
+float: left;
+margin-right: 13px;
+width: 16px;
+}
+
+.titulo_botoes img.ico_secao {
+padding-top: 7px;
+width: 32px;
+}
+
 .titulo_botoes h2 {
 font-size: 26px;
 color: #363d3d;
 float: left;
 letter-spacing: -0.05em;
+}
+
+.titulo_botoes h2 span {
+line-height: 13px;
+vertical-align: bottom;
 }
 
 .titulo_botoes h2 span,
@@ -304,13 +351,12 @@ color: #FFF;
 }
 
 #rodape {
-background: #EEE;
+background: url(/static/imagens/bg_rodape.gif) top left no-repeat;
 padding: 10px;
 margin-top: 20px;
 color: #999;
+font-size: 10px;
+color: #FFF;
 }
-
-
-
 
 
