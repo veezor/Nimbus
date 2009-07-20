@@ -47,9 +47,22 @@ button.red { background: transparent url(/static/imagens/button_red.gif) top lef
 button.red span { background: transparent url(/static/imagens/button_red.gif) top right no-repeat; }
 
 
+.button_delete {
+text-indent: -9999em;
+overflow: hidden;
+width: 16px;
+height: 16px;
+background: transparent url(/static/imagens/ico_minus.gif) top left no-repeat;
+vertical-align: bottom;
+}
+
+.button_delete span { background: none; }
+
 .escondido {
 display: none;
 }
+
+a img { border: none; }
 
 #site {
 width: 940px;
@@ -230,9 +243,12 @@ overflow: hidden;
 margin-bottom: 10px;
 }
 
-.titulo_botoes .pequeno {
+.titulo_botoes .pequeno,
+.bloco_texto .pequeno {
 font-size: 11px;
 cursor: pointer;
+color: #939393;
+font-weight: normal;
 }
 
 img.ico_secao {
@@ -322,6 +338,11 @@ float: right;
 .titulo_botoes .botao_acoes form {
 float: left;
 margin-left: 3px;
+}
+
+.bloco_texto .procedure {
+width: 100%;
+overflow: hidden;
 }
 
 .fieldWrapper {

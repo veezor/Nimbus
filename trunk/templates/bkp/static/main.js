@@ -53,6 +53,7 @@ function set_schedule_procedure() {
             change_schedule_procedure();
         }
     );
+    $('#execute_procedure #id_run_now').click();
     $('#execute_procedure #id_run_now').change();
 }
 

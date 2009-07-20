@@ -6,7 +6,7 @@
         <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_comp.gif" />
 	    <h2>
 	        <span>Computador</span><br/>
-	        {{ comp.computer_name }} <span class="toggle pequeno" rel="detalhes_computador">detalhes</span>
+	        {{ comp.computer_name }} <span class="toggle pequeno" rel="detalhes_computador">(ver detalhes)</span>
 	    </h2>
 	    <div class="botao_acoes">
 	        <button onclick="location.href='{{script_name}}/{{comp.edit_url}}'"><span>Alterar</span></button>
@@ -46,29 +46,36 @@
     {% for proc in comp.procedure_set.all %}
         <div class="procedure">
             <div class="titulo_topo">
-                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_gear.gif" />
-                <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a></h3>
+                <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a>
+                    <span class="toggle pequeno" rel="detalhes_procedure_{{ proc.id }}">(ver detalhes)</span></h3>
                 <div class="botao_acoes">
 	                <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
 	                <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
 	                <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
 	            </div>
 	        </div>
-	        <ul class="aux">
+	        <ul class="aux escondido" id="detalhes_procedure_{{ proc.id }}">
 	            <li>
-	                <span class="label">Caminhos do backup:<br/>
-	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/new">adicionar</a></span>
+	                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_gear.gif" />
+	                <span class="label"><strong>Caminhos do backup:</strong><br/>
+	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
 	                <span class="value">
+	                {% if not proc.fileset_set.count %}
+	                (vazio)
+	                {% endif %}
 					{% for fset in proc.fileset_set.all %}
 	                	{{ fset.path }}
-			            <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="red"><span>Remover</span></button>
+			            <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="button_delete" title="Remover este item."><span>Remover</span></button><br/>
 	                {% endfor %}
 	                </span>
 	            </li>
 	            <li>
 	                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_clock.gif" />
-	                <span class="label">Agendamentos:<br/>
-	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new">adicionar</a></span>
+	                <span class="label"><strong>Agendamentos:</strong><br/>
+	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
+	                {% if not p.schedule_set.count %}
+	                <span class="value">(vazio)</span>
+	                {% endif %}
 	                {% for sched in p.schedule_set.all %}
 	                <span class="value">
 	                    Tipo: {{ sched.type }}
