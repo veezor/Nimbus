@@ -38,13 +38,15 @@ cursor: pointer;
 }
 
 button span {
-background: transparent url(/static/imagens/button_gray.gif) top right no-repeat;
-padding: 4px 5px 5px 8px;
+background: #FFF url(/static/imagens/button_gray.gif) top right no-repeat;
+padding: 5px 9px 5px 8px;
+margin: -1px -3px 0 0;
+height: 15px;
 float: right;
 }
 
 button.red { background: transparent url(/static/imagens/button_red.gif) top left no-repeat; }
-button.red span { background: transparent url(/static/imagens/button_red.gif) top right no-repeat; }
+button.red span { background: #FFF url(/static/imagens/button_red.gif) top right no-repeat; }
 
 
 .button_delete {
