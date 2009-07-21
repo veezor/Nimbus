@@ -24,7 +24,7 @@
 </thead>
 <tbody>
 {% for job in runningjobs %}
-<tr> 
+<tr class="{% cycle 'odd' 'even' %}">
 <td> {{job.Name}} </td>
 <td> {{job.cName}} </td>
 <td> {{job.Level}} </td>
