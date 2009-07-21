@@ -147,3 +147,10 @@ def restriction_id(rtime_object, day_name):
         return rest and rest.id or ''
     except Exception:
         return ''
+
+
+@register.filter
+def contains(obj, value):
+    """Verify if a value is containned in a obj."""
+    return value in obj
+

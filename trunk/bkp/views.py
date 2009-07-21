@@ -36,6 +36,8 @@ def global_vars(request):
     vars_dict['LEVEL_CHOICES'] = LEVEL_CHOICES
     vars_dict['DAYS_OF_THE_WEEK'] = DAYS_OF_THE_WEEK
     
+    vars_dict['request'] = request
+    
     return vars_dict, forms_dict, return_dict
 
 
