@@ -171,7 +171,7 @@
 		        </thead>
 		        <tbody>
 			{% endif %}
-        <tr> 
+        <tr class="{% cycle 'odd' 'even' %}"> 
 	        <td> {{ job.Name }} </td>
 	        <td> {{ job.Level|friendly_level }} </td>
 	        <td> {{ job.JobFiles }} </td>

@@ -66,6 +66,33 @@ display: none;
 
 a img { border: none; }
 
+table {
+border: 0;
+width: 100%;
+}
+
+table th,
+table td { padding: 5px; }
+
+table thead th {
+background: #999;
+color: #FFF;
+font-size: 11px;
+border-bottom: 2px solid #BBB;
+}
+
+table tbody tr td {
+border-bottom: 1px solid #DDD;
+color: #444;
+font-size: 11px;
+}
+
+table tbody tr.even td {
+background: #EEE;
+}
+
+
+
 #site {
 width: 940px;
 margin: 0 auto;

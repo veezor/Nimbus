@@ -27,6 +27,9 @@
                         <p>Bem-vindo, {{current_user.username}} | <button type="submit">Sair</button></p>
                     </form>
                     {% endif %}
+                    {% if not current_user.username %}
+                    <p>Você não está autenticado.</p>
+                    {% endif %}
                 </div>
 			</div>
 			<div id="conteudo">	
