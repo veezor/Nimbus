@@ -13,6 +13,7 @@ from backup_corporativo.bkp.models import Schedule
 from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
+from backup_corporativo.bkp.models import Storage
 from backup_corporativo.bkp.models import ExternalDevice
 from backup_corporativo.bkp.models import BandwidthRestriction
 from backup_corporativo.bkp.models import DayOfTheWeek
@@ -53,6 +54,12 @@ class ComputerForm(ModelForm):
     class Meta:
         model = Computer
         fields = ('computer_name','ip','description')
+
+class StorageForm(ModelForm):
+    class Meta:
+        model = Storage
+        fields = ('storage_name', 'storage_ip', 'storage_port',
+                  'storage_password', 'storage_description')
         
 class ProcedureForm(ModelForm):
     class Meta:
@@ -84,7 +91,6 @@ class ComputerAuxForm(forms.Form):
     Schedule = forms.BooleanField(widget=forms.HiddenInput, initial="True")
     schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")
     Trigger = forms.BooleanField(widget=forms.HiddenInput, initial="True")
-
 
 class ScheduleForm(ModelForm):
     class Meta:

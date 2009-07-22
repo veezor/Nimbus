@@ -155,10 +155,45 @@ class Computer(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.computer_name, self.ip)
 
+
+
+### Storage ###
+class Storage(models.Model):
+    storage_name = cfields.ModelSlugField("Nome", max_length=50, unique=True)
+    storage_ip = models.IPAddressField("Endereço IP")
+    storage_port = models.IntegerField("Porta do Storage", default='9103')
+    storage_password = models.CharField(max_length=50, default='defaultpw')
+    
+    storage_description = models.CharField("Descrição", max_length=100, blank=True)
+
+
+    def get_storage_name(self):
+        """Returns storage name lower string."""
+        return str.lower(str(self.storage_name))
+
+
+    def save(self):
+        if not self.id: # If this record is not at database yet
+            self.__generate_password()
+        super(Computer, self).save()
+
+
+    def __generate_password(self, size=20):
+        """Sets a new random password to the computer."""
+        from backup_corporativo.bkp.utils import random_password
+        self.storage_password = random_password(size)
+
+
+    def __unicode__(self):
+        return "%s (%s:%s)" % (self.storage_name, self.storage_ip, self.storage_port)
+
+
         
 ### Procedure ###
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
+    storage = models.ForeignKey(Storage, default=None)
+    
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     status = models.CharField(max_length=10, default="Invalid")
 

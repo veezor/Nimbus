@@ -14,6 +14,7 @@ from backup_corporativo.bkp.models import WeeklyTrigger
 from backup_corporativo.bkp.models import MonthlyTrigger
 from backup_corporativo.bkp.models import FileSet
 from backup_corporativo.bkp.models import Pool
+from backup_corporativo.bkp.models import Storage
 from backup_corporativo.bkp.models import BandwidthRestriction
 from backup_corporativo.bkp.utils import prepare_to_write,absolute_dir_path,remove_or_leave,mount_path
 
@@ -56,6 +57,8 @@ def update_files(sender, instance, signal, *args, **kwargs):
         update_schedule_file(instance.schedule.procedure)
     elif sender == MonthlyTrigger:
         update_schedule_file(instance.schedule.procedure)
+    elif sender == Storage:
+        update_storage_file(instance)
     elif sender == GlobalConfig:
         update_config_file(instance)
         update_device_file(instance)        
@@ -75,6 +78,8 @@ def remove_files(sender, instance, signal, *args, **kwargs):
         remove_schedule_file(instance)
     elif sender == Pool:
         remove_pool_file(instance.procedure)
+    elif sender == Storage:
+        remove_storage_file(instance)
     elif sender == Schedule:
         pass
     else:
@@ -447,6 +452,41 @@ def remove_schedule_file(procedure):
     remove_or_leave(filepath)
     
 
+
+#### Storage #####
+
+def update_storage_file(instance):
+    """Storage update file."""
+    sdict = storage_dict(instance.get_storage_name(),
+                         instance.storage_ip,
+                         instance.storage_port,
+                         instance.storage_password)
+    generate_storage_file(instance.get_storage_name(), sdict)
+
+def storage_dict(name, ip, port, password):
+    """Generate Storage attributes dict."""
+    return {'Name': name, 'SDPort': port,
+            'WorkingDirectory': '/var/lib/bacula',
+            'Pid Directory': '/var/run',
+            'Maximum Concurrent Jobs': 20}
+
+def generate_storage_file(name, attr_dict):
+    """Generate Storage file"""
+    f = prepare_to_write(name, 'custom/storages')
+
+    f.write("Storage {\n")
+    for k in attr_dict.keys():
+        f.write('''\t%(key)s = "%(value)s"\n''' % {'key':k, 'value':attr_dict[k]})
+    f.write("}\n")
+    f.close()
+
+def remove_storage_file(instance):
+    """Remove Storage file"""
+    base_dir,filepath = mount_path(instance.get_storage_name(), 'custom/storages')
+    remove_or_leave(filepath)
+
+
+
 ### Cron file
 def generate_cron(filename="nimbus.cron"):
 	"""Generates cron file"""
@@ -488,6 +528,9 @@ models.signals.post_delete.connect(remove_files, sender=Schedule)
 # Pool
 models.signals.post_save.connect(update_files, sender=Pool)
 models.signals.post_delete.connect(remove_files, sender=Pool)
+# Cron
+models.signals.post_save.connect(update_files, sender=Storage)
+models.signals.post_delete.connect(remove_files, sender=Storage)
 # Cron
 models.signals.post_save.connect(update_files, sender=BandwidthRestriction)
 models.signals.post_delete.connect(update_files, sender=BandwidthRestriction)
