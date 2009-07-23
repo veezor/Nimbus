@@ -334,9 +334,11 @@ class Procedure(models.Model):
         self.load_full_media()              # load infos for full backup
         self.load_inc_media(last_inc_bkp)   # load infos for incremental backups
         jid_list = self.build_jid_list()    # build list with all job ids
-        filetree_query = FILE_TREE_RAW_QUERY %  {'jid_string_list':','.join(jid_list),}
-        file_tree = Bacula.dictfetch_query(filetree_query)
-        return file_tree
+        if jid_list:
+            filetree_query = FILE_TREE_RAW_QUERY %  {'jid_string_list':','.join(jid_list),}
+            file_tree = Bacula.dictfetch_query(filetree_query)
+            return file_tree 
+        else: return []
     
     def get_fileset_name(self):
         """Get fileset name for bacula file."""
