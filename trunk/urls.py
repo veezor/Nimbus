@@ -44,6 +44,7 @@ urlpatterns = patterns('',
     (r'^storage/$', 'backup_corporativo.bkp.views.create_storage'),
     (r'^storage/new$', 'backup_corporativo.bkp.views.new_storage'),
     (r'^storage/(?P<storage_id>\d+)$', 'backup_corporativo.bkp.views.view_storage'),
+    (r'^storage/(?P<storage_id>\d+)/dump_config$', 'backup_corporativo.bkp.views.storage_config_dump'),
     # views_app/procedures.py
     (r'^computer/(?P<computer_id>\d+)/procedure/$', 'backup_corporativo.bkp.views.create_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/new$', 'backup_corporativo.bkp.views.new_procedure'),

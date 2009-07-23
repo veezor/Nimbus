@@ -3,7 +3,7 @@
 
 # Application
 from backup_corporativo.bkp.utils import *
-from backup_corporativo.bkp.models import Storage
+from backup_corporativo.bkp.models import Storage, GlobalConfig
 from backup_corporativo.bkp.forms import StorageForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
@@ -54,6 +54,74 @@ def view_storage(request, storage_id):
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/view/view_storage.html', return_dict, context_instance=RequestContext(request))
 
+
+def generate_storage_dump_file(storage, config):
+    "generate config file"
+    sto_dict = {'Name': storage.storage_name, 'SDPort': storage.storage_port,
+                    'WorkingDirectory': '"/var/bacula/working"',
+                    'Pid Directory': '"/var/run"',
+                    'Maximum Concurrent Jobs': '20'}
+    dir_dict = {'Name': config.bacula_name,
+                    'Password': '"%s"' % config.storage_password}
+    dev_dict = {'Name': "FileStorage", 'Media Type': 'File',
+                    'Archive Device': '/var/backup', 'LabelMedia': 'yes', 
+                    'Random Access': 'yes', 'AutomaticMount': 'yes',
+                    'RemovableMedia': 'no', 'AlwaysOpen': 'no'}
+    msg_dict = {'Name': "Standard", 'Director':'%s = all' % config.bacula_name}
+    
+    s = []
+
+    s.append("Storage {\n")
+    for k in sto_dict.keys():
+        s.append('''\t%(key)s = %(value)s\n''' % {'key':k,'value':sto_dict[k]})
+    s.append("}\n\n")
+
+    s.append("Director {\n")
+    for k in dir_dict.keys():
+        s.append('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dir_dict[k]})
+    s.append("}\n\n")
+    
+    s.append("Device {\n")
+    for k in dev_dict.keys():
+        s.append('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dev_dict[k]})
+    s.append("}\n\n")
+    
+    s.append("Messages {\n")
+    for k in msg_dict.keys():
+        s.append('''\t%(key)s = %(value)s\n''' % {'key':k,'value':msg_dict[k]})
+    s.append("}\n\n")
+    
+    return ''.join(s)
+
+
+@authentication_required
+def storage_config_dump(request, storage_id):
+    from time import strftime
+    from backup_corporativo.bkp.crypt_utils import encrypt, decrypt
+    from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
+    try:
+        from backup_corporativo.settings import BACULA_DB_NAME
+    except:
+        raise('Could not import BACULA_DB_NAME from settings.py')
+   
+	# Create dump file and encrypt 
+    #date = strftime("%Y-%m-%d_%H:%M:%S")
+    #tmpdump_file = absolute_file_path('tmpdump','custom')
+    #dump_file = absolute_file_path('%s.nimbus' % date,'custom')
+    #cmd = '''mysqldump --user=%s --password=%s --add-drop-database --create-options --disable-keys --databases %s %s -r "%s"''' % (DATABASE_USER,DATABASE_PASSWORD,DATABASE_NAME,BACULA_DB_NAME,tmpdump_file)
+    #os.system(cmd)
+    #encrypt(tmpdump_file,dump_file,'lala',15,True)
+    
+    storage = Storage.objects.get(id=storage_id)
+    config = GlobalConfig.objects.all()[0]
+    dump_file = generate_storage_dump_file(storage, config)
+    
+	# Return file for download
+    response = HttpResponse(mimetype='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=bacula-sd.conf'
+    response.write(dump_file)
+    
+    return response
 
 #        if temp_dict['compauxform'].cleaned_data['Procedure']:
 #            forms_dict['procform'] = ProcedureForm(request.POST)
