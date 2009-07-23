@@ -103,14 +103,6 @@ def storage_config_dump(request, storage_id):
         from backup_corporativo.settings import BACULA_DB_NAME
     except:
         raise('Could not import BACULA_DB_NAME from settings.py')
-   
-	# Create dump file and encrypt 
-    #date = strftime("%Y-%m-%d_%H:%M:%S")
-    #tmpdump_file = absolute_file_path('tmpdump','custom')
-    #dump_file = absolute_file_path('%s.nimbus' % date,'custom')
-    #cmd = '''mysqldump --user=%s --password=%s --add-drop-database --create-options --disable-keys --databases %s %s -r "%s"''' % (DATABASE_USER,DATABASE_PASSWORD,DATABASE_NAME,BACULA_DB_NAME,tmpdump_file)
-    #os.system(cmd)
-    #encrypt(tmpdump_file,dump_file,'lala',15,True)
     
     storage = Storage.objects.get(id=storage_id)
     config = GlobalConfig.objects.all()[0]
@@ -123,32 +115,3 @@ def storage_config_dump(request, storage_id):
     
     return response
 
-#        if temp_dict['compauxform'].cleaned_data['Procedure']:
-#            forms_dict['procform'] = ProcedureForm(request.POST)
-#        if temp_dict['compauxform'].cleaned_data['FileSet']:
-#            forms_dict['fsetform'] = FileSetForm(request.POST)
-#        if temp_dict['compauxform'].cleaned_data['Schedule']:
-#            forms_dict['schedform'] = ScheduleForm(request.POST)
-#        if temp_dict['compauxform'].cleaned_data['Trigger']:
-#            if triggclass.lower() == 'weekly':
-#                forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST)
-#                temp_dict['mtriggform'] = MonthlyTriggerForm()
-#            elif triggclass.lower() == 'monthly':
-#                temp_dict['wtriggform'] = WeeklyTriggerForm()
-#                forms_dict['mtriggform'] = MonthlyTriggerForm(request.POST)
-#        forms_list = forms_dict.values()
-#        if all([form.is_valid() for form in forms_list]):
-#            comp = forms_dict['compform'].save(commit=False)
-#            proc = forms_dict['procform'].save(commit=False)
-#            fset = forms_dict['fsetform'].save(commit=False)
-#            sched = forms_dict['schedform'].save(commit=False)
-#            trigg = forms_dict[triggform].save(commit=False)
-#            comp.save()
-#            comp.build_backup(proc, fset, sched, trigg)
-#            request.user.message_set.create(message="Computador cadastrado com sucesso.")
-#            return HttpResponseRedirect(computer_path(request, comp.id))
-#        else:
-#            # Load forms and vars
-#            request.user.message_set.create(message="Existem erros e o computador não foi cadastrado.")
-#            return_dict = merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
-#            return render_to_response('bkp/new/new_computer.html', return_dict, context_instance=RequestContext(request))
