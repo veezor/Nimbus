@@ -42,6 +42,19 @@ def create_storage(request):
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
             return render_to_response('bkp/new/new_storage.html', return_dict, context_instance=RequestContext(request))
 
+
+@authentication_required
+def view_storage(request, storage_id):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+
+    if request.method == 'GET':
+        # Load forms and vars
+        #forms_dict['storform'] = StorageForm()
+        vars_dict['storage'] = get_object_or_404(Storage, pk=storage_id)
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/view/view_storage.html', return_dict, context_instance=RequestContext(request))
+
+
 #        if temp_dict['compauxform'].cleaned_data['Procedure']:
 #            forms_dict['procform'] = ProcedureForm(request.POST)
 #        if temp_dict['compauxform'].cleaned_data['FileSet']:

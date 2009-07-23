@@ -29,6 +29,7 @@ def global_vars(request):
     return_dict['current_user'] = request.user
     # List of computers.
     vars_dict['comps'] = Computer.objects.all()
+    vars_dict['stors'] = Storage.objects.all()
     # List of forms has been removed! 
     # (Please declare only forms the views)
     # List of vars.    

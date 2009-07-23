@@ -51,6 +51,22 @@
 					{% endif %}
 					<p><a href="{{script_name}}/computer/new">[+] Adicionar computador</a></p>
 					{% endblock %}
+					
+					{% block storages %}
+				    {% if stors.count %}
+				    <h3>Storages</h3>
+					<ul class="aux list_computers">
+						{% for s in stors %}
+						{% ifequal s.id storage.id %}
+						<li><strong><a href="{{script_name}}/storage/{{s.id}}">{{ s.storage_name }}</a> <span>{{ s.storage_ip }}</span></strong></li>
+						{% else %}
+						<li><a href="{{script_name}}/storage/{{s.id}}">{{ s.storage_name }}</a> <span>{{ s.storage_ip }}</span></li>
+						{% endifequal %}
+						{% endfor %}
+					</ul>
+					{% endif %}
+					<p><a href="{{script_name}}/storage/new">[+] Adicionar storage</a></p>
+					{% endblock %}
 					<!-- end computers block -->
 				</div>
 				<div id="main_content">

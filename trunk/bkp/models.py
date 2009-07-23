@@ -184,6 +184,18 @@ class Storage(models.Model):
         self.storage_password = random_password(size)
 
 
+    def absolute_url(self):
+        """Returns absolute url."""
+        return "storage/%s" % (self.id)
+
+    def edit_url(self):
+        """Returns absolute url."""
+        return "storage/%s/edit" % (self.id)
+
+    def delete_url(self):
+        """Returns delete url."""
+        return "storage/%s/delete" % (self.id)
+
     def __unicode__(self):
         return "%s (%s:%s)" % (self.storage_name, self.storage_ip, self.storage_port)
 

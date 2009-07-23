@@ -95,11 +95,13 @@ def update_config_file(instance):
     "Config update file"
     i = instance
     dir_dict = config_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
-    sto_dict = config_sto_dict("%sStorage" % i.bacula_name, i.storage_ip, i.storage_port, i.storage_password)
+    sto_list = [config_sto_dict("%sStorage" % i.bacula_name, i.storage_ip, i.storage_port, i.storage_password)]
+    for st in Storage.objects.all():
+        sto_list.append(config_sto_dict(st.storage_name, st.storage_ip, st.storage_port, st.storage_password))
     cat_dict = config_cat_dict("MyCatalog",i.database_name, i.database_user, i.database_password)
     smsg_dict = config_msg_dict("Standard",i.admin_mail)
     dmsg_dict = config_msg_dict("Daemon",i.admin_mail)    
-    generate_config("bacula-dir.conf", dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict)
+    generate_config("bacula-dir.conf", dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
 
 def config_dir_dict(dir_name, dir_port, dir_passwd):
     "generate config director attributes dict"
@@ -136,7 +138,7 @@ def config_msg_dict(msg_name, admin_mail=None):
 
 
     
-def generate_config(filename,dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict):
+def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict):
     "generate config file"
     f = prepare_to_write(filename,'custom/config/')
 
@@ -145,10 +147,12 @@ def generate_config(filename,dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict)
         f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':dir_dict[k]})
     f.write("}\n\n")
 
-    f.write("Storage {\n")
-    for k in sto_dict.keys():
-        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':sto_dict[k]})
-    f.write("}\n\n")
+    # sto_dict is now sto_list.
+    for sto in sto_list:
+        f.write("Storage {\n")
+        for k in sto.keys():
+            f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':sto[k]})
+        f.write("}\n\n")
     
     f.write("Catalog {\n")
     for k in cat_dict.keys():
