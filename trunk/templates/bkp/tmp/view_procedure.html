@@ -32,24 +32,27 @@
 		        <table>
 		        <thead>
 			        <tr>
-			        <th scope='col'>Data</th>
+			        <th scope='col'>JobId</th>
+			        <th scope='col'>Data Início</th>
+			        <th scope='col'>Hora Início</th>
 			        <th scope='col'>Arquivos</th>
 			        <th scope='col'>Bytes</th>
+			        <th scope='col'>Nível</th>
 			        <th scope='col'></th>
 			        </tr>
 		        </thead>
 		        <tbody>
 			{% endif %}
         <tr> 
-	        <td> {{ job.StartTime }} </td>
+	        <td> {{ job.JobId }} </td>
+	        <td> {{ job.StartTime|friendly_date }} </td>
+	        <td> {{ job.StartTime|friendly_hour }} </td>
 	        <td> {{ job.JobFiles }} </td>
 	        <td> {{ job.JobBytes }} </td>
+	        <td> {{ job.Level|friendly_level }} </td>
 			<td>
 															
-			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobId}}';return false"><span>Detalhes</span></button>
-			</td>
-			<td>
-			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/restore/new?src={{job.cName}}&dt={{job.StartTime}}&fset={{job.FileSet}}';return false"><span>Restaurar</span></button>
+			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobId}}/new';return false"><span>Detalhes</span></button>
 			</td>
 		</tr>
 			{% if forloop.last %}

@@ -80,8 +80,8 @@ def create_procedure(request, computer_id):
     if request.method == 'POST':
         temp_dict['procauxform'] = ProcedureAuxForm(request.POST)
 
-        if temp_dict['compauxform'].is_valid():
-            triggclass = temp_dict['compauxform'].cleaned_data['schedule_type']
+        if temp_dict['procauxform'].is_valid():
+            triggclass = temp_dict['procauxform'].cleaned_data['schedule_type']
             if triggclass == 'Weekly':
                 triggform = 'wtriggform'
             elif triggclass == 'Monthly':
@@ -95,7 +95,7 @@ def create_procedure(request, computer_id):
                 forms_dict['fsetform'] = FileSetForm(request.POST)
             if temp_dict['procauxform'].cleaned_data['Schedule']:
                 forms_dict['schedform'] = ScheduleForm(request.POST)
-            if temp_dict['compauxform'].cleaned_data['Trigger']:
+            if temp_dict['procauxform'].cleaned_data['Trigger']:
                 if triggclass.lower() == 'weekly':
                     forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST)
                     temp_dict['mtriggform'] = MonthlyTriggerForm()

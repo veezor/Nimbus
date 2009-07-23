@@ -127,6 +127,7 @@ class Bacula:
     
     def db_query(cls, query):
         """Returns unfetched cursor with the given query executed."""
+        from MySQLdb import ProgrammingError
         import MySQLdb
     	from backup_corporativo.settings import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD
     	try:
@@ -138,8 +139,11 @@ class Bacula:
             db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=BACULA_DB_NAME)
             cursor = db.cursor()
             cursor.execute(query)
-        except:
-            raise Exception('Error in connect to bacula database')
+            db.commit()
+        except ProgrammingError:
+            raise Exception('Error na query %s')
+        except Warning:
+            pass
         finally:
             db.close()
         return cursor

@@ -63,11 +63,16 @@ class GlobalConfig(models.Model):
  
 ### Computer ###
 class Computer(models.Model):
+    # Constants
+    DEFAULT_LOCATION="/tmp/bacula-restore"
+    BACULA_VOID_ID = -1
+    BACULA_ERROR_ID = 0
+    # Attributes
     computer_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     ip = models.IPAddressField("Endereço IP")
     description = models.CharField("Descrição",max_length=100, blank=True)
     fd_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
-    DEFAULT_LOCATION="/tmp/bacula-restore"
+    bacula_id = models.IntegerField("Bacula ID", default=BACULA_VOID_ID) 
     
     # TODO: replace fetchall for custom dictfetch
     def get_status(self):
@@ -144,6 +149,19 @@ class Computer(models.Model):
         if not self.id: # If this record is not at database yet
             self.__generate_password()
         super(Computer, self).save()
+        if self.bacula_id == self.BACULA_VOID_ID:
+            self.__update_bacula_id()
+            
+    def __update_bacula_id(self):
+        """Queries bacula database for client id"""
+        from backup_corporativo.bkp.sql_queries import CLIENT_ID_RAW_QUERY
+        from backup_corporativo.bkp.bacula import Bacula
+        
+        cliend_id_query = CLIENT_ID_RAW_QUERY % {'client_name':self.get_computer_name()}
+        import pdb; pdb.set_trace()
+        client_id_dict = Bacula.dictfetch_query(cliend_id_query)
+        self.bacula_id = client_id_dict and client_id_dict[0]['ClientId'] or self.BACULA_ERROR_ID
+        self.save()
     
     
     def __generate_password(self, size=20):
@@ -224,75 +242,100 @@ class Procedure(models.Model):
                                                         'file_set':self.get_fileset_name(),}
         return Bacula.dictfetch_query(restore_jobs_query)
 
-  
-    def get_full_bkp_dict(self, last_inc_bkp):
-        """Returns dict of last full backup of some incremental backup job id"""
-        from backup_corporativo.bkp.bacula import Bacula
-        from backup_corporativo.bkp.sql_queries import LAST_FULL_RAW_QUERY
-        if 'StartTime' in last_inc_bkp:
-            lastfull_query = LAST_FULL_RAW_QUERY %  {'client_name':self.computer.computer_name,
-                                                    'start_time':last_inc_bkp['StartTime'],
-                                                    'file_set':self.get_fileset_name,}
-            full_bkp_dict = Bacula.dictfetch_query(lastfull_query)
-            return full_bkp_dict and full_bkp_dict[0] or {}
-        else:
-            return {}
-            
     def get_bkp_dict(self, bkp_jid):
+        """Returns a dict with job information of a given job id"""
         from backup_corporativo.bkp.bacula import Bacula
-        from backup_corporativo.bkp.sql_queries import JOB_START_TIME_RAW_QUERY
-        starttime_query = JOB_START_TIME_RAW_QUERY %    {'job_id':jobid,}
+        from backup_corporativo.bkp.sql_queries import JOB_INFO_RAW_QUERY
+        starttime_query = JOB_INFO_RAW_QUERY %    {'job_id':bkp_jid,}
         result = Bacula.dictfetch_query(starttime_query)
         return result and result[0] or {}
 
-
-    def get_related_backups(self, first_full_bkp, last_inc_bkp):
-        """Returns list with all backups"""
+  
+    def clean_temp(self):
+        """Drop temp and temp1 tables"""
         from backup_corporativo.bkp.bacula import Bacula
-        from backup_corporativo.bkp.sql_queries import CLIENT_DELTA_RAW_QUERY
-        if ('StartTime' in first_full_bkp) and ('StartTime' in last_inc_bkp):
-            delta_query = CLIENT_DELTA_RAW_QUERY %  {'client_name':self.computer.computer_name,
-                                                    'delta_begin':delta_begin,
-                                                    'delta_end':delta_end,
-                                                    'file_set':self.get_fileset_name,}
-            result = Bacula.dictfetch_query(delta_query)
-            print result
-            return result
-        else:
-            return []
+        from backup_corporativo.bkp.sql_queries import DROP_TABLE_RAW_QUERY, CREATE_TEMP_QUERY, CREATE_TEMP1_QUERY
+        drop_temp_query = DROP_TABLE_RAW_QUERY % {'table_name':'temp'}
+        drop_temp1_query = DROP_TABLE_RAW_QUERY % {'table_name':'temp1'}
+        Bacula.db_query(drop_temp_query)
+        Bacula.db_query(drop_temp1_query)
+        Bacula.db_query(CREATE_TEMP_QUERY)
+        Bacula.db_query(CREATE_TEMP1_QUERY)
+        
+    
+    def load_full_bkp(self, last_inc_bkp):
+        """
+        Loads last full job id and startime at table called temp1.
+        for more information, see CLIENT_LAST_FULL_RAW_QUERY at sql_queries.py
+        """
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import LOAD_LAST_FULL_RAW_QUERY
+        self.clean_temp()
+        if 'StartTime' in last_inc_bkp:
+            lastfull_query = LOAD_LAST_FULL_RAW_QUERY %  {'client_id':self.computer.bacula_id,
+                                                    'start_time':last_inc_bkp['StartTime'],
+                                                    'fileset':self.get_fileset_name(),}
+            Bacula.db_query(lastfull_query)
 
-    def get_all_backups(self, last_inc_bkp_jid):
-        """Returns list of dicts with all backups from given jid"""
-        last_inc_bkp = self.get_bkp_dict(last_inc_bkp_jid)
-        first_full_bkp = self.get_full_bkp_dict(last_inc_bkp)
-        backups_list = self.get_related_backups(first_full_bkp, last_inc_bkp)
-        return 
+    def get_tdate(self):
+        """Gets tdate from a 1-row-table called temp1 which holds last full backup when properly loaded."""
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import TEMP1_TDATE_QUERY
+        tdate_dict = Bacula.dictfetch_query(TEMP1_TDATE_QUERY)
+        return tdate_dict and tdate_dict[0]['JobTDate'] or ''
 
-    def build_jid_list(bkp_list):
+
+    def load_full_media(self):
+        """
+        Loads media information for lasfull backup at table called temp.
+        for more information, see LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
+        """
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import LOAD_FULL_MEDIA_INFO_QUERY
+        Bacula.db_query(LOAD_FULL_MEDIA_INFO_QUERY)
+        
+    def load_inc_media(self,last_inc_bkp):
+        """
+        Loads media information for incremental backups at table called temp.
+        for more information, see LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
+        """
+        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.sql_queries import LOAD_INC_MEDIA_INFO_RAW_QUERY
+        tdate = self.get_tdate()
+        
+        if 'StartTime' in last_inc_bkp:
+            incmedia_query = LOAD_INC_MEDIA_INFO_RAW_QUERY %    {'tdate':tdate,
+                                                                'start_time':last_inc_bkp['StartTime'],
+                                                                'client_id':self.computer.bacula_id,
+                                                                'fileset':self.get_fileset_name(),
+                                                                }
+            Bacula.db_query(incmedia_query)
+
+    def build_jid_list(self):
+        """
+        If temp1 and temp tables are properly feeded, will build a list with all
+        job ids included at this restore. For more information, see 
+        JOBS_FOR_RESTORE_QUERY at sql_queries.py
+        """
+        from backup_corporativo.bkp.sql_queries import JOBS_FOR_RESTORE_QUERY
+        from backup_corporativo.bkp.bacula import Bacula
+        result_list = Bacula.dictfetch_query(JOBS_FOR_RESTORE_QUERY)
         jid_list = []
-        for bkp in bkp_list:
-            jid_list.append(bkp['JobId'])
+
+        for item in result_list:
+            jid_list.append(str(item['JobId']))
         return jid_list
 
     def get_file_tree(self, last_inc_bkp_jid):
         """Retrieves tree with files from a job id list"""
         from backup_corporativo.bkp.bacula import Bacula
         from backup_corporativo.bkp.sql_queries import FILE_TREE_RAW_QUERY
-        bkp_list = self.get_all_backups(last_inc_bkp_jid)
-        jid_list = self.build_jid_list(bkp_list)
-        filetree_query = FILE_TREE_RAW_QUERY %  {'file_set':self.get_fileset_name(),}
-
-        if jid_list: 
-            filetree_query += 'AND ('
-            itr = 0
-            # TODO use ITERTOOLS to eliminate itr variable
-            for jid in jid_list:
-                if itr > 0:
-                    filetree_query += 'OR '
-                filetree_query += """Job.JobId='%s' """ % jid
-                itr += 1
-            filetree_query += ') '
-        filetree_query += 'ORDER BY Path.Path,Filename.Name'
+        last_inc_bkp = self.get_bkp_dict(last_inc_bkp_jid)
+        self.load_full_bkp(last_inc_bkp)    # find last full backup
+        self.load_full_media()              # load infos for full backup
+        self.load_inc_media(last_inc_bkp)   # load infos for incremental backups
+        jid_list = self.build_jid_list()    # build list with all job ids
+        filetree_query = FILE_TREE_RAW_QUERY %  {'jid_string_list':','.join(jid_list),}
         file_tree = Bacula.dictfetch_query(filetree_query)
         return file_tree
     
