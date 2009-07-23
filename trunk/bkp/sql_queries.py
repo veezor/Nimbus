@@ -161,6 +161,15 @@ DROP_TABLE_RAW_QUERY =\
 #    ORDER BY Job.StartTime DESC 
 #    LIMIT 1
 #    '''
+
+LOAD_FULL_RAW_QUERY =\
+    '''
+    INSERT INTO temp1
+    SELECT Job.JobId,JobTdate
+    FROM Job
+    WHERE JobId = %(jid)s
+    LIMIT 1
+    '''
     
 LOAD_LAST_FULL_RAW_QUERY =\
     '''
@@ -246,7 +255,7 @@ JOBS_FOR_RESTORE_QUERY =\
 #OLD_JOB_START_TIME_RAW_QUERY =\    
 JOB_INFO_RAW_QUERY =\
     '''
-    SELECT JobId,StartTime
+    SELECT JobId,StartTime,Level
     FROM Job
     WHERE JobId = '%(job_id)s'
     LIMIT 1

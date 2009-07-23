@@ -116,12 +116,15 @@ class Bacula:
     run_backup = classmethod(run_backup)
     
     
-    def dictfetch_query(cls, query):
-        """Returns generator of dicts from given query executed."""
+    def dictfetch_query(cls, query, count_rows=False):
+        """
+        Returns generator of dicts from given query executed.
+        If count_rows is set to True, will return cursor.rowcount as well.
+        """
         from backup_corporativo.bkp.utils import dictfetch
 
         cursor = cls.db_query(query)
-        return dictfetch(cursor)
+        return count_rows and (cursor.rowcount,dictfetch(cursor)) or dictfetch(cursor)
     dictfetch_query = classmethod(dictfetch_query)
     
     
@@ -140,10 +143,10 @@ class Bacula:
             cursor = db.cursor()
             cursor.execute(query)
             db.commit()
-        except ProgrammingError:
-            raise Exception('Error na query %s' % e)
         except Warning:
             pass
+        except ProgrammingError, e:
+            raise Exception('Erro na query: %s' % e)
         finally:
             db.close()
         return cursor

@@ -21,7 +21,7 @@ def tmp_restore(request, computer_id, procedure_id, job_id):
 
     if request.method == 'GET':
         # Load forms and vars
-        vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)
+        vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/tmp/new_tmp_restore.html', return_dict, context_instance=RequestContext(request))
 

@@ -266,19 +266,22 @@ class Procedure(models.Model):
         Bacula.db_query(CREATE_TEMP1_QUERY)
         
     
-    def load_full_bkp(self, last_inc_bkp):
+    def load_full_bkp(self, initial_bkp):
         """
         Loads last full job id and startime at table called temp1.
         for more information, see CLIENT_LAST_FULL_RAW_QUERY at sql_queries.py
         """
         from backup_corporativo.bkp.bacula import Bacula
         from backup_corporativo.bkp.sql_queries import LOAD_LAST_FULL_RAW_QUERY
+        from backup_corporativo.bkp.sql_queries import LOAD_FULL_RAW_QUERY
         self.clean_temp()
-        if 'StartTime' in last_inc_bkp:
-            lastfull_query = LOAD_LAST_FULL_RAW_QUERY %  {'client_id':self.computer.bacula_id,
-                                                    'start_time':last_inc_bkp['StartTime'],
+        if 'StartTime' in initial_bkp and 'Level' in initial_bkp and initial_bkp['Level'] == 'I':
+            load_full_query = LOAD_LAST_FULL_RAW_QUERY %  {'client_id':self.computer.bacula_id,
+                                                    'start_time':initial_bkp['StartTime'],
                                                     'fileset':self.get_fileset_name(),}
-            Bacula.db_query(lastfull_query)
+        elif 'JobId' in initial_bkp and 'Level' in initial_bkp and initial_bkp['Level'] == 'F':
+            load_full_query = LOAD_FULL_RAW_QUERY % {'jid':initial_bkp['JobId']}
+        Bacula.db_query(load_full_query)
 
     def get_tdate(self):
         """Gets tdate from a 1-row-table called temp1 which holds last full backup when properly loaded."""
@@ -297,7 +300,7 @@ class Procedure(models.Model):
         from backup_corporativo.bkp.sql_queries import LOAD_FULL_MEDIA_INFO_QUERY
         Bacula.db_query(LOAD_FULL_MEDIA_INFO_QUERY)
         
-    def load_inc_media(self,last_inc_bkp):
+    def load_inc_media(self,initial_bkp):
         """
         Loads media information for incremental backups at table called temp.
         for more information, see LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
@@ -306,15 +309,22 @@ class Procedure(models.Model):
         from backup_corporativo.bkp.sql_queries import LOAD_INC_MEDIA_INFO_RAW_QUERY
         tdate = self.get_tdate()
         
-        if 'StartTime' in last_inc_bkp:
+        if 'StartTime' in initial_bkp:
             incmedia_query = LOAD_INC_MEDIA_INFO_RAW_QUERY %    {'tdate':tdate,
-                                                                'start_time':last_inc_bkp['StartTime'],
+                                                                'start_time':initial_bkp['StartTime'],
                                                                 'client_id':self.computer.bacula_id,
                                                                 'fileset':self.get_fileset_name(),
                                                                 }
             Bacula.db_query(incmedia_query)
 
-    def build_jid_list(self):
+    def load_backups_information(self,initial_bkp):
+        self.load_full_bkp(initial_bkp)         # load full bkp general info into temp1
+        self.load_full_media()                  # load full bkp media info into temp
+        if 'Level' in initial_bkp and initial_bkp['Level'] == 'I':
+            self.load_inc_media(initial_bkp)    # load inc bkps media info into temp
+            
+
+    def build_jid_list(self,bkp_jid):
         """
         If temp1 and temp tables are properly feeded, will build a list with all
         job ids included at this restore. For more information, see 
@@ -322,27 +332,26 @@ class Procedure(models.Model):
         """
         from backup_corporativo.bkp.sql_queries import JOBS_FOR_RESTORE_QUERY
         from backup_corporativo.bkp.bacula import Bacula
-        result_list = Bacula.dictfetch_query(JOBS_FOR_RESTORE_QUERY)
+        initial_bkp = self.get_bkp_dict(bkp_jid)
         jid_list = []
+        if initial_bkp:
+            self.load_backups_information(initial_bkp)  # loads full bkp info and inc bkps information if exists
+            job_list = Bacula.dictfetch_query(JOBS_FOR_RESTORE_QUERY)
 
-        for item in result_list:
-            jid_list.append(str(item['JobId']))
+            for job in job_list:
+                jid_list.append(str(job['JobId']))
         return jid_list
 
-    def get_file_tree(self, last_inc_bkp_jid):
+    def get_file_tree(self, bkp_jid):
         """Retrieves tree with files from a job id list"""
         from backup_corporativo.bkp.bacula import Bacula
         from backup_corporativo.bkp.sql_queries import FILE_TREE_RAW_QUERY
-        last_inc_bkp = self.get_bkp_dict(last_inc_bkp_jid)
-        self.load_full_bkp(last_inc_bkp)    # find last full backup
-        self.load_full_media()              # load infos for full backup
-        self.load_inc_media(last_inc_bkp)   # load infos for incremental backups
-        jid_list = self.build_jid_list()    # build list with all job ids
+        jid_list = self.build_jid_list(bkp_jid)    # build list with all job ids
         if jid_list:
             filetree_query = FILE_TREE_RAW_QUERY %  {'jid_string_list':','.join(jid_list),}
-            file_tree = Bacula.dictfetch_query(filetree_query)
-            return file_tree 
-        else: return []
+            count,file_tree = Bacula.dictfetch_query(filetree_query,count_rows=True)
+            return count,file_tree 
+        else: return 0,[]
     
     def get_fileset_name(self):
         """Get fileset name for bacula file."""
