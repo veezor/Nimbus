@@ -175,7 +175,7 @@ class Storage(models.Model):
     def save(self):
         if not self.id: # If this record is not at database yet
             self.__generate_password()
-        super(Computer, self).save()
+        super(Storage, self).save()
 
 
     def __generate_password(self, size=20):

@@ -4,15 +4,7 @@
 # Application
 from backup_corporativo.bkp.utils import *
 from backup_corporativo.bkp.models import Storage
-from backup_corporativo.bkp.forms import ComputerForm
-from backup_corporativo.bkp.forms import ComputerAuxForm
-from backup_corporativo.bkp.forms import ProcedureForm
-from backup_corporativo.bkp.forms import MonthlyTriggerForm
-from backup_corporativo.bkp.forms import WeeklyTriggerForm
-from backup_corporativo.bkp.forms import FileSetForm
-from backup_corporativo.bkp.forms import ScheduleForm
-from backup_corporativo.bkp.forms import RestoreForm
-from backup_corporativo.bkp.forms import HiddenRestoreForm
+from backup_corporativo.bkp.forms import StorageForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
 from django.http import HttpResponse
@@ -40,7 +32,7 @@ def create_storage(request):
 
     if request.method == 'POST':
         forms_dict['storform'] = StorageForm(request.POST)
-        
+        forms_list = forms_dict.values()
         if all([form.is_valid() for form in forms_list]):
             storage = forms_dict['storform'].save()
             return HttpResponseRedirect(storage_path(request, storage.id))
@@ -48,7 +40,7 @@ def create_storage(request):
             # Load forms and vars
             request.user.message_set.create(message="Existem erros e o storage não foi cadastrado.")
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
-            return render_to_response('bkp/new/new_storage.html', return_dict, context_instance=RequestContex(request))
+            return render_to_response('bkp/new/new_storage.html', return_dict, context_instance=RequestContext(request))
 
 #        if temp_dict['compauxform'].cleaned_data['Procedure']:
 #            forms_dict['procform'] = ProcedureForm(request.POST)

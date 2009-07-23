@@ -60,6 +60,10 @@ def computer_path(request, computer_id):
     """Returns computer path."""
     return "%s/computer/%s" % (request.META['SCRIPT_NAME'],computer_id)
 
+def storage_path(request, computer_id):
+    """Returns storage path."""
+    return "%s/storage/%s" % (request.META['SCRIPT_NAME'],storage_id)
+
 def procedure_path(request, procedure_id, computer_id):
     """Returns procedure path."""
     return "%s/computer/%s/procedure/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id)
