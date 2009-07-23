@@ -205,6 +205,10 @@ class Storage(models.Model):
         """Returns absolute url."""
         return "storage/%s" % (self.id)
 
+    def view_url(self):
+        """Returns absolute url."""
+        return "storage/%s" % (self.id)
+
     def edit_url(self):
         """Returns absolute url."""
         return "storage/%s/edit" % (self.id)

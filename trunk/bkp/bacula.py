@@ -141,7 +141,7 @@ class Bacula:
             cursor.execute(query)
             db.commit()
         except ProgrammingError:
-            raise Exception('Error na query %s')
+            raise Exception('Error na query %s' % e)
         except Warning:
             pass
         finally:

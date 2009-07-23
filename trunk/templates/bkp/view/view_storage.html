@@ -9,6 +9,7 @@
 	        {{ storage.storage_name }} <span class="toggle pequeno" rel="detalhes_computador">(ver detalhes)</span>
 	    </h2>
 	    <div class="botao_acoes">
+	        <button onclick="location.href='{{script_name}}/{{storage.view_url}}/dump_config'"><span>Dump da configuração</span></button>
 	        <button onclick="location.href='{{script_name}}/{{storage.edit_url}}'"><span>Alterar</span></button>
 		    <button onclick="location.href='{{script_name}}/{{storage.delete_url}}';" class="red"><span>Remover</span></button>
 	    </div>

@@ -1,11 +1,9 @@
 {% extends "bkp/base.html" %}
 
 {% block content %}
-<h2>Adicionar Computador</h2>
+<h2>Adicionar Storage</h2>
 
 <form action="{{script_name}}/storage/" method="post">
-	<h3>Cadastrar Storage</h3>
-
     {% for field in storform %}
         <div class="fieldWrapper">
             {{ field.errors }}

@@ -80,19 +80,20 @@ DB_SIZE_RAW_QUERY =\
     WHERE table_schema = '%(bacula_db_name)s'
     GROUP BY table_schema
     '''
-    
+
+from backup_corporativo import settings
 
 NUM_PROC_QUERY =\
     '''
     SELECT count(*) AS Procedures
-    FROM backup_corporativo.bkp_procedure
-    '''
+    FROM %s.bkp_procedure
+    ''' % settings.DATABASE_NAME
 
 NUM_CLI_QUERY =\
     '''
     SELECT count(*) AS Computers
-    FROM backup_corporativo.bkp_computer
-    '''
+    FROM %s.bkp_computer
+    ''' % settings.DATABASE_NAME
 
 # TODO: fix formula since this is getting more than whats actually at HD
 TOTAL_MBYTES_QUERY =\

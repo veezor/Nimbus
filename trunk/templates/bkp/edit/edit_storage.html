@@ -1,20 +1,20 @@
 {% extends "bkp/base.html" %}
 {% block content %}
 
-<h2> Alterar Computador </h2>
+<h2>Alterar Storage</h2>
 
-
-<form action="{{script_name}}/computer/{{comp.id}}/update" method="post">
-    {% for field in compform %}
+<form action="{{script_name}}/storage/{{ storage.id }}/update" method="post">
+    {% for field in storform %}
         <div class="fieldWrapper">
             {{ field.errors }}
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
+
     <p><input type="submit" value="Salvar" /></p>
 </form>
 
-<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<a href="{{script_name}}/storage/{{storage.id}}">Cancelar</a>
 <br />
 
 {% endblock %}
