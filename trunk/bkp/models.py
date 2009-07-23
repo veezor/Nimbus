@@ -158,7 +158,6 @@ class Computer(models.Model):
         from backup_corporativo.bkp.bacula import Bacula
         
         cliend_id_query = CLIENT_ID_RAW_QUERY % {'client_name':self.get_computer_name()}
-        import pdb; pdb.set_trace()
         client_id_dict = Bacula.dictfetch_query(cliend_id_query)
         self.bacula_id = client_id_dict and client_id_dict[0]['ClientId'] or self.BACULA_ERROR_ID
         self.save()
