@@ -56,6 +56,13 @@
 	        </div>
 	        <ul class="aux escondido" id="detalhes_procedure_{{ proc.id }}">
 	            <li>
+	                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_storage.gif" />
+	                <span class="label"><strong>Storage:</strong></span>
+	                <span class="value">
+	                    <a href="{{ script_name }}/{{ proc.storage.view_url }}">{{ proc.storage.storage_name }}</a>
+	                </span>
+	            </li>
+	            <li>
 	                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_gear.gif" />
 	                <span class="label"><strong>Caminhos do backup:</strong><br/>
 	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/new"><img src="/static/imagens/ico_plus.gif" /></a></span>

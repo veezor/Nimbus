@@ -3,7 +3,7 @@
 
 # Application
 from backup_corporativo.bkp.utils import *
-from backup_corporativo.bkp.models import Storage, GlobalConfig
+from backup_corporativo.bkp.models import Storage, Procedure, GlobalConfig
 from backup_corporativo.bkp.forms import StorageForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
@@ -51,6 +51,8 @@ def view_storage(request, storage_id):
         # Load forms and vars
         #forms_dict['storform'] = StorageForm()
         vars_dict['storage'] = get_object_or_404(Storage, pk=storage_id)
+        vars_dict['procedures'] = Procedure.objects.filter(storage = vars_dict['storage'])
+        
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/view/view_storage.html', return_dict, context_instance=RequestContext(request))
         

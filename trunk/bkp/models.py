@@ -133,6 +133,10 @@ class Computer(models.Model):
         """Returns absolute url."""
         return "computer/%s" % (self.id)
 
+    def view_url(self):
+        """Returns absolute url."""
+        return "computer/%s" % (self.id)
+
     def edit_url(self):
         """Returns absolute url."""
         return "computer/%s/edit" % (self.id)

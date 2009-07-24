@@ -64,7 +64,7 @@ class StorageForm(ModelForm):
 class ProcedureForm(ModelForm):
     class Meta:
         model = Procedure
-        fields = ('procedure_name')
+        fields = ('procedure_name', 'storage')
 
 class ScheduleAuxForm(forms.Form):
     schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")
@@ -74,6 +74,10 @@ class ProcedureAuxForm(forms.Form):
     Schedule = forms.BooleanField(widget=forms.HiddenInput, initial="True")
     schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")
     Trigger = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+    
+    #storages = Storage.objects.all()
+    #sto_dict = dict([(sto.id, sto.storage_name) for sto in storages])
+    #storage_id = forms.MultipleChoiceField(choices=sto_dict, widget=forms.SelectMultiple())
 
 
 BR_DATES = ['%d/%m/%Y']   #sim, eh uma lista
