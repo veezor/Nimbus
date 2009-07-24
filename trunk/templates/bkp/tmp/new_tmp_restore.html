@@ -2,13 +2,30 @@
 {% load bkp_extras %}
 {% block content %}
 <hr />
-
     <div class="titulo_botoes">
 	    <h3>
 	        <span>Arquivos Disponíveis: {{file_count}}</span>
 	    </h3>
 	    <div class="botao_acoes"></div>
 	</div>
+	<div class="bloco_texto">
+		<ul>
+		{% for dir in file_tree.keys %}
+			<li>Diretório: {{dir}}</li>
+			<ul>
+			{% for file in file_tree|get_value:dir %}
+				<li>Arquivo: {{file}}</li>
+			{% endfor %}
+			</ul>
+        {% endfor %}
+		</ul>
+    </div>
+
+
+
+
+
+	{% if debug %}
 	<div class="bloco_texto">
 		{% for file in file_tree %}
 			{% if forloop.first %}
@@ -39,7 +56,7 @@
 			{% endif %}
         {% endfor %}
     </div>
-
+	{% endif %}
 
 
 

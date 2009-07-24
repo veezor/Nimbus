@@ -117,6 +117,14 @@ def get_method(obj, value):
     """
     return getattr(obj, value)
     
+
+@register.filter
+def get_value(obj, key):
+    """ Try to get an attribute from an object.
+    Example: 
+    """
+    return key in obj and obj[key] or ''
+    
     
 @register.filter
 def restriction_value(rtime_object, day_name):

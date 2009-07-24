@@ -353,10 +353,23 @@ class Procedure(models.Model):
         jid_list = self.build_jid_list(bkp_jid)    # build list with all job ids
         if jid_list:
             filetree_query = FILE_TREE_RAW_QUERY %  {'jid_string_list':','.join(jid_list),}
-            count,file_tree = Bacula.dictfetch_query(filetree_query,count_rows=True)
-            return count,file_tree 
+            count,file_list = Bacula.dictfetch_query(filetree_query,count_rows=True)
+            return count,self.build_file_tree(file_list)
         else: return 0,[]
     
+    def build_file_tree(self, file_list):
+        """Build tree from file list"""
+        file_tree = {}
+
+        for file in file_list:
+            if not file['FName']: continue # Skip Directory entry
+            file_path = file['FPath']; file_name = file['FName']
+            if  file_path in file_tree:
+                file_tree[file_path].append(file_name)
+            else:
+                file_tree[file_path] = [file_name]
+        return file_tree
+        
     def get_fileset_name(self):
         """Get fileset name for bacula file."""
         return "%s_Set" % (self.procedure_name)
