@@ -18,7 +18,8 @@
 	<th scope='col'>Procedimento</th>
 	<th scope='col'>Computador</th>
 	<th scope='col'>Nível</th>
-	<th scope='col'>Início</th>
+	<th scope='col'>Data Início</th>
+	<th scope='col'>Hora Início</th>
 	<th scope='col'>Fim</th>
 	</tr>
 </thead>
@@ -27,9 +28,10 @@
 <tr class="{% cycle 'odd' 'even' %}">
 <td> {{job.Name}} </td>
 <td> {{job.cName}} </td>
-<td> {{job.Level}} </td>
+<td> {{job.Level|friendly_level}} </td>
 <td> {{job.Name}} </td>
-<td> {{job.StartTime}} </td>
+<td> {{job.StartTime|friendly_date}} </td>
+<td> {{job.StartTime|friendly_hour}} </td>
 <td> {{job.EndTime}} </td>
 </tr>
 {% endfor %}
@@ -50,7 +52,8 @@
 	<th scope='col'>Procedimento</th>
 	<th scope='col'>Computador</th>
 	<th scope='col'>Nível</th>
-	<th scope='col'>Início</th>
+	<th scope='col'>Data Início</th>
+	<th scope='col'>Hora Início</th>
 	<th scope='col'>Arquivos</th>
 	<th scope='col'>Bytes</th>
 	<th scope='col'>Erros</th>
@@ -62,12 +65,13 @@
 <tr class="{% cycle 'odd' 'even' %}"> 
 <td> {{job.Name}} </td>
 <td> {{job.cName}} </td>
-<td> {{job.Level}} </td>
-<td> {{job.StartTime}} </td>
+<td> {{job.Level|friendly_level}} </td>
+<td> {{job.StartTime|friendly_date}} </td>
+<td> {{job.StartTime|friendly_hour}} </td>
 <td> {{job.JobFiles}} </td>
-<td> {{job.JobBytes}} </td>
+<td> {{job.JobBytes|friendly_size_mb}} </td>
 <td> {{job.JobErrors}} </td>
-<td> {{job.JobStatus}} </td>
+<td> {{job.JobStatus|friendly_status}} </td>
 
 </tr>
 {% endfor %}

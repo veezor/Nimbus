@@ -48,7 +48,7 @@
 	        <td> {{ job.StartTime|friendly_date }} </td>
 	        <td> {{ job.StartTime|friendly_hour }} </td>
 	        <td> {{ job.JobFiles }} </td>
-	        <td> {{ job.JobBytes }} </td>
+	        <td> {{ job.JobBytes|friendly_size_mb }} </td>
 	        <td> {{ job.Level|friendly_level }} </td>
 			<td>
 															
