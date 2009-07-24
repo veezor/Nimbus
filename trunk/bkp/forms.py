@@ -59,7 +59,7 @@ class StorageForm(ModelForm):
     class Meta:
         model = Storage
         fields = ('storage_name', 'storage_ip', 'storage_port',
-                  'storage_password', 'storage_description')
+                  'storage_description')
         
 class ProcedureForm(ModelForm):
     class Meta:

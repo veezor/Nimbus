@@ -20,13 +20,15 @@
 	        <li><strong class="label">IP:</strong> <span class="value">{{ storage.storage_ip }}</span></li>
 	        <li><strong class="label">Descrição:</strong> <span class="value">{{ storage.storage_description }}</span></li>
 	        <li><strong class="label">Password:</strong> <span class="value">{{ storage.storage_password }}</span></li>
-	        <li><strong class="label">Procedimento:</strong>
+	        {% if procedures.count %}
+	        <li><strong class="label">Procedimento{{ procedures.count|pluralize }}:</strong>
 	            <span class="value">
 	                {% for proc in procedures %}
-	                    <a href="{{ script_name }}/{{ proc.computer.view_url }}">{{ proc }} - {{ proc.computer }}</a>,
+	                    <a href="{{ script_name }}/{{ proc.computer.view_url }}">{{ proc }} - {{ proc.computer }}</a><br/>
 	                {% endfor %}
 	            </span>
 	        </li>
+	        {% endif %}
 	    </ul>
 	</div>
 
