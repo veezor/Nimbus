@@ -62,8 +62,8 @@ def new_procedure(request, computer_id):
     forms_dict['procform'] = ProcedureForm()
     forms_dict['schedform'] = ScheduleForm()
     forms_dict['fsetform'] = FileSetForm()
-    forms_dict['triggform'] = MonthlyTriggerForm()
-    forms_dict['mtriggform'] = WeeklyTriggerForm()
+    forms_dict['mtriggform'] = MonthlyTriggerForm()
+    forms_dict['wtriggform'] = WeeklyTriggerForm()
     forms_dict['procauxform'] = ProcedureAuxForm()
 
     if request.method == 'GET':

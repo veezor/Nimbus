@@ -35,14 +35,29 @@
 
 	<hr />
 
-	<h3>Detalhes Agendamento {{ sched.type }}</h3>
+	<h3>Detalhes Agendamento</h3>
 
-    {% for field in triggform %}
+    <div class="mtriggform">
+    {% for field in mtriggform %}
         <div class="fieldWrapper">
             {{ field.errors }}
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
+    </div>
+    
+    <div class="wtriggform">
+    {% for field in wtriggform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    </div>
+    
+    <div class="triggform_message">
+        <p>Por favor selecione o tipo de agendamento no formulário acima.</p>
+    </div>
 
     {% for field in procauxform %}
 		{{ field }}
