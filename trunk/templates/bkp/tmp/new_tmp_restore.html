@@ -17,7 +17,9 @@
 {% endblock %}
 
 {% block content %}
-<hr />
+    <h1>Backup de {{ comp.computer_name }}</h1>
+    <h2>Procedimento: {{ proc.procedure_name }}</h2>
+    
     <div class="titulo_botoes">
 	    <h3>
 	        <span>Arquivos Disponíveis: {{file_count}}</span>
