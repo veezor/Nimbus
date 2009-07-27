@@ -1,5 +1,19 @@
 {% extends "bkp/base.html" %}
 {% load bkp_extras %}
+
+{% block headtags %}
+    <script type="text/javascript" src="{{script_name}}/static/jquery.treeview.js"></script>
+    <link type="text/css" rel="stylesheet" href="{{script_name}}/static/jquery.treeview.css"></link>
+    
+    <script type="text/javascript">
+        $(document).ready(
+            function() {
+                $('.filetree').treeview({animated: 'fast'});
+            }
+        );
+    </script>
+{% endblock %}
+
 {% block content %}
 <hr />
     <div class="titulo_botoes">
@@ -8,18 +22,22 @@
 	    </h3>
 	    <div class="botao_acoes"></div>
 	</div>
+	
+	<form action="">
 	<div class="bloco_texto">
-		<ul>
+		<ul class="filetree">
 		{% for dir in file_tree.keys %}
-			<li>Diretório: {{dir}}</li>
+			<li><span class="folder"><input type="checkbox" name="bla" /> {{dir}}</span>
 			<ul>
 			{% for file in file_tree|get_value:dir %}
-				<li>Arquivo: {{file}}</li>
+				<li><span class="file"><input type="checkbox" name="bla" /> {{file}}</span></li>
 			{% endfor %}
 			</ul>
+			</li>
         {% endfor %}
 		</ul>
     </div>
+    </form>
 
 
 
