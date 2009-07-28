@@ -33,14 +33,16 @@ DAYS_OF_THE_WEEK = (
 
 
 def create_pools(sender, instance, signal, *args, **kwargs):
-    "create associated pools to the procedure"
+    """create associated pools to the procedure."""
     if 'created' in kwargs:
         if kwargs['created']:   # instance was just created
             fpool = Pool(procedure=instance)
             fpool.save()
 
 def update_files(sender, instance, signal, *args, **kwargs):
-    "entry point for update files"
+    """entry point for update files"""
+    from backup_corporativo.bkp.bacula import Bacula
+    
     if sender == FileSet:
         update_fileset_file(instance.procedure)
     elif sender == Computer:
@@ -67,9 +69,10 @@ def update_files(sender, instance, signal, *args, **kwargs):
         generate_cron()
     else:
         raise # Oops!
+    Bacula.reload()
 
 def remove_files(sender, instance, signal, *args, **kwargs):
-    "entry point for remove files"
+    """entry point for remove files"""
     if sender == Computer:
         remove_computer_file(instance)
     elif sender == Procedure:
@@ -84,6 +87,7 @@ def remove_files(sender, instance, signal, *args, **kwargs):
         pass
     else:
         raise # Oops!
+    Bacula.reload()
 
 ###
 ###   Auxiliar Definitions
@@ -92,7 +96,7 @@ def remove_files(sender, instance, signal, *args, **kwargs):
 ### Global Config ###
 
 def update_config_file(instance):
-    "Config update file"
+    """Config update file"""
     i = instance
     dir_dict = config_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
     sto_list = [config_sto_dict("%sStorage" % i.bacula_name, i.storage_ip, i.storage_port, i.storage_password)]
@@ -104,25 +108,25 @@ def update_config_file(instance):
     generate_config("bacula-dir.conf", dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
 
 def config_dir_dict(dir_name, dir_port, dir_passwd):
-    "generate config director attributes dict"
+    """generate config director attributes dict"""
     
     return {'Name':dir_name, 'DIRport':dir_port, 'QueryFile':'"/etc/bacula/query.sql"', 
     'WorkingDirectory':'"/var/bacula/working"','PidDirectory':'"/var/run"','Maximum Concurrent Jobs':'1',
     'Password':'"%s"' % dir_passwd, 'Messages':'Daemon' }
 
 def config_sto_dict(sto_name, sto_ip, sto_port, sto_passwd):
-    "generate config storage attributes dict"
+    """generate config storage attributes dict"""
     
     return {'Name':sto_name, 'Address':sto_ip,'SDPort':sto_port, 'Password':'"%s"' % sto_passwd,
     'Device':'FileStorage','Media Type':'File'}
 
 def config_cat_dict(cat_name, db_name, db_user, db_passwd):
-    "generate config storage attributes dict"
+    """generate config storage attributes dict"""
     
     return {'Name':cat_name, 'dbname':'"%s"' % db_name, 'dbuser':'"%s"' % db_user, 'dbpassword':'"%s"' % db_passwd}
     
 def config_msg_dict(msg_name, admin_mail=None):
-    "generate config message attributes dict"
+    """generate config message attributes dict"""
     admin_mail = admin_mail or "backup@linconet.com.br"
     if msg_name == 'Standard':
         return {'Name':msg_name, 
@@ -139,7 +143,7 @@ def config_msg_dict(msg_name, admin_mail=None):
 
     
 def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict):
-    "generate config file"
+    """generate config file"""
     f = prepare_to_write(filename,'custom/config/')
 
     f.write("Director {\n")
@@ -179,31 +183,31 @@ def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
 ### Device ###
 
 def device_sto_dict(sto_name, sto_port):
-    "generate device storage attributes dict"
+    """generate device storage attributes dict"""
     
     return {'Name':sto_name, 'SDPort':sto_port, 'WorkingDirectory':'"/var/bacula/working"',
     'Pid Directory':'"/var/run"','Maximum Concurrent Jobs':'20'}
 
 def device_dir_dict(dir_name, dir_passwd):
-    "generate device director attributes dict"
+    """generate device director attributes dict"""
     
     return {'Name':dir_name, 'Password':'"%s"' % dir_passwd}
 
 def device_dev_dict(dev_name):
-    "generate device device attributes dict"
+    """generate device device attributes dict"""
     
     return {'Name':dev_name, 'Media Type':'File', 'Archive Device':'/var/backup', 'LabelMedia':'yes', 
     'Random Access':'yes', 'AutomaticMount':'yes', 'RemovableMedia':'no', 'AlwaysOpen':'no'}
 
 
 def device_msg_dict(msg_name, dir_name):
-    "generate device message attributes dict"
+    """generate device message attributes dict"""
     
     return {'Name':msg_name, 'Director':'%s = all' % dir_name}
 
     
 def update_device_file(instance):
-    "Update Device File"
+    """Update Device File"""
     i = instance
     sto_dict = device_sto_dict("%s-sd" % i.bacula_name, i.storage_port)
     dir_dict = device_dir_dict("%s-dir" % i.bacula_name,i.storage_password)
@@ -212,7 +216,7 @@ def update_device_file(instance):
     generate_device("bacula-sd.conf", sto_dict, dir_dict, dev_dict, msg_dict)
 
 def generate_device(filename,sto_dict, dir_dict, dev_dict, msg_dict):
-    "generate config file"
+    """generate config file"""
     f = prepare_to_write(filename,'custom/config/')
 
     f.write("Storage {\n")
@@ -239,20 +243,20 @@ def generate_device(filename,sto_dict, dir_dict, dev_dict, msg_dict):
 ### Console ###
 
 def console_dir_dict(dir_name, dir_port, dir_passwd):
-    "generate device message attributes dict"
+    """generate device message attributes dict"""
     
     return {'Name':dir_name, 'DIRPort':dir_port, 'Address':'127.0.0.1', 'Password':'"%s"' % dir_passwd}
 
 
 def update_console_file(instance):
-    "Update Console File"
+    """Update Console File"""
     i = instance
     dir_dict = console_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
     generate_console("bconsole.conf", dir_dict)
     
 
 def generate_console(filename,dir_dict):
-    "generate console file"
+    """generate console file"""
     f = prepare_to_write(filename,'custom/config/')
 
     f.write("Director {\n")
@@ -265,65 +269,64 @@ def generate_console(filename,dir_dict):
 #### Procedure #####
 
 def update_procedure_file(instance):
-    "Procedure update file"
+    """Procedure update file"""
     proc_name = instance.get_procedure_name()
     restore_name = instance.get_restore_name()
     fset_name = instance.get_fileset_name()
     sched_name = instance.get_schedule_name()
     pool_name = instance.get_pool_name()
     comp_name = instance.computer.get_computer_name()
-    jdict = procedure_dict(proc_name,'Backup',comp_name,fset_name,sched_name,pool_name)
+    sto_name = instance.storage.storage_name
+    jdict = procedure_dict(proc_name, comp_name, fset_name, sched_name, pool_name, sto_name, type='Backup')
     generate_procedure(proc_name,jdict)
 
     
-def procedure_dict(proc_name, type, computer_name, fset_name, sched_name, pool_name, where=None):
-    "generate procedure attributes dict"
+def procedure_dict(proc_name, comp_name, fset_name, sched_name, pool_name, sto_name, type='Backup', where=None):
+    """generate procedure attributes dict"""
     bootstrap = '/var/lib/bacula/%s.bsr' % (proc_name)
     
-    gconf = GlobalConfig.objects.get(pk=1)
-    
-    return {'Name':proc_name, 'Client':computer_name, 'Level':'Incremental',
-    'FileSet':fset_name, 'Schedule':sched_name, 'Storage':'%sStorage' % (gconf.bacula_name), 'Pool':pool_name,
-    'Write Bootstrap':bootstrap, 'Priority':'10', 'Messages':'Standard','Type':type,'Where':where}
+    return  {'Name':proc_name, 'Client':comp_name, 'Level':'Incremental','FileSet':fset_name,
+            'Schedule':sched_name, 'Storage':sto_name, 'Pool':pool_name,'Write Bootstrap':bootstrap,
+            'Priority':'10', 'Messages':'Standard','Type':type,'Where':where
+            }
 
 def generate_procedure(proc_name,attr_dict):
-    "generate procedure file"
+    """generate procedure file"""
     f = prepare_to_write(proc_name,'custom/jobs')
 
     f.write("Job {\n")
+    
     if attr_dict['Type'] == 'Backup':
         f.write('''\tWrite Bootstrap = "%s"\n''' % (attr_dict['Write Bootstrap']))
-
     elif attr_dict['Type'] == 'Restore':
         f.write('''\tWhere = "%s"\n''' % (attr_dict['Where']))
         del(attr_dict['Schedule'])
         del(attr_dict['Level'])    
     del(attr_dict['Where'])
-    del(attr_dict['Write Bootstrap'])
     for k in attr_dict.keys():
         f.write('''\t%(key)s = "%(value)s"\n''' % {'key':k,'value':attr_dict[k]})
     f.write("}\n")
     f.close()
 
 def remove_procedure_file(instance):
-    "remove procedure file"
+    """remove procedure file"""
     base_dir,filepath = mount_path(instance.get_procedure_name(),'custom/jobs')
     remove_or_leave(filepath)
     
 #### Computer #####
 
 def update_computer_file(instance):
-    "Computer update file"
+    """Computer update file"""
     cdict = computer_dict(instance.get_computer_name(),instance.ip,instance.fd_password)
     generate_computer_file(instance.get_computer_name(),cdict)
 
 def computer_dict(computer_name,ip,fd_password):
-    "generate computer attributes dict"
+    """generate computer attributes dict"""
     return {'Name':computer_name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
     'password':fd_password, 'AutoPrune':'yes'}
 
 def generate_computer_file(name,attr_dict):        
-    "Computer generate file    "
+    """Computer generate file"""
     f = prepare_to_write(name,'custom/computers')
 
     f.write("Client {\n")
@@ -333,7 +336,7 @@ def generate_computer_file(name,attr_dict):
     f.close()
 
 def remove_computer_file(instance):
-    "Computer remove file"
+    """Computer remove file"""
     base_dir,filepath = mount_path(instance.get_computer_name(),'custom/computers')
     remove_or_leave(filepath)
     
@@ -341,21 +344,21 @@ def remove_computer_file(instance):
 
 
 def update_fileset_file(procedure):
-    "FileSet update filesets to a procedure instance"
+    """FileSet update filesets to a procedure instance"""
     fsets = procedure.fileset_set.all()
     name = procedure.get_fileset_name()
     farray = generate_file_array(fsets)
     generate_fileset_file(name,farray)
 
 def generate_file_array(fsets):
-    "generate file_array"
+    """generate file_array"""
     array = []
     for fset in fsets:
         array.append(fset.path)
     return array
     
 def generate_fileset_file(name,file_array):
-    "FileSet generate file    "
+    """FileSet generate file"""
     f = prepare_to_write(name,'custom/filesets')
 
     f.write("FileSet {\n")
@@ -372,7 +375,7 @@ def generate_fileset_file(name,file_array):
     f.close()
 
 def remove_fileset_file(procedure):
-    "remove FileSet file"
+    """remove FileSet file"""
     name = procedure.get_fileset_name()
     base_dir,filepath = mount_path(name,'custom/filesets')
     remove_or_leave(filepath)    
@@ -380,21 +383,21 @@ def remove_fileset_file(procedure):
 #### Pool #####
 
 def update_pool_file(procedure):
-    "Pool update pool bacula file"
+    """Pool update pool bacula file""" 
     pool_name = procedure.get_pool_name()
     pdict = pool_dict(pool_name)
     generate_pool(pool_name,pdict)
 
 
 def pool_dict(pool_name):
-    "Generate pool attributes dict"
+    """Generate pool attributes dict"""
     format = '%s-vol-' % (pool_name)
     return {'Name':pool_name, 'Pool Type':'Backup', 'Recycle':'yes', 'AutoPrune':'yes', 
     'Volume Retention':'31 days','Purge Oldest Volume':'yes','Maximum Volume Bytes':'1048576',
     'Recycle Oldest Volume':'yes','Label Format':format}
 
 def generate_pool(name,attr_dict):        
-    "generate pool bacula file"
+    """generate pool bacula file"""
     f = prepare_to_write(name,'custom/pools')
     
     f.write("Pool {\n")
@@ -408,13 +411,13 @@ def generate_pool(name,attr_dict):
     f.close()
 
 def remove_pool_file(instance):
-    "pool remove file"
+    """pool remove file"""
     base_dir,filepath = mount_path(instance.get_pool_name(),'custom/pools')
     remove_or_leave(filepath)
 
 ### Schedule ###
 def run_dict(schedules_list):
-    "build a dict with bacula run specification"
+    """build a dict with bacula run specification"""
     dict = {}
     for sched in schedules_list:
         trigg = sched.get_trigger()

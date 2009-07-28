@@ -5,7 +5,37 @@ import os
 import datetime
 
 class Bacula:
-    WHERE_DEFAULT="/tmp/bacula-restore"
+    WHERE_DEFAULT = "/tmp/bacula-restore"
+    BACULA_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
+
+    def client_status(cls,client_name):
+        cmd =   """
+                echo 'sta client=%(client_name)s'|bconsole -c %(bacula_conf)s|grep %(client_name)s
+                """ % {'client_name':client_name, 'bacula_conf':BACULA_CONF}
+        output = os.popen(cmd).read()
+        return output
+    client_status = classmethod(client_status)
+        
+        
+    def reload(cls):
+        cmd =   """
+                echo 'reload'|bconsole -c %(bacula_conf)s
+                """ % {'bacula_conf':cls.BACULA_CONF}
+        output = os.popen(cmd).read()
+        return output
+    reload = classmethod(reload)
+    
+    
+    
+    def messages(cls):
+        cmd =   """
+                echo 'm'|bconsole -c %(bacula_conf)s
+                """ % {'bacula_conf':BACULA_CONF}
+        output = os.popen(cmd).read()
+        return output
+    messages = classmethod(messages)
+
+
 
     def last_jobs(cls):
         """Returns list of dicts with  20 last jobs in overall system."""
@@ -169,6 +199,6 @@ class BaculaLog:
     notice = classmethod(notice)
 
     def debug_log_file(cls):
-        from backup_corporativo.bkp.utils import prepare_to_write, mount_path, create_or_leave
+        from backup_corporativo.bkp.utils import prepare_to_write
         return prepare_to_write('debug_log','custom/bacula_logs/',mod="a")
     debug_log_file = classmethod(debug_log_file)
