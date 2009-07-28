@@ -15,13 +15,8 @@
                 $('*[rel=tree_select_input]').click(
                     function() {
                         checked = $(this).attr('checked');
-                        console.log(checked);
                         _id = $(this).attr('id');
-                        
                         $('*[rel=' + _id + ']').attr('checked', checked);
-                        
-                        $(this).attr('checked', checked);
-
                     }
                 );
             }
