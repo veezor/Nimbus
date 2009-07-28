@@ -273,8 +273,8 @@ JOB_INFO_RAW_QUERY =\
 
 FILE_TREE_RAW_QUERY =\
     '''
-    SELECT Path.Path as FPath, Filename.Name as FName, File.FileIndex, 
-    File.JobId AS FJobId, File.LStat 
+    SELECT File.FileId as FId, Path.Path as FPath, Filename.Name as FName,
+    File.FileIndex, File.JobId AS FJobId, File.LStat 
     FROM 
     (SELECT max(FileId) as FileId, PathId, FilenameId 
     FROM (SELECT FileId, PathId, FilenameId 
