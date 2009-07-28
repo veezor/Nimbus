@@ -103,25 +103,29 @@
 <h2>Adicionar Nova Restrição</h2>
 <form action="{{script_name}}/restriction/" method="post">
 
-	<div class="fieldWrapper">	
+	<div class="fieldWrapper">
 	{{ restform.restrictiontime.errors }}
-	{{ restform.restrictiontime.label_tag }}  {{ restform.restrictiontime }}
+	    <span class="label">{{ restform.restrictiontime.label_tag }}</span>
+    	<span class="value">{{ restform.restrictiontime }}</span>
 	</div>
-	<div class="fieldWrapper">	
-	{{ restform.restriction_value.errors }}
-	{{ restform.restriction_value.label_tag }}  {{ restform.restriction_value }}
+	<div class="fieldWrapper">
+	    {{ restform.restriction_value.errors }}
+	     <span class="label">{{ restform.restriction_value.label_tag }}</span>
+	     <span class="value">{{ restform.restriction_value }}</span>
 	</div>
 
 	{% if restform.days.errors %}
 		{{ restform.days.errors }}
 	{% endif %}
 
-	Dias de Restrição:
-		<div class="fieldWrapper">	
-		{% for choice_id, choice_label in restform.fields.days.choices %}
-		{{ choice_label }} <input type="checkbox" name="days" value="{{ choice_id }}">
-		{% endfor %}
-		</div>
+    <div class="fieldWrapper">
+	    <span class="label"><label>Dias de Restrição</label></span>
+		<span class="value">
+		    {% for choice_id, choice_label in restform.fields.days.choices %}
+		        <input type="checkbox" name="days" value="{{ choice_id }}"> {{ choice_label }}
+		    {% endfor %}
+		</span>
+    </div>
     <p><input type="submit" value="Salvar" /></p>
 </form>
 
@@ -136,7 +140,20 @@
 	{% if not rtimes %}
 	<p> Não existem restrições cadastradas. </p>
 	{% else %}
-    <table>
+	
+	<script type="text/javascript">
+	    $(document).ready(
+    	    function() {
+    	        $('.removable_cell').css('cursor', 'pointer');
+    	        $('.removable_cell').click(
+	                function(){
+	                    location.href = '{{script_name}}/restriction/' + $(this).attr('rel') + '/delete';
+	                }
+	            );
+    	    }
+	    );
+	</script>
+    <table class="restriction_table">
     <thead>
         <tr>
         <th scope='col'>Hora</th>
@@ -154,9 +171,7 @@
     <tr> 
         <td> {{ rtime.restriction_time }} </td>
 		{% for day in days_of_the_week %}
-        <td> {{ rtime|restriction_value:day }} {% if rtime|restriction_id:day %}
-			<button onclick="location.href='{{script_name}}/restriction/{{rtime|restriction_id:day}}/delete';">
-			<span>X</span></button>{% endif %}
+            <td {% if rtime|restriction_id:day %}class="removable_cell" rel="{{rtime|restriction_id:day}}" title="Clique para remover."{% endif %}> {{ rtime|restriction_value:day }}{% if rtime|restriction_id:day %} kbps{% endif %}
 		</td>
 	{% endfor %}
 	</tr>

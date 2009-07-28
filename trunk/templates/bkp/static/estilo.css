@@ -91,6 +91,19 @@ table tbody tr.even td {
 background: #EEE;
 }
 
+.restriction_table td {
+text-align: center;
+}
+
+.restriction_table td.removable_cell {
+background: url(/static/imagens/tick_topright.gif) top right no-repeat;
+}
+
+.restriction_table td.removable_cell:hover {
+background: #C00;
+color: #FFF;
+}
+
 
 
 #site {
@@ -385,12 +398,18 @@ width: 710px;
 overflow: hidden
 }
 
-.fieldWrapper label {
+.fieldWrapper label,
+.fieldWrapper .label {
 display: block;
 float: left;
-width: 100px;
+width: 140px;
 padding-right: 10px;
-line-height: 2em;
+line-height: 1.3em;
+}
+
+.fieldWrapper .value {
+width: 540px;
+float: right;
 }
 
 .errorlist {
