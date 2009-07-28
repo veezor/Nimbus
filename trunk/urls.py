@@ -71,5 +71,6 @@ urlpatterns = patterns('',
     # temp restore path
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/tmp_restore/$', 'backup_corporativo.bkp.views.view_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/tmp_restore/(?P<job_id>\d+)/new$', 'backup_corporativo.bkp.views.tmp_restore'),
+    (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/tmp_restore/(?P<job_id>\d+)/$', 'backup_corporativo.bkp.views.restore_files'),
     (r'^admin/(.*)', admin.site.root),
 )

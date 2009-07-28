@@ -362,12 +362,16 @@ class Procedure(models.Model):
         file_tree = {}
 
         for file in file_list:
-            if not file['FName']: continue # Skip Directory entry
-            file_path = file['FPath']; file_name = file['FName']
+            # Skip Directory entry
+            if not file['FName']:
+                continue
+            file_path = file['FPath']
+            file_name = file['FName']
+            file_id = file['FId']
             if  file_path in file_tree:
-                file_tree[file_path].append(file_name)
+                file_tree[file_path].append([file_id, file_name])
             else:
-                file_tree[file_path] = [file_name]
+                file_tree[file_path] = [[file_id, file_name]]
         return file_tree
         
     def get_fileset_name(self):

@@ -11,6 +11,19 @@
                 $('.filetree').treeview(
                     {animated: 'fast', collapsed: true}
                 );
+                
+                $('*[rel=tree_select_input]').click(
+                    function() {
+                        checked = $(this).attr('checked');
+                        console.log(checked);
+                        _id = $(this).attr('id');
+                        
+                        $('*[rel=' + _id + ']').attr('checked', checked);
+                        
+                        $(this).attr('checked', checked);
+
+                    }
+                );
             }
         );
     </script>
@@ -27,20 +40,21 @@
 	    <div class="botao_acoes"></div>
 	</div>
 	
-	<form action="">
+	<form action="{{ script_name }}/computer/{{ comp.id }}/procedure/{{ proc.id }}/tmp_restore/{{ job_id }}/" method="post">
 	<div class="bloco_texto">
 		<ul class="filetree">
 		{% for dir in file_tree.keys %}
-			<li><span class="folder"><input type="checkbox" name="bla" /> {{dir}}</span>
-			<ul>
-			{% for file in file_tree|get_value:dir %}
-				<li><span class="file"><input type="checkbox" name="bla" /> {{file}}</span></li>
-			{% endfor %}
-			</ul>
+			<li><input type="checkbox" name="dir" rel="tree_select_input" id="tree_select_{{ forloop.counter }}" /> <span class="folder">{{dir}}</span>
+			    <ul>
+			    {% for file in file_tree|get_value:dir %}
+				    <li><input type="checkbox" rel="tree_select_{{ forloop.parentloop.counter }}" name="file_{{ file.0 }}" /> <span class="file">{{ file.1 }}</span></li>
+			    {% endfor %}
+			    </ul>
 			</li>
         {% endfor %}
 		</ul>
     </div>
+    <button type="submit"><span>Restaurar</span></button>
     </form>
 
 
