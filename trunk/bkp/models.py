@@ -33,16 +33,15 @@ DAYS_OF_THE_WEEK = {
 ### GlobalConfig ###
 class GlobalConfig(models.Model):
     bacula_name = cfields.ModelSlugField("Nome da Instância", max_length=50)
-    storage_ip = models.IPAddressField("IP do Servidor")
-    storage_password = models.CharField(max_length=50,default='defaultpw')
-    storage_port = models.IntegerField("Porta do Storage",default='9103')
-    director_port = models.IntegerField("Porta do Director",default='9101')
+    server_ip = models.IPAddressField("Endereço IP")
     director_password = models.CharField(max_length=50,default='defaultpw')
-    database_name = models.CharField(max_length=50, default='bacula')    
+    director_port = models.IntegerField("Porta do Director",default='9101')
+    storage_port = models.IntegerField("Porta do Storage",default='9103')
+    database_name = models.CharField(max_length=50, default='bacula')
     database_user = models.CharField(max_length=50, default='root')
     database_password = models.CharField(max_length=50)
-    admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
     max_upload_bandwidth = models.CharField("Limite de Upload", max_length=15, default='100 mbps')
+    admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
 
     def generate_passwords(self):
         """Generates random passwords."""
@@ -69,10 +68,12 @@ class Computer(models.Model):
     BACULA_ERROR_ID = 0
     # Attributes
     computer_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
-    ip = models.IPAddressField("Endereço IP")
-    description = models.CharField("Descrição",max_length=100, blank=True)
-    fd_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
-    bacula_id = models.IntegerField("Bacula ID", default=BACULA_VOID_ID) 
+    computer_ip = models.IPAddressField("Endereço IP")
+    computer_so = models.CharField("Sistema Operacional",max_length=50)
+    computer_encryption = models.BooleanField("Encriptar Dados?",default=False)
+    computer_description = models.CharField("Descrição",max_length=100, blank=True)
+    computer_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
+    bacula_id = models.IntegerField("Bacula ID", default=BACULA_VOID_ID)
     
     # TODO: replace fetchall for custom dictfetch
     def get_status(self):
@@ -91,6 +92,21 @@ class Computer(models.Model):
         else:
             return 'Desconhecido'
 
+    def generate_rsa_key(self):
+        "Generates client rsa key needed for certificate generation."""
+        from backup_corporativo.bkp.crypt_utils import gen_key
+        return gen_key(self.computer_name)
+    
+    def generate_certificate(self, key):
+        "Generates client certificate needed for pem generation."""
+        from backup_corporativo.bkp.crypt_utils import gen_cert
+        return gen_cert(self.computer_name, key)
+    
+    def generate_pem(self, key, cert):
+        """Generates client pem"""
+        from backup_corporativo.bkp.crypt_utils import gen_pem
+        return gen_pem(self.computer_name, key, cert)
+        
     def build_backup(self, proc, fset, sched, wtrigg):
         """Saves child objects in correct order."""
         proc.computer = self
@@ -145,6 +161,9 @@ class Computer(models.Model):
         """Returns delete url."""
         return "computer/%s/delete" % (self.id)
 
+    def dump_url(self):
+        """Returns dump url."""
+        return "computer/%s/dump" % (self.id)
     def run_test_url(self):
         """Returns run test url."""
         return "computer/%s/test" % (self.id)
@@ -170,11 +189,11 @@ class Computer(models.Model):
     def __generate_password(self, size=20):
         """Sets a new random password to the computer."""
         from backup_corporativo.bkp.utils import random_password
-        self.fd_password = random_password(size)
+        self.computer_password = random_password(size)
 
 
     def __unicode__(self):
-        return "%s (%s)" % (self.computer_name, self.ip)
+        return "%s (%s)" % (self.computer_name, self.computer_ip)
 
 
 
@@ -184,7 +203,6 @@ class Storage(models.Model):
     storage_ip = models.IPAddressField("Endereço IP")
     storage_port = models.IntegerField("Porta do Storage", default='9103')
     storage_password = models.CharField(max_length=50, default='defaultpw')
-    
     storage_description = models.CharField("Descrição", max_length=100, blank=True)
 
 
@@ -198,9 +216,14 @@ class Storage(models.Model):
             self.__generate_password()
         super(Storage, self).save()
 
-
+    def delete(self):
+        if self.storage_name == 'StorageLocal':
+            raise Exception('StorageLocal não pode ser removido.') # TODO: create custom NimbusException classes
+        else:
+            super(Storage, self).delete()
+        
     def __generate_password(self, size=20):
-        """Sets a new random password to the computer."""
+        """Sets a new random password to the storage."""
         from backup_corporativo.bkp.utils import random_password
         self.storage_password = random_password(size)
 
@@ -224,15 +247,21 @@ class Storage(models.Model):
     def __unicode__(self):
         return "%s (%s:%s)" % (self.storage_name, self.storage_ip, self.storage_port)
 
+    # ClassMethods
+    def get_default_storage(cls):
+        try:
+            def_sto = cls.objects.get(storage_name='StorageLocal')
+        except cls.DoesNotExist:
+            def_sto = False
+        return def_sto
+    get_default_storage = classmethod(get_default_storage)
 
         
 ### Procedure ###
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
     storage = models.ForeignKey(Storage, default=None)
-    
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
-    status = models.CharField(max_length=10, default="Invalid")
 
     def build_backup(self, fset, sched, trigg):
         """Saves child objects in correct order."""

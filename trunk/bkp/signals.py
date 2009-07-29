@@ -62,8 +62,9 @@ def update_files(sender, instance, signal, *args, **kwargs):
     elif sender == Storage:
         update_storage_file(instance)
     elif sender == GlobalConfig:
+        update_default_storage(instance)
         update_config_file(instance)
-        update_device_file(instance)        
+        update_device_file(instance)     
         update_console_file(instance)
     elif sender == BandwidthRestriction:
         generate_cron()
@@ -99,9 +100,9 @@ def update_config_file(instance):
     """Config update file"""
     i = instance
     dir_dict = config_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
-    sto_list = [config_sto_dict("%sStorage" % i.bacula_name, i.storage_ip, i.storage_port, i.storage_password)]
-    for st in Storage.objects.all():
-        sto_list.append(config_sto_dict(st.storage_name, st.storage_ip, st.storage_port, st.storage_password))
+    sto_list = []
+    for sto in Storage.objects.all():
+        sto_list.append(config_sto_dict(sto.storage_name, sto.storage_ip, sto.storage_port, sto.storage_password))
     cat_dict = config_cat_dict("MyCatalog",i.database_name, i.database_user, i.database_password)
     smsg_dict = config_msg_dict("Standard",i.admin_mail)
     dmsg_dict = config_msg_dict("Daemon",i.admin_mail)    
@@ -114,10 +115,10 @@ def config_dir_dict(dir_name, dir_port, dir_passwd):
     'WorkingDirectory':'"/var/bacula/working"','PidDirectory':'"/var/run"','Maximum Concurrent Jobs':'1',
     'Password':'"%s"' % dir_passwd, 'Messages':'Daemon' }
 
-def config_sto_dict(sto_name, sto_ip, sto_port, sto_passwd):
+def config_sto_dict(name, ip, port, password):
     """generate config storage attributes dict"""
     
-    return {'Name':sto_name, 'Address':sto_ip,'SDPort':sto_port, 'Password':'"%s"' % sto_passwd,
+    return {'Name':name, 'Address':ip,'SDPort':port, 'Password':'"%s"' % password,
     'Device':'FileStorage','Media Type':'File'}
 
 def config_cat_dict(cat_name, db_name, db_user, db_passwd):
@@ -209,8 +210,9 @@ def device_msg_dict(msg_name, dir_name):
 def update_device_file(instance):
     """Update Device File"""
     i = instance
-    sto_dict = device_sto_dict("%s-sd" % i.bacula_name, i.storage_port)
-    dir_dict = device_dir_dict("%s-dir" % i.bacula_name,i.storage_password)
+    def_sto = Storage.get_default_storage()
+    sto_dict = device_sto_dict("%s-sd" % i.bacula_name, def_sto.storage_port)
+    dir_dict = device_dir_dict("%s-dir" % i.bacula_name,def_sto.storage_password)
     dev_dict = device_dev_dict("FileStorage")
     msg_dict = device_msg_dict("Standard","%s-dir" % i.bacula_name)
     generate_device("bacula-sd.conf", sto_dict, dir_dict, dev_dict, msg_dict)
@@ -317,13 +319,13 @@ def remove_procedure_file(instance):
 
 def update_computer_file(instance):
     """Computer update file"""
-    cdict = computer_dict(instance.get_computer_name(),instance.ip,instance.fd_password)
+    cdict = computer_dict(instance.get_computer_name(),instance.computer_ip,instance.computer_password)
     generate_computer_file(instance.get_computer_name(),cdict)
 
-def computer_dict(computer_name,ip,fd_password):
+def computer_dict(name,ip,password):
     """generate computer attributes dict"""
-    return {'Name':computer_name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
-    'password':fd_password, 'AutoPrune':'yes'}
+    return {'Name':name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
+    'password':password, 'AutoPrune':'yes'}
 
 def generate_computer_file(name,attr_dict):        
     """Computer generate file"""
@@ -461,6 +463,15 @@ def remove_schedule_file(procedure):
 
 
 #### Storage #####
+def update_default_storage(globalconfig):
+    """Updates default storage object or creates it if doesnt exists."""
+    def_sto = Storage.get_default_storage()
+    def_sto = def_sto and def_sto or Storage() # Assign new storage if it doesnt exist
+    def_sto.storage_name = 'StorageLocal'
+    def_sto.storage_ip = globalconfig.server_ip
+    def_sto.storage_port = globalconfig.storage_port
+    def_sto.save()
+
 
 def update_storage_file(instance):
     """Storage update file."""

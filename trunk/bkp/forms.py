@@ -27,7 +27,7 @@ from backup_corporativo.bkp import customfields as cfields
 class RestoreForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(RestoreForm, self).__init__(*args, **kwargs)
-        self.fields['client_restore'].choices = [('', '----------')] + [(comp.computer_name, '%s (%s)' %(comp.computer_name, comp.ip)) for comp in Computer.objects.all()]
+        self.fields['client_restore'].choices = [('', '----------')] + [(comp.computer_name, '%s (%s)' %(comp.computer_name, comp.computer_ip)) for comp in Computer.objects.all()]
 
     client_restore = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())
     restore_path = cfields.FormPathField(label="Diretório", max_length=50)
@@ -44,7 +44,7 @@ class RestoreDumpForm(forms.Form):
 class GlobalConfigForm(ModelForm):
     class Meta:
         model = GlobalConfig
-        fields = ('bacula_name','storage_ip','storage_port','director_port','admin_mail','database_name','database_user','database_password')
+        fields = ('bacula_name','server_ip','director_port','storage_port','database_name','database_user','database_password','admin_mail')
 
 class LoginForm(forms.Form):
     auth_login = forms.CharField(label=u'Usuário',max_length=20)
@@ -53,7 +53,7 @@ class LoginForm(forms.Form):
 class ComputerForm(ModelForm):
     class Meta:
         model = Computer
-        fields = ('computer_name','ip','description')
+        fields = ('computer_name','computer_ip','computer_so','computer_encryption','computer_description',)
 
 class StorageForm(ModelForm):
     class Meta:

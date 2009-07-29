@@ -105,7 +105,7 @@ def delete_storage(request, storage_id):
         request.user.message_set.create(message="Storage removido permanentemente.")
         return redirect_back_or_default(request, default=root_path(request))
 
-
+# TODO remove code from view, move it to models.py
 def generate_storage_dump_file(storage, config):
     "generate config file"
     sto_dict = {'Name': storage.storage_name, 'SDPort': storage.storage_port,

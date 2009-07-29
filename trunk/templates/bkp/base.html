@@ -55,8 +55,8 @@
 					{% endblock %}
 					
 					{% block storages %}
-				    {% if stors.count %}
 				    <h3>Storages</h3>
+				    {% if stors.count %}
 					<ul class="aux list_computers">
 						{% for s in stors %}
 						{% ifequal s.id storage.id %}
@@ -66,6 +66,8 @@
 						{% endifequal %}
 						{% endfor %}
 					</ul>
+					{% else %}
+						<p><a href="{{script_name}}/config/edit">Configure o Sistema</a></p>
 					{% endif %}
 					<p><a href="{{script_name}}/storage/new">[+] Adicionar storage</a></p>
 					{% endblock %}
