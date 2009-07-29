@@ -42,10 +42,10 @@ def view_procedure(request, computer_id, procedure_id):
 
 @authentication_required
 def restore_files(request, computer_id, procedure_id, job_id):
+    from backup_corporativo.bkp.bacula import Bacula
     vars_dict, forms_dict, return_dict = global_vars(request)
     vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
     vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
     
     if request.method == 'POST':
         print request.POST
-    pass
