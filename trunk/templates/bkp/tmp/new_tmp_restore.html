@@ -15,10 +15,43 @@
                 $('*[rel=tree_select_input]').click(
                     function() {
                         checked = $(this).attr('checked');
+                        disabled = checked ? true : false;
+                        
                         _id = $(this).attr('id');
                         $('*[rel=' + _id + ']').attr('checked', checked);
+                        //$('*[rel=' + _id + ']').attr('disabled', disabled);
                     }
                 );
+                
+                $('.tree_child_select_input').click(
+                    function() {
+                        _parent_id = $(this).attr('rel');
+                        console.log($('#' + _parent_id).attr('checked'));
+                        if ($('#' + _parent_id).attr('checked')) {
+                            console.log('true');
+                            $('#' + _parent_id).attr('checked', false);
+                            //$('*[rel=' + _parent_id + ']').attr('disabled', disabled);
+                        } else {
+                            all_checked = true;
+                            $('*[rel=' + $(this).attr('rel') + ']').each(function () {
+                                if (!$(this).attr('checked')) {
+                                    all_checked = false;
+                                }
+                            });
+                            if (all_checked) {
+                                $('#' + _parent_id).attr('checked', true);
+                            }
+                        }
+                    }
+                );
+                
+                $('form').submit(function() {
+                    $('*[rel=tree_select_input]').each(function(){
+                        if ($(this).attr('checked')) {
+                            $('*[rel=' + $(this).attr('id') + ']').attr('disabled', true);
+                        }
+                    });
+                });
             }
         );
     </script>
@@ -39,10 +72,10 @@
 	<div class="bloco_texto">
 		<ul class="filetree">
 		{% for dir in file_tree.keys %}
-			<li><input type="checkbox" name="dir" rel="tree_select_input" id="tree_select_{{ forloop.counter }}" /> <span class="folder">{{dir}}</span>
+			<li><input type="checkbox" name="dir" rel="tree_select_input" id="tree_select_{{ forloop.counter }}" value="{{ dir }}" /> <span class="folder">{{dir}}</span>
 			    <ul>
 			    {% for file in file_tree|get_value:dir %}
-				    <li><input type="checkbox" rel="tree_select_{{ forloop.parentloop.counter }}" name="file_{{ file.0 }}" /> <span class="file">{{ file.1 }}</span></li>
+				    <li><input type="checkbox" class="tree_child_select_input" rel="tree_select_{{ forloop.parentloop.counter }}" name="file_{{ file.0 }}" value="{{ dir }}{{ file.1 }}" /> <span class="file">{{ file.1 }}</span></li>
 			    {% endfor %}
 			    </ul>
 			</li>
