@@ -121,8 +121,8 @@ class Computer(models.Model):
         from backup_corporativo.bkp.crypt_utils import GET_PEM_RAW_CMD
         if not os.path.isfile(self.computer_key): self.generate_rsa_key()
         if not os.path.isfile(self.computer_cert): self.generate_certificate()
-        cmd = GET_PEM_RAW_CMD % {'key_path':,self.computer_key,
-                                'cert_path':,self.computer_cert,}
+        cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_key,
+                                'cert_path':self.computer_cert,}
         pem = os.popen(cmd).read()
         return pem
         
