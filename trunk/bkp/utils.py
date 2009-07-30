@@ -151,3 +151,11 @@ def absolute_dir_path(rel_dir):
     """Return full path to a directory from script file location."""
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
 
+#def file_exists(filename):
+#    """Returns true case file exists and False otherwise."""
+#    try:
+#        f = open(filename)
+#        f.close()
+#        return True
+#    except:
+#        return False

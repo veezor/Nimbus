@@ -74,6 +74,9 @@ class Computer(models.Model):
     computer_description = models.CharField("Descrição",max_length=100, blank=True)
     computer_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     bacula_id = models.IntegerField("Bacula ID", default=BACULA_VOID_ID)
+    computer_key = models.CharField(max_length=255,default='',blank=True)
+    computer_cert = models.CharField(max_length=255,default='',blank=True)
+    
     
     # TODO: replace fetchall for custom dictfetch
     def get_status(self):
@@ -93,19 +96,35 @@ class Computer(models.Model):
             return 'Desconhecido'
 
     def generate_rsa_key(self):
-        "Generates client rsa key needed for certificate generation."""
-        from backup_corporativo.bkp.crypt_utils import gen_key
-        return gen_key(self.computer_name)
+        """Generates client rsa key.
+        The key is needed for certificate generation.
+        Will only generate if it wasnt previously generated.
+        """
+        from backup_corporativo.bkp.crypt_utils import GENERATE_KEY_RAW_CMD
+        if not os.path.isfile(self.computer_key):
+            cmd = GENERATE_KEY_RAW_CMD %    {'out':self.computer_key,}
+            os.system(cmd)
     
-    def generate_certificate(self, key):
-        "Generates client certificate needed for pem generation."""
-        from backup_corporativo.bkp.crypt_utils import gen_cert
-        return gen_cert(self.computer_name, key)
+    def generate_certificate(self):
+        """Generates client certificate based on key.
+        The certificate is needed for pem generation.
+        Will only generate if it wasnt previously generated.
+        """
+        from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
+        if not os.path.isfile(self.computer_key):
+            cmd = GENERATE_CERT_RAW_CMD %   {'key_path':self.computer_key,
+                                            'out':self.computer_cert,}
+            os.system(cmd)
     
-    def generate_pem(self, key, cert):
-        """Generates client pem"""
-        from backup_corporativo.bkp.crypt_utils import gen_pem
-        return gen_pem(self.computer_name, key, cert)
+    def dump_pem(self):
+        """Generates client pem using providaded key and certificate"""
+        from backup_corporativo.bkp.crypt_utils import GET_PEM_RAW_CMD
+        if not os.path.isfile(self.computer_key): self.generate_rsa_key()
+        if not os.path.isfile(self.computer_cert): self.generate_certificate()
+        cmd = GET_PEM_RAW_CMD % {'key_path':,self.computer_key,
+                                'cert_path':,self.computer_cert,}
+        pem = os.popen(cmd).read()
+        return pem
         
     def build_backup(self, proc, fset, sched, wtrigg):
         """Saves child objects in correct order."""
@@ -140,9 +159,9 @@ class Computer(models.Model):
         """Returns computer name lower string."""
         return str.lower(str(self.computer_name))
         
-    def change_password(self, size):
+    def change_password(self):
         """Changes the password to a new random password."""
-        self.__generate_password(size)
+        self.__set_computer_password(size)
         self.save()
 
     def absolute_url(self):
@@ -161,16 +180,25 @@ class Computer(models.Model):
         """Returns delete url."""
         return "computer/%s/delete" % (self.id)
 
-    def dump_url(self):
-        """Returns dump url."""
-        return "computer/%s/dump" % (self.id)
+    def config_dump_url(self):
+        """Returns config dump url."""
+        return "computer/%s/config_dump" % (self.id)
+
+    def pem_dump_url(self):
+        """Returns pem dump url."""
+        return "computer/%s/pem_dump" % (self.id)
+
     def run_test_url(self):
         """Returns run test url."""
         return "computer/%s/test" % (self.id)
 
     def save(self):
         if not self.id: # If this record is not at database yet
-            self.__generate_password()
+            self.__set_computer_password()
+            self.__set_computer_key()
+            self.__set_computer_cert()
+            self.generate_rsa_key()
+            self.generate_certificate()        
         super(Computer, self).save()
         if self.bacula_id == self.BACULA_VOID_ID:
             self.__update_bacula_id()
@@ -186,10 +214,28 @@ class Computer(models.Model):
         self.save()
     
     
-    def __generate_password(self, size=20):
-        """Sets a new random password to the computer."""
+    def __set_computer_password(self, size=20):
+        """Sets a new random password to the computer.
+        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
+        """
         from backup_corporativo.bkp.utils import random_password
         self.computer_password = random_password(size)
+
+    def __set_computer_key(self):
+        """Generates key filepath
+        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
+        """
+        from backup_corporativo.bkp.utils import absolute_file_path
+        fname = "fd-%(client_name)s.cert" % {'client_name':self.computer_name}
+        self.computer_key = absolute_file_path(fname,'custom/crypt/')
+
+    def __set_computer_cert(self):
+        """Generates cert filepath
+        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
+        """
+        from backup_corporativo.bkp.utils import absolute_file_path
+        fname = "fd-%(client_name)s.cert" % {'client_name':self.computer_name}
+        self.computer_cert = absolute_file_path(fname,'custom/crypt/')
 
 
     def __unicode__(self):
@@ -213,7 +259,7 @@ class Storage(models.Model):
 
     def save(self):
         if not self.id: # If this record is not at database yet
-            self.__generate_password()
+            self.__set_storage_password()
         super(Storage, self).save()
 
     def delete(self):
@@ -222,8 +268,10 @@ class Storage(models.Model):
         else:
             super(Storage, self).delete()
         
-    def __generate_password(self, size=20):
-        """Sets a new random password to the storage."""
+    def __set_storage_password(self, size=20):
+        """Sets a new random password to the storage.
+        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
+        """
         from backup_corporativo.bkp.utils import random_password
         self.storage_password = random_password(size)
 
@@ -346,8 +394,7 @@ class Procedure(models.Model):
             incmedia_query = LOAD_INC_MEDIA_INFO_RAW_QUERY %    {'tdate':tdate,
                                                                 'start_time':initial_bkp['StartTime'],
                                                                 'client_id':self.computer.bacula_id,
-                                                                'fileset':self.get_fileset_name(),
-                                                                }
+                                                                'fileset':self.get_fileset_name(),}
             Bacula.db_query(incmedia_query)
 
     def load_backups_information(self,initial_bkp):

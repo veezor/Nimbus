@@ -263,3 +263,18 @@ def client_config_dump(request, computer_id):
         response['Content-Disposition'] = 'attachment; filename=bacula-sd.conf'
         response.write(dump_file)
         return response
+        
+        
+@authentication_required
+def client_pem_dump(request, computer_id):
+    """Generates and provides download to a file deamon client config file."""
+    if request.method == 'GET':
+        computer = Computer.objects.get(pk=computer_id)
+        dump_file = computer.dump_pem()
+        
+    	# Return file for download
+        response = HttpResponse(mimetype='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=bacula-sd.conf'
+        response.write(dump_file)
+        return response
+

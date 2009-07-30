@@ -21,6 +21,21 @@ def tmp_restore(request, computer_id, procedure_id, job_id):
     vars_dict['job_id'] = job_id
 
     if request.method == 'GET':
+        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+        if not 'fset' in request.GET:
+            raise Exception('JobID parameter is missing.')
+        if not 'dt' in request.GET:
+            raise Exception('Date parameter is missing.')
+        if not 'src' in request.GET:
+            raise Exception('ClientName parameter is missing.')
+
+        vars_dict['src_client'] = request.GET['src']
+        vars_dict['target_dt'] = request.GET['dt']
+        vars_dict['fileset_name'] = request.GET['fset']
+        vars_dict['comp_id'] = computer_id
+        forms_dict['restore_form'] = RestoreForm()
+
         # Load forms and vars
         vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
@@ -48,4 +63,5 @@ def restore_files(request, computer_id, procedure_id, job_id):
     vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
     
     if request.method == 'POST':
-        print request.POST
+        Bacula.restore_files(request.POST)
+        

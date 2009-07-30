@@ -72,48 +72,13 @@ def decrypt(input, output, key, factor, del_original=False):
     fcode.close()
     if del_original:
         remove_or_leave(input)
-        
-def generate_master_kp():
-    key = gen_key('master')
-    cert = gen_cert('master',key)
 
-def generate_fd_kp(client_name):
-    key = gen_key(client_name)
-    cert = gen_cert(client_name,key)
-    pem = gen_pem(client_name,key,cert)
+# TODO: Refazer função para gerar master.key        
+#def generate_master_kp():
+#    key = gen_key('master')
+#    cert = gen_cert('master',key)
 
 
-def gen_key(client_name):
-    TMP_KEYS_REL_PATH = "custom/tmp/keys/"
-    fname = "fd-%(client_name)s.key" % {'client_name':client_name}
-    key_path = absolute_file_path(fname,TMP_KEYS_REL_PATH)
-    cmd = "openssl genrsa -out %(out)s 2048" % {'out':key_path}
-    try:
-        os.system(cmd)
-        return key_path
-    except: #TODO: Catch only IOError
-        return ''
-
-def gen_cert(client_name, key_path):
-    TMP_CERTS_REL_PATH = "custom/tmp/certs/"
-    fname = "fd-%(client_name)s.cert" % {'client_name':client_name}
-    cert_path = absolute_file_path(fname,TMP_CERTS_REL_PATH)
-    cmd = "openssl req -new -key %(fdkey)s -x509 -out %(out)s" % {'fdkey':key_path, 'out':cert_path}
-    try:
-        os.system(cmd)
-        return cert_path
-    except: #TODO: Catch only IOError
-        return ''
-
-       
-def gen_pem(client_name,key_path, cert_path):
-    TMP_PEMS_REL_PATH = "custom/tmp/keys/"
-    fname = "fd-%(client_name)s.key" % {'client_name':client_name}
-    pem_path = absolute_file_path(fname,TMP_PEMS_REL_PATH)
-    cmd = "cat %(fdkey)s %(fdcert)s > %(out)s" % {'fdkey':key_path,'fdcert':cert_path,'out':pem_path}
-    try:
-        os.system(cmd)
-        return pem_path
-    except: #TODO Catch only specific error
-        return ''
-    
+    GENERATE_KEY_RAW_CMD = "openssl genrsa -out %(out)s 2048"
+    GENERATE_CERT_RAW_CMD = "openssl req -new -key %(key_path)s -x509 -out %(out)s"
+    GET_PEM_RAW_CMD = "cat %(key_path)s %(cert_path)s"

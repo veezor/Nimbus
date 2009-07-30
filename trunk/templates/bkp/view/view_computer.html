@@ -17,7 +17,8 @@
 	<div class="bloco_texto escondido" id="detalhes_computador">
 	    <div class="titulo_botoes">
 		<div class="botao_acoes">
-	        <button onclick="location.href='{{script_name}}/{{comp.dump_url}}'"><span>Dump</span></button>
+	        <button onclick="location.href='{{script_name}}/{{comp.pem_dump_url}}'"><span>Dump Pem</span></button>
+	        <button onclick="location.href='{{script_name}}/{{comp.config_dump_url}}'"><span>Dump CFG</span></button>
 	        <form action="{{script_name}}/{{comp.run_test_url}}" method="post">
 	            <button type="submit"><span>Testar Conexão</span></button>
 	        </form>

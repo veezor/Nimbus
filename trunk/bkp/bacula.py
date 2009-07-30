@@ -92,7 +92,7 @@ class Bacula:
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         ClientRestore = ClientRestore and ClientRestore or ClientName
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select current all done yes where=%(restore_path)s\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where}
-        BaculaLog.notice(["command: %s" % cmd])
+#        BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
     run_restore_last = classmethod(run_restore_last)
     
@@ -100,7 +100,7 @@ class Bacula:
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select all done yes where="%(restore_path)s" before="%(tg_date)s" fileset="%(fileset_name)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date,'fileset_name':fileset_name}
-        BaculaLog.notice(["command: %s" % cmd])
+#        BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
     run_restore_date = classmethod(run_restore_date)
   
@@ -109,7 +109,7 @@ class Bacula:
         ClientRestore = ClientRestore and ClientRestore or ClientName
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select all done yes where="%(restore_path)s" jobid="%(job_id)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'job_id':JobId}
-        BaculaLog.notice(["command: %s" % cmd])
+#        BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
     run_restore_jobid = classmethod(run_restore_jobid)
 
@@ -141,11 +141,19 @@ class Bacula:
             cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun client="%(client_name)s" job="%(job_name)s" level="%(job_level)s" when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date,'client_name':client_name}
         else:
             cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun job="%(job_name)s" level="%(job_level)s" when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date}
-        BaculaLog.notice(["command: %s" % cmd])
+#        BaculaLog.notice(["command: %s" % cmd])
         os.system(cmd)
     run_backup = classmethod(run_backup)
     
     
+    def restore_files(cls, client_name, client_restore, restore_path, tg_date, fileset_name, files_dict):
+        BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
+        cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select yes where="%(restore_path)s" before="%(tg_date)s" fileset="%(fileset_name)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date,'fileset_name':fileset_name}
+        for key in files_dict.keys():
+            cmd.append("%()s\n" % {'value':files_dict[key]})
+    restore_files = classmethod(restore_files)
+
+
     def dictfetch_query(cls, query, count_rows=False):
         """
         Returns generator of dicts from given query executed.
@@ -181,24 +189,3 @@ class Bacula:
             db.close()
         return cursor
     db_query = classmethod(db_query)
-    
-    
-class BaculaLog:
-    def notice(cls, msgs_list):
-        import time
-        try:
-            log = cls.debug_log_file()
-            for msg in msgs_list:
-                log_entry = "%s [notice] - %s" % (time.strftime("%Y/%m/%d %H:%M:%S", time.localtime()), msg)
-                log.write(str(log_entry).encode("string-escape"))
-                log.write("\n")
-        except IOError:
-            raise Exception("Error at open custom/bacula_logs/debug_log attempt.") 
-        finally:
-            log.close()
-    notice = classmethod(notice)
-
-    def debug_log_file(cls):
-        from backup_corporativo.bkp.utils import prepare_to_write
-        return prepare_to_write('debug_log','custom/bacula_logs/',mod="a")
-    debug_log_file = classmethod(debug_log_file)
