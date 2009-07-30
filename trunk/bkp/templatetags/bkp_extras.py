@@ -181,10 +181,10 @@ def isinstanceofdict(obj):
 
 @register.filter
 def getfilename(obj):
-    return obj.split('/')[-1].split(':')[0]
+    return obj.split('/')[-1].rsplit(':', 1)[0]
 
 @register.filter
 def getfileid(obj):
-    return obj.split('/')[-1].split(':')[-1]
+    return obj.split('/')[-1].rsplit(':', 1)[-1]
 
 

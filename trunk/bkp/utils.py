@@ -173,14 +173,15 @@ def parse_filetree(files):
     file_tree = {}
             
     for f in files:
+        f, fid = f.rsplit(':', 1)
         file_path = [x for x in f.split('/') if x]
         if isdir(f):
             file_name = None
         else:
-            file_name = file_path.pop()
+            file_name = '%s:%s' % (file_path.pop(), fid)
         file_path = ['%s/' % x for x in file_path]
         
-        print file_path, file_name
+        #print file_path, file_name
         
         local_tree = file_tree
         for n, fp in enumerate(file_path):
