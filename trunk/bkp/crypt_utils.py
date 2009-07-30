@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os
 from backup_corporativo.bkp.utils import remove_or_leave, absolute_dir_path, absolute_file_path
 
