@@ -109,15 +109,7 @@
 	<form action="{{ script_name }}/computer/{{ comp.id }}/procedure/{{ proc.id }}/tmp_restore/{{ job_id }}/" method="post">
 	<div class="bloco_texto">
 		<ul class="filetree">
-		{% for dir in file_tree.keys %}
-			<li><input type="checkbox" name="dir" rel="tree_select_input" id="tree_select_{{ forloop.counter }}" value="{{ dir }}" /> <span class="folder">{{dir}}</span>
-			    <ul>
-			    {% for file in file_tree|get_value:dir %}
-				    <li><input type="checkbox" class="tree_child_select_input" rel="tree_select_{{ forloop.parentloop.counter }}" name="file_{{ file.0 }}" value="{{ dir }}{{ file.1 }}" /> <span class="file">{{ file.1 }}</span></li>
-			    {% endfor %}
-			    </ul>
-			</li>
-        {% endfor %}
+		{% include 'bkp/tmp/new_tmp_restore_tree.html' %}
 		</ul>
     </div>
     <button type="submit"><span>Restaurar</span></button>

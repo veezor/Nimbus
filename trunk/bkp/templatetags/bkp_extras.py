@@ -159,6 +159,32 @@ def restriction_id(rtime_object, day_name):
 
 @register.filter
 def contains(obj, value):
-    """Verify if a value is containned in a obj."""
+    """Verify if a value is containned in an obj."""
     return value in obj
+
+
+@register.filter
+def isdir(obj):
+    """Returns True if an obj ends with a '/'."""
+    if isinstance(obj, str):
+        return obj.endswith('/')
+    else:
+        return False
+
+@register.filter
+def isinstanceof(obj, value):
+    return isinstance(obj, value)
+
+@register.filter
+def isinstanceofdict(obj):
+    return isinstance(obj, dict)
+
+@register.filter
+def getfilename(obj):
+    return obj.split('/')[-1].split(':')[0]
+
+@register.filter
+def getfileid(obj):
+    return obj.split('/')[-1].split(':')[-1]
+
 

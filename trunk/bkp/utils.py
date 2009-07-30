@@ -151,11 +151,56 @@ def absolute_dir_path(rel_dir):
     """Return full path to a directory from script file location."""
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
 
-#def file_exists(filename):
-#    """Returns true case file exists and False otherwise."""
-#    try:
-#        f = open(filename)
-#        f.close()
-#        return True
-#    except:
-#        return False
+def isdir(path):
+    if path.endswith('/'):
+        return True
+    else:
+        return False
+
+def parse_filetree(files):
+    """
+    Parse a list of files creating a new hierarchical data structure.
+    
+    Dict are for directories and lists are for files.
+    # {'var': [{'tmp': ['a']}]}
+    
+    >>> files = ['/var/tmp/a', '/var/tmp/b', '/etc/httpd/httpd.conf', \
+        '/etc/httpd/sites-available/a', '/etc/httpd/sites-available/b', \
+        '/var/tmp/lixo', '/usr/contrib/']
+    >>> tree = parse_filetree(files)
+    >>> assert tree == {'var': [{'tmp': ['a', 'b', 'lixo']}], 'etc': [{'httpd': ['httpd.conf', {'sites-available': ['a', 'b']}]}], 'urs': [{'contrib': []}]}
+    """
+    file_tree = {}
+            
+    for f in files:
+        file_path = [x for x in f.split('/') if x]
+        if isdir(f):
+            file_name = None
+        else:
+            file_name = file_path.pop()
+        file_path = ['%s/' % x for x in file_path]
+        
+        print file_path, file_name
+        
+        local_tree = file_tree
+        for n, fp in enumerate(file_path):
+            if fp in local_tree:
+                local_tree = local_tree[fp]
+            else:
+                if isinstance(local_tree, list):
+                    for i in local_tree:
+                        if isinstance(i, dict) and i.has_key(fp):
+                            local_tree = i[fp]
+                            break
+                    else:
+                        local_tree.append({fp: []})
+                        local_tree = local_tree[-1][fp]
+                    if n == len(file_path) - 1 and file_name:
+                        local_tree.append(file_name)
+                else:
+                    local_tree[fp] = []
+                    local_tree = local_tree[fp]
+                    if n == len(file_path) - 1 and file_name:
+                        local_tree.append(file_name)
+    return file_tree
+

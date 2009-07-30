@@ -5,6 +5,7 @@ from django.core import serializers
 from django.db import models
 from django import forms
 from backup_corporativo.bkp import customfields as cfields
+from backup_corporativo.bkp import utils
 import os
 import string
 
@@ -435,20 +436,28 @@ class Procedure(models.Model):
     
     def build_file_tree(self, file_list):
         """Build tree from file list"""
-        file_tree = {}
+        import os
+        files = []
 
-        for file in file_list:
-            # Skip Directory entry
-            if not file['FName']:
-                continue
-            file_path = file['FPath']
-            file_name = file['FName']
-            file_id = file['FId']
-            if  file_path in file_tree:
-                file_tree[file_path].append([file_id, file_name])
-            else:
-                file_tree[file_path] = [[file_id, file_name]]
-        return file_tree
+        print file_list
+        for f in file_list:
+            files.append('%s:%s' % (os.path.join(f['FPath'], f['FName']), f['FId']))
+        print
+        print files
+        return utils.parse_filetree(files)
+
+        #for file in file_list:
+        #    # Skip Directory entry
+        #    if not file['FName']:
+        #        continue
+        #    file_path = file['FPath']
+        #    file_name = file['FName']
+        #    file_id = file['FId']
+        #    if  file_path in file_tree:
+        #        file_tree[file_path].append([file_id, file_name])
+        #    else:
+        #        file_tree[file_path] = [[file_id, file_name]]
+        #return file_tree
         
     def get_fileset_name(self):
         """Get fileset name for bacula file."""
