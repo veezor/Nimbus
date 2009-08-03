@@ -116,7 +116,8 @@ class Computer(models.Model):
         Will only generate if it wasnt previously generated.
         """
         from backup_corporativo.bkp.crypt_utils import GENERATE_KEY_RAW_CMD
-        utils.create_or_leave('custom/crypt')
+        crypt_path = absolute_dir_path('custom/crypt')
+        utils.create_or_leave(crypt_path)
         if not os.path.isfile(self.computer_key_path()):
             cmd = GENERATE_KEY_RAW_CMD %    {'out':self.computer_key_path(),}
             os.system(cmd)
@@ -127,7 +128,8 @@ class Computer(models.Model):
         Will only generate if it wasnt previously generated.
         """
         from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
-        utils.create_or_leave('custom/crypt')
+        crypt_path = absolute_dir_path('custom/crypt')
+        utils.create_or_leave(crypt_path)
         if not os.path.isfile(self.computer_key_path()):
             cmd = GENERATE_CERT_RAW_CMD %   {'key_path':self.computer_key_path(),
                                             'out':self.computer_cert_path(),}
