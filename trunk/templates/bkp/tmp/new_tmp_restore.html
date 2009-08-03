@@ -46,6 +46,12 @@
                 );
                 
                 $('form').submit(function() {
+                    // If no one input is selected, form will not be submitted
+                    if (!$(this).serialize()) {
+                        alert('Selecione pelo menos um arquivo para restauração.');
+                        return false;
+                    }
+                    
                     $('*[rel=tree_select_input]').each(function(){
                         if ($(this).attr('checked')) {
                             $('*[rel=' + $(this).attr('id') + ']').attr('disabled', true);
@@ -106,7 +112,7 @@
 	    <div class="botao_acoes"></div>
 	</div>
 	
-	<form action="{{ script_name }}/computer/{{ comp.id }}/procedure/{{ proc.id }}/tmp_restore/{{ job_id }}/" method="post">
+	<form action="{{ script_name }}/computer/{{ comp.id }}/procedure/{{ proc.id }}/tmp_restore/{{ job_id }}/" method="post" id="form_restore">
 	<div class="bloco_texto">
 		<ul class="filetree">
 		{% include 'bkp/tmp/new_tmp_restore_tree.html' %}
