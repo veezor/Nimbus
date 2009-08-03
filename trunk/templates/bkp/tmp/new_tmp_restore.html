@@ -8,11 +8,50 @@
     <script type="text/javascript">
         $(document).ready(
             function() {
-                $('.filetree').treeview(
+                tree = $('.filetree').treeview(
                     {animated: 'fast', collapsed: true}
                 );
                 
-                $('*[rel=tree_select_input]').click(
+                tree.find('input').click(
+                    function() {
+                        console.log('INPUT >>> ' + $(this).attr('checked'))
+                        
+                        // Check all childs of this element.
+                        $(this).parent().find('input').attr(
+                            'checked', $(this).attr('checked'));
+                        
+                        // Verify if all siblings are checkeds.
+                        siblings = $(this).parent().siblings().children().filter('input');
+                        check_siblings(this, siblings);
+                    }
+                );
+                
+                function check_siblings(_this, siblings) {
+                    siblings_checked = true;
+                    siblings.each(
+                        function() {
+                            console.log($(this) + ': ' + $(this).attr('checked'));
+                            
+                            if (!$(this).attr('checked')) {
+                                siblings_checked = false;
+                            }
+                        }
+                    );
+                    
+                    if (!$(_this).attr('checked')) {
+                        siblings_checked = false;
+                    }
+                    
+                    parent_input = $(_this).parent().parent().parent().children().filter('input');
+                    if (siblings_checked) {
+                        parent_input.attr('checked', true);
+                    } else {
+                        parent_input.attr('checked', false);
+                    }
+                }
+                
+                /*
+                $(' ').click(
                     function() {
                         checked = $(this).attr('checked');
                         disabled = checked ? true : false;
@@ -26,9 +65,7 @@
                 $('.tree_child_select_input').click(
                     function() {
                         _parent_id = $(this).attr('rel');
-                        console.log($('#' + _parent_id).attr('checked'));
                         if ($('#' + _parent_id).attr('checked')) {
-                            console.log('true');
                             $('#' + _parent_id).attr('checked', false);
                             //$('*[rel=' + _parent_id + ']').attr('disabled', disabled);
                         } else {
@@ -44,10 +81,20 @@
                         }
                     }
                 );
+                */
                 
-                $('form').submit(function() {
+                $('form#form_restore').submit(function() {
+                    with_files = false;
+                    $(this).serializeArray().filter(
+                        function(obj){
+                            if (obj.name.substr(0, 5) == 'file_') {
+                                with_files = true;
+                            }
+                        }
+                    );
+                    
                     // If no one input is selected, form will not be submitted
-                    if (!$(this).serialize()) {
+                    if (!with_files || !$(this).serialize()) {
                         alert('Selecione pelo menos um arquivo para restauração.');
                         return false;
                     }
@@ -78,7 +125,7 @@
 
 <h3>Restaurar Em: </h3>
 <br />
-<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job_id}}/" method="POST">
+<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job_id}}/" method="POST" id="form_restore">
 
 {% for field in restore_form %}
     <div class="fieldWrapper">
