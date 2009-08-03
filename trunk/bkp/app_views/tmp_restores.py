@@ -61,25 +61,26 @@ def restore_files(request, computer_id, procedure_id, job_id):
     
     if request.method == 'POST':
         vars_dict, forms_dict, return_dict = global_vars(request)
+        temp_dict = {}
         vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
         vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
         vars_dict['job_id'] = job_id
         forms_dict['restore_form'] = RestoreForm(request.POST)
-        forms_dict['hidden_restore_form'] = HiddenRestoreForm(request.POST)
-        forms_list = forms_dict.values()
+        temp_dict['hidden_restore_form'] = HiddenRestoreForm(request.POST)
         
-        if all([form.is_valid() for form in forms_list]):
-            fileset_name = forms_dict['hidden_restore_form'].cleaned_data['fileset_name']
-            target_dt = forms_dict['hidden_restore_form'].cleaned_data['target_dt']
-            src_client = forms_dict['hidden_restore_form'].cleaned_data['client_source']
-            client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
-            restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
+        if temp_dict['hidden_restore_form'].is_valid():
+            vars_dict['src_client'] = temp_dict['hidden_restore_form'].cleaned_data['client_source']
+            vars_dict['target_dt'] = temp_dict['hidden_restore_form'].cleaned_data['target_dt']
+            vars_dict['fileset_name'] = temp_dict['hidden_restore_form'].cleaned_data['fileset_name']
+            forms_list = forms_dict.values()
             
-        else:
-            vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)        
-            return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/tmp/new_tmp_restore.html', return_dict, context_instance=RequestContext(request))
-            
-        return HttpResponse(request.POST)
-#        Bacula.restore_files(request.POST)
-        
+            if all([form.is_valid() for form in forms_list]):
+                client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
+                restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
+            else:
+                vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)        
+                return_dict = merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
+                return render_to_response('bkp/tmp/new_tmp_restore.html', return_dict, context_instance=RequestContext(request))
+                
+            return HttpResponse(request.POST)
+    #        Bacula.restore_files(request.POST)
