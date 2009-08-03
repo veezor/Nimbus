@@ -1,5 +1,5 @@
 {% load bkp_extras %}
-<ul>
+{% if not file_tree|isinstanceofdict %}<ul>{% endif %}
 {% for item in file_tree %}
     {% if item|isinstanceofdict %}
         {% with "bkp/tmp/new_tmp_restore_tree.html" as filename %}
@@ -20,4 +20,4 @@
         {% endif %}
     {% endif %}
 {% endfor %}
-</ul>
+{% if not file_tree|isinstanceofdict %}</ul>{% endif %}

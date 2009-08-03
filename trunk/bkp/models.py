@@ -465,11 +465,8 @@ class Procedure(models.Model):
         import os
         files = []
 
-        print file_list
         for f in file_list:
             files.append('%s:%s' % (os.path.join(f['FPath'], f['FName']), f['FId']))
-        print
-        print files
         return utils.parse_filetree(files)
 
         #for file in file_list:
