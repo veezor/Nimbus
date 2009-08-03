@@ -117,7 +117,7 @@ class Computer(models.Model):
         """
         from backup_corporativo.bkp.crypt_utils import GENERATE_KEY_RAW_CMD
         if not os.path.isfile(self.computer_key_path()):
-            cmd = GENERATE_KEY_RAW_CMD %    {'out':'' % self.computer_key_path(),}
+            cmd = GENERATE_KEY_RAW_CMD %    {'out':self.computer_key_path(),}
             os.system(cmd)
     
     def generate_certificate(self):
