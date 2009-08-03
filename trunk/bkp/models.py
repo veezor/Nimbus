@@ -134,8 +134,8 @@ class Computer(models.Model):
     def dump_pem(self):
         """Generates client pem using providaded key and certificate"""
         from backup_corporativo.bkp.crypt_utils import GET_PEM_RAW_CMD
-        if not os.path.isfile(self.computer_key): self.generate_rsa_key()
-        if not os.path.isfile(self.computer_cert): self.generate_certificate()
+        if not os.path.isfile(self.computer_key_path()): self.generate_rsa_key()
+        if not os.path.isfile(self.computer_cert_path()): self.generate_certificate()
         cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_key_path(),
                                 'cert_path':self.computer_cert_path(),}
         pem = os.popen(cmd).read()
