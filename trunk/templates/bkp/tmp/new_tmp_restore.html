@@ -3,19 +3,36 @@
 
 {% block headtags %}
     <script type="text/javascript" src="{{script_name}}/static/jquery.treeview.js"></script>
+    <script type="text/javascript" src="{{script_name}}/static/jquery.cookie.js"></script>
     <link type="text/css" rel="stylesheet" href="{{script_name}}/static/jquery.treeview.css"></link>
     
     <script type="text/javascript">
         $(document).ready(
             function() {
+                // Start tree.
                 tree = $('.filetree').treeview(
-                    {animated: 'fast', collapsed: true}
+                    {animated: 'fast', collapsed: true, cookie: true, persist: "cookie"}
                 );
                 
+                // Update cache values.
+                cache_selected = $.cookie('cache_selected');
+                if (cache_selected) {
+                    cache_selected = cache_selected.split(';');
+                    $(cache_selected).each(
+                        function() {
+                            if (this.substr(0, 4) == 'dir_') {
+                                dir = this.split('_', 2);
+                                $('*[name=dir][value="' + dir[1] + '"]').attr('checked', true);
+                            } else {
+                                $('*[name=' + this + ']').attr('checked', true);
+                            }
+                        }
+                    );
+                }
+                
+                // Binds input click.
                 tree.find('input').click(
                     function() {
-                        console.log('INPUT >>> ' + $(this).attr('checked'))
-                        
                         // Check all childs of this element.
                         $(this).parent().find('input').attr(
                             'checked', $(this).attr('checked'));
@@ -26,12 +43,11 @@
                     }
                 );
                 
+                // Check for siblings checkeds box.
                 function check_siblings(_this, siblings) {
                     siblings_checked = true;
                     siblings.each(
                         function() {
-                            console.log($(this) + ': ' + $(this).attr('checked'));
-                            
                             if (!$(this).attr('checked')) {
                                 siblings_checked = false;
                             }
@@ -50,39 +66,7 @@
                     }
                 }
                 
-                /*
-                $(' ').click(
-                    function() {
-                        checked = $(this).attr('checked');
-                        disabled = checked ? true : false;
-                        
-                        _id = $(this).attr('id');
-                        $('*[rel=' + _id + ']').attr('checked', checked);
-                        //$('*[rel=' + _id + ']').attr('disabled', disabled);
-                    }
-                );
-                
-                $('.tree_child_select_input').click(
-                    function() {
-                        _parent_id = $(this).attr('rel');
-                        if ($('#' + _parent_id).attr('checked')) {
-                            $('#' + _parent_id).attr('checked', false);
-                            //$('*[rel=' + _parent_id + ']').attr('disabled', disabled);
-                        } else {
-                            all_checked = true;
-                            $('*[rel=' + $(this).attr('rel') + ']').each(function () {
-                                if (!$(this).attr('checked')) {
-                                    all_checked = false;
-                                }
-                            });
-                            if (all_checked) {
-                                $('#' + _parent_id).attr('checked', true);
-                            }
-                        }
-                    }
-                );
-                */
-                
+                // Bind submit to restore form.
                 $('form#form_restore').submit(function() {
                     with_files = false;
                     $(this).serializeArray().filter(
@@ -104,6 +88,23 @@
                             $('*[rel=' + $(this).attr('id') + ']').attr('disabled', true);
                         }
                     });
+                    
+                    // Cookie all selected files.
+                    cache_selected = [];
+                    serialized_inputs = tree.find('input').serializeArray();
+                    $(serialized_inputs).each(
+                        function() {
+                            name = this.name;
+                            if (this.name == 'dir') {
+                                name = this.name + '_' + this.value;
+                            }
+                            cache_selected.push(name);
+                        }
+                    );
+                    if (cache_selected) {
+                        $.cookie('cache_selected', cache_selected.join(';'),
+                                 {path: '/', expires: 10});
+                    }
                 });
             }
         );
