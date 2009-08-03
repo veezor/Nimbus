@@ -52,7 +52,7 @@
 	        <td> {{ job.Level|friendly_level }} </td>
 			<td>
 															
-			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobId}}/new';return false"><span>Detalhes</span></button>
+			<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobId}}/new?fset={{job.FileSet}}&dt={{job.StartTime}}&src={{job.cName}}';return false"><span>Detalhes</span></button>
 			</td>
 		</tr>
 			{% if forloop.last %}
