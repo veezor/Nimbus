@@ -3,6 +3,7 @@
 
 import os
 import datetime
+from backup_corporativo.bkp.models import NimbusLog
 
 class Bacula:
     WHERE_DEFAULT = "/tmp/bacula-restore"
@@ -12,6 +13,7 @@ class Bacula:
         cmd =   """
                 echo 'sta client=%(client_name)s'|bconsole -c %(bacula_conf)s|grep %(client_name)s
                 """ % {'client_name':client_name, 'bacula_conf':BACULA_CONF}
+        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         output = os.popen(cmd).read()
         return output
     client_status = classmethod(client_status)
@@ -21,6 +23,7 @@ class Bacula:
         cmd =   """
                 echo 'reload'|bconsole -c %(bacula_conf)s
                 """ % {'bacula_conf':cls.BACULA_CONF}
+        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         output = os.popen(cmd).read()
         return output
     reload = classmethod(reload)
@@ -31,6 +34,7 @@ class Bacula:
         cmd =   """
                 echo 'm'|bconsole -c %(bacula_conf)s
                 """ % {'bacula_conf':BACULA_CONF}
+        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         output = os.popen(cmd).read()
         return output
     messages = classmethod(messages)
@@ -92,7 +96,7 @@ class Bacula:
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         ClientRestore = ClientRestore and ClientRestore or ClientName
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select current all done yes where=%(restore_path)s\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where}
-#        BaculaLog.notice(["command: %s" % cmd])
+        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_last = classmethod(run_restore_last)
     
@@ -100,7 +104,7 @@ class Bacula:
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select all done yes where="%(restore_path)s" before="%(tg_date)s" fileset="%(fileset_name)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date,'fileset_name':fileset_name}
-#        BaculaLog.notice(["command: %s" % cmd])
+        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_date = classmethod(run_restore_date)
   
@@ -109,7 +113,7 @@ class Bacula:
         ClientRestore = ClientRestore and ClientRestore or ClientName
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select all done yes where="%(restore_path)s" jobid="%(job_id)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'job_id':JobId}
-#        BaculaLog.notice(["command: %s" % cmd])
+        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_jobid = classmethod(run_restore_jobid)
 
@@ -117,7 +121,6 @@ class Bacula:
         """ClassMethod to restore a Job"""
         if ClientRestore == "":
             ClientRestore = ClientName
-
         if fileset_name and Date:
             cls.run_restore_date(ClientName,Date,ClientRestore,Where,fileset_name)
         elif JobId != "":
@@ -141,7 +144,7 @@ class Bacula:
             cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun client="%(client_name)s" job="%(job_name)s" level="%(job_level)s" when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date,'client_name':client_name}
         else:
             cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun job="%(job_name)s" level="%(job_level)s" when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date}
-#        BaculaLog.notice(["command: %s" % cmd])
+        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_backup = classmethod(run_backup)
     
@@ -179,6 +182,7 @@ class Bacula:
         try:
             db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=BACULA_DB_NAME)
             cursor = db.cursor()
+            cls.notice(type='query',content=query) #TODO criar constantes para os tipos adequados
             cursor.execute(query)
             db.commit()
         except Warning:
@@ -189,3 +193,11 @@ class Bacula:
             db.close()
         return cursor
     db_query = classmethod(db_query)
+    
+    def notice(cls, type, content):
+        n1 = NimbusLog()
+        n1.entry_category = 'bacula'
+        n1.entry_type = type
+        n1.entry_content = content
+        n1.save()
+    notice = classmethod(notice)

@@ -6,8 +6,8 @@ from django.db import models
 from django import forms
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-import os
-import string
+import os, string, time
+
 
 ### Constants ###
 TYPE_CHOICES = (
@@ -714,6 +714,41 @@ class BandwidthRestriction(models.Model):
         day = DAYS_OF_THE_WEEK[self.dayoftheweek.day_name]
         return '%shs %s %s kbps' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
 
+class NimbusLog(models.Model):
+    entry_timestamp = models.DateTimeField(default='',blank=True)
+    entry_category = models.CharField(max_length=30)
+    entry_type = models.CharField(max_length=30)
+    entry_content = models.TextField()
+    
+    def save(self):
+        self.entry_timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        try:
+            from backup_corporativo.settings import LOG_LEVEL #TODO colocar LOG_LEVEL dentro de GlobalConfig
+            if LOG_LEVEL == 0:          # Nenhum log
+                pass
+            elif LOG_LEVEL == 1:        # Somente em arquivo
+                self.new_file_entry()
+            elif LOG_LEVEL == 2:        # Somente em banco de dados
+                super(NimbusLog, self).save()
+            elif LOG_LEVEL == 3:        # Arquivo + banco de dados
+                self.new_file_entry()
+                super(NimbusLog, self).save()
+            else:                       # LOG_LEVEL desconhecido
+                raise Exception('Erro de configuração: LOG_LEVEL desconhecido.')
+        except ImportError:
+            pass
+
+    def new_file_entry(self):
+        nlog = NimbusLog.get_log_file()
+        log_entry = "%s [%s] - %s: %s" % (self.entry_timestamp, self.entry_category, self.entry_type, self.entry_content)
+        nlog.write(str(log_entry).encode("string-escape"))
+        nlog.write("\n")
+        nlog.close()
+
+    # ClassMethods
+    def get_log_file(cls):
+        return utils.prepare_to_write('log_geral','custom/logs/',mod='a')
+    get_log_file = classmethod(get_log_file)
 
 ###
 ###   Signals

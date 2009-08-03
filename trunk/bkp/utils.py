@@ -128,18 +128,19 @@ def remove_or_leave(filepath):
         # Leave
         pass
 
-def prepare_to_write(filename,rel_dir,mod="w"):
+def prepare_to_write(filename,rel_dir,mod="w",remove_old=False):
     "make sure base_dir exists and open filename"
     base_dir,filepath = mount_path(filename,rel_dir)
     create_or_leave(base_dir)
-    remove_or_leave(filepath)
+    if remove_old:
+        remove_or_leave(filepath)
     return open(filepath, mod)
 
 def mount_path(filename,rel_dir):
     "mount absolute dir path and filepath"
     filename = str(filename).lower()
     base_dir = absolute_dir_path(rel_dir)
-    filepath = absolute_file_path(filename, base_dir)
+    filepath = absolute_file_path(filename, rel_dir)
     return base_dir, filepath
     
 def absolute_file_path(filename, rel_dir):
