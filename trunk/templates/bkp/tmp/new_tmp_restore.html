@@ -115,45 +115,6 @@
     <button type="submit"><span>Restaurar</span></button>
     </form>
 
-
-
-
-
-	{% if debug %}
-	<div class="bloco_texto">
-		{% for file in file_tree %}
-			{% if forloop.first %}
-		        <table>
-		        <thead>
-			        <tr>
-					<th scope='col'>FJobId</th>
-			        <th scope='col'>Tipo</th>
-			        <th scope='col'>Caminho</th>
-			        <th scope='col'>Arquivo</th>
-			        </tr>
-		        </thead>
-		        <tbody>
-			{% endif %}
-        <tr> 
-			<td>{{ file.FJobId }}</td>
-			{% if file.Name %}
-	        <td> Arquivo </td>
-			{% else %}
-	        <td> Diretório </td>
-			{% endif %}
-	        <td> {{ file.Path }} </td>
-	        <td> {{ file.Name }} </td>
-		</tr>
-			{% if forloop.last %}
-		</tbody>
-		</table>
-			{% endif %}
-        {% endfor %}
-    </div>
-	{% endif %}
-
-
-
-<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<a href="{{script_name}}/computer/{{comp.id}}/procedure/{{ proc.id }}">Cancelar</a>
 <hr />
 {% endblock %}

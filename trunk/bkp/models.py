@@ -75,9 +75,6 @@ class Computer(models.Model):
     computer_description = models.CharField("Descrição",max_length=100, blank=True)
     computer_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     bacula_id = models.IntegerField("Bacula ID", default=BACULA_VOID_ID)
-    computer_key = models.CharField(max_length=255,default='',blank=True)
-    computer_cert = models.CharField(max_length=255,default='',blank=True)
-    
     
     # TODO: replace fetchall for custom dictfetch
     def get_status(self):
@@ -95,6 +92,23 @@ class Computer(models.Model):
             return 'Erro'
         else:
             return 'Desconhecido'
+    def computer_key(self):
+        return "%s.key" % self.computer_name
+    
+    def computer_cert(self):
+        return "%s.cert" % self.computer_name
+        
+    def computer_pem(self):
+        return "%s.pem" % self.computer_name
+    
+    def computer_key_path(self):
+        return utils.absolute_file_path(self.computer_key(),"custom/crypt/")
+
+    def computer_cert_path(self):
+        return utils.absolute_file_path(self.computer_cert(),"custom/crypt/")
+
+    def computer_pem_path(self):
+        return utils.absolute_file_path(self.computer_pem(),"custom/crypt/")
 
     def generate_rsa_key(self):
         """Generates client rsa key.
@@ -103,7 +117,7 @@ class Computer(models.Model):
         """
         from backup_corporativo.bkp.crypt_utils import GENERATE_KEY_RAW_CMD
         if not os.path.isfile(self.computer_key):
-            cmd = GENERATE_KEY_RAW_CMD %    {'out':self.computer_key,}
+            cmd = GENERATE_KEY_RAW_CMD %    {'out':'' % self.computer_key_path(),}
             os.system(cmd)
     
     def generate_certificate(self):
@@ -112,9 +126,9 @@ class Computer(models.Model):
         Will only generate if it wasnt previously generated.
         """
         from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
-        if not os.path.isfile(self.computer_key):
-            cmd = GENERATE_CERT_RAW_CMD %   {'key_path':self.computer_key,
-                                            'out':self.computer_cert,}
+        if not os.path.isfile('custom/crypt/%s' % self.computer_key()):
+            cmd = GENERATE_CERT_RAW_CMD %   {'key_path':self.computer_key_path(),
+                                            'out':self.computer_cert_path(),}
             os.system(cmd)
     
     def dump_pem(self):
@@ -122,8 +136,8 @@ class Computer(models.Model):
         from backup_corporativo.bkp.crypt_utils import GET_PEM_RAW_CMD
         if not os.path.isfile(self.computer_key): self.generate_rsa_key()
         if not os.path.isfile(self.computer_cert): self.generate_certificate()
-        cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_key,
-                                'cert_path':self.computer_cert,}
+        cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_key_path(),
+                                'cert_path':self.computer_cert_path(),}
         pem = os.popen(cmd).read()
         return pem
         
@@ -237,6 +251,14 @@ class Computer(models.Model):
         from backup_corporativo.bkp.utils import absolute_file_path
         fname = "fd-%(client_name)s.cert" % {'client_name':self.computer_name}
         self.computer_cert = absolute_file_path(fname,'custom/crypt/')
+
+    def __set_computer_pem(self):
+        """Generates key filepath
+        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
+        """
+        from backup_corporativo.bkp.utils import absolute_file_path
+        fname = "fd-%(client_name)s.pem" % {'client_name':self.computer_name}
+        self.computer_key = absolute_file_path(fname,'custom/crypt/')
 
 
     def __unicode__(self):
