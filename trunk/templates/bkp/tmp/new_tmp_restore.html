@@ -14,6 +14,19 @@
                     {animated: 'fast', collapsed: true, cookie: true, persist: "cookie"}
                 );
                 
+                // Populate tree values.
+                tree.find('input').each(
+                    function() {
+                        my_obj = $(this);
+                        my_obj.parent().parents().filter('li').each(
+                            function () {
+                                folder_name = $(this).children().filter('span').html();
+                                my_obj.attr('value', folder_name + my_obj.attr('value'));
+                            }
+                        )
+                    }
+                );
+                
                 // Update cache values.
                 cache_selected = $.cookie('cache_selected');
                 if (cache_selected) {
