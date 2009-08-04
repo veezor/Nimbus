@@ -1,5 +1,34 @@
 {% extends "bkp/base.html" %}
 {% load bkp_extras %}
+{% block headtags %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('button.popup').toggle(
+                function() {
+                    _id = '#' + $(this).attr('rel');
+                    css_options = {'position': 'absolute', 'float': 'none',
+                                   'top': $(this).offset().top + $(this).height(),
+                                   'left':  $(this).offset().left - 200 + $(this).width(),
+                                   'width': 180, '-moz-border-radius': '7px'}
+                    $(_id).show().css(css_options);
+                    $(_id).addClass('popup_opened')
+                },
+                function() {
+                    $('#' + $(this).attr('rel')).hide();
+                    $(_id).removeClass('popup_opened')
+                }
+            );
+        })
+    </script>
+    <style type="text/css">
+        .popup_opened {
+            background: #F1F1F4;
+            border: 5px solid #CCC;
+            padding: 8px 5px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
 
     <div class="titulo_botoes">
@@ -7,10 +36,14 @@
 	    <h2>
 	        <span>Computador</span><br/>
 	        {{ comp.computer_name }} <span class="toggle pequeno" rel="detalhes_computador">(ver detalhes)</span>
+	        
 	    </h2>
 	    <div class="botao_acoes">
-	        <button onclick="location.href='{{script_name}}/{{comp.edit_url}}'"><span>Alterar</span></button>
-		    <button onclick="location.href='{{script_name}}/{{comp.delete_url}}';" class="red"><span>Remover</span></button>
+	        <button class="popup" rel="view_comp_01"><span>ações</span></button>
+	        <div id="view_comp_01" class="escondido">
+    	        <button onclick="location.href='{{script_name}}/{{comp.edit_url}}'"><span>Alterar</span></button>
+	    	    <button onclick="location.href='{{script_name}}/{{comp.delete_url}}';" class="red"><span>Remover</span></button>
+	    	</div>
 	    </div>
 	</div>
 	
@@ -47,76 +80,124 @@
 	{% if not comp.procedure_set.count %}
 	    <span>Não existem procedimentos cadastrados para este computador.</span>
 	{% endif %}
-    {% for proc in comp.procedure_set.all %}
-        <div class="procedure">
-            <div class="titulo_topo">
-                <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a>
-                    <span class="toggle pequeno" rel="detalhes_procedure_{{ proc.id }}">(ver detalhes)</span></h3>
-                <div class="botao_acoes">
-	                <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
-	                <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
-	                <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
-	            </div>
-	        </div>
-	        <ul class="aux escondido" id="detalhes_procedure_{{ proc.id }}">
-	            <li>
-	                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_storage.gif" />
-	                <span class="label"><strong>Storage:</strong></span>
-	                <span class="value">
-	                    <a href="{{ script_name }}/{{ proc.storage.view_url }}">{{ proc.storage.storage_name }}</a>
-	                </span>
-	            </li>
-	            <li>
-	                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_gear.gif" />
-	                <span class="label"><strong>Caminhos do backup:</strong><br/>
-	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
-	                <span class="value">
-	                {% if not proc.fileset_set.count %}
-	                (vazio)
+	
+	<table>
+	    <thead>
+	        <tr>
+	            <th>Nome</th>
+	            <th>Storage</th>
+	            <th>Caminhos</th>
+	            <th>#Agendam.</th>
+	            <th></th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	    {% for proc in comp.procedure_set.all %}
+	        <tr>
+	            <td class="col_procedimento">{{ proc.procedure_name }}</td>
+	            <td class="col_storage">{{ proc.storage.storage_name }}</td>
+	            <td class="col_caminhos">
+	                {% if proc.fileset_set.count %}
+	                    {% for fset in proc.fileset_set.all|slice:":3" %}
+	                        {{ fset.path }}{% if not forloop.last %},{% endif %}
+	                    {% endfor %}
+	                    {{ proc.fileset_set.count|pluralize:"..." }}
+	                {% else %}
+	                    -
 	                {% endif %}
-					{% for fset in proc.fileset_set.all %}
-	                	{{ fset.path }}
-			            <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="button_delete" title="Remover este item."><span>Remover</span></button><br/>
-	                {% endfor %}
-	                </span>
-	            </li>
-	            <li>
-	                <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_clock.gif" />
-	                <span class="label"><strong>Agendamentos:</strong><br/>
-	                    <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
-	                {% if not p.schedule_set.count %}
-	                <span class="value">(vazio)</span>
-	                {% endif %}
-	                {% for sched in p.schedule_set.all %}
-	                <span class="value">
-	                    Tipo: {{ sched.type }}
-                        <ul>
-                        {% for wtrigg in sched.weeklytrigger_set.all %}
-                            <li>Nível: {{ wtrigg.level }}</li>
-                            <li>Hora: {{ wtrigg.hour }}</li>
-                            <li>Dias da semana:
-                            {% for day, day_br in DAYS_OF_THE_WEEK.items %}
-                                {% if wtrigg|get_method:day %}
-                                    {{ day_br }}
-                                {% endif %}
-                            {% endfor %}
+	            </td>
+	            <td class="col_agendamentos">{{ proc.fileset_set.count }}</td>
+	            <td class="col_acoes">
+	                <button class="toggle" rel="detalhes_procedimento_{{ forloop.counter }}"><span>+</span></button>
+	                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
+	                <div id="view_comp_02_{{ forloop.counter }}" class="escondido">
+                        <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
+                        <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
+                        <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
+                    </div>
+                </td>
+	        </tr>
+	        <tr>
+	            <td colspan="5">
+	            
+                    <div class="procedure escondido" id="detalhes_procedimento_{{ forloop.counter }}">
+                        <!--<div class="titulo_topo">
+                            <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a>
+                                <span class="toggle pequeno" rel="detalhes_procedure_{{ proc.id }}">(ver detalhes)</span></h3>
+                            <div class="botao_acoes">
+                                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
+                    	        
+	                        </div>
+	                    </div>-->
+	                    
+	                    <ul class="aux" id="detalhes_procedure_{{ proc.id }}">
+	                        <li>
+	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_storage.gif" />
+	                            <span class="label"><strong>Storage:</strong></span>
+	                            <span class="value">
+	                                <a href="{{ script_name }}/{{ proc.storage.view_url }}">{{ proc.storage.storage_name }}</a>
+	                            </span>
+	                        </li>
+	                        <li>
+	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_gear.gif" />
+	                            <span class="label"><strong>Caminhos do backup:</strong><br/>
+	                                <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
+	                            <span class="value">
+	                            {% if not proc.fileset_set.count %}
+	                            (vazio)
+	                            {% endif %}
+					            {% for fset in proc.fileset_set.all %}
+	                            	{{ fset.path }}
+			                        <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="button_delete" title="Remover este item."><span>Remover</span></button><br/>
+	                            {% endfor %}
+	                            </span>
+	                        </li>
+	                        <li>
+	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_clock.gif" />
+	                            <span class="label"><strong>Agendamentos:</strong><br/>
+	                                <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
+	                            {% if not p.schedule_set.count %}
+	                            <span class="value">(vazio)</span>
+	                            {% endif %}
+	                            {% for sched in p.schedule_set.all %}
+	                            <span class="value">
+	                                Tipo: {{ sched.type }}
+                                    <ul>
+                                    {% for wtrigg in sched.weeklytrigger_set.all %}
+                                        <li>Nível: {{ wtrigg.level }}</li>
+                                        <li>Hora: {{ wtrigg.hour }}</li>
+                                        <li>Dias da semana:
+                                        {% for day, day_br in DAYS_OF_THE_WEEK.items %}
+                                            {% if wtrigg|get_method:day %}
+                                                {{ day_br }}
+                                            {% endif %}
+                                        {% endfor %}
+                                        </li>
+                                    {% endfor %}
+                                    {% for mtrigg in sched.monthlytrigger_set.all %}
+                                        <li>Nível: {{ mtrigg.level }}</li>
+                                        <li>Hora: {{ mtrigg.hour }}</li>
+                                        <li>Dias: {{ mtrigg.target_days }}</li>
+                                    {% endfor %}
+                                    </ul>
+	                                <button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
+	                                <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false" class="red"><span>Remover</span></button>
+                                </span>
+                                {% endfor %}
                             </li>
-                        {% endfor %}
-                        {% for mtrigg in sched.monthlytrigger_set.all %}
-                            <li>Nível: {{ mtrigg.level }}</li>
-                            <li>Hora: {{ mtrigg.hour }}</li>
-                            <li>Dias: {{ mtrigg.target_days }}</li>
-                        {% endfor %}
-                        </ul>
-	                    <button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
-	                    <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false" class="red"><span>Remover</span></button>
-                    </span>
-                    {% endfor %}
-                </li>
-	        </ul>
-	        
-        </div>
-    {% endfor %}
+	                    </ul>
+	                    
+                    </div><div id="view_comp_02_{{ forloop.counter }}" class="escondido">
+	                                <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
+	                                <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
+	                                <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
+	                            </div>
+	            
+	            </td>
+	        </tr>
+	    {% endfor %}
+	    </tbody>
+	</table>
     </div>
 
     <div class="titulo_botoes">
