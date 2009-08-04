@@ -6,6 +6,8 @@ import datetime
 from backup_corporativo.bkp.models import NimbusLog
 from backup_corporativo.bkp import utils
 from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
+import MySQLdb as Database 
+
 
 # TODO dividir funções de manipulação da console e de queries com banco de dados em duas classes distintas
 class Bacula:
@@ -161,9 +163,6 @@ class Bacula:
 # AVISO:
 # essa classe foi apenas parcialmente implementada e contempla somente
 # a execução de queries SQL puras através de seu método execute.
-# O django utiliza comportamento padrão de autocommit, portanto classe não trata isso.
-# Caso autocommit do django seja desligado, classe não irá funcionar corretamente
-# e será preciso adicionar self._commit() depois das operações.
 # Além do que foi descrito acima, seu funcionamento não é garantido para nenhum outro tipo de operação.
 # Para maiores informações, consultar código original em: 
 # http://djangoapi.quamquam.org/trunk/toc-django.db.backends.mysql-module.html
@@ -178,9 +177,11 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
                 self.connection.close()
                 self.connection = None
         return False
+
+    def commit(self):
+        self._commit()
         
     def cursor(self):
-        import MySQLdb as Database 
         from django.conf import settings 
         if not self._valid_connection(): 
             kwargs = { 
@@ -202,6 +203,7 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
             self.connection = Database.connect(**kwargs) 
         cursor = self.connection.cursor() 
         return cursor
+        
 
 class BaculaDatabase:
     """Classe de fachada utilizada para gerenciar todas as conexões com a base de dados do bacula."""
@@ -214,6 +216,9 @@ class BaculaDatabase:
     def execute(cls, query):
         cursor = cls.cursor()
         NimbusLog.notice(category='database', type='query',content=query) #TODO criar constantes para os tipos adequados
-        cursor.execute(query)
-        return cursor
+        try:
+            cursor.execute(query)
+            return cursor
+        except Database.Warning:
+            pass
     execute = classmethod(execute)
