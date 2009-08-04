@@ -156,10 +156,10 @@
 	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_clock.gif" />
 	                            <span class="label"><strong>Agendamentos:</strong><br/>
 	                                <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
-	                            {% if not p.schedule_set.count %}
+	                            {% if not proc.schedule_set.count %}
 	                            <span class="value">(vazio)</span>
 	                            {% endif %}
-	                            {% for sched in p.schedule_set.all %}
+	                            {% for sched in proc.schedule_set.all %}
 	                            <span class="value">
 	                                Tipo: {{ sched.type }}
                                     <ul>

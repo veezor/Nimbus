@@ -25,23 +25,20 @@ def create_schedule(request, computer_id, procedure_id):
             triggclass = temp_dict['schedauxform'].cleaned_data['schedule_type']
             if triggclass == 'Weekly':
                 triggform = 'wtriggform'
+                formclass = WeeklyTriggerForm
             elif triggclass == 'Monthly':
                 triggform = 'mtriggform'
+                formclass = MonthlyTriggerForm
             else:
-                triggform = ''
-        
-            forms_dict['schedform'] = ScheduleForm(request.POST)
+                raise Exception('Erro de programação. Tipo de agendamento inválido: %s' % triggclass)                    
+
+            forms_dict['schedform'] = ScheduleForm(request.POST, ScheduleForm())
+            forms_dict[triggform] = formclass(request.POST, formclass())
             forms_list = forms_dict.values()
-            
-            if triggclass.lower() == 'weekly':
-                forms_dict['wtriggform'] = WeeklyTriggerForm(request.POST)
-            elif triggclass.lower() == 'monthly':
-                forms_dict['mtriggform'] = MonthlyTriggerForm(request.POST)
        
             if all([form.is_valid() for form in forms_list]):
                 sched = forms_dict['schedform'].save(commit=False)
                 trigg = forms_dict[triggform].save(commit=False)
-                
                 sched.procedure_id = procedure_id
                 sched.save()
                 sched.build_backup(trigg)
