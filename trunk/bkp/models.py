@@ -79,12 +79,12 @@ class Computer(models.Model):
     # TODO: replace fetchall for custom dictfetch
     def get_status(self):
         """Gets client lastjob status"""
-        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_STATUS_RAW_QUERY
         status_query = CLIENT_STATUS_RAW_QUERY % {'client_name':self.computer_name,}
-        cursor = Bacula.db_query(status_query)
-        result = cursor.fetchall()
-        status = result and result[0][0] or ''
+        cursor = BaculaDatabase.execute(status_query)
+        result = cursor.fetchone()
+        status = result and result[0] or ''
 
         if status == 'T':
             return 'Ativo'
@@ -92,6 +92,7 @@ class Computer(models.Model):
             return 'Erro'
         else:
             return 'Desconhecido'
+
     def computer_key(self):
         return "%s.key" % self.computer_name
     
@@ -156,18 +157,18 @@ class Computer(models.Model):
         wtrigg.save()
 
     def running_jobs(self):
-        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY
         running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {'client_name':self.computer_name,}
-        running_jobs = Bacula.dictfetch_query(running_jobs_query)
-        return running_jobs
+        running_jobs_cursor = BaculaDatabase.execute(running_jobs_query)
+        return utils.dictfetch(running_jobs_cursor)
 
     def last_jobs(self):
-        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_LAST_JOBS_RAW_QUERY
         last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {'client_name':self.computer_name,}
-        last_jobs = Bacula.dictfetch_query(last_jobs_query)
-        return last_jobs
+        last_jobs_cursor = BaculaDatabase.execute(last_jobs_query)
+        return utils.dictfetch(last_jobs_cursor)
         
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
@@ -468,19 +469,6 @@ class Procedure(models.Model):
         for f in file_list:
             files.append('%s:%s' % (os.path.join(f['FPath'], f['FName']), f['FId']))
         return utils.parse_filetree(files)
-
-        #for file in file_list:
-        #    # Skip Directory entry
-        #    if not file['FName']:
-        #        continue
-        #    file_path = file['FPath']
-        #    file_name = file['FName']
-        #    file_id = file['FId']
-        #    if  file_path in file_tree:
-        #        file_tree[file_path].append([file_id, file_name])
-        #    else:
-        #        file_tree[file_path] = [[file_id, file_name]]
-        #return file_tree
         
     def get_fileset_name(self):
         """Get fileset name for bacula file."""
@@ -749,6 +737,15 @@ class NimbusLog(models.Model):
     def get_log_file(cls):
         return utils.prepare_to_write('log_geral','custom/logs/',mod='a')
     get_log_file = classmethod(get_log_file)
+    
+    def notice(cls, category, type, content):
+        n1 = NimbusLog()
+        n1.entry_category = category
+        n1.entry_type = type
+        n1.entry_content = content
+        n1.save()
+    notice = classmethod(notice)
+    
 
 ###
 ###   Signals

@@ -79,6 +79,7 @@ DB_SIZE_RAW_QUERY =\
     FROM information_schema.TABLES
     WHERE table_schema = '%(bacula_db_name)s'
     GROUP BY table_schema
+    LIMIT 1
     '''
 
 from backup_corporativo import settings
@@ -87,12 +88,14 @@ NUM_PROC_QUERY =\
     '''
     SELECT count(*) AS Procedures
     FROM %s.bkp_procedure
+    LIMIT 1
     ''' % settings.DATABASE_NAME
 
 NUM_CLI_QUERY =\
     '''
     SELECT count(*) AS Computers
     FROM %s.bkp_computer
+    LIMIT 1
     ''' % settings.DATABASE_NAME
 
 # TODO: fix formula since this is getting more than whats actually at HD
@@ -100,6 +103,7 @@ TOTAL_MBYTES_QUERY =\
     '''
     SELECT (sum(JobBytes)/(1024*1024)) AS MBytes
     FROM Job WHERE Job.JobStatus = 'T'
+    LIMIT 1
     '''
     
 CLIENT_ID_RAW_QUERY =\

@@ -4,7 +4,10 @@
 import os
 import datetime
 from backup_corporativo.bkp.models import NimbusLog
+from backup_corporativo.bkp import utils
+from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
 
+# TODO dividir funções de manipulação da console e de queries com banco de dados em duas classes distintas
 class Bacula:
     WHERE_DEFAULT = "/tmp/bacula-restore"
     BACULA_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
@@ -13,82 +16,81 @@ class Bacula:
         cmd =   """
                 echo 'sta client=%(client_name)s'|bconsole -c %(bacula_conf)s|grep %(client_name)s
                 """ % {'client_name':client_name, 'bacula_conf':BACULA_CONF}
-        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        NimbusLog.notice(category='bconsole', type='cmd', content=cmd) #TODO criar constantes para os tipos adequados
         output = os.popen(cmd).read()
         return output
     client_status = classmethod(client_status)
-        
-        
+
+
     def reload(cls):
         cmd =   """
                 echo 'reload'|bconsole -c %(bacula_conf)s
                 """ % {'bacula_conf':cls.BACULA_CONF}
-        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        NimbusLog.notice(category='bconsole', type='cmd', content=cmd) #TODO criar constantes para os tipos adequados
         output = os.popen(cmd).read()
         return output
     reload = classmethod(reload)
-    
-    
     
     def messages(cls):
         cmd =   """
                 echo 'm'|bconsole -c %(bacula_conf)s
                 """ % {'bacula_conf':BACULA_CONF}
-        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         output = os.popen(cmd).read()
         return output
     messages = classmethod(messages)
 
-
-
     def last_jobs(cls):
         """Returns list of dicts with  20 last jobs in overall system."""
         from backup_corporativo.bkp.sql_queries import LAST_JOBS_QUERY
-        return cls.dictfetch_query(LAST_JOBS_QUERY)
+        cursor = BaculaDatabase.execute(LAST_JOBS_QUERY)
+        return utils.dictfetch(cursor)
     last_jobs = classmethod(last_jobs)
 
     def running_jobs(cls):
         """Returns list of dicts with  10 running jobs in overall system."""
         from backup_corporativo.bkp.sql_queries import RUNNING_JOBS_QUERY
-        return cls.dictfetch_query(RUNNING_JOBS_QUERY)
+        cursor = BaculaDatabase.execute(RUNNING_JOBS_QUERY)
+        return utils.dictfetch(cursor)
     running_jobs = classmethod(running_jobs)
-                        
                         
     def db_size(cls):
         """Returns bacula's database size in MB."""
         from backup_corporativo.bkp.sql_queries import DB_SIZE_RAW_QUERY
         try:
             from backup_corporativo.settings import BACULA_DB_NAME
-        except:
-            raise Exception('Não foi possível importar BACULA_DB_NAME do settings.py')
-        dbsize_query = DB_SIZE_RAW_QUERY % {'bacula_db_name':BACULA_DB_NAME,}
-        result = cls.dictfetch_query(dbsize_query)
-        result = result and result[0]['DBSIZE'] or ''
-        return result
+            dbsize_query = DB_SIZE_RAW_QUERY % {'bacula_db_name':BACULA_DB_NAME,}
+            cursor = BaculaDatabase.execute(dbsize_query)
+            result = cursor.fetchone()
+            return result and result[0] or ''
+        except ImportError:
+            return ''
     db_size = classmethod(db_size)                
     
+    # TODO mover código para local adequado
     def num_procedures(cls):
         """Returns generator of dict with number or total procedures stored at Nimbus."""
         from backup_corporativo.bkp.sql_queries import NUM_PROC_QUERY
-        result = cls.dictfetch_query(NUM_PROC_QUERY)
-        result = result and result[0]['Procedures'] or ''
-        return result
+        cursor = BaculaDatabase.execute(NUM_PROC_QUERY)
+        result = cursor.fetchone()
+        return result and result[0] or ''
     num_procedures = classmethod(num_procedures)
                         
+    # TODO mover código para local adequado
     def num_clients(cls):
         """Returns generator of dict with number of clients stored at Nimbus."""
         from backup_corporativo.bkp.sql_queries import NUM_CLI_QUERY
-        result = cls.dictfetch_query(NUM_CLI_QUERY)
-        result = result and result[0]['Computers'] or ''
-        return result
+        cursor = BaculaDatabase.execute(NUM_CLI_QUERY)
+        result = cursor.fetchone() 
+        return result and result[0] or ''
     num_clients = classmethod(num_clients)
                         
     def total_mbytes(cls):
         """Returns generator of dict with total megabytes at bacula system backups."""
         from backup_corporativo.bkp.sql_queries import TOTAL_MBYTES_QUERY
-        result = cls.dictfetch_query(TOTAL_MBYTES_QUERY)
-        result = result and result[0]['MBytes'] or ''
-        return result
+        cursor = BaculaDatabase.execute(TOTAL_MBYTES_QUERY)
+        result = cursor.fetchone()
+        return result and result[0] or ''
     total_mbytes = classmethod(total_mbytes)
 
     # ClassMethods    
@@ -96,7 +98,7 @@ class Bacula:
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         ClientRestore = ClientRestore and ClientRestore or ClientName
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select current all done yes where=%(restore_path)s\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where}
-        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_last = classmethod(run_restore_last)
     
@@ -104,7 +106,7 @@ class Bacula:
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select all done yes where="%(restore_path)s" before="%(tg_date)s" fileset="%(fileset_name)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date,'fileset_name':fileset_name}
-        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_date = classmethod(run_restore_date)
   
@@ -113,7 +115,7 @@ class Bacula:
         ClientRestore = ClientRestore and ClientRestore or ClientName
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select all done yes where="%(restore_path)s" jobid="%(job_id)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'job_id':JobId}
-        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_jobid = classmethod(run_restore_jobid)
 
@@ -144,7 +146,7 @@ class Bacula:
             cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun client="%(client_name)s" job="%(job_name)s" level="%(job_level)s" when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date,'client_name':client_name}
         else:
             cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun job="%(job_name)s" level="%(job_level)s" when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date}
-        cls.notice(type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_backup = classmethod(run_backup)
     
@@ -155,49 +157,63 @@ class Bacula:
         for key in files_dict.keys():
             cmd.append("%()s\n" % {'value':files_dict[key]})
     restore_files = classmethod(restore_files)
-
-
-    def dictfetch_query(cls, query, count_rows=False):
-        """
-        Returns generator of dicts from given query executed.
-        If count_rows is set to True, will return cursor.rowcount as well.
-        """
-        from backup_corporativo.bkp.utils import dictfetch
-
-        cursor = cls.db_query(query)
-        return count_rows and (cursor.rowcount,dictfetch(cursor)) or dictfetch(cursor)
-    dictfetch_query = classmethod(dictfetch_query)
-    
-    
-    def db_query(cls, query):
-        """Returns unfetched cursor with the given query executed."""
-        from MySQLdb import ProgrammingError
-        import MySQLdb
-    	from backup_corporativo.settings import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD
-    	try:
-    	    from backup_corporativo.settings import BACULA_DB_NAME
-    	except:
-    	    raise Exception('Could not import BACULA_DB_NAME from settings.py')
-
-        try:
-            db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=BACULA_DB_NAME)
-            cursor = db.cursor()
-            cls.notice(type='query',content=query) #TODO criar constantes para os tipos adequados
-            cursor.execute(query)
-            db.commit()
-        except Warning:
-            pass
-        except ProgrammingError, e:
-            raise Exception('Erro na query: %s' % e)
-        finally:
-            db.close()
+   
+# AVISO:
+# essa classe foi apenas parcialmente implementada e contempla somente
+# a execução de queries SQL puras através de seu método execute.
+# O django utiliza comportamento padrão de autocommit, portanto classe não trata isso.
+# Caso autocommit do django seja desligado, classe não irá funcionar corretamente
+# e será preciso adicionar self._commit() depois das operações.
+# Além do que foi descrito acima, seu funcionamento não é garantido para nenhum outro tipo de operação.
+# Para maiores informações, consultar código original em: 
+# http://djangoapi.quamquam.org/trunk/toc-django.db.backends.mysql-module.html
+class BaculaDatabaseWrapper(BaseDatabaseWrapper):
+    """Classe que encapsula operações básicas com banco de dados."""
+    def _valid_connection(self):
+        if self.connection is not None:
+            try:
+                self.connection.ping()
+                return True
+            except DatabaseError:
+                self.connection.close()
+                self.connection = None
+        return False
+        
+    def cursor(self):
+        import MySQLdb as Database 
+        from django.conf import settings 
+        if not self._valid_connection(): 
+            kwargs = { 
+                'charset': 'utf8', 
+                'use_unicode': True, 
+            } 
+            if settings.BACULA_DB_USER:
+                kwargs['user'] = settings.BACULA_DB_USER
+            if settings.BACULA_DB_NAME: 
+                kwargs['db'] = settings.BACULA_DB_NAME
+            if settings.BACULA_DB_PASSWORD: 
+                kwargs['passwd'] = settings.BACULA_DB_PASSWORD
+            if settings.DATABASE_HOST.startswith('/'): 
+                kwargs['unix_socket'] = settings.DATABASE_HOST 
+            elif settings.DATABASE_HOST: 
+                kwargs['host'] = settings.DATABASE_HOST
+            if settings.DATABASE_PORT: 
+                kwargs['port'] = int(settings.DATABASE_PORT)
+            self.connection = Database.connect(**kwargs) 
+        cursor = self.connection.cursor() 
         return cursor
-    db_query = classmethod(db_query)
+
+class BaculaDatabase:
+    """Classe de fachada utilizada para gerenciar todas as conexões com a base de dados do bacula."""
+    #ClassMethods
+    def cursor(cls):
+        b1 = BaculaDatabaseWrapper()
+        return b1.cursor()
+    cursor = classmethod(cursor)
     
-    def notice(cls, type, content):
-        n1 = NimbusLog()
-        n1.entry_category = 'bacula'
-        n1.entry_type = type
-        n1.entry_content = content
-        n1.save()
-    notice = classmethod(notice)
+    def execute(cls, query):
+        cursor = cls.cursor()
+        NimbusLog.notice(category='database', type='query',content=query) #TODO criar constantes para os tipos adequados
+        cursor.execute(query)
+        return cursor
+    execute = classmethod(execute)
