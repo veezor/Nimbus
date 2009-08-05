@@ -26,21 +26,27 @@ function change_backup_type(backup_type) {
             // Do something...
             //console.log('weekly');
             $('.mtriggform').hide('fast');
+            $('.mtriggform').find('input, select').attr('disabled', true);
             $('.wtriggform').show('fast');
+            $('.wtriggform').find('input, select').attr('disabled', false);
             $('.triggform_message').hide('fast');
             break;
         case 'monthly':
             // Do something more...
             //console.log('monthly');
             $('.mtriggform').show('fast');
+            $('.mtriggform').find('input, select').attr('disabled', false);
             $('.wtriggform').hide('fast');
+            $('.wtriggform').find('input, select').attr('disabled', true);
             $('.triggform_message').hide('fast');
             break;
         default:
             // Go away.
             //console.log('default');
             $('.mtriggform').hide('fast');
+            $('.mtriggform').find('input, select').attr('disabled', true);
             $('.wtriggform').hide('fast');
+            $('.wtriggform').find('input, select').attr('disabled', true);
             $('.triggform_message').show('fast');
     }
 }
