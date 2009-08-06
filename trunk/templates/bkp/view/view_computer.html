@@ -9,16 +9,16 @@
                     css_options = {'position': 'absolute', 'float': 'none',
                                    'top': $(this).offset().top + $(this).height(),
                                    'left':  $(this).offset().left - 200 + $(this).width(),
-                                   'width': 180, '-moz-border-radius': '7px'}
+                                   'width': 180, '-moz-border-radius': '7px'};
                     $(_id).show().css(css_options);
-                    $(_id).addClass('popup_opened')
+                    $(_id).addClass('popup_opened');
                 },
                 function() {
                     $('#' + $(this).attr('rel')).hide();
-                    $(_id).removeClass('popup_opened')
+                    $(_id).removeClass('popup_opened');
                 }
             );
-        })
+        });
     </script>
     <style type="text/css">
         .popup_opened {
