@@ -92,11 +92,11 @@ def create_computer(request):
 @authentication_required
 def edit_computer(request, computer_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
-    comp = get_object_or_404(Computer, pk=computer_id)
-    vars_dict['comp'] = comp
+    vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
+    vars_dict['restore_prefix'] = "/computer/%s" % vars_dict['comp'].id
 
     if request.method == 'GET': # Edit computer
-        forms_dict['compform'] = ComputerForm(instance=comp)
+        forms_dict['compform'] = ComputerForm(instance=vars_dict['comp'])
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/edit/edit_computer.html', return_dict, context_instance=RequestContext(request))
@@ -129,6 +129,7 @@ def view_computer(request, computer_id):
     store_location(request)
     if request.method == 'GET':
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
+        vars_dict['restore_prefix'] = "/computer/%s" % vars_dict['comp'].id
         vars_dict['procs'] = vars_dict['comp'].procedure_set.all()
         vars_dict['running_jobs'] = vars_dict['comp'].running_jobs()
         vars_dict['last_jobs'] = vars_dict['comp'].last_jobs()
@@ -144,6 +145,7 @@ def delete_computer(request, computer_id):
     if request.method == 'GET':
         vars_dict, forms_dict, return_dict = global_vars(request)
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
+        vars_dict['restore_prefix'] = "/computer/%s" % comp.id
         request.user.message_set.create(message="Confirme a remoção do computador.")
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
@@ -155,49 +157,7 @@ def delete_computer(request, computer_id):
         request.user.message_set.create(message="Computador removido permanentemente.")            
         return redirect_back_or_default(request, default=root_path(request))  
 
-### Job Restore ###
-@authentication_required
-def do_restore(request, computer_id):
-    if request.method == 'POST':
-        vars_dict, forms_dict, return_dict = global_vars(request)    
-        forms_dict['restore_form'] = RestoreForm(request.POST)
-        forms_dict['hidden_restore_form'] = HiddenRestoreForm(request.POST)
-        forms_list = forms_dict.values()
 
-        if all([form.is_valid() for form in forms_list]):
-            fileset_name = forms_dict['hidden_restore_form'].cleaned_data['fileset_name']
-            target_dt = forms_dict['hidden_restore_form'].cleaned_data['target_dt']
-            src_client = forms_dict['hidden_restore_form'].cleaned_data['client_source']
-            client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
-            restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
-            from backup_corporativo.bkp.bacula import Bacula
-            Bacula.run_restore(ClientName=src_client, Date=target_dt, ClientRestore=client_restore, Where=restore_path, fileset_name=fileset_name)
-            request.user.message_set.create(message="Uma requisição de restauração foi enviada para ser executado no computador.")
-            return HttpResponseRedirect(computer_path(request, computer_id))
-        else:
-            vars_dict['comp_id'] = computer_id
-            return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-            return render_to_response('bkp/new/new_restore.html', return_dict, context_instance=RequestContext(request))
-
-
-def new_restore(request, computer_id):
-    if request.method == 'GET':
-        vars_dict, forms_dict, return_dict = global_vars(request)
-        vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
-        if not 'fset' in request.GET:
-            raise Exception('JobID parameter is missing.')
-        if not 'dt' in request.GET:
-            raise Exception('Date parameter is missing.')
-        if not 'src' in request.GET:
-            raise Exception('ClientName parameter is missing.')
-
-        vars_dict['src_client'] = request.GET['src']
-        vars_dict['target_dt'] = request.GET['dt']
-        vars_dict['fileset_name'] = request.GET['fset']
-        vars_dict['comp_id'] = computer_id
-        forms_dict['restore_form'] = RestoreForm()
-        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new/new_restore.html', return_dict, context_instance=RequestContext(request))
         
 def test_computer(request, computer_id):
     if request.method == 'POST':

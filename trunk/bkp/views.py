@@ -22,24 +22,29 @@ from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_T
 ###   Decorators and Global Definitions
 ###
 
+# ATENÇÃO!
+# Favor não declarar formulários dentro da variável 
+# forms_dict dessa função. O motivo para isso é que em várias
+# partes do código do Nimbus o seguinte trecho é utilizado
+# "if all([form.is_valid() for form in forms_dict.values()])"
+# e um formulário incluído aqui fará com que esse código
+# se comporte de forma estranha, já que existirá um formulário
+# vazio presente em forms_dict.values()
 def global_vars(request):
     """Declare system-wide variables."""
     vars_dict = {}; forms_dict = {}; return_dict = {}
     return_dict['script_name'] = request.META['SCRIPT_NAME']
     return_dict['current_user'] = request.user
-    # List of computers.
+    # Lista de computadores e storages.
     vars_dict['comps'] = Computer.objects.all()
     vars_dict['stors'] = Storage.objects.all()
-    # List of forms has been removed! 
-    # (Please declare only forms the views)
-    # List of vars.    
+    # Algumas variáveis importantes.
     vars_dict['TYPE_CHOICES'] = TYPE_CHOICES
     vars_dict['LEVEL_CHOICES'] = LEVEL_CHOICES
     vars_dict['DAYS_OF_THE_WEEK'] = DAYS_OF_THE_WEEK
-    
     vars_dict['request'] = request
     
-    return vars_dict, forms_dict, return_dict
+    return vars_dict, forms_dict, return_dict        
 
 
 def require_authentication(request):

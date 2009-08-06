@@ -83,7 +83,17 @@ def new_device_path(request):
 def new_restriction_path(request):
     """Returns new restriction path."""        
     return "%s/config/restrictions/edit" % (request.META['SCRIPT_NAME'])
-    
+
+# Passo 1
+def restore_computer_path(request, computer_id):
+    """Returns restore computer path."""
+    return "%s/computer/%s/restore/new" % (request.META['SCRIPT_NAME'], computer_id)
+
+# Passo 2
+def restore_procedure_path(request, computer_id, procedure_id):
+    """Returns restore procedure path."""
+    return "%s/computer/%s/procedure/%s/restore/new" % (request.META['SCRIPT_NAME'], computer_id,procedure_id)
+
 def random_password(size):
     """Generates random password of a given size."""
     import string
@@ -205,4 +215,3 @@ def parse_filetree(files):
                     if n == len(file_path) - 1 and file_name:
                         local_tree.append(file_name)
     return file_tree
-

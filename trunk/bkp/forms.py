@@ -24,13 +24,27 @@ from backup_corporativo.bkp import customfields as cfields
 #   Forms
 #
 
+class RestoreCompForm(forms.Form):
+    target_client = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())
+
+    def __init__(self, *args, **kwargs):
+        super(RestoreCompForm, self).__init__(*args, **kwargs)
+        self.fields['target_client'].choices = [('', '----------')] + [(comp.id, '%s (%s)' %(comp.computer_name, comp.computer_ip)) for comp in Computer.objects.all()]
+
+class RestoreProcForm(forms.Form):
+    target_procedure = forms.ChoiceField(label="Procedimento", choices=(), widget=forms.Select())
+
+    def load_choices(self, computer_id):
+        self.fields['target_procedure'].choices = [('', '----------')] + [(proc.id, '%s' %(proc.procedure_name)) for proc in Procedure.objects.filter(computer=computer_id)]
+
 class RestoreForm(forms.Form):
+    client_restore = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())
+    restore_path = cfields.FormPathField(label="Diretório", max_length=50)
+
     def __init__(self, *args, **kwargs):
         super(RestoreForm, self).__init__(*args, **kwargs)
         self.fields['client_restore'].choices = [('', '----------')] + [(comp.computer_name, '%s (%s)' %(comp.computer_name, comp.computer_ip)) for comp in Computer.objects.all()]
 
-    client_restore = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())
-    restore_path = cfields.FormPathField(label="Diretório", max_length=50)
 
 class HiddenRestoreForm(forms.Form):
     fileset_name = forms.CharField(max_length=50, widget=forms.HiddenInput)

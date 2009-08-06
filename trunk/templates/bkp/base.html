@@ -20,8 +20,8 @@
                 <h1><a href="{{script_name}}/" title="Home">Linconet - Tencnologia Estratégica</a></h1>
                 <div id="main_menu" class="menu">
                     <ul class="links">
-                        <li {% if request.META.PATH_INFO|contains:"/computer" %}class="active"{% endif %}><a href="{{script_name}}/backup" title="">Backup</a></li>
-                        <li class=""><a href="{{script_name}}/restore" title="">Restore</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/backup" %}class="active"{% endif %}><a href="{{script_name}}/backup" title="">Backup</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/restore" %}class="active"{% endif %}><a href="{{script_name}}{{restore_prefix}}/restore/new" title="">Restore</a></li>
                         <li {% if request.META.PATH_INFO|contains:"/stats" %}class="active"{% endif %}><a href="{{script_name}}/stats" title="">Estatísticas</a></li>
                         <li {% if request.META.PATH_INFO|contains:"/config" %}class="active"{% endif %}><a href="{{script_name}}/config/edit" title="">Configurações</a></li>
                     </ul>

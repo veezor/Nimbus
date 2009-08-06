@@ -70,9 +70,16 @@ urlpatterns = patterns('',
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_schedule'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/weeklytrigger/$', 'backup_corporativo.bkp.views.weeklytrigger'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/schedule/(?P<schedule_id>\d+)/monthlytrigger/$', 'backup_corporativo.bkp.views.monthlytrigger'),
-    # temp restore path
-    (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/tmp_restore/$', 'backup_corporativo.bkp.views.view_procedure'),
-    (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/tmp_restore/(?P<job_id>\d+)/new$', 'backup_corporativo.bkp.views.tmp_restore'),
-    (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/tmp_restore/(?P<job_id>\d+)/$', 'backup_corporativo.bkp.views.restore_files'),
+    # Novo Design da Funcionalidade do Restore:
+    # PASSO 1: Selecione Computador
+    (r'^restore/new$', 'backup_corporativo.bkp.views.new_restore'),
+    # PASSO 2: Selecione Procedimento
+    (r'^computer/(?P<computer_id>\d+)/restore/new$', 'backup_corporativo.bkp.views.new_restore'),
+    # PASSO 3: Selecione Data
+    (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/restore/new$', 'backup_corporativo.bkp.views.new_restore'),
+    # PASSO 4: Selecione Arquivos e Detalhes do Restore
+    (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'backup_corporativo.bkp.views.new_restore'),
+    # PASSO 5: Execute!
+    (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'backup_corporativo.bkp.views.restore_files'),
     (r'^admin/(.*)', admin.site.root),
 )

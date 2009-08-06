@@ -17,6 +17,7 @@ from backup_corporativo.bkp.models import Pool
 from backup_corporativo.bkp.models import Storage
 from backup_corporativo.bkp.models import BandwidthRestriction
 from backup_corporativo.bkp.utils import prepare_to_write,absolute_dir_path,remove_or_leave,mount_path
+from backup_corporativo.bkp.bacula import Bacula
 
 ### Constants ###
 DAYS_OF_THE_WEEK = (
