@@ -423,6 +423,30 @@ margin-bottom: 10px;
 color: #FFF;
 }
 
+.passos {
+width: 684px;
+height: 48px;
+overflow: hidden;
+background: url(/static/imagens/bg_passos.gif) top left no-repeat;
+}
+
+.passos .passo {
+width: 162px;
+height: 48px;
+text-indent: -99999em;
+overflow: hidden;
+background: transparent top left no-repeat;
+float: left;
+}
+.passos .passo1 { background-image: url(/static/imagens/passo1-off.gif); margin-left: 15px; }
+.passos .passo2 { background-image: url(/static/imagens/passo2-off.gif); }
+.passos .passo3 { background-image: url(/static/imagens/passo3-off.gif); }
+.passos .passo4 { background-image: url(/static/imagens/passo4-off.gif); }
+.passos .passo1.on { background-image: url(/static/imagens/passo1-on.gif); }
+.passos .passo2.on { background-image: url(/static/imagens/passo2-on.gif); }
+.passos .passo3.on { background-image: url(/static/imagens/passo3-on.gif); }
+.passos .passo4.on { background-image: url(/static/imagens/passo4-on.gif); }
+
 #rodape {
 background: url(/static/imagens/bg_rodape.gif) top left no-repeat;
 padding: 10px;

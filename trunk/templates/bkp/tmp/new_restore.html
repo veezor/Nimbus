@@ -3,6 +3,8 @@
 {% block content %}
 <hr />
 
+    {% include 'bkp/restore_steps.html' %}
+
     <div class="titulo_botoes">
 	    <h3>
 	        <span>Informações</span>
@@ -11,7 +13,7 @@
 	</div>
 	<div class="bloco_texto">
 <p>	DEBUG: </p>
-<p> Passo: {{restore_step}} </p>
+<p> Passo: {{restore_stepv}} </p>
 {% if comp %}
 	<p>Computador: {{ comp.computer_name}}</p>
 {% if proc %}	
@@ -60,10 +62,8 @@
 	{{field.label_tag}} {{field}}
     </div>
 {% endfor %}
-<button type="submit"><span>Prosseguir</span></button>
+<a href="{{script_name}}/restore/new">&laquo; Voltar</a> <button type="submit"><span>Prosseguir</span></button> 
 </form>
-
-<p><a href="{{script_name}}/restore/new">&laquo; Voltar</a></p>
 {% endifequal %}
 
 
@@ -155,10 +155,8 @@
 	    </div>
 	{% endfor %}
     </div>
-<button type="submit"><span>Restaurar</span></button>
+<a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/restore/new">&laquo; Voltar</a> <button type="submit"><span>Restaurar</span></button>
 </form>
-
-<a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/restore/new">&laquo; Voltar</a>
 {% endifequal %}
 
 <hr />
