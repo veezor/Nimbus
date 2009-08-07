@@ -130,6 +130,7 @@ def view_computer(request, computer_id):
     if request.method == 'GET':
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
         vars_dict['restore_prefix'] = "/computer/%s" % vars_dict['comp'].id
+        vars_dict['backup_prefix'] = "/computer/%s" % vars_dict['comp'].id
         vars_dict['procs'] = vars_dict['comp'].procedure_set.all()
         vars_dict['running_jobs'] = vars_dict['comp'].running_jobs()
         vars_dict['last_jobs'] = vars_dict['comp'].last_jobs()
@@ -145,7 +146,7 @@ def delete_computer(request, computer_id):
     if request.method == 'GET':
         vars_dict, forms_dict, return_dict = global_vars(request)
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
-        vars_dict['restore_prefix'] = "/computer/%s" % comp.id
+        vars_dict['restore_prefix'] = "/computer/%s" % vars_dict['comp'].id
         request.user.message_set.create(message="Confirme a remoção do computador.")
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)

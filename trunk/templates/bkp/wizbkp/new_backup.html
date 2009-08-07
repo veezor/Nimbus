@@ -1,0 +1,100 @@
+{% extends "bkp/base.html" %}
+{% load bkp_extras %}
+{% block content %}
+<hr />
+    <div class="titulo_botoes">
+	    <h3>
+{# Passo 1 #}
+{% ifequal backup_step 1 %}
+<span>Onde?</span>
+{% endifequal %}
+
+{# Passo 2 #}
+{% ifequal backup_step 2 %}
+<span>O que?</span>
+{% endifequal %}
+
+{# Passo 3 #}
+{% ifequal backup_step 3 %}
+<span>Quando?</span>
+{% endifequal %}
+	    </h3>
+	    <div class="botao_acoes"></div>
+	</div>
+	<div class="bloco_texto">
+
+{# Passo 1 #}
+{% ifequal backup_step 1 %}
+<form action="{{script_name}}/backup/new" method="post">
+	<h3>Computador</h3>
+
+    {% for field in compform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+	
+<button type="submit"><span>Prosseguir</span></button>
+</form>
+
+{% endifequal %}
+
+{# Passo 2 #}
+{% ifequal backup_step 2 %}
+<form action="{{script_name}}/computer/{{comp.id}}/backup/new" method="post">
+	<h3>Procedimento</h3><br />
+
+{% if proc %}{# Se já existe procedimento, não precisa cadastrar um novo #}
+<p>Nome: {{proc.procedure_name}}</p>
+{% else %}
+    {% for field in procform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+{% endif %}
+	<br /><br />	
+	<h3>Locais</h3><br />
+    {% for field in fsetform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }} <button onclick="location.href='#';return false"><span>x</span></button>
+        </div>
+    {% endfor %}
+	<button onclick="location.href='#';return false"><span>Mais Locais</span></button>
+<button onclick="location.href='{{script_name}}/backup/new';return false"><span>Cancelar</span></button>
+
+	
+<button type="submit"><span>Prosseguir</span></button>
+</form>
+{% endifequal %}
+
+{# Passo 3 #}
+{% ifequal backup_step 3 %}
+<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/backup/new" method="post">
+	<h3>Agendamento</h3><br />
+
+
+	<p>Tipo: Mensal</p> {# TODO: Tratar tipo semanal #}
+    {% for field in mtriggform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+	<button onclick="location.href='#';return false"><span>Mais Agendamentos</span></button>
+<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/backup/new';return false"><span>Cancelar</span></button>
+
+	
+<button type="submit"><span>Prosseguir</span></button>
+</form>
+
+{% endifequal %}
+	</div>
+
+
+
+<hr />
+{% endblock %}

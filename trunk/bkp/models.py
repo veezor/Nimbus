@@ -20,11 +20,18 @@ LEVEL_CHOICES = (
     ('Incremental', 'Incremental'),
 )
 
+OS_CHOICES = (
+    ('WIN', 'Windows'),
+    ('UNIX', 'Unix'),
+)
+
+
 DAYS_OF_THE_WEEK = {
     'sunday':'Domingo','monday':'Segunda','tuesday':'Terça',
     'wednesday':'Quarta','thursday':'Quinta','friday':'Sexta',
     'saturday':'Sábado',
 }
+
 
 ###
 ###   Models
@@ -70,9 +77,9 @@ class Computer(models.Model):
     # Attributes
     computer_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     computer_ip = models.IPAddressField("Endereço IP")
-    computer_so = models.CharField("Sistema Operacional",max_length=50)
+    computer_so = models.CharField("Sistema Operacional",max_length=50,choices=OS_CHOICES)
     computer_encryption = models.BooleanField("Encriptar Dados?",default=False)
-    computer_description = models.CharField("Descrição",max_length=100, blank=True)
+    computer_description = models.TextField("Descrição",max_length=100, blank=True)
     computer_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     bacula_id = models.IntegerField("Bacula ID", default=BACULA_VOID_ID)
     
@@ -214,11 +221,13 @@ class Computer(models.Model):
 
     def save(self):
         if not self.id: # If this record is not at database yet
-            self.__set_computer_password()
-            self.__set_computer_key()
-            self.__set_computer_cert()
-            self.generate_rsa_key()
-            self.generate_certificate()        
+            pass
+# TODO: Resolver problema na geração da chave.
+#            self.__set_computer_password()
+#            self.__set_computer_key()
+#            self.__set_computer_cert()
+#            self.generate_rsa_key()
+#            self.generate_certificate()        
         super(Computer, self).save()
         if self.bacula_id == self.BACULA_VOID_ID:
             self.__update_bacula_id()
@@ -226,11 +235,13 @@ class Computer(models.Model):
     def __update_bacula_id(self):
         """Queries bacula database for client id"""
         from backup_corporativo.bkp.sql_queries import CLIENT_ID_RAW_QUERY
-        from backup_corporativo.bkp.bacula import Bacula
+        from backup_corporativo.bkp.bacula import BaculaDatabase
         
         cliend_id_query = CLIENT_ID_RAW_QUERY % {'client_name':self.get_computer_name()}
-        client_id_dict = Bacula.dictfetch_query(cliend_id_query)
-        self.bacula_id = client_id_dict and client_id_dict[0]['ClientId'] or self.BACULA_ERROR_ID
+        cursor = BaculaDatabase.cursor()
+        cursor.execute(cliend_id_query)
+        client_id = cursor.fetchone()
+        self.bacula_id = client_id and client_id[0] or self.BACULA_ERROR_ID
         self.save()
     
     
@@ -336,8 +347,8 @@ class Storage(models.Model):
 ### Procedure ###
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
-    storage = models.ForeignKey(Storage, default=None)
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
+    storage = models.ForeignKey(Storage, default=None)
 
     def build_backup(self, fset, sched, trigg):
         """Saves child objects in correct order."""
@@ -603,7 +614,7 @@ class MonthlyTrigger(models.Model):
 ### FileSet ###
 class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
-    path = cfields.ModelPathField("Local", max_length="255")
+    path = cfields.ModelPathField("Diretório", max_length="255")
 
     def add_url(self):
         """Returns add url."""

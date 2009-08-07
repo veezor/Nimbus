@@ -94,6 +94,23 @@ def restore_procedure_path(request, computer_id, procedure_id):
     """Returns restore procedure path."""
     return "%s/computer/%s/procedure/%s/restore/new" % (request.META['SCRIPT_NAME'], computer_id,procedure_id)
 
+
+# Passo 2
+def backup_computer_path(request, computer_id):
+    """Returns backup computer path."""
+    return "%s/computer/%s/backup/new" % (request.META['SCRIPT_NAME'], computer_id)
+
+# Passo 3
+def backup_procedure_path(request, computer_id, procedure_id):
+    """Returns backup computer path."""
+    return "%s/computer/%s/procedure/%s/backup/new" % (request.META['SCRIPT_NAME'], computer_id, procedure_id)
+
+# Inicio
+def backup_path(request):
+    """Returns backup computer path."""
+    return "%s/backup/new" % (request.META['SCRIPT_NAME'])
+
+
 def random_password(size):
     """Generates random password of a given size."""
     import string

@@ -75,3 +75,4 @@ from backup_corporativo.bkp.app_views.storages import *
 from backup_corporativo.bkp.app_views.stats import *
 from backup_corporativo.bkp.app_views.triggers import *
 from backup_corporativo.bkp.app_views.tmp_restores import *
+from backup_corporativo.bkp.app_views.wizbkp import *
