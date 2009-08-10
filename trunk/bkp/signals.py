@@ -255,7 +255,7 @@ def console_dir_dict(dir_name, dir_port, dir_passwd):
 def update_console_file(instance):
     """Update Console File"""
     i = instance
-    dir_dict = console_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
+    dir_dict = console_dir_dict("%s" % i.bacula_name, i.director_port, i.director_password)
     generate_console("bconsole.conf", dir_dict)
     
 
