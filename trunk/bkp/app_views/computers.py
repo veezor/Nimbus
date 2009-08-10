@@ -172,7 +172,7 @@ def client_config_dump(request, computer_id):
     """Generates and provides download to a file deamon client config file."""
     if request.method == 'GET':
         computer = Computer.objects.get(pk=computer_id)
-        dump_file = dump_filedaemon_config(computer)
+        dump_file = computer.dump_filedaemon_config()
         
     	# Return file for download
         response = HttpResponse(mimetype='text/plain')
