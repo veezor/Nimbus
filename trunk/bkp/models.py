@@ -162,22 +162,22 @@ class Computer(models.Model):
                     'FDport':'9102', #TODO: tratar porta do cliente
                     'Maximum Concurrent Jobs':'5',}
                     
-        if computer.computer_encryption:
-            if computer.computer_so == 'UNIX':
+        if self.computer_encryption:
+            if self.computer_so == 'UNIX':
                 fd_dict.update( {'PKI Signatures':'Yes',
                                 'PKI Encryption':'Yes',
                                 'PKI Keypair':"""'/etc/bacula/%s'""" % (self.computer_pem()),
                                 'PKI Master Key':"""'/etc/bacula/master.cert'""",})
-            elif computer.computer_so == 'WIN':
+            elif self.computer_so == 'WIN':
                 fd_dict.update( {'PKI Signatures':'Yes',
                                 'PKI Encryption':'Yes',
                                 'PKI Keypair':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\%s'""" % (self.computer_pem()),
                                 'PKI Master Key':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\master.cert'""",})
             
-        if computer.computer_so == 'UNIX':
+        if self.computer_so == 'UNIX':
             fd_dict.update( {'WorkingDirectory':'/var/bacula/working ',
                             'Pid Directory':'/var/run ',})
-        elif computer.computer_so == 'WIN':
+        elif self.computer_so == 'WIN':
             fd_dict.update( {'WorkingDirectory':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work'""",
                             'Pid Directory':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work'""",})
         gconf = GlobalConfig.objects.get(pk=1)
