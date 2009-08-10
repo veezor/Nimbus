@@ -1,19 +1,27 @@
 {% extends "bkp/base.html" %}
 {% load bkp_extras %}
+
+{% block headtags %}
+{% ifequal restore_step 3 %}
+    <script type="text/javascript" src="{{script_name}}/static/jquery.treeview.js"></script>
+    <script type="text/javascript" src="{{script_name}}/static/jquery.cookie.js"></script>
+    <link type="text/css" rel="stylesheet" href="{{script_name}}/static/jquery.treeview.css"></link>
+    <script type="text/javascript" src="{{script_name}}/static/main_tree.js"></script>
+{% endifequal %}
+{% endblock %}
+
+
+
+
 {% block content %}
 <hr />
 
     {% include 'bkp/restore_steps.html' %}
 
-    <div class="titulo_botoes">
-	    <h3>
-	        <span>Informações</span>
-	    </h3>
-	    <div class="botao_acoes"></div>
-	</div>
+<!--
 	<div class="bloco_texto">
-<p>	DEBUG: </p>
-<p> Passo: {{restore_stepv}} </p>
+    <p>	DEBUG: </p>
+    <p> Passo: {{restore_stepv}} </p>
 {% if comp %}
 	<p>Computador: {{ comp.computer_name}}</p>
 {% if proc %}	
@@ -30,10 +38,11 @@
 {% endif %}
 	<p>Data: {{ target_dt }}</p>
 	</div>
+-->
 
 
 
-
+<div class="bloco_texto">
 {# Passo 0 #}
 {% ifequal restore_step 0 %}
 <p>Escolha Computador para prosseguir.</p>
@@ -158,6 +167,8 @@
 <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/restore/new">&laquo; Voltar</a> <button type="submit"><span>Restaurar</span></button>
 </form>
 {% endifequal %}
+
+</div>
 
 <hr />
 {% endblock %}
