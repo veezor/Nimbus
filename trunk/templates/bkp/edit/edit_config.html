@@ -122,7 +122,7 @@
 	    <span class="label"><label>Dias de Restrição</label></span>
 		<span class="value">
 		    {% for choice_id, choice_label in restform.fields.days.choices %}
-		        <input type="checkbox" name="days" value="{{ choice_id }}"> {{ choice_label }}
+		        <span class="item_day" style="float:left; width:65px;"><input type="checkbox" name="days" value="{{ choice_id }}"> {{ choice_label|slice_unicode:3 }}</span>
 		    {% endfor %}
 		</span>
     </div>

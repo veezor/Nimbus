@@ -188,3 +188,6 @@ def getfileid(obj):
     return obj.split('/')[-1].rsplit(':', 1)[-1]
 
 
+@register.filter
+def slice_unicode(obj, how_much):
+    return obj.decode('utf-8')[:how_much].encode('utf-8')
