@@ -44,9 +44,9 @@
 					<ul class="aux list_computers">
 						{% for c in comps %}
 						{% ifequal c.id comp.id %}
-						<li><strong><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> <span>{{ c.ip }}</span></strong></li>
+						<li><strong><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> <span>{{ c.computer_ip }}</span></strong></li>
 						{% else %}
-						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> <span>{{ c.ip }}</span></li>
+						<li><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> <span>{{ c.computer_ip }}</span></li>
 						{% endifequal %}
 						{% endfor %}
 					</ul>
