@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-VERSION = "2.3"
+VERSION = "2.4"
 
 import S3
 from SOAPpy import SOAPServer
