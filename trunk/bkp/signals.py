@@ -97,10 +97,11 @@ def remove_files(sender, instance, signal, *args, **kwargs):
 
 ### Global Config ###
 
+#TODO remover dir do nome do director
 def update_config_file(instance):
     """Config update file"""
     i = instance
-    dir_dict = config_dir_dict("%s-dir" % i.bacula_name, i.director_port, i.director_password)
+    dir_dict = config_dir_dict("%s" % i.bacula_name, i.director_port, i.director_password)
     sto_list = []
     for sto in Storage.objects.all():
         sto_list.append(config_sto_dict(sto.storage_name, sto.storage_ip, sto.storage_port, sto.storage_password))
