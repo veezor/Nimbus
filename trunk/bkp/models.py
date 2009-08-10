@@ -233,7 +233,7 @@ class Computer(models.Model):
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
         from backup_corporativo.bkp.bacula import Bacula;
-        Bacula.run_backup(JobName='empty job', client_name=self.computer_name)
+        Bacula.run_backup(JobName='Teste Conectividade', client_name=self.computer_name)
         
     def get_computer_name(self):
         """Returns computer name lower string."""
