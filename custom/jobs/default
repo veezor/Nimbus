@@ -1,9 +1,19 @@
+ Job {
+    Name = "Teste Conectividade"
+    Type = "Backup"
+    Messages = "Standard"
+    Pool = "empty pool"
+    Client = "empty client"
+    FileSet = "empty fileset"
+    Storage = "StorageLocal"
+}
+
 Job {
-	Name = "empty job"
-	Type = "backup"
-	Messages = "Standard"
-	Pool = "empty pool"
-	Client = "empty client"
-	FileSet = "empty fileset"
-	Storage = "develStorage"
+    Name = "Restaurar Arquivos"
+    Type = "Restore"
+    Messages = "Standard"
+    Pool = "empty pool"
+    Client = "empty client"
+    FileSet = "empty fileset"
+    Storage = "StorageLocal"
 }
