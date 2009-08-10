@@ -166,25 +166,25 @@ class Computer(models.Model):
             if self.computer_so == 'UNIX':
                 fd_dict.update( {'PKI Signatures':'Yes',
                                 'PKI Encryption':'Yes',
-                                'PKI Keypair':"""'/etc/bacula/%s'""" % (self.computer_pem()),
-                                'PKI Master Key':"""'/etc/bacula/master.cert'""",})
+                                'PKI Keypair':'''"/etc/bacula/%s"''' % (self.computer_pem()),
+                                'PKI Master Key':'''"/etc/bacula/master.cert"''',})
             elif self.computer_so == 'WIN':
                 fd_dict.update( {'PKI Signatures':'Yes',
                                 'PKI Encryption':'Yes',
-                                'PKI Keypair':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\%s'""" % (self.computer_pem()),
-                                'PKI Master Key':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\master.cert'""",})
+                                'PKI Keypair':'''"C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\%s"''' % (self.computer_pem()),
+                                'PKI Master Key':'''"C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\master.cert"''',})
             
         if self.computer_so == 'UNIX':
             fd_dict.update( {'WorkingDirectory':'/var/bacula/working ',
                             'Pid Directory':'/var/run ',})
         elif self.computer_so == 'WIN':
-            fd_dict.update( {'WorkingDirectory':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work'""",
-                            'Pid Directory':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work'""",})
+            fd_dict.update( {'WorkingDirectory':'''"C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work"''',
+                            'Pid Directory':'''"C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work"''',})
         gconf = GlobalConfig.objects.get(pk=1)
         dir_dict =  {'Name':gconf.bacula_name,
-                    'Password':"""'%s'""" % (self.computer_password),}
+                    'Password':'''"%s"''' % (self.computer_password),}
         msg_dict =  {'Name':'Standard',
-                    'director':'devel-dir = all, !skipped, !restored',}
+                    'director':'%s = all, !skipped, !restored' % (gconf.bacula_name),}
         dump = []
     
         dump.append("#\n")
