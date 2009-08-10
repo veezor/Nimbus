@@ -221,13 +221,9 @@ class Computer(models.Model):
 
     def save(self):
         if not self.id: # If this record is not at database yet
-            pass
-# TODO: Resolver problema na geração da chave.
-#            self.__set_computer_password()
-#            self.__set_computer_key()
-#            self.__set_computer_cert()
-#            self.generate_rsa_key()
-#            self.generate_certificate()        
+            self.__set_computer_password()
+            self.generate_rsa_key()
+            self.generate_certificate()        
         super(Computer, self).save()
         if self.bacula_id == self.BACULA_VOID_ID:
             self.__update_bacula_id()
@@ -251,30 +247,6 @@ class Computer(models.Model):
         """
         from backup_corporativo.bkp.utils import random_password
         self.computer_password = random_password(size)
-
-    def __set_computer_key(self):
-        """Generates key filepath
-        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
-        """
-        from backup_corporativo.bkp.utils import absolute_file_path
-        fname = "fd-%(client_name)s.cert" % {'client_name':self.computer_name}
-        self.computer_key = absolute_file_path(fname,'custom/crypt/')
-
-    def __set_computer_cert(self):
-        """Generates cert filepath
-        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
-        """
-        from backup_corporativo.bkp.utils import absolute_file_path
-        fname = "fd-%(client_name)s.cert" % {'client_name':self.computer_name}
-        self.computer_cert = absolute_file_path(fname,'custom/crypt/')
-
-    def __set_computer_pem(self):
-        """Generates key filepath
-        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
-        """
-        from backup_corporativo.bkp.utils import absolute_file_path
-        fname = "fd-%(client_name)s.pem" % {'client_name':self.computer_name}
-        self.computer_key = absolute_file_path(fname,'custom/crypt/')
 
 
     def __unicode__(self):
