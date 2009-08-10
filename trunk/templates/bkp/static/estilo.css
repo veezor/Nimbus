@@ -438,14 +438,26 @@ overflow: hidden;
 background: transparent top left no-repeat;
 float: left;
 }
-.passos .passo1 { background-image: url(/static/imagens/passo1-off.gif); margin-left: 15px; }
-.passos .passo2 { background-image: url(/static/imagens/passo2-off.gif); }
-.passos .passo3 { background-image: url(/static/imagens/passo3-off.gif); }
-.passos .passo4 { background-image: url(/static/imagens/passo4-off.gif); }
-.passos .passo1.on { background-image: url(/static/imagens/passo1-on.gif); }
-.passos .passo2.on { background-image: url(/static/imagens/passo2-on.gif); }
-.passos .passo3.on { background-image: url(/static/imagens/passo3-on.gif); }
-.passos .passo4.on { background-image: url(/static/imagens/passo4-on.gif); }
+
+.passos .passo1 { margin-left: 15px; }
+
+.nr_passos .passo1 { background-image: url(/static/imagens/nr_passo1-off.gif); }
+.nr_passos .passo2 { background-image: url(/static/imagens/nr_passo2-off.gif); }
+.nr_passos .passo3 { background-image: url(/static/imagens/nr_passo3-off.gif); }
+.nr_passos .passo4 { background-image: url(/static/imagens/nr_passo4-off.gif); }
+.nr_passos .passo1.on { background-image: url(/static/imagens/nr_passo1-on.gif); }
+.nr_passos .passo2.on { background-image: url(/static/imagens/nr_passo2-on.gif); }
+.nr_passos .passo3.on { background-image: url(/static/imagens/nr_passo3-on.gif); }
+.nr_passos .passo4.on { background-image: url(/static/imagens/nr_passo4-on.gif); }
+
+
+.nb_passos .passo1 { background-image: url(/static/imagens/nb_passo1-off.gif); }
+.nb_passos .passo2 { background-image: url(/static/imagens/nb_passo2-off.gif); }
+.nb_passos .passo3 { background-image: url(/static/imagens/nb_passo3-off.gif); }
+.nb_passos .passo1.on { background-image: url(/static/imagens/nb_passo1-on.gif); }
+.nb_passos .passo2.on { background-image: url(/static/imagens/nb_passo2-on.gif); }
+.nb_passos .passo3.on { background-image: url(/static/imagens/nb_passo3-on.gif); }
+
 
 #rodape {
 background: url(/static/imagens/bg_rodape.gif) top left no-repeat;

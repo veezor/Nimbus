@@ -2,25 +2,9 @@
 {% load bkp_extras %}
 {% block content %}
 <hr />
-    <div class="titulo_botoes">
-	    <h3>
-{# Passo 1 #}
-{% ifequal backup_step 1 %}
-<span>Onde?</span>
-{% endifequal %}
 
-{# Passo 2 #}
-{% ifequal backup_step 2 %}
-<span>O que?</span>
-{% endifequal %}
+    {% include 'bkp/wizbkp_steps.html' %}
 
-{# Passo 3 #}
-{% ifequal backup_step 3 %}
-<span>Quando?</span>
-{% endifequal %}
-	    </h3>
-	    <div class="botao_acoes"></div>
-	</div>
 	<div class="bloco_texto">
 
 {# Passo 1 #}
