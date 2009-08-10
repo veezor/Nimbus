@@ -55,6 +55,7 @@ from django.shortcuts import get_object_or_404
 # mesmo no modo debug ativado
 # Para resolver isso, será necessário exclusivamente aqui, 
 # tratar os erros Model.DoesNotExist com blocos "Try e Except"
+# TODO: trocar get_object_or_404 por Try classe.objects.get e Except classe.DoesNotExist
 @authentication_required
 def new_restore(request, computer_id=None, procedure_id=None, job_id=None):
     vars_dict, forms_dict, return_dict = global_vars(request)

@@ -158,7 +158,7 @@ class Computer(models.Model):
         """Gera arquivo de configuraçãodo cliente bacula-sd.conf."""
         import time
         
-        fd_dict =   {'Name': computer.computer_name, 
+        fd_dict =   {'Name': self.computer_name, 
                     'FDport':'9102', #TODO: tratar porta do cliente
                     'Maximum Concurrent Jobs':'5',}
                     
@@ -166,12 +166,12 @@ class Computer(models.Model):
             if computer.computer_so == 'UNIX':
                 fd_dict.update( {'PKI Signatures':'Yes',
                                 'PKI Encryption':'Yes',
-                                'PKI Keypair':"""'/etc/bacula/%s'""" % (computer.computer_pem()),
+                                'PKI Keypair':"""'/etc/bacula/%s'""" % (self.computer_pem()),
                                 'PKI Master Key':"""'/etc/bacula/master.cert'""",})
             elif computer.computer_so == 'WIN':
                 fd_dict.update( {'PKI Signatures':'Yes',
                                 'PKI Encryption':'Yes',
-                                'PKI Keypair':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\%s'""" % (computer.computer_pem()),
+                                'PKI Keypair':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\%s'""" % (self.computer_pem()),
                                 'PKI Master Key':"""'C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\master.cert'""",})
             
         if computer.computer_so == 'UNIX':
