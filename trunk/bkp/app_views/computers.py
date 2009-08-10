@@ -176,7 +176,7 @@ def client_config_dump(request, computer_id):
         
     	# Return file for download
         response = HttpResponse(mimetype='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=bacula-sd.conf'
+        response['Content-Disposition'] = 'attachment; filename=bacula-fd.conf'
         response.write(dump_file)
         return response
         
