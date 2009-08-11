@@ -16,7 +16,7 @@
             {% endwith %}
             {% endwith %}</li>
         {% else %}
-            <li><input type="checkbox" class="tree_child_select_input" rel="tree_select_" name="file_{{ item|getfileid }}" value="{{ item|getfilename }}" /> <span class="file">{{ item|getfilename }}</span></li>
+            <li><input type="checkbox" class="tree_child_select_input" rel="tree_select_" name="file" value="{{ item|getfilename }}" /> <span class="file">{{ item|getfilename }}</span></li>
         {% endif %}
     {% endif %}
 {% endfor %}
