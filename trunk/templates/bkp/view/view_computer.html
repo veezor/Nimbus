@@ -108,7 +108,7 @@
 	            </td>
 	            <td class="col_agendamentos">{{ proc.fileset_set.count }}</td>
 	            <td class="col_acoes">
-	                <button class="toggle" rel="detalhes_procedimento_{{ forloop.counter }}"><span>+</span></button>
+	                <button class="toggle" rel="detalhes_procedimento_{{ proc.id }}"><span>+</span></button>
 	                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
 	                <div id="view_comp_02_{{ forloop.counter }}" class="escondido">
                         <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
@@ -120,7 +120,7 @@
 	        <tr>
 	            <td colspan="5">
 	            
-                    <div class="procedure escondido cookie_toggle" id="detalhes_procedimento_{{ forloop.counter }}">
+                    <div class="procedure escondido cookie_toggle" id="detalhes_procedimento_{{ proc.id }}">
                         <!--<div class="titulo_topo">
                             <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a>
                                 <span class="toggle pequeno" rel="detalhes_procedure_{{ proc.id }}">(ver detalhes)</span></h3>
