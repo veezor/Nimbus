@@ -297,22 +297,22 @@ class Computer(models.Model):
     # ClassMethods
     def master_rsa_key_path(cls):
         return utils.absolute_file_path("master.key","custom/crypt/")
-    master_key_path = classmethod(master_key_path)
+    master_rsa_key_path = classmethod(master_rsa_key_path)
     
     def master_certificate_path(cls):
         return utils.absolute_file_path("master.cert","custom/crypt/")
-    master_certificate = classmethod(master_certificate)
+    master_certificate_path = classmethod(master_certificate_path)
         
     # TODO: quando gerar certificado e master_key, enviar por email pro usuário
     def generate_master_rsa_key(cls):
         cls.generate_rsa_key(cls.master_key_path())
-    master_key = classmethod(master_key)
+    generate_master_rsa_key = classmethod(generate_master_rsa_key)
 
     def generate_master_certificate(cls):
         if not os.path.isfile(cls.master_rsa_key_path()):
             raise Exception("Não foi possível encontrar Chave RSA Mestre. Tentou-se: %s" % cls.master_rsa_key_path())
         cls.generate_certificate(cls.master_rsa_key_path(), cls.master_certificate_path())
-    master_key = classmethod(master_key)
+    generate_master_certificate = classmethod(generate_master_certificate)
             
     def generate_rsa_key(cls, rsa_key_path):
         """
