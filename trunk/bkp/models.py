@@ -83,9 +83,12 @@ class Computer(models.Model):
     computer_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
     bacula_id = models.IntegerField("Bacula ID", default=BACULA_VOID_ID)
     
-    # TODO: replace fetchall for custom dictfetch
+    #TODO: Refatorar código
     def get_status(self):
-        """Gets client lastjob status"""
+        """
+        Atualiza status do computador baseado no 
+        status de término do último Job executado
+        """
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_STATUS_RAW_QUERY
         status_query = CLIENT_STATUS_RAW_QUERY % {'client_name':self.computer_name,}
@@ -100,60 +103,46 @@ class Computer(models.Model):
         else:
             return 'Desconhecido'
 
-    def computer_key(self):
-        return "%s.key" % self.computer_name
-    
-    def computer_cert(self):
-        return "%s.cert" % self.computer_name
-        
-    def computer_pem(self):
-        return "%s.pem" % self.computer_name
-    
-    def computer_key_path(self):
-        return utils.absolute_file_path(self.computer_key(),"custom/crypt/")
+    def computer_rsa_key_path(self):
+        """Retorna o caminho completo para o arquivo de chave rsa."""
+        return utils.absolute_file_path("%s.key" % self.computer_name,"custom/crypt/")
 
-    def computer_cert_path(self):
-        return utils.absolute_file_path(self.computer_cert(),"custom/crypt/")
+    def computer_certificate_path(self):
+        """Retorna caminho completo para o arquivo de certificado."""
+        return utils.absolute_file_path("%s.cert" % self.computer_name,"custom/crypt/")
 
     def computer_pem_path(self):
-        return utils.absolute_file_path(self.computer_pem(),"custom/crypt/")
+        """Retorna caminho completo para o arquivo PEM."""
+        return utils.absolute_file_path("%s.pem" % self.computer_name,"custom/crypt/")
 
-    def generate_rsa_key(self):
-        """Generates client rsa key.
-        The key is needed for certificate generation.
-        Will only generate if it wasnt previously generated.
-        """
-        from backup_corporativo.bkp.crypt_utils import GENERATE_KEY_RAW_CMD
-        crypt_path = utils.absolute_dir_path('custom/crypt')
-        utils.create_or_leave(crypt_path)
-        if not os.path.isfile(self.computer_key_path()):
-            cmd = GENERATE_KEY_RAW_CMD %    {'out':self.computer_key_path(),}
-            os.system(cmd)
+    def __generate_rsa_key(self):
+        """Gera chave rsa do computador."""
+        Computer.generate_rsa_key(self.computer_rsa_key_path())
     
-    def generate_certificate(self):
-        """Generates client certificate based on key.
-        The certificate is needed for pem generation.
-        Will only generate if it wasnt previously generated.
-        """
-        from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
-        crypt_path = utils.absolute_dir_path('custom/crypt')
-        utils.create_or_leave(crypt_path)
-        if not os.path.isfile(self.computer_key_path()):
-            cmd = GENERATE_CERT_RAW_CMD %   {'key_path':self.computer_key_path(),
-                                            'out':self.computer_cert_path(),}
-            os.system(cmd)
+    def __generate_certificate(self):
+        """Gera certificado do computador."""
+        if not os.path.isfile(self.computer_rsa_key_path()):
+            raise Exception("Não foi possível encontrar Chave RSA do computador. Tentou-se: %s" % self.computer_rsa_key_path())
+        Computer.generate_certificate(self.computer_rsa_key_path(), self.computer_certificate_path())
     
+    #TODO: verificar se o PEM que foi gerado é válido.
     def dump_pem(self):
-        """Generates client pem using providaded key and certificate"""
+        """
+        Gera PEM do computador
+        PEM consiste na concatenação da chave
+        e do certificado no mesmo arquivo.
+        """
         from backup_corporativo.bkp.crypt_utils import GET_PEM_RAW_CMD
-        if not os.path.isfile(self.computer_key_path()): self.generate_rsa_key()
-        if not os.path.isfile(self.computer_cert_path()): self.generate_certificate()
-        cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_key_path(),
-                                'cert_path':self.computer_cert_path(),}
+        if not os.path.isfile(self.computer_rsa_key_path()):
+            raise Exception("Não foi possível encontrar Chave RSA do computador. Tentou-se: %s" % self.computer_rsa_key_path())
+        if not os.path.isfile(self.computer_certificate_path()):
+            raise Exception("Não foi possível encontrar Certificado do computador. Tentou-se: %s" % self.computer_certificate_path())
+        cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_rsa_key_path(),
+                                'cert_path':self.computer_certificate_path(),}
         pem = os.popen(cmd).read()
         return pem
 
-    # TODO refatorar código e separar em várias funções
+    # TODO: refatorar código e separar em várias funções
     def dump_filedaemon_config(self):
         """Gera arquivo de configuraçãodo cliente bacula-sd.conf."""
         import time
@@ -188,7 +177,7 @@ class Computer(models.Model):
         dump = []
     
         dump.append("#\n")
-        # TODO adicionar version stamp aqui
+        # TODO: adicionar version stamp aqui
         dump.append("# Generated by Nimbus %s\n" % (time.strftime("%d-%m-%Y %H:%M:%S", time.localtime())))
         dump.append("#\n")
         dump.append("FileDaemon {\n")
@@ -273,10 +262,10 @@ class Computer(models.Model):
         return "computer/%s/test" % (self.id)
 
     def save(self):
-        if not self.id: # If this record is not at database yet
+        if not self.id: # Computador está sendo salvo pela primeira vez.
             self.__set_computer_password()
-            self.generate_rsa_key()
-            self.generate_certificate()        
+            self.__generate_rsa_key()
+            self.__generate_certificate()        
         super(Computer, self).save()
         if self.bacula_id == self.BACULA_VOID_ID:
             self.__update_bacula_id()
@@ -305,7 +294,56 @@ class Computer(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.computer_name, self.computer_ip)
 
+    # ClassMethods
+    def master_rsa_key_path(cls):
+        return utils.absolute_file_path("master.key","custom/crypt/")
+    master_key_path = classmethod(master_key_path)
+    
+    def master_certificate_path(cls):
+        return utils.absolute_file_path("master.cert","custom/crypt/")
+    master_certificate = classmethod(master_certificate)
+        
+    # TODO: quando gerar certificado e master_key, enviar por email pro usuário
+    def generate_master_rsa_key(cls):
+        cls.generate_rsa_key(cls.master_key_path())
+    master_key = classmethod(master_key)
 
+    def generate_master_certificate(cls):
+        if not os.path.isfile(cls.master_rsa_key_path()):
+            raise Exception("Não foi possível encontrar Chave RSA Mestre. Tentou-se: %s" % cls.master_rsa_key_path())
+        cls.generate_certificate(cls.master_rsa_key_path(), cls.master_certificate_path())
+    master_key = classmethod(master_key)
+            
+    def generate_rsa_key(cls, rsa_key_path):
+        """
+        Gera uma Chave RSA.
+        A Chave RSA é necessária para a geração de um Certificado.
+        A Chave RSA é necessária para a geração de um PEM.
+        So irá gerar Chave RSA caso ainda não exista.
+        """
+        from backup_corporativo.bkp.crypt_utils import GENERATE_KEY_RAW_CMD
+        utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
+        if os.path.isfile(rsa_key_path):
+            pass # Nunca sobrescreva uma chave.
+        else:
+            cmd = GENERATE_KEY_RAW_CMD % {'out':rsa_key_path,}
+            os.system(cmd)
+    generate_rsa_key = classmethod(generate_rsa_key)
+    
+    def generate_certificate(cls, rsa_key_path,certificate_path):
+        """
+        Gera Certificado baseado em uma Chave RSA.
+        O Certificado é necessário para a geração de um PEM.
+        So irá gerar Certificado caso ainda não exista.
+        """
+        from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
+        utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
+        if os.path.isfile(certificate_path):
+            pass # Nunca sobrescreva um certificado.
+        else:
+            cmd = GENERATE_CERT_RAW_CMD % {'key_path':rsa_key_path,'out':certificate_path,}
+            os.system(cmd)
+    generate_certificate = classmethod(generate_certificate)    
 
 ### Storage ###
 class Storage(models.Model):

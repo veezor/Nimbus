@@ -76,11 +76,6 @@ def decrypt(input, output, key, factor, del_original=False):
     if del_original:
         remove_or_leave(input)
 
-# TODO: Refazer função para gerar master.key        
-#def generate_master_kp():
-#    key = gen_key('master')
-#    cert = gen_cert('master',key)
-
 
 GENERATE_KEY_RAW_CMD = "openssl genrsa -out %(out)s 2048"
 GENERATE_CERT_RAW_CMD = "openssl req -new -key %(key_path)s -x509 -out %(out)s"
