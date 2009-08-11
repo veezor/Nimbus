@@ -140,50 +140,75 @@
 	                        </li>
 	                        <li>
 	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_gear.gif" />
-	                            <span class="label"><strong>Caminhos do backup:</strong><br/>
+	                            <span class="label"><strong>Caminhos do backup:</strong>
 	                                <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
-	                            <span class="value">
 	                            {% if not proc.fileset_set.count %}
 	                            (vazio)
 	                            {% endif %}
-					            {% for fset in proc.fileset_set.all %}
-	                            	{{ fset.path }}
-			                        <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="button_delete" title="Remover este item."><span>Remover</span></button><br/>
-	                            {% endfor %}
-	                            </span>
+	                            {% if proc.fileset_set.count %}
+	                            <table>
+	                                <thead>
+	                                    <tr>
+	                                        <th>Caminho</th>
+	                                    </tr>
+	                                </thead>
+	                                <tbody>
+	                                {% for fset in proc.fileset_set.all %}
+	                                    <tr>
+	                                        <td>{{ fset.path }} <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="button_delete" title="Remover este item."><span>Remover</span></button></td>
+			                            </tr>
+	                                {% endfor %}
+	                                </tbody>
+	                            </table>
+	                            {% endif %}
 	                        </li>
 	                        <li>
 	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_clock.gif" />
-	                            <span class="label"><strong>Agendamentos:</strong><br/>
+	                            <span class="label"><strong>Agendamentos:</strong>
 	                                <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
 	                            {% if not proc.schedule_set.count %}
 	                            <span class="value">(vazio)</span>
 	                            {% endif %}
-	                            {% for sched in proc.schedule_set.all %}
-	                            <span class="value">
-	                                Tipo: {{ sched.type }}
-                                    <ul>
-                                    {% for wtrigg in sched.weeklytrigger_set.all %}
-                                        <li>Nível: {{ wtrigg.level }}</li>
-                                        <li>Hora: {{ wtrigg.hour }}</li>
-                                        <li>Dias da semana:
-                                        {% for day, day_br in DAYS_OF_THE_WEEK.items %}
-                                            {% if wtrigg|get_method:day %}
-                                                {{ day_br }}
-                                            {% endif %}
-                                        {% endfor %}
-                                        </li>
-                                    {% endfor %}
-                                    {% for mtrigg in sched.monthlytrigger_set.all %}
-                                        <li>Nível: {{ mtrigg.level }}</li>
-                                        <li>Hora: {{ mtrigg.hour }}</li>
-                                        <li>Dias: {{ mtrigg.target_days }}</li>
-                                    {% endfor %}
-                                    </ul>
-	                                <button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
-	                                <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false" class="red"><span>Remover</span></button>
-                                </span>
-                                {% endfor %}
+	                            {% if proc.schedule_set.count %}
+	                            <table>
+	                                <thead>
+	                                    <tr>
+	                                        <th>Tipo</th>
+	                                        <th>Nível</th>
+	                                        <th>Hora</th>
+	                                        <th>Dias</th>
+	                                        <th>Ações</th>
+	                                    </tr>
+	                                </thead>
+	                                <tbody>
+        	                            {% for sched in proc.schedule_set.all %}
+	                                    <tr>
+	                                        <td>{{ sched.type }}</td>
+	                                        {% for wtrigg in sched.weeklytrigger_set.all %}
+	                                            <td>{{ wtrigg.level }}</td>
+	                                            <td>{{ wtrigg.hour }}</td>
+	                                            <td>
+	                                            {% for day, day_br in DAYS_OF_THE_WEEK.items %}
+                                                    {% if wtrigg|get_method:day %}
+                                                        {{ day_br }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </td>
+	                                        {% endfor %}
+	                                        {% for mtrigg in sched.monthlytrigger_set.all %}
+	                                            <td>{{ mtrigg.level }}</td>
+	                                            <td>{{ mtrigg.hour }}</td>
+	                                            <td>{{ mtrigg.target_days }}</td>
+	                                        {% endfor %}
+	                                        <td>
+	                                            <button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
+	                                            <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false" class="red"><span>Remover</span></button>
+	                                        </td>
+	                                    </tr>
+	                                    {% endfor %}
+	                                </tbody>
+	                            </table>
+                                {% endif %}
                             </li>
 	                    </ul>
 	                    
