@@ -121,8 +121,6 @@ class Computer(models.Model):
     
     def __generate_certificate(self):
         """Gera certificado do computador."""
-        if not os.path.isfile(self.computer_rsa_key_path()):
-            raise Exception("Não foi possível encontrar Chave RSA do computador. Tentou-se: %s" % self.computer_rsa_key_path())
         Computer.generate_certificate(self.computer_rsa_key_path(), self.computer_certificate_path())
     
     #TODO: verificar se o PEM que foi gerado é válido.
@@ -133,10 +131,6 @@ class Computer(models.Model):
         e do certificado no mesmo arquivo.
         """
         from backup_corporativo.bkp.crypt_utils import GET_PEM_RAW_CMD
-        if not os.path.isfile(self.computer_rsa_key_path()):
-            raise Exception("Não foi possível encontrar Chave RSA do computador. Tentou-se: %s" % self.computer_rsa_key_path())
-        if not os.path.isfile(self.computer_certificate_path()):
-            raise Exception("Não foi possível encontrar Certificado do computador. Tentou-se: %s" % self.computer_certificate_path())
         cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_rsa_key_path(),
                                 'cert_path':self.computer_certificate_path(),}
         pem = os.popen(cmd).read()
@@ -309,8 +303,6 @@ class Computer(models.Model):
     generate_master_rsa_key = classmethod(generate_master_rsa_key)
 
     def generate_master_certificate(cls):
-        if not os.path.isfile(cls.master_rsa_key_path()):
-            raise Exception("Não foi possível encontrar Chave RSA Mestre. Tentou-se: %s" % cls.master_rsa_key_path())
         cls.generate_certificate(cls.master_rsa_key_path(), cls.master_certificate_path())
     generate_master_certificate = classmethod(generate_master_certificate)
             
@@ -338,6 +330,8 @@ class Computer(models.Model):
         """
         from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
         utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
+        if not os.path.isfile(rsa_key_path):
+            raise Exception("Não foi possível encontrar Chave RSA. Tentou-se: %s" % rsa_key_path)
         if os.path.isfile(certificate_path):
             pass # Nunca sobrescreva um certificado.
         else:
