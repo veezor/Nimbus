@@ -50,6 +50,7 @@ class GlobalConfig(models.Model):
     database_password = models.CharField(max_length=50)
     max_upload_bandwidth = models.CharField("Limite de Upload", max_length=15, default='100 mbps')
     admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
+    offsite_on = models.BooleanField("Offsite ativo?", default=False)
 
     def generate_passwords(self):
         """Generates random passwords."""
@@ -408,6 +409,7 @@ class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     storage = models.ForeignKey(Storage, default=None)
+    offsite_on = models.BooleanField("Enviar para offsite?", default=False)
 
     def build_backup(self, fset, sched, trigg):
         """Saves child objects in correct order."""

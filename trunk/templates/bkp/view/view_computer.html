@@ -88,6 +88,7 @@
 	            <th>Storage</th>
 	            <th>Caminhos</th>
 	            <th>#Agendam.</th>
+	            <th>Offsite?</th>
 	            <th></th>
 	        </tr>
 	    </thead>
@@ -107,6 +108,7 @@
 	                {% endif %}
 	            </td>
 	            <td class="col_agendamentos">{{ proc.fileset_set.count }}</td>
+	            <td class="col_offsite">{% if proc.offsite_on %}ATIVO{% endif %}{% if not proc.offsite_on %}-{% endif %}</td>
 	            <td class="col_acoes">
 	                <button class="toggle" rel="detalhes_procedimento_{{ proc.id }}"><span>+</span></button>
 	                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>

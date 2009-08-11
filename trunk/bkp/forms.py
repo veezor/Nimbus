@@ -58,7 +58,7 @@ class RestoreDumpForm(forms.Form):
 class GlobalConfigForm(ModelForm):
     class Meta:
         model = GlobalConfig
-        fields = ('bacula_name','server_ip','director_port','storage_port','database_name','database_user','database_password','admin_mail')
+        fields = ('bacula_name','server_ip','director_port','storage_port','database_name','database_user','database_password','admin_mail','offsite_on')
 
 class LoginForm(forms.Form):
     auth_login = forms.CharField(label=u'Usuário',max_length=20)
@@ -78,7 +78,7 @@ class StorageForm(ModelForm):
 class ProcedureForm(ModelForm):
     class Meta:
         model = Procedure
-        fields = ('procedure_name', 'storage')
+        fields = ('procedure_name', 'storage', 'offsite_on')
 
 class ScheduleAuxForm(forms.Form):
     schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")

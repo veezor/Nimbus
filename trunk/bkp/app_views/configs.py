@@ -53,6 +53,9 @@ def edit_config(request, config_type='global'):
                 vars_dict['rests'] = BandwidthRestriction.objects.all().order_by('dayoftheweek','restrictiontime')
                 forms_dict['restform'] = BandwidthRestrictionForm()
                 vars_dict['days_of_the_week'] = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
+            elif config_type == 'offsite':
+                vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
+                vars_dict['offsite_on'] = vars_dict['gconfig'].offsite_on
         else:
             vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
             forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
