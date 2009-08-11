@@ -60,6 +60,11 @@ class GlobalConfigForm(ModelForm):
         model = GlobalConfig
         fields = ('bacula_name','server_ip','director_port','storage_port','database_name','database_user','database_password','admin_mail','offsite_on')
 
+class OffsiteConfigForm(ModelForm):
+    class Meta:
+        model = GlobalConfig
+        fields = ('offsite_on', 'offsite_hour')
+
 class LoginForm(forms.Form):
     auth_login = forms.CharField(label=u'Usuário',max_length=20)
     auth_password = forms.CharField(label=u'Senha',max_length=50,widget=forms.PasswordInput(render_value=False))

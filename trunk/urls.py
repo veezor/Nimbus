@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     (r'^password/$', 'backup_corporativo.bkp.views.change_password'),
 	(r'restriction/$', 'backup_corporativo.bkp.views.create_restriction'),
 	(r'restriction/(?P<restriction_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_restriction'),
+	(r'^offsite/$', 'backup_corporativo.bkp.views.edit_offsite'),
     # views_app/stats.py
     (r'^stats$', 'backup_corporativo.bkp.views.view_stats'),
     # views_app/authentications.py

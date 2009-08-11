@@ -84,6 +84,10 @@ def new_restriction_path(request):
     """Returns new restriction path."""        
     return "%s/config/restrictions/edit" % (request.META['SCRIPT_NAME'])
 
+def new_offsite_path(request):
+    """Returns new offsite path."""        
+    return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
+
 # Passo 1
 def restore_computer_path(request, computer_id):
     """Returns restore computer path."""

@@ -5,7 +5,7 @@
 from backup_corporativo.bkp.utils import *
 from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.models import ExternalDevice
-from backup_corporativo.bkp.forms import GlobalConfigForm
+from backup_corporativo.bkp.forms import GlobalConfigForm, OffsiteConfigForm
 from backup_corporativo.bkp.forms import RestoreDumpForm
 from backup_corporativo.bkp.forms import ExternalDeviceForm
 from backup_corporativo.bkp.forms import ExternalDeviceEditForm
@@ -56,6 +56,7 @@ def edit_config(request, config_type='global'):
             elif config_type == 'offsite':
                 vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
                 vars_dict['offsite_on'] = vars_dict['gconfig'].offsite_on
+                forms_dict['offsiteform'] = OffsiteConfigForm(instance=vars_dict['gconfig'])
         else:
             vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
             forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
@@ -285,3 +286,26 @@ def delete_restriction(request,restriction_id):
 		return HttpResponseRedirect(new_restriction_path(request))
 		
 
+@authentication_required
+def edit_offsite(request):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+    
+    if request.method == 'GET':
+        return HttpResponseRedirect(new_offsite_path(request))
+    
+    if request.method == 'POST':
+        forms_dict['offsiteform'] = OffsiteConfigForm(request.POST)
+        
+        if forms_dict['offsiteform'].is_valid():
+            global_config = GlobalConfig.objects.get(pk=1)
+            for i in forms_dict['offsiteform'].cleaned_data:
+                global_config.__setattr__(i, forms_dict['offsiteform'].cleaned_data[i])
+            global_config.save()
+            request.user.message_set.create(message="Dados do backup offsite alterados com sucesso.")
+            return HttpResponseRedirect(new_offsite_path(request))
+        else:
+            vars_dict['config_type'] = 'offsite'
+            return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+            request.user.message_set.create(message="Houve um erro ao tentar alterar os dados do backup offsite.")
+            #return HttpResponseRedirect(new_offsite_path(request))
+            return render_to_response('bkp/edit/edit_config.html', return_dict, context_instance=RequestContext(request))
