@@ -130,6 +130,8 @@ class Computer(models.Model):
         PEM consiste na concatenação da chave
         e do certificado no mesmo arquivo.
         """
+        self.__generate_rsa_key()
+        self.__generate_certificate()
         from backup_corporativo.bkp.crypt_utils import GET_PEM_RAW_CMD
         cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_rsa_key_path(),
                                 'cert_path':self.computer_certificate_path(),}
@@ -331,7 +333,7 @@ class Computer(models.Model):
         from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
         utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
         if not os.path.isfile(rsa_key_path):
-            raise Exception("Não foi possível encontrar Chave RSA. Tentou-se: %s" % rsa_key_path)
+            raise Exception(u"Não foi possível encontrar Chave RSA. Tentou-se: %s" % rsa_key_path)
         if os.path.isfile(certificate_path):
             pass # Nunca sobrescreva um certificado.
         else:

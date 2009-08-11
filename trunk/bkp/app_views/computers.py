@@ -190,7 +190,7 @@ def client_pem_dump(request, computer_id):
         
     	# Return file for download
         response = HttpResponse(mimetype='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=%s'% (computer.computer_pem())
+        response['Content-Disposition'] = 'attachment; filename=%s.pem'% (computer.computer_name)
         response.write(dump_file)
         return response
 
