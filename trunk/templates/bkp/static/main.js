@@ -1,9 +1,27 @@
 function set_toggles() {
     $('.toggle').click(
         function () {
+            visible = false;
+            if ($('#' + $(this).attr('rel') + ':visible').size()) {
+                visible = true;
+            }
+            
             $('#' + $(this).attr('rel')).toggle('fast');
+            if (visible) {
+                $.cookie('#' + $(this).attr('rel'), null);
+            } else {
+                $.cookie('#' + $(this).attr('rel'), true);
+            }
         }
     )
+    
+    $('.cookie_toggle').each(
+        function() {
+            if ($.cookie('#' + $(this).attr('id')) == 'true') {
+                $(this).show();
+            }
+        }
+    );
 }
 
 function set_backup_type() {

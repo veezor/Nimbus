@@ -35,7 +35,7 @@
         <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_comp.gif" />
 	    <h2>
 	        <span>Computador</span><br/>
-	        {{ comp.computer_name }} <span class="toggle pequeno" rel="detalhes_computador">(ver detalhes)</span>
+	        {{ comp.computer_name }} <span class="toggle pequeno" rel="detalhes_computador_{{ comp.id }}">(ver detalhes)</span>
 	        
 	    </h2>
 	    <div class="botao_acoes">
@@ -47,7 +47,7 @@
 	    </div>
 	</div>
 	
-	<div class="bloco_texto escondido" id="detalhes_computador">
+	<div class="bloco_texto escondido cookie_toggle" id="detalhes_computador_{{ comp.id }}">
 	    <div class="titulo_botoes">
 		<div class="botao_acoes">
 	        <button onclick="location.href='{{script_name}}/{{comp.pem_dump_url}}'"><span>Dump Pem</span></button>
@@ -120,7 +120,7 @@
 	        <tr>
 	            <td colspan="5">
 	            
-                    <div class="procedure escondido" id="detalhes_procedimento_{{ forloop.counter }}">
+                    <div class="procedure escondido cookie_toggle" id="detalhes_procedimento_{{ forloop.counter }}">
                         <!--<div class="titulo_topo">
                             <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a>
                                 <span class="toggle pequeno" rel="detalhes_procedure_{{ proc.id }}">(ver detalhes)</span></h3>
