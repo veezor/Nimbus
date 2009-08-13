@@ -3,7 +3,7 @@
 
 # Application
 from backup_corporativo.bkp.utils import *
-from backup_corporativo.bkp.models import GlobalConfig
+from backup_corporativo.bkp.models import GlobalConfig, Procedure
 from backup_corporativo.bkp.models import ExternalDevice
 from backup_corporativo.bkp.forms import GlobalConfigForm, OffsiteConfigForm
 from backup_corporativo.bkp.forms import RestoreDumpForm
@@ -56,6 +56,7 @@ def edit_config(request, config_type='global'):
             elif config_type == 'offsite':
                 vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
                 vars_dict['offsite_on'] = vars_dict['gconfig'].offsite_on
+                vars_dict['procedures'] = Procedure.objects.filter(offsite_on=True)
                 forms_dict['offsiteform'] = OffsiteConfigForm(instance=vars_dict['gconfig'])
         else:
             vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
@@ -309,3 +310,4 @@ def edit_offsite(request):
             request.user.message_set.create(message="Houve um erro ao tentar alterar os dados do backup offsite.")
             #return HttpResponseRedirect(new_offsite_path(request))
             return render_to_response('bkp/edit/edit_config.html', return_dict, context_instance=RequestContext(request))
+

@@ -218,6 +218,13 @@
     <p><input type="submit" value="Salvar" /></p>
 </form>
 
+<h3>Procedimentos que executarão bakup offsite:</h3>
+<ul>
+    {% for proc in procedures %}
+        <li><a href="{{ script_name }}/{{ proc.computer.view_url }}">{{ proc.computer.computer_name }} - {{ proc.procedure_name }}</a></li>
+    {% endfor %}
+</ul>
+
 {% endifequal %}
 
 
