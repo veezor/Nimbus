@@ -100,9 +100,9 @@ class Bacula:
     def tmp_restore(cls, client_from_restore, client_to_restore, date_to_restore, directory_to_restore, fileset_name, file_list):
         from backup_corporativo.bkp import utils
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
-        raw_cmd = '''bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_from)s restoreclient=%(client_to)s select done yes where=%(dir)s fileset=%(fileset)s before="%(date)s"\n'''
+        raw_cmd = '''bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_from)s restoreclient=%(client_to)s select yes where=%(dir)s fileset=%(fileset)s before="%(date)s"\n'''
         for file in file_list:
-            raw_cmd += "mark %s\n" % utils.fix_win_notation(file)            
+            raw_cmd += "mark %s\n" % file
         raw_cmd += "\nBACULAEOF"
         cmd = raw_cmd % {'bconsole_conf':BCONSOLE_CONF,
                         'client_from':client_from_restore,
