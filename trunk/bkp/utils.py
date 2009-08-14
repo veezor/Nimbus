@@ -8,6 +8,8 @@ import os
 import string
 
 
+
+
 ###
 ###   Auxiliar Definitions
 ###
@@ -83,10 +85,6 @@ def new_device_path(request):
 def new_restriction_path(request):
     """Returns new restriction path."""        
     return "%s/config/restrictions/edit" % (request.META['SCRIPT_NAME'])
-
-def new_offsite_path(request):
-    """Returns new offsite path."""        
-    return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
 
 # Passo 1
 def restore_computer_path(request, computer_id):
@@ -236,3 +234,5 @@ def parse_filetree(files):
                     if n == len(file_path) - 1 and file_name:
                         local_tree.append(file_name)
     return file_tree
+    
+CERTIFICATE_CONFIG_PATH = absolute_file_path('certificate.conf','custom/crypt')
