@@ -194,3 +194,19 @@ def client_pem_dump(request, computer_id):
         response.write(dump_file)
         return response
 
+
+@authentication_required
+def master_certificate_dump(request):
+    """Generates and provides download to a file master key file."""
+    if request.method == 'GET':
+        Computer.generate_master_rsa_key()
+        Computer.generate_master_certificate()
+        
+        dump_file = Computer.get_master_certificate()
+        
+    	# Return file for download
+        response = HttpResponse(mimetype='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=master.cert'
+        response.write(dump_file)
+        return response
+

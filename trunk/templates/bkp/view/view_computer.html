@@ -50,6 +50,7 @@
 	<div class="bloco_texto escondido cookie_toggle" id="detalhes_computador_{{ comp.id }}">
 	    <div class="titulo_botoes">
 		<div class="botao_acoes">
+	        <button onclick="location.href='{{script_name}}/{{comp.master_cert_dump_url}}'"><span>Dump Master Cert</span></button>
 	        <button onclick="location.href='{{script_name}}/{{comp.pem_dump_url}}'"><span>Dump Pem</span></button>
 	        <button onclick="location.href='{{script_name}}/{{comp.config_dump_url}}'"><span>Dump CFG</span></button>
 	        <form action="{{script_name}}/{{comp.run_test_url}}" method="post">

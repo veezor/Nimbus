@@ -255,6 +255,10 @@ class Computer(models.Model):
         """Returns pem dump url."""
         return "computer/%s/pem_dump" % (self.id)
 
+    def master_cert_dump_url(self):
+        """Returns master cert dump url."""
+        return "computer/master_certificate/"
+        
     def run_test_url(self):
         """Returns run test url."""
         return "computer/%s/test" % (self.id)
@@ -303,13 +307,22 @@ class Computer(models.Model):
         
     # TODO: quando gerar certificado e master_key, enviar por email pro usuário
     def generate_master_rsa_key(cls):
-        cls.generate_rsa_key(cls.master_key_path())
+        cls.generate_rsa_key(cls.master_rsa_key_path())
     generate_master_rsa_key = classmethod(generate_master_rsa_key)
 
     def generate_master_certificate(cls):
         cls.generate_certificate(cls.master_rsa_key_path(), cls.master_certificate_path())
     generate_master_certificate = classmethod(generate_master_certificate)
+
+    def dump_master_certificate(cls):
+        f = open(cls.master_certificate_path())
+        dump = []
+        for line in f:
+            dump.append("%s") % line
             
+        return '\n'.join(dump)
+    dump_master_certificate = classmethod(dump_master_certificate)
+
     def generate_rsa_key(cls, rsa_key_path):
         """
         Gera uma Chave RSA.
@@ -332,6 +345,7 @@ class Computer(models.Model):
         O Certificado é necessário para a geração de um PEM.
         So irá gerar Certificado caso ainda não exista.
         """
+        from backup_corporativo.bkp.utils import CERTIFICATE_CONFIG_PATH
         from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
         utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
         if not os.path.isfile(rsa_key_path):
@@ -339,9 +353,9 @@ class Computer(models.Model):
         if os.path.isfile(certificate_path):
             pass # Nunca sobrescreva um certificado.
         else:
-            cmd = GENERATE_CERT_RAW_CMD % {'key_path':rsa_key_path,'out':certificate_path,}
+            cmd = GENERATE_CERT_RAW_CMD % {'key_path':rsa_key_path,'out':certificate_path, 'conf':CERTIFICATE_CONFIG_PATH,}
             os.system(cmd)
-    generate_certificate = classmethod(generate_certificate)    
+    generate_certificate = classmethod(generate_certificate)
 
 ### Storage ###
 class Storage(models.Model):
@@ -351,11 +365,9 @@ class Storage(models.Model):
     storage_password = models.CharField(max_length=50, default='defaultpw')
     storage_description = models.CharField("Descrição", max_length=100, blank=True)
 
-
     def get_storage_name(self):
         """Returns storage name lower string."""
         return str.lower(str(self.storage_name))
-
 
     def save(self):
         if not self.id: # If this record is not at database yet
