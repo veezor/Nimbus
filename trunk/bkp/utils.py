@@ -1,11 +1,14 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
-import os
-import string
+import string, re, os
+
 
 
 
@@ -234,5 +237,23 @@ def parse_filetree(files):
                     if n == len(file_path) - 1 and file_name:
                         local_tree.append(file_name)
     return file_tree
+    
+def fix_win_notation(file):
+    """
+    Trata um array de strings, one cada item é o caminho
+    de diretório para um arquivo. Para enviar esse caminho 
+    para o bacula, é necessário tirar a / que vem logo após
+    início do caminho representando o driver. Exemplo c:/folder/
+    é preciso ser convertido para c/folder/
+    """
+    win_drive_letter_pattern = "^(?P<driver_letter>[a-zA-Z]):/(?P<file_path>.*)"
+    if re.match(win_drive_letter_pattern,file):
+        drive_letter = re.match(win_drive_letter_pattern,file).group('driver_letter')
+        file_path = re.match(win_drive_letter_pattern,file).group('file_path')
+        fixed_file = "%s/%s" % (drive_letter,file_path)
+    else:
+        fixed_file = file
+            
+    return fixed_file
     
 CERTIFICATE_CONFIG_PATH = absolute_file_path('certificate.conf','custom/crypt')

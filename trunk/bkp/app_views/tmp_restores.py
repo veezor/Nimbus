@@ -9,42 +9,13 @@ from backup_corporativo.bkp.models import Procedure
 from backup_corporativo.bkp.forms import RestoreForm
 from backup_corporativo.bkp.forms import HiddenRestoreForm
 from backup_corporativo.bkp.forms import RestoreCompForm, RestoreProcForm
+from backup_corporativo.bkp.bacula import Bacula
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
-
-###               ###
-#   Código Novo     #
-###               ###
-
-
-### Job Restore ###
-#@authentication_required
-#def do_restore(request, computer_id):
-#    if request.method == 'POST':
-#        vars_dict, forms_dict, return_dict = global_vars(request)    
-#        forms_dict['restore_form'] = RestoreForm(request.POST)
-#        forms_dict['hidden_restore_form'] = HiddenRestoreForm(request.POST)
-#        forms_list = forms_dict.values()
-#
-#        if all([form.is_valid() for form in forms_list]):
-#            fileset_name = forms_dict['hidden_restore_form'].cleaned_data['fileset_name']
-#            target_dt = forms_dict['hidden_restore_form'].cleaned_data['target_dt']
-#            src_client = forms_dict['hidden_restore_form'].cleaned_data['client_source']
-#            client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
-#            restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
-#            from backup_corporativo.bkp.bacula import Bacula
-#            Bacula.run_restore(ClientName=src_client, Date=target_dt, ClientRestore=client_restore, Where=restore_path, fileset_name=fileset_name)
-#            request.user.message_set.create(message="Uma requisição de restauração foi enviada para ser executado no computador.")
-#            return HttpResponseRedirect(computer_path(request, computer_id))
-#        else:
-#            vars_dict['comp_id'] = computer_id
-#            return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-#            return render_to_response('bkp/new/new_restore.html', return_dict, context_instance=RequestContext(request))
-
 
 # NOTA:
 # Utilizar argumento padrão na assinatura da view não 
@@ -120,9 +91,15 @@ def new_restore(request, computer_id=None, procedure_id=None, job_id=None):
                 vars_dict['fileset_name'] = temp_dict['hidden_restore_form'].cleaned_data['fileset_name']
 
                 if forms_dict['restore_form'].is_valid():
-                    client_restore = forms_dict['restore_form'].cleaned_data['client_restore']
-                    restore_path = forms_dict['restore_form'].cleaned_data['restore_path']
-                    return HttpResponse(request.POST)
+                    client_from_restore = vars_dict['comp'].computer_name
+                    client_to_restore = forms_dict['restore_form'].cleaned_data['client_restore']
+                    date_to_restore = vars_dict['target_dt']
+                    directory_to_restore = forms_dict['restore_form'].cleaned_data['restore_path']
+                    fileset_name = vars_dict['fileset_name']
+                    file_list = request.POST.getlist('file')
+                    Bacula.tmp_restore(client_from_restore, client_to_restore, date_to_restore, directory_to_restore, fileset_name, file_list)
+                    return HttpResponseRedirect(computer_path(request, computer_id))
+#                    return HttpResponse(request.POST.getlist('file'))
                 else:
                     vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)        
                     return_dict = merge_dicts(return_dict, forms_dict, vars_dict)

@@ -95,7 +95,24 @@ class Bacula:
         return result and result[0] or ''
     total_mbytes = classmethod(total_mbytes)
 
-    # ClassMethods    
+    # ClassMethods
+    # Todo BCONSOLE_CONF declarar em algum lugar 
+    def tmp_restore(cls, client_from_restore, client_to_restore, date_to_restore, directory_to_restore, fileset_name, file_list):
+        from backup_corporativo.bkp import utils
+        BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
+        raw_cmd = '''bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_from)s restoreclient=%(client_to)s select done yes where=%(dir)s fileset=%(fileset)s before="%(date)s"\n'''
+        for file in file_list:
+            raw_cmd += "mark %s\n" % utils.fix_win_notation(file)            
+        raw_cmd += "\nBACULAEOF"
+        cmd = raw_cmd % {'bconsole_conf':BCONSOLE_CONF,
+                        'client_from':client_from_restore,
+                        'client_to':client_to_restore,
+                        'dir':directory_to_restore,
+                        'fileset':fileset_name,
+                        'date':date_to_restore,}
+        print cmd
+    tmp_restore = classmethod(tmp_restore)
+        
     def run_restore_last(cls, ClientName, ClientRestore="", Where=WHERE_DEFAULT):
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         ClientRestore = ClientRestore and ClientRestore or ClientName
