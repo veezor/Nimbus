@@ -1,0 +1,33 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<div class="titulo_botoes">
+<h3>Informações de Rede</h3>
+</div>
+<div class="bloco_texto">
+<p>Nome da Interface</p>
+<p>Endereço IP: {{ ip_address }}</p>
+<p>Endereço Mac: {{ mac_address }}</p>
+<p>Endereço Broadcast: {{broadcast_address}}</p>
+<p>Netmask: {{netmask}}</p>
+</div>
+
+
+<div class="titulo_botoes">
+<h3>Configurar</h3>
+</div>
+<div class="bloco_texto">
+<form action="{{script_name}}/network/config/update" method="post">
+    {% for field in netform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+</div>
+
+{% endblock %}
+
+

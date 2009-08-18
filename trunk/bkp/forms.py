@@ -6,23 +6,18 @@
 from django.forms import ModelForm
 from django import forms
 # Models
-from backup_corporativo.bkp.models import GlobalConfig
-from backup_corporativo.bkp.models import Computer
-from backup_corporativo.bkp.models import Procedure
-from backup_corporativo.bkp.models import Schedule
-from backup_corporativo.bkp.models import WeeklyTrigger
-from backup_corporativo.bkp.models import MonthlyTrigger
-from backup_corporativo.bkp.models import FileSet
-from backup_corporativo.bkp.models import Storage
-from backup_corporativo.bkp.models import ExternalDevice
-from backup_corporativo.bkp.models import BandwidthRestriction
-from backup_corporativo.bkp.models import DayOfTheWeek
+from backup_corporativo.bkp.models import *
 # Custom
 from backup_corporativo.bkp import customfields as cfields
 
 #
 #   Forms
 #
+
+class NetworkConfigForm(ModelForm):
+    class Meta:
+        model = NetworkConfig
+        fields = ('network_ip','network_netmask',)
 
 class RestoreCompForm(forms.Form):
     target_client = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())

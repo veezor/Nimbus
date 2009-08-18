@@ -37,7 +37,15 @@ DAYS_OF_THE_WEEK = {
 ###   Models
 ###
 
+### NetworkConfig ###
+class NetworkConfig(models.Model):
+	network_ip = models.IPAddressField("Endereço IP")
+	network_netmask = models.IPAddressField("Máscara")
 
+	def save(self):
+		self.id = 1 # sempre usar id=1
+		super(NetworkConfig, self).save()
+        
 ### GlobalConfig ###
 class GlobalConfig(models.Model):
     bacula_name = cfields.ModelSlugField("Nome da Instância", max_length=50)
