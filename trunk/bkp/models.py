@@ -39,6 +39,8 @@ DAYS_OF_THE_WEEK = {
 
 ### NetworkConfig ###
 class NetworkConfig(models.Model):
+	network_mac = cfields.MACAddressField("Endereço MAC")
+	network_iface_name = models.CharField("Nome da Interface", max_length=30)
 	network_ip = models.IPAddressField("Endereço IP")
 	network_netmask = models.IPAddressField("Máscara")
 

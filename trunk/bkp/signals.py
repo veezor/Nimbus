@@ -4,19 +4,9 @@
 
 # Misc
 from django.db import models
-from backup_corporativo.bkp.utils import *
+from backup_corporativo.bkp import utils
 # Models
-from backup_corporativo.bkp.models import GlobalConfig
-from backup_corporativo.bkp.models import Computer
-from backup_corporativo.bkp.models import Procedure
-from backup_corporativo.bkp.models import Schedule
-from backup_corporativo.bkp.models import WeeklyTrigger
-from backup_corporativo.bkp.models import MonthlyTrigger
-from backup_corporativo.bkp.models import FileSet
-from backup_corporativo.bkp.models import Pool
-from backup_corporativo.bkp.models import Storage
-from backup_corporativo.bkp.models import BandwidthRestriction
-from backup_corporativo.bkp.utils import prepare_to_write,absolute_dir_path,remove_or_leave,mount_path
+from backup_corporativo.bkp.models import *
 from backup_corporativo.bkp.bacula import Bacula
 
 ### Constants ###
@@ -62,6 +52,8 @@ def update_files(sender, instance, signal, *args, **kwargs):
         update_schedule_file(instance.schedule.procedure)
     elif sender == Storage:
         update_storage_file(instance)
+    elif sender == NetworkConfig:
+    	update_networkconfig_file(instance)
     elif sender == GlobalConfig:
         update_default_storage(instance)
         update_config_file(instance)
@@ -91,13 +83,15 @@ def remove_files(sender, instance, signal, *args, **kwargs):
         raise # Oops!
     Bacula.reload()
 
-###
-###   Auxiliar Definitions
-###
+
+### Network Config ###
+def update_networkconfig_file(instance):
+	i = instance
+	
+
 
 ### Global Config ###
 
-#TODO remover dir do nome do director
 def update_config_file(instance):
     """Config update file"""
     i = instance
@@ -147,7 +141,7 @@ def config_msg_dict(msg_name, admin_mail=None):
     
 def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict):
     """generate config file"""
-    f = prepare_to_write(filename,'custom/config/')
+    f = utils.prepare_to_write(filename,'custom/config/')
 
     f.write("Director {\n")
     for k in dir_dict.keys():
@@ -178,7 +172,7 @@ def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
     
     folders = ['computers','filesets','jobs','pools','schedules']
     for folder in folders:
-        import_dir = absolute_dir_path("custom/%s/" % folder)
+        import_dir = utils.absolute_dir_path("custom/%s/" % folder)
         f.write("@|\"sh -c 'for f in %s* ; do echo @${f} ; done'\"\n" % import_dir)
 
     f.close()
@@ -221,7 +215,7 @@ def update_device_file(instance):
 
 def generate_device(filename,sto_dict, dir_dict, dev_dict, msg_dict):
     """generate config file"""
-    f = prepare_to_write(filename,'custom/config/')
+    f = utils.prepare_to_write(filename,'custom/config/')
 
     f.write("Storage {\n")
     for k in sto_dict.keys():
@@ -261,7 +255,7 @@ def update_console_file(instance):
 
 def generate_console(filename,dir_dict):
     """generate console file"""
-    f = prepare_to_write(filename,'custom/config/')
+    f = utils.prepare_to_write(filename,'custom/config/')
 
     f.write("Director {\n")
     for k in dir_dict.keys():
@@ -296,7 +290,7 @@ def procedure_dict(proc_name, comp_name, fset_name, sched_name, pool_name, sto_n
 
 def generate_procedure(proc_name,attr_dict):
     """generate procedure file"""
-    f = prepare_to_write(proc_name,'custom/jobs')
+    f = utils.prepare_to_write(proc_name,'custom/jobs')
 
     f.write("Job {\n")
     
@@ -314,8 +308,8 @@ def generate_procedure(proc_name,attr_dict):
 
 def remove_procedure_file(instance):
     """remove procedure file"""
-    base_dir,filepath = mount_path(instance.get_procedure_name(),'custom/jobs')
-    remove_or_leave(filepath)
+    base_dir,filepath = utils.mount_path(instance.get_procedure_name(),'custom/jobs')
+    utils.remove_or_leave(filepath)
     
 #### Computer #####
 
@@ -331,7 +325,7 @@ def computer_dict(name,ip,password):
 
 def generate_computer_file(name,attr_dict):        
     """Computer generate file"""
-    f = prepare_to_write(name,'custom/computers')
+    f = utils.prepare_to_write(name,'custom/computers')
 
     f.write("Client {\n")
     for k in attr_dict.keys():
@@ -341,8 +335,8 @@ def generate_computer_file(name,attr_dict):
 
 def remove_computer_file(instance):
     """Computer remove file"""
-    base_dir,filepath = mount_path(instance.get_computer_name(),'custom/computers')
-    remove_or_leave(filepath)
+    base_dir,filepath = utils.mount_path(instance.get_computer_name(),'custom/computers')
+    utils.remove_or_leave(filepath)
     
 #### FileSet #####
 
@@ -363,7 +357,7 @@ def generate_file_array(fsets):
     
 def generate_fileset_file(name,file_array):
     """FileSet generate file"""
-    f = prepare_to_write(name,'custom/filesets')
+    f = utils.prepare_to_write(name,'custom/filesets')
 
     f.write("FileSet {\n")
     f.write('''\tName = "%s"\n''' % (name))
@@ -381,8 +375,8 @@ def generate_fileset_file(name,file_array):
 def remove_fileset_file(procedure):
     """remove FileSet file"""
     name = procedure.get_fileset_name()
-    base_dir,filepath = mount_path(name,'custom/filesets')
-    remove_or_leave(filepath)    
+    base_dir,filepath = utils.mount_path(name,'custom/filesets')
+    utils.remove_or_leave(filepath)    
 
 #### Pool #####
 
@@ -402,7 +396,7 @@ def pool_dict(pool_name):
 
 def generate_pool(name,attr_dict):        
     """generate pool bacula file"""
-    f = prepare_to_write(name,'custom/pools')
+    f = utils.prepare_to_write(name,'custom/pools')
     
     f.write("Pool {\n")
     f.write("\tMaximum Volume Bytes = %s\n" % (attr_dict['Maximum Volume Bytes']))
@@ -416,8 +410,8 @@ def generate_pool(name,attr_dict):
 
 def remove_pool_file(instance):
     """pool remove file"""
-    base_dir,filepath = mount_path(instance.get_pool_name(),'custom/pools')
-    remove_or_leave(filepath)
+    base_dir,filepath = utils.mount_path(instance.get_pool_name(),'custom/pools')
+    utils.remove_or_leave(filepath)
 
 ### Schedule ###
 def run_dict(schedules_list):
@@ -449,7 +443,7 @@ def update_schedule_file(procedure):
     generate_schedule(sched_name,rdict)
 
 def generate_schedule(schedule_name,run_dict):        
-    f = prepare_to_write(schedule_name,'custom/schedules')
+    f = utils.prepare_to_write(schedule_name,'custom/schedules')
 
     f.write("Schedule {\n")
     f.write('''\tName = "%s"\n''' % (schedule_name))
@@ -459,8 +453,8 @@ def generate_schedule(schedule_name,run_dict):
     f.close()
 
 def remove_schedule_file(procedure):
-    base_dir,filepath = mount_path(procedure.get_schedule_name(),'custom/schedules')
-    remove_or_leave(filepath)
+    base_dir,filepath = utils.mount_path(procedure.get_schedule_name(),'custom/schedules')
+    utils.remove_or_leave(filepath)
     
 
 
@@ -492,7 +486,7 @@ def storage_dict(name, ip, port, password):
 
 def generate_storage_file(name, attr_dict):
     """Generate Storage file"""
-    f = prepare_to_write(name, 'custom/storages')
+    f = utils.prepare_to_write(name, 'custom/storages')
 
     f.write("Storage {\n")
     for k in attr_dict.keys():
@@ -502,8 +496,8 @@ def generate_storage_file(name, attr_dict):
 
 def remove_storage_file(instance):
     """Remove Storage file"""
-    base_dir,filepath = mount_path(instance.get_storage_name(), 'custom/storages')
-    remove_or_leave(filepath)
+    base_dir,filepath = utils.mount_path(instance.get_storage_name(), 'custom/storages')
+    utils.remove_or_leave(filepath)
 
 
 
@@ -514,7 +508,7 @@ def generate_cron(filename="nimbus.cron"):
 	import time
 	root_user = 'root'
 	script_name = 'speedctl.py'
-	f = prepare_to_write(filename,'custom/')
+	f = utils.prepare_to_write(filename,'custom/')
 	restrictions = BandwidthRestriction.objects.all()
 
 	for rest in restrictions:
@@ -530,6 +524,8 @@ def generate_cron(filename="nimbus.cron"):
 ###   Dispatcher Connection
 ###
 
+#NetworkConfig
+models.signals.post_save.connect(update_files, sender=NetworkConfig)
 # GlobalConfig
 models.signals.post_save.connect(update_files, sender=GlobalConfig)
 # Computer

@@ -10,14 +10,10 @@ from backup_corporativo.bkp.models import *
 # Custom
 from backup_corporativo.bkp import customfields as cfields
 
-#
-#   Forms
-#
-
 class NetworkConfigForm(ModelForm):
     class Meta:
         model = NetworkConfig
-        fields = ('network_ip','network_netmask',)
+        fields = ('network_iface_name','network_mac','network_ip','network_netmask',)
 
 class RestoreCompForm(forms.Form):
     target_client = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())

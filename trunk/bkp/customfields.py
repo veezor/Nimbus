@@ -4,6 +4,7 @@
 import re
 from django import forms
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 ###
 ###   Fields
@@ -63,3 +64,35 @@ class FormFileNimbusField(forms.FileField):
 		if extension != 'nimbus':
 			raise forms.ValidationError, u'Extensão inválida, apenas arquivos \'.nimbus\' são aceitos.'
 		return value
+		
+# Início MACAddressField
+# Código retirado de: 
+# http://www.djangosnippets.org/snippets/1337/
+
+
+MAC_RE = r'^([0-9a-fA-F]{2}([:-]?|$)){6}$'
+mac_re = re.compile(MAC_RE)
+
+class MACAddressFormField(forms.fields.RegexField):
+    default_error_messages = {
+        'invalid': _(u'Enter a valid MAC address.'),
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(MACAddressFormField, self).__init__(mac_re, *args, **kwargs)
+
+class MACAddressField(models.Field):
+    empty_strings_allowed = False
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 17
+        super(MACAddressField, self).__init__(*args, **kwargs)
+
+    def get_internal_type(self):
+        return "CharField"
+
+    def formfield(self, **kwargs):
+        defaults = {'form_class': MACAddressFormField}
+        defaults.update(kwargs)
+        return super(MACAddressField, self).formfield(**defaults)
+
+# Fim MACAddressField
