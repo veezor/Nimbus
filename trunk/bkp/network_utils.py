@@ -15,29 +15,39 @@ class NetworkInfo:
 	interfaces = classmethod(interfaces)
 
 	def ip_address(cls, iface_name):
-		return netifaces.ifaddresses(iface_name)[2][0]["addr"]
+		try:
+			return netifaces.ifaddresses(iface_name)[2][0]["addr"]
+		except KeyError:
+			return ''
 	ip_address = classmethod(ip_address)
 
 	def broadcast_address(cls, iface_name):
-		return netifaces.ifaddresses(iface_name)[2][0]["broadcast"]
+		try:
+			return netifaces.ifaddresses(iface_name)[2][0]["broadcast"]
+		except KeyError:
+			return ''
 	broadcast_address = classmethod(broadcast_address)
 
 	def netmask(cls, iface_name):
-		return netifaces.ifaddresses(iface_name)[2][0]["netmask"]
+		try:
+			return netifaces.ifaddresses(iface_name)[2][0]["netmask"]
+		except KeyError:
+			return ''
 	netmask = classmethod(netmask)
 
 	def mac_address(cls, iface_name):
-		return netifaces.ifaddresses(iface_name)[17][0]["addr"]
+		try:
+			return netifaces.ifaddresses(iface_name)[17][0]["addr"]
+		except KeyError:
+			return ''
 	mac_address = classmethod(mac_address)
 	
 	def mac_choices(cls):
 		interfaces = cls.interfaces()
 		choices = []
 		for iface in interfaces:
-			try:
-				mac_address = cls.mac_address(iface)
+			mac_address = cls.mac_address(iface)
+			if mac_address:
 				choices.append((mac_address,mac_address))
-			except KeyError:
-				continue
 		return choices
 	mac_choices = classmethod(mac_choices)

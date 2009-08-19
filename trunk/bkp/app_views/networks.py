@@ -4,7 +4,7 @@
 # Application
 from backup_corporativo.bkp.network_utils import NetworkInfo
 from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.models import GlobalConfig
+from backup_corporativo.bkp.models import GlobalConfig, NetworkConfig
 from backup_corporativo.bkp.forms import NetworkConfigForm
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
@@ -19,7 +19,8 @@ def edit_network_config(request):
 	vars_dict, forms_dict, return_dict = global_vars(request)
 
 	if request.method == 'GET':
-		vars_dict['interfaces'] = NetworkInfo.interfaces()
+		vars_dict['raw_interfaces'] = NetworkInfo.interfaces()
+		vars_dict['interfaces'] = NetworkConfig.objects.all()
 		forms_dict['netform'] = NetworkConfigForm()
 		forms_dict['netform'].load_choices()
         # Load forms and vars 
@@ -38,7 +39,8 @@ def update_network_config(request):
 			forms_dict['netform'].save()
 			return HttpResponseRedirect(utils.edit_networkconfig_path(request))
 		else:
-			vars_dict['interfaces'] = NetworkInfo.interfaces()
+			vars_dict['raw_interfaces'] = NetworkInfo.interfaces()
+			vars_dict['interfaces'] = NetworkConfig.objects.all()
 			# Load forms and vars 
 			return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
 			return render_to_response('bkp/edit/edit_network_info.html', return_dict, context_instance=RequestContext(request))

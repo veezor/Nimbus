@@ -195,33 +195,21 @@ def slice_unicode(obj, how_much):
 
 @register.filter
 def network_ip_address(iface):
-	try:
-		ip_address = NetworkInfo.ip_address(iface)
-		return ip_address
-	except KeyError:
-		return ''
+	ip_address = NetworkInfo.ip_address(iface)
+	return ip_address
 		
 @register.filter
 def mac_address(iface):
-	try:
-		mac_address = NetworkInfo.mac_address(iface)
-		return mac_address
-	except KeyError:
-		return ''
+	mac_address = NetworkInfo.mac_address(iface)
+	return mac_address
 		
 @register.filter
 def broadcast_address(iface):
-	try:
-		broadcast_address = NetworkInfo.broadcast_address(iface)
-		return broadcast_address
-	except KeyError:
-		return ''
+	broadcast_address = NetworkInfo.broadcast_address(iface)
+	return broadcast_address
 		
 @register.filter
 def netmask(iface):
-	try:
-		netmask = NetworkInfo.netmask(iface)
-		return netmask
-	except KeyError:
-		return ''
+	netmask = NetworkInfo.netmask(iface)
+	return netmask
 

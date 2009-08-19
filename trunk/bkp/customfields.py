@@ -79,7 +79,7 @@ class MACAddressFormField(forms.fields.ChoiceField):
 
 	def clean(self, value, initial=None):
 		if not re.match(mac_re, value):
-			raise forms.ValidationError, u'Nenhum arquivo selecionado.'			
+			raise forms.ValidationError, u'Endreço de MAC Inválido.'
 
 class MACAddressField(models.Field):
     empty_strings_allowed = False
@@ -88,7 +88,7 @@ class MACAddressField(models.Field):
         super(MACAddressField, self).__init__(*args, **kwargs)
 
     def get_internal_type(self):
-        return "ChoiceField"
+        return "CharField"
 
     def formfield(self, **kwargs):
         defaults = {'form_class': MACAddressFormField}

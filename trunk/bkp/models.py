@@ -39,14 +39,16 @@ DAYS_OF_THE_WEEK = {
 
 ### NetworkConfig ###
 class NetworkConfig(models.Model):
-	network_mac = cfields.MACAddressField("Endereço MAC",choices=())
-	network_iface_name = models.CharField("Nome da Interface", max_length=30)
+	network_mac = cfields.MACAddressField("Endereço MAC",choices=(), unique=True)
+	network_iface_name = cfields.ModelSlugField("Nome da Interface", max_length=30)
 	network_ip = models.IPAddressField("Endereço IP")
 	network_netmask = models.IPAddressField("Máscara")
-
-	def save(self):
-		self.id = 1 # sempre usar id=1
-		super(NetworkConfig, self).save()
+	
+	def edit_url(self):
+		return "network/config/%s/edit" % self.id
+		
+	def delete_url(self):
+		return "network/config/%s/delete" % self.id
         
 ### GlobalConfig ###
 class GlobalConfig(models.Model):

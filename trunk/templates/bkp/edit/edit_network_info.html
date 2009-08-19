@@ -2,18 +2,53 @@
 {% load bkp_extras %}
 {% block content %}
 
-{{mac_choices}}
 <div class="titulo_botoes">
 <h3>Debug de Informações da Rede</h3>
 </div>
 <div class="bloco_texto">
-{% for iface in interfaces %}
+{% for iface in raw_interfaces %}
 <h4>Interface: {{ iface }}</h4>
 <p>Endereço IP: {{ iface|network_ip_address }}</p>
 <p>Endereço Mac: {{ iface|mac_address }}</p>
 <p>Endereço Broadcast: {{ iface|broadcast_address }}</p>
 <p>Netmask: {{ iface|netmask }}</p>
 {% endfor %}
+</div>
+
+
+<div class="titulo_botoes">
+<h3>Interfaces Cadastradas</h3>
+</div>
+
+<div class="bloco_texto">
+	{% if not interfaces %}
+	<p>Não existem interfaces cadastradas.</p>
+	{% else %}
+    <table>
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Mac</th>
+            <th>Ip</th>
+            <th>Netmask</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+		{% for iface in interfaces %}
+        <tr>
+	        <td>{{ iface.network_iface_name }}</td>
+	        <td>{{ iface.network_mac }}</td>
+	        <td>{{ iface.network_ip }}</td>
+	        <td>{{ iface.network_netmask }}</td>
+			<td> <button onclick="location.href='{{script_name}}/{{iface.edit_url}}';return false"><span>Alterar</span></button></td>
+			<td> <button onclick="location.href='{{script_name}}/{{iface.delete_url}}';return false" class="red"><span>Remover</span></button></td>
+	    </tr>
+{% endfor %}
+		</tbody>
+	</table>
+	{% endif %}
 </div>
 
 
