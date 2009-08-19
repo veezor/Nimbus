@@ -1,15 +1,19 @@
 {% extends "bkp/base.html" %}
+{% load bkp_extras %}
 {% block content %}
 
+{{mac_choices}}
 <div class="titulo_botoes">
 <h3>Debug de Informações da Rede</h3>
 </div>
 <div class="bloco_texto">
-<p>Nome da Interface</p>
-<p>Endereço IP: {{ ip_address }}</p>
-<p>Endereço Mac: {{ mac_address }}</p>
-<p>Endereço Broadcast: {{broadcast_address}}</p>
-<p>Netmask: {{netmask}}</p>
+{% for iface in interfaces %}
+<h4>Interface: {{ iface }}</h4>
+<p>Endereço IP: {{ iface|network_ip_address }}</p>
+<p>Endereço Mac: {{ iface|mac_address }}</p>
+<p>Endereço Broadcast: {{ iface|broadcast_address }}</p>
+<p>Netmask: {{ iface|netmask }}</p>
+{% endfor %}
 </div>
 
 

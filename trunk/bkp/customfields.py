@@ -66,20 +66,20 @@ class FormFileNimbusField(forms.FileField):
 		return value
 		
 # Início MACAddressField
-# Código retirado de: 
+# Código adaptado a partir de: 
 # http://www.djangosnippets.org/snippets/1337/
 
 
 MAC_RE = r'^([0-9a-fA-F]{2}([:-]?|$)){6}$'
 mac_re = re.compile(MAC_RE)
 
-class MACAddressFormField(forms.fields.RegexField):
-    default_error_messages = {
-        'invalid': _(u'Enter a valid MAC address.'),
-    }
-
+class MACAddressFormField(forms.fields.ChoiceField):
     def __init__(self, *args, **kwargs):
-        super(MACAddressFormField, self).__init__(mac_re, *args, **kwargs)
+        super(MACAddressFormField, self).__init__(*args, **kwargs)
+
+	def clean(self, value, initial=None):
+		if not re.match(mac_re, value):
+			raise forms.ValidationError, u'Nenhum arquivo selecionado.'			
 
 class MACAddressField(models.Field):
     empty_strings_allowed = False
@@ -88,11 +88,12 @@ class MACAddressField(models.Field):
         super(MACAddressField, self).__init__(*args, **kwargs)
 
     def get_internal_type(self):
-        return "CharField"
+        return "ChoiceField"
 
     def formfield(self, **kwargs):
         defaults = {'form_class': MACAddressFormField}
         defaults.update(kwargs)
         return super(MACAddressField, self).formfield(**defaults)
+
 
 # Fim MACAddressField

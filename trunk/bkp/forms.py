@@ -15,6 +15,11 @@ class NetworkConfigForm(ModelForm):
         model = NetworkConfig
         fields = ('network_iface_name','network_mac','network_ip','network_netmask',)
 
+    def load_choices(self):
+    	from backup_corporativo.bkp.network_utils import NetworkInfo
+    	self.fields['network_mac'].widget=forms.Select()
+        self.fields['network_mac'].choices = [('', '----------')] + NetworkInfo.mac_choices()
+
 class RestoreCompForm(forms.Form):
     target_client = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())
 
