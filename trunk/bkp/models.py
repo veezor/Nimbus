@@ -38,17 +38,26 @@ DAYS_OF_THE_WEEK = {
 ###
 
 ### NetworkConfig ###
-class NetworkConfig(models.Model):
-	network_mac = cfields.MACAddressField("Endereço MAC",choices=(), unique=True)
-	network_iface_name = cfields.ModelSlugField("Nome da Interface", max_length=30)
-	network_ip = models.IPAddressField("Endereço IP")
-	network_netmask = models.IPAddressField("Máscara")
+class NetworkInterface(models.Model):
+	interface_mac = cfields.MACAddressField("Endereço MAC",choices=(), unique=True)
+	interface_name = cfields.ModelSlugField("Nome da Interface", max_length=30)
+	interface_address = models.IPAddressField("Endereço IP")
+	interface_netmask = models.IPAddressField("Máscara")
+	interface_gateway = models.IPAddressField("Gateway")
+	interface_network = models.IPAddressField("Network")
+	interface_broadcast = models.IPAddressField("Broadcast")
 	
 	def edit_url(self):
 		return "network/config/%s/edit" % self.id
 		
 	def delete_url(self):
 		return "network/config/%s/delete" % self.id
+		
+	def save(self):
+		# TODO: Calcular valores corretos para network e broadcast
+		self.interface_network = '1.1.1.1'
+		self.interface_broadcast = '1.1.1.1'
+		super(NetworkInterface, self).save()
         
 ### GlobalConfig ###
 class GlobalConfig(models.Model):

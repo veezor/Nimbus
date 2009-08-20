@@ -115,9 +115,9 @@ def backup_path(request):
     """Returns backup computer path."""
     return "%s/backup/new" % (request.META['SCRIPT_NAME'])
 
-def edit_networkconfig_path(request):
+def new_networkinterface_path(request):
     """Returns edit network config path."""
-    return "%s/network/config/edit" % (request.META['SCRIPT_NAME'])
+    return "%s/networkinterface/new" % (request.META['SCRIPT_NAME'])
 
 def random_password(size):
     """Generates random password of a given size."""

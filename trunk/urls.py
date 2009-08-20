@@ -21,8 +21,9 @@ urlpatterns = patterns('',
     (r'restriction/$', 'backup_corporativo.bkp.views.create_restriction'),
     (r'restriction/(?P<restriction_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_restriction'),
     (r'^offsite/$', 'backup_corporativo.bkp.views.edit_offsite'),
-    (r'^network/config/edit$', 'backup_corporativo.bkp.views.edit_network_config'),
-    (r'^network/config/update$', 'backup_corporativo.bkp.views.update_network_config'),
+    # views_app/networkinterfaces.py
+    (r'^networkinterface/new$', 'backup_corporativo.bkp.views.new_networkinterface'),
+    (r'^networkinterface/$', 'backup_corporativo.bkp.views.create_networkinterface'),
     # views_app/stats.py
     (r'^stats$', 'backup_corporativo.bkp.views.view_stats'),
     # views_app/authentications.py

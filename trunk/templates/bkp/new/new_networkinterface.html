@@ -31,6 +31,7 @@
             <th>Mac</th>
             <th>Ip</th>
             <th>Netmask</th>
+            <th>Gateway</th>
             <th></th>
             <th></th>
         </tr>
@@ -38,10 +39,11 @@
         <tbody>
 		{% for iface in interfaces %}
         <tr>
-	        <td>{{ iface.network_iface_name }}</td>
-	        <td>{{ iface.network_mac }}</td>
-	        <td>{{ iface.network_ip }}</td>
-	        <td>{{ iface.network_netmask }}</td>
+	        <td>{{ iface.interface_name }}</td>
+	        <td>{{ iface.interface_mac }}</td>
+	        <td>{{ iface.interface_address }}</td>
+	        <td>{{ iface.interface_netmask }}</td>
+	        <td>{{ iface.interface_gateway }}</td>
 			<td> <button onclick="location.href='{{script_name}}/{{iface.edit_url}}';return false"><span>Alterar</span></button></td>
 			<td> <button onclick="location.href='{{script_name}}/{{iface.delete_url}}';return false" class="red"><span>Remover</span></button></td>
 	    </tr>
@@ -57,7 +59,7 @@
 <h3>Configurar</h3>
 </div>
 <div class="bloco_texto">
-<form action="{{script_name}}/network/config/update" method="post">
+<form action="{{script_name}}/networkinterface/" method="post">
     {% for field in netform %}
         <div class="fieldWrapper">
             {{ field.errors }}
