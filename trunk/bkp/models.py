@@ -588,10 +588,7 @@ class Procedure(models.Model):
     def build_file_tree(self, file_list):
         """Build tree from file list"""
         import os
-        files = []
-
-        for f in file_list:
-            files.append('%s:%s' % (os.path.join(f['FPath'], f['FName']), f['FId']))
+        files = ['%s:%s' % (os.path.join(f['FPath'], f['FName']), f['FId']) for f in file_list]
         return utils.parse_filetree(files)
         
     def get_fileset_name(self):
