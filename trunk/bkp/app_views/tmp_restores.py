@@ -89,14 +89,19 @@ def new_restore(request, computer_id=None, procedure_id=None, job_id=None):
                 vars_dict['src_client'] = temp_dict['hidden_restore_form'].cleaned_data['client_source']
                 vars_dict['target_dt'] = temp_dict['hidden_restore_form'].cleaned_data['target_dt']
                 vars_dict['fileset_name'] = temp_dict['hidden_restore_form'].cleaned_data['fileset_name']
-
+                
                 if forms_dict['restore_form'].is_valid():
                     client_from_restore = vars_dict['comp'].computer_name
                     client_to_restore = forms_dict['restore_form'].cleaned_data['client_restore']
                     date_to_restore = vars_dict['target_dt']
                     directory_to_restore = forms_dict['restore_form'].cleaned_data['restore_path']
                     fileset_name = vars_dict['fileset_name']
-                    file_list = request.POST.getlist('file')
+                    raw_file_list = request.POST.getlist('file')
+                    # Generating list of list.
+                    file_list = []
+                    for f in raw_file_list:
+                        f = f.split('/')
+                        file_list.append(['%s/' % i for i in f[:-1]] + [f[-1]])
                     Bacula.tmp_restore(client_from_restore, client_to_restore, date_to_restore, directory_to_restore, fileset_name, file_list)
                     return HttpResponseRedirect(computer_path(request, computer_id))
 #                    return HttpResponse(request.POST.getlist('file'))
