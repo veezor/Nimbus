@@ -38,28 +38,46 @@ DAYS_OF_THE_WEEK = {
 ###
 
 ### NetworkConfig ###
+# Futuramente essa classe será substituída por um gerenciamento completo de interfaces
+# Para o momento não faz sentido usar esse nome de modelo, mas vamos usar assim mesmo
+# Pra evitar a mudança no nome do modelo quando o sistema tiver em produção
+# Mas hoje em dia essa classe poderia perfeitamente ser chamada de NetworkConfig
+# Já que centraliza toda a configuração de rede do sistema em um único objeto
+# TODO: Gerenciamento completo de rede
 class NetworkInterface(models.Model):
-	interface_mac = cfields.MACAddressField("Endereço MAC",choices=(), unique=True)
+	interface_mac = cfields.MACAddressField("Endereço MAC", unique=True) #,choices=()
 	interface_name = cfields.ModelSlugField("Nome da Interface", max_length=30)
 	interface_address = models.IPAddressField("Endereço IP")
 	interface_netmask = models.IPAddressField("Máscara")
-	interface_gateway = models.IPAddressField("Gateway")
 	interface_network = models.IPAddressField("Network")
 	interface_broadcast = models.IPAddressField("Broadcast")
-	
-	def edit_url(self):
-		return "network/config/%s/edit" % self.id
-		
-	def delete_url(self):
-		return "network/config/%s/delete" % self.id
-		
+	interface_gateway = models.IPAddressField("Gateway Padrão")
+	interface_dns1 = models.IPAddressField("Servidor DNS 1")
+	interface_dns2 = models.IPAddressField("Servidor DNS 2")
+			
 	def save(self):
-		# TODO: Calcular valores corretos para network e broadcast
-		self.interface_network = '1.1.1.1'
-		self.interface_broadcast = '1.1.1.1'
+		if self.interface_mac == 'MAC':
+			from backup_corporativo.bkp.network_utils import NetworkInfo
+			self.interface_mac = NetworkInfo.main_mac_address()
+		self.id = 1 # always use the same row id at database to store the config
 		super(NetworkInterface, self).save()
+	
+	def __unicode__(self):
+		return "%s (%s)" % (self.interface_name, self.interface_address)
+		
+	#ClassMethods
+	def networkconfig(cls):
+		try:
+			netconfig = cls.objects.get(pk=1)
+			return netconfig
+		except cls.DoesNotExist:
+			return cls()
+	networkconfig = classmethod(networkconfig)
         
 ### GlobalConfig ###
+# TODO: remover campos redundantes com NetworkInterface
+# por exemplo server_ip e alterar todos os lugares no código
+# onde server_ip é mencionado
 class GlobalConfig(models.Model):
     bacula_name = cfields.ModelSlugField("Nome da Instância", max_length=50)
     server_ip = models.IPAddressField("Endereço IP")
@@ -87,6 +105,7 @@ class GlobalConfig(models.Model):
     def save(self):
         if not self.id:
             self.generate_passwords()
+            NetworkInterface.networkconfig.save()
         self.id = 1 # always use the same row id at database to store the config
         super(GlobalConfig, self).save()
 

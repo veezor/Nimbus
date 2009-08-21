@@ -51,3 +51,9 @@ class NetworkInfo:
 				choices.append((mac_address,mac_address))
 		return choices
 	mac_choices = classmethod(mac_choices)
+	
+	def main_mac_address(cls):
+		iface = cls.interfaces()[0]
+		macaddress = cls.mac_address(iface)
+		return macaddress and macaddress or 'MAC'
+	main_mac_address = classmethod(main_mac_address)

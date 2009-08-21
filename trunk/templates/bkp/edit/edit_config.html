@@ -4,10 +4,7 @@
 
 <ul class="aux menu_horizontal config">
     <li><a href="{{script_name}}/config/global/edit"{% ifequal config_type 'global' %} class="ativo"{% endifequal %}>Configurações globais</a></li>
-    <li><a href="{{script_name}}/config/dump_restore/edit"{% ifequal config_type 'dump_restore' %} class="ativo"{% endifequal %}>Dump e restauração</a></li>
     <li><a href="{{script_name}}/config/password/edit"{% ifequal config_type 'password' %} class="ativo"{% endifequal %}>Senha</a></li>
-    <li><a href="{{script_name}}/config/devices/edit"{% ifequal config_type 'devices' %} class="ativo"{% endifequal %}>Dispositivos Externos</a></li>
-    <li><a href="{{script_name}}/config/restrictions/edit"{% ifequal config_type 'restrictions' %} class="ativo"{% endifequal %}>Restrições de Banda</a></li>
     <li><a href="{{script_name}}/config/offsite/edit"{% ifequal config_type 'offsite' %} class="ativo"{% endifequal %}>Offsite</a></li>
 </ul>
 
@@ -25,26 +22,6 @@
     </form>
 {% endifequal %}
 
-{% ifequal config_type 'dump_restore' %}
-    <h2>Gerar Dump do Sistema</h2>
-
-    <form action="{{script_name}}/dump/create" method="post">
-    <p><input type="submit" value="Dump" /></p>
-    </form>
-    <br />
-
-    <h2>Restaurar Sistema</h2>
-    <form action="{{script_name}}/dump/restore" method="post" enctype="multipart/form-data">
-	    {% for field in restoredumpform %}
-		    <div class="fieldWrapper">
-                {{ field.errors }}
-                {{ field.label_tag }}: {{ field }}
-            </div>
-	    {% endfor %}
-
-    <p><input type="submit" value="Restore" /></p>
-    </form>
-{% endifequal %}
 
 {% ifequal config_type 'password' %}
 <h2>Alterar Senha do Administrador</h2>
@@ -61,127 +38,7 @@
 {% endifequal %}
 
 
-{% ifequal config_type 'devices' %}
-<h2>Cadastrar Dispositivo</h2>
 
-<form action="{{script_name}}/device/" method="post">
-    <div class="fieldWrapper">
-        {{ devform.device_name.errors }}
-        {{ devform.device_name.label_tag }} {{ devform.device_name }}
-    </div>
-
-    <div class="fieldWrapper">
-        {{ devform.uuid.errors }}
-		{{ devform.uuid.label_tag }}	
-		<select name="uuid" id="id_uuid">
-			{% for value,choice in dev_choices %}
-			<option value="{{value}}" selected="selected">{{choice}} (UUID {{value}})</option>
-			{% endfor %}
-		</select>
-    </div>
-    <p><input type="submit" value="Salvar" /></p>
-</form>
-
-<h2>Dispositivos Cadastrados</h2>
-<div class="bloco_texto">
-{% if not devices %}
-<p> Não existem dispositivos cadastrados.</p>
-{% else %}
-<ul>
-{% for dev in devices %}
-	<li>
-	{{dev}} 
-	<button onclick="location.href='{{script_name}}/{{dev.edit_url}}'"><span>Alterar</span></button>
-	<button onclick="location.href='{{script_name}}/{{dev.delete_url}}'"><span>Remover</span></button>
-    </li>
-{% endfor %}
-</ul>
-{% endif %}
-</div>
-{% endifequal %}
-
-{% ifequal config_type 'restrictions' %}
-<h2>Adicionar Nova Restrição</h2>
-<form action="{{script_name}}/restriction/" method="post">
-
-	<div class="fieldWrapper">
-	{{ restform.restrictiontime.errors }}
-	    <span class="label">{{ restform.restrictiontime.label_tag }}</span>
-    	<span class="value">{{ restform.restrictiontime }}</span>
-	</div>
-	<div class="fieldWrapper">
-	    {{ restform.restriction_value.errors }}
-	     <span class="label">{{ restform.restriction_value.label_tag }}</span>
-	     <span class="value">{{ restform.restriction_value }}</span>
-	</div>
-
-	{% if restform.days.errors %}
-		{{ restform.days.errors }}
-	{% endif %}
-
-    <div class="fieldWrapper">
-	    <span class="label"><label>Dias de Restrição</label></span>
-		<span class="value">
-		    {% for choice_id, choice_label in restform.fields.days.choices %}
-		        <span class="item_day" style="float:left; width:65px;"><input type="checkbox" name="days" value="{{ choice_id }}"> {{ choice_label|slice_unicode:3 }}</span>
-		    {% endfor %}
-		</span>
-    </div>
-    <p><input type="submit" value="Salvar" /></p>
-</form>
-
-
-<div class="titulo_botoes">
-    <h3>
-        <span>Restrições Cadastradas</span>
-    </h3>
-    <div class="botao_acoes"></div>
-</div>
-<div class="bloco_texto">
-	{% if not rtimes %}
-	<p> Não existem restrições cadastradas. </p>
-	{% else %}
-	
-	<script type="text/javascript">
-	    $(document).ready(
-    	    function() {
-    	        $('.removable_cell').css('cursor', 'pointer');
-    	        $('.removable_cell').click(
-	                function(){
-	                    location.href = '{{script_name}}/restriction/' + $(this).attr('rel') + '/delete';
-	                }
-	            );
-    	    }
-	    );
-	</script>
-    <table class="restriction_table">
-    <thead>
-        <tr>
-        <th scope='col'>Hora</th>
-        <th scope='col'>Segunda</th>
-        <th scope='col'>Terça</th>
-        <th scope='col'>Quarta</th>
-        <th scope='col'>Quinta</th>
-        <th scope='col'>Sexta</th>
-        <th scope='col'>Sábado</th>
-        <th scope='col'>Domingo</th>
-        </tr>
-    </thead>
-	<tbody>
-	{% for rtime in rtimes %}
-    <tr> 
-        <td> {{ rtime.restriction_time }} </td>
-		{% for day in days_of_the_week %}
-            <td {% if rtime|restriction_id:day %}class="removable_cell" rel="{{rtime|restriction_id:day}}" title="Clique para remover."{% endif %}> {{ rtime|restriction_value:day }}{% if rtime|restriction_id:day %} kbps{% endif %}
-		</td>
-	{% endfor %}
-	</tr>
-    {% endfor %}
-	</tbody>
-	</table>
-	{% endif %}
-</div>
-{% endifequal %}
 
 {% ifequal config_type 'offsite' %}
 <h2>Backup Offsite</h2>

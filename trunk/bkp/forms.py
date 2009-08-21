@@ -10,15 +10,17 @@ from backup_corporativo.bkp.models import *
 # Custom
 from backup_corporativo.bkp import customfields as cfields
 
-class NetworkInterfaceForm(ModelForm):
+class NetworkInterfaceEditForm(ModelForm):
     class Meta:
         model = NetworkInterface
-        fields = ('interface_name','interface_mac','interface_address','interface_netmask','interface_gateway',)
+        fields = ('interface_address','interface_netmask','interface_network',
+        			'interface_broadcast', 'interface_gateway','interface_dns1', 'interface_dns2',)
 
-    def load_choices(self):
-    	from backup_corporativo.bkp.network_utils import NetworkInfo
-    	self.fields['interface_mac'].widget=forms.Select()
-        self.fields['interface_mac'].choices = [('', '----------')] + NetworkInfo.mac_choices()
+#    def load_choices(self):
+#    	from backup_corporativo.bkp.network_utils import NetworkInfo
+#    	self.fields['interface_mac'].widget=forms.Select()
+#        self.fields['interface_mac'].choices = [('', '----------')] + NetworkInfo.mac_choices()
+
 
 class RestoreCompForm(forms.Form):
     target_client = forms.ChoiceField(label="Computador", choices=(), widget=forms.Select())
