@@ -99,10 +99,17 @@ class Bacula:
     # Todo BCONSOLE_CONF declarar em algum lugar 
     def tmp_restore(cls, client_from_restore, client_to_restore, date_to_restore, directory_to_restore, fileset_name, file_list):
         from backup_corporativo.bkp import utils
+        import re
+    	folder_re = '[a-zA-Z0-9.:_-]+/$'
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         raw_cmd = '''bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_from)s restoreclient=%(client_to)s select yes where=%(dir)s fileset=%(fileset)s before="%(date)s"\n'''
-        for file in file_list:
-            raw_cmd += "mark %s\n" % file
+        for filepath in file_list:
+        	for item in filepath:
+	        	if re.match(folder_re, item):
+	        		raw_cmd += 'cd %s\n' % item
+	        	else:
+	        		raw_cmd += "mark %s\n" % item
+	        		break
         raw_cmd += "\nBACULAEOF"
         cmd = raw_cmd % {'bconsole_conf':BCONSOLE_CONF,
                         'client_from':client_from_restore,
@@ -110,7 +117,8 @@ class Bacula:
                         'dir':directory_to_restore,
                         'fileset':fileset_name,
                         'date':date_to_restore,}
-        print cmd
+        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        os.system(cmd)
     tmp_restore = classmethod(tmp_restore)
         
     def run_restore_last(cls, ClientName, ClientRestore="", Where=WHERE_DEFAULT):
