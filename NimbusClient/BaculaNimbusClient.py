@@ -76,7 +76,6 @@ def uploadVolumes(DBCONN,STACK,SOAPSERVER,NLOGIN,NPASSWD,NSPEED) :
 		#break
 		return "NOAUTH"
 	
-	#os.system("curl -H Content-MD5:"+MD5BASE64+" \""+url+"\" -T "+volume+" -f --limit-rate "+str(NSPEED)+"K --retry 5 --retry-delay 10 -s -w \"%{http_code}\" > /etc/nimbus/httpcodeout")
 	os.system("curl -H Content-MD5:"+MD5BASE64+" \""+url+"\" -T "+volume+" -f --limit-rate "+str(NSPEED)+"K -s -w \"%{http_code}\" > /etc/nimbus/httpcodeout")
 	httpcode = open('/etc/nimbus/httpcodeout','r')
 	CODE = httpcode.read()
@@ -135,7 +134,7 @@ def main():
 		if rtncd == "Empty Stack":
 			FDBK = "STOP"
 		if rtncd == "HTTP Error" or rtncd == "NOAUTH":
-			print "Ouuch! Houston we have a problem, but we will retry!"			
+			print "Retrying..."			
 			RETRYCOUNT = RETRYCOUNT + 1	
 			time.sleep(60)
 			stack = generateStack(PATH,dbconn)
