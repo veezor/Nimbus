@@ -79,18 +79,30 @@ def __control_daemon(op, daemonname):
 		output = os.popen("/etc/init.d/"+daemonname+" "+op)
 	else:
 		raise Exception("Operação Desconhecida: "+op)
+def __status_daemon(daemonname):
+	status = os.popen("/etc/init.d/"+daemonname+" status")
+	return status.read()
 
 def control_director(op):
 	__control_daemon("bacula-ctl-dir",op)
-
+	
 def control_storage(op):
 	__control_daemon("bacula-ctl-sd",op)
 
-def control_filed(op):
+def control_client(op):
 	__control_daemon("bacula-ctl-fd",op)
 
 def control_network(op):
 	__control_daemon("networking",op)
+
+def status_director():
+	return __status_daemon("bacula-ctl-dir")
+
+def status_storage():
+	return __status_daemon("bacula-ctl-sd")
+
+def status_client():
+	return __status_daemon("bacula-ctl-fd")
 
 def main():
 
@@ -98,6 +110,13 @@ def main():
 	server.registerFunction(generate_iftab)
 	server.registerFunction(generate_dns)
 	server.registerFunction(generate_interfaces)
+	server.registerFunction(control_director)
+	server.registerFunction(control_storage)
+	server.registerFunction(control_client)
+	server.registerFunction(control_network)
+	server.registerFunction(status_director)
+	server.registerFunction(status_storage)
+	server.registerFunction(status_client)
 	print "Inicializing NimbusManager version %s by Linconet" % VERSION
 	server.serve_forever()
 
