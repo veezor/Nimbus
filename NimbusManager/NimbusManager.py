@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-VERSION = "1.2"
+VERSION = "1.3"
 
 from SOAPpy import SOAPServer
 import sys,os
@@ -72,6 +72,25 @@ def generate_interfaces(iface, ip, netmask, broad=None, network=None, gateway=No
 		interfaces.write("\tgateway %s\n" % gateway)
 	interfaces.close()
 	print "Interfaces file created"
+
+def __control_daemon(op, daemonname):
+	operations = ("start","stop","restart")
+	if op in operations:
+		output = os.popen("/etc/init.d/"+daemonname+" "+op)
+	else:
+		raise Exception("Operação Desconhecida: "+op)
+
+def control_director(op):
+	__control_daemon("bacula-ctl-dir",op)
+
+def control_storage(op):
+	__control_daemon("bacula-ctl-sd",op)
+
+def control_filed(op):
+	__control_daemon("bacula-ctl-fd",op)
+
+def control_network(op):
+	__control_daemon("networking",op)
 
 def main():
 
