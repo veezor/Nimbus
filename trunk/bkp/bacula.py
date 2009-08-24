@@ -120,7 +120,7 @@ class Bacula:
                         'fileset':fileset_name,
                         'date':date_to_restore,}
         NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
-        print(cmd)
+        os.system(cmd)
     tmp_restore = classmethod(tmp_restore)
         
     def run_restore_last(cls, ClientName, ClientRestore="", Where=WHERE_DEFAULT):
