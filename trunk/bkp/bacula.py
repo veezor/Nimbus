@@ -96,7 +96,8 @@ class Bacula:
     total_mbytes = classmethod(total_mbytes)
 
     # ClassMethods
-    # Todo BCONSOLE_CONF declarar em algum lugar 
+    # TODO: BCONSOLE_CONF declarar em algum lugar 
+    # TODO: Otimizar pastas, corrigir caso para quando marcar só uma pasta.
     def tmp_restore(cls, client_from_restore, client_to_restore, date_to_restore, directory_to_restore, fileset_name, file_list):
         from backup_corporativo.bkp import utils
         import re
