@@ -16,7 +16,13 @@ from django.shortcuts import get_object_or_404
 @authentication_required
 def view_stats(request):
     vars_dict, forms_dict, return_dict = global_vars(request)
+
     from backup_corporativo.bkp.bacula import Bacula
+    from SOAPpy import SOAPProxy
+    server = SOAPProxy("http://127.0.0.1:8888")
+    vars_dict['dir_status'] = server.status_director()
+    vars_dict['sd_status'] = server.status_storage()
+    vars_dict['fd_status'] = server.status_client()
     vars_dict['runningjobs'] = Bacula.running_jobs()
     vars_dict['lastjobs'] = Bacula.last_jobs()
     vars_dict['dbsize'] = Bacula.db_size()
