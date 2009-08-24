@@ -90,7 +90,7 @@ class GlobalConfig(models.Model):
     max_upload_bandwidth = models.CharField("Limite de Upload", max_length=15, default='100 mbps')
     admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
     offsite_on = models.BooleanField("Offsite ativo?", default=False)
-    offsite_hour = models.TimeField("Horário")
+    offsite_hour = models.TimeField("Horário", default="00:00:00")
 
     def generate_passwords(self):
         """Generates random passwords."""
