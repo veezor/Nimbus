@@ -463,7 +463,7 @@ class Procedure(models.Model):
     storage = models.ForeignKey(Storage, default=None)
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     offsite_on = models.BooleanField("Enviar para offsite?", default=False)
-    pool_size = models.IntegerField("Tamanho da Pool", default=0)
+    pool_size = models.IntegerField("Tamanho total ocupado", default=0)
     retention_time = models.IntegerField("Tempo de renteção (dias)", default=0)
 
     def build_backup(self, fset, sched, trigg):
