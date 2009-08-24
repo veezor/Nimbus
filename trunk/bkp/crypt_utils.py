@@ -77,6 +77,6 @@ def decrypt(input, output, key, factor, del_original=False):
         remove_or_leave(input)
 
 
-GENERATE_KEY_RAW_CMD = "openssl genrsa -out %(out)s 2048"
+GENERATE_RSA_KEY_RAW_CMD = "openssl genrsa -out %(out)s 2048"
 GENERATE_CERT_RAW_CMD = "openssl req -new -key %(key_path)s -x509 -out %(out)s -config %(conf)s"
 GET_PEM_RAW_CMD = "cat %(key_path)s %(cert_path)s"

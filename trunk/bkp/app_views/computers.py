@@ -125,7 +125,6 @@ def update_computer(request, computer_id):
 @authentication_required
 def view_computer(request, computer_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
-
     store_location(request)
     if request.method == 'GET':
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
@@ -151,7 +150,7 @@ def delete_computer(request, computer_id):
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
         return render_to_response('bkp/delete/delete_computer.html', return_dict, context_instance=RequestContext(request))    
-        
+
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=computer_id)
         comp.delete()
@@ -159,14 +158,14 @@ def delete_computer(request, computer_id):
         return redirect_back_or_default(request, default=root_path(request))  
 
 
-        
 def test_computer(request, computer_id):
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=computer_id)
         comp.run_test_job()
         request.user.message_set.create(message="Uma requisição teste foi enviada para ser executado no computador.")
         return HttpResponseRedirect(computer_path(request, computer_id))
-        
+
+
 @authentication_required
 def client_config_dump(request, computer_id):
     """Generates and provides download to a file deamon client config file."""
@@ -174,7 +173,7 @@ def client_config_dump(request, computer_id):
         computer = Computer.objects.get(pk=computer_id)
         dump_file = computer.dump_filedaemon_config()
         
-    	# Return file for download
+        # Return file for download
         response = HttpResponse(mimetype='text/plain')
         response['Content-Disposition'] = 'attachment; filename=bacula-fd.conf'
         response.write(dump_file)
@@ -188,7 +187,7 @@ def client_pem_dump(request, computer_id):
         computer = Computer.objects.get(pk=computer_id)
         dump_file = computer.dump_pem()
         
-    	# Return file for download
+        # Return file for download
         response = HttpResponse(mimetype='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s.pem'% (computer.computer_name)
         response.write(dump_file)
@@ -203,10 +202,26 @@ def master_certificate_dump(request):
         Computer.generate_master_certificate()
         
         dump_file = Computer.get_master_certificate()
-        
-    	# Return file for download
+
+        # Return file for download
         response = HttpResponse(mimetype='text/plain')
         response['Content-Disposition'] = 'attachment; filename=master.cert'
         response.write(dump_file)
         return response
+
+
+@authentication_required
+def key_cert_pem(request, computer_id):
+    """Generates and provides download to a file deamon client config file."""
+    if request.method == 'GET':
+        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
+        vars_dict['rsa_key'] = vars_dict['comp'].dump_rsa_key()		
+        vars_dict['certificate'] = vars_dict['comp'].dump_certificate()
+        vars_dict['pem'] = vars_dict['comp'].dump_pem()
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response('bkp/view/view_key_cert_pem.html', return_dict, context_instance=RequestContext(request))    
+        
+        
+
 

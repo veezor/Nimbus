@@ -73,7 +73,7 @@ class NetworkInterface(models.Model):
 		except cls.DoesNotExist:
 			return cls()
 	networkconfig = classmethod(networkconfig)
-        
+
 ### GlobalConfig ###
 # TODO: remover campos redundantes com NetworkInterface
 # por exemplo server_ip e alterar todos os lugares no código
@@ -158,12 +158,41 @@ class Computer(models.Model):
         return utils.absolute_file_path("%s.pem" % self.computer_name,"custom/crypt/")
 
     def __generate_rsa_key(self):
-        """Gera chave rsa do computador."""
-        Computer.generate_rsa_key(self.computer_rsa_key_path())
-    
+        from backup_corporativo.bkp.crypt_utils import GENERATE_RSA_KEY_RAW_CMD
+        utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
+        cmd = GENERATE_RSA_KEY_RAW_CMD % {'out':self.computer_rsa_key_path()}
+        os.popen(cmd).read()
+        
+
     def __generate_certificate(self):
-        """Gera certificado do computador."""
-        Computer.generate_certificate(self.computer_rsa_key_path(), self.computer_certificate_path())
+        from backup_corporativo.bkp.utils import CERTIFICATE_CONFIG_PATH
+        from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
+        utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
+        rsa_key_path = self.computer_rsa_key_path()
+        if not os.path.isfile(rsa_key_path):
+            raise Exception(u"Não foi possível encontrar Chave RSA. Tentou-se: %s" % rsa_key_path)
+        cmd = GENERATE_CERT_RAW_CMD % {'key_path':rsa_key_path, 'conf':CERTIFICATE_CONFIG_PATH, 'out':self.computer_certificate_path()}
+        os.popen(cmd).read()
+
+    def dump_rsa_key(self):
+        self.__generate_rsa_key()
+        f = open(self.computer_rsa_key_path())
+        dump = []
+        for line in f:
+            dump.append(str(line))
+            
+        return '\n'.join(dump)	
+        
+
+    def dump_certificate(self):
+        self.__generate_certificate()
+        f = open(self.computer_certificate_path())
+        dump = []
+        for line in f:
+            dump.append(str(line))
+            
+        return '\n'.join(dump)	
+	
     
     #TODO: verificar se o PEM que foi gerado é válido.
     def dump_pem(self):
@@ -172,12 +201,17 @@ class Computer(models.Model):
         PEM consiste na concatenação da chave
         e do certificado no mesmo arquivo.
         """
-        self.__generate_rsa_key()
-        self.__generate_certificate()
         from backup_corporativo.bkp.crypt_utils import GET_PEM_RAW_CMD
-        cmd = GET_PEM_RAW_CMD % {'key_path':self.computer_rsa_key_path(),
-                                'cert_path':self.computer_certificate_path(),}
+        rsa_key_path = self.computer_rsa_key_path()
+        certificate_path = self.computer_certificate_path()
+        if not os.path.isfile(rsa_key_path):
+            raise Exception(u"Não foi possível encontrar Chave RSA. Tentou-se: %s" % rsa_key_path)
+        if not os.path.isfile(certificate_path):
+            raise Exception(u"Não foi possível encontrar Certificado. Tentou-se: %s" % certificate_path)
+        cmd = GET_PEM_RAW_CMD % {'key_path':rsa_key_path, 'cert_path':certificate_path,}
         pem = os.popen(cmd).read()
+        utils.remove_or_leave(rsa_key_path)
+        utils.remove_or_leave(certificate_path)
         return pem
 
     # TODO: refatorar código e separar em várias funções
@@ -232,7 +266,7 @@ class Computer(models.Model):
         dump.append("}\n\n")
         
         return ''.join(dump)
-        
+
     def build_backup(self, proc, fset, sched, wtrigg):
         """Saves child objects in correct order."""
         proc.computer = self
@@ -256,16 +290,16 @@ class Computer(models.Model):
         last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {'client_name':self.computer_name,}
         last_jobs_cursor = BaculaDatabase.execute(last_jobs_query)
         return utils.dictfetch(last_jobs_cursor)
-        
+
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
         from backup_corporativo.bkp.bacula import Bacula;
         Bacula.run_backup(JobName='Teste Conectividade', client_name=self.computer_name)
-        
+
     def get_computer_name(self):
         """Returns computer name lower string."""
         return str.lower(str(self.computer_name))
-        
+
     def change_password(self):
         """Changes the password to a new random password."""
         self.__set_computer_password(size)
@@ -298,20 +332,23 @@ class Computer(models.Model):
     def master_cert_dump_url(self):
         """Returns master cert dump url."""
         return "computer/master_certificate/"
-        
+   
     def run_test_url(self):
         """Returns run test url."""
         return "computer/%s/test" % (self.id)
+
+    def key_cert_pem_url(self):
+        return "computer/%s/key_cert_pem/" % (self.id)
 
     def save(self):
         if not self.id: # Computador está sendo salvo pela primeira vez.
             self.__set_computer_password()
             self.__generate_rsa_key()
-            self.__generate_certificate()        
+            self.__generate_certificate()
         super(Computer, self).save()
         if self.bacula_id == self.BACULA_VOID_ID:
             self.__update_bacula_id()
-            
+
     def __update_bacula_id(self):
         """Queries bacula database for client id"""
         from backup_corporativo.bkp.sql_queries import CLIENT_ID_RAW_QUERY
@@ -323,8 +360,7 @@ class Computer(models.Model):
         client_id = cursor.fetchone()
         self.bacula_id = client_id and client_id[0] or self.BACULA_ERROR_ID
         self.save()
-    
-    
+
     def __set_computer_password(self, size=20):
         """Sets a new random password to the computer.
         Dont ever call self.save() inside this function otherwise it will cause infinite loop.
@@ -363,39 +399,6 @@ class Computer(models.Model):
         return '\n'.join(dump)
     dump_master_certificate = classmethod(dump_master_certificate)
 
-    def generate_rsa_key(cls, rsa_key_path):
-        """
-        Gera uma Chave RSA.
-        A Chave RSA é necessária para a geração de um Certificado.
-        A Chave RSA é necessária para a geração de um PEM.
-        So irá gerar Chave RSA caso ainda não exista.
-        """
-        from backup_corporativo.bkp.crypt_utils import GENERATE_KEY_RAW_CMD
-        utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
-        if os.path.isfile(rsa_key_path):
-            pass # Nunca sobrescreva uma chave.
-        else:
-            cmd = GENERATE_KEY_RAW_CMD % {'out':rsa_key_path,}
-            os.system(cmd)
-    generate_rsa_key = classmethod(generate_rsa_key)
-    
-    def generate_certificate(cls, rsa_key_path,certificate_path):
-        """
-        Gera Certificado baseado em uma Chave RSA.
-        O Certificado é necessário para a geração de um PEM.
-        So irá gerar Certificado caso ainda não exista.
-        """
-        from backup_corporativo.bkp.utils import CERTIFICATE_CONFIG_PATH
-        from backup_corporativo.bkp.crypt_utils import GENERATE_CERT_RAW_CMD
-        utils.create_or_leave(utils.absolute_dir_path('custom/crypt'))
-        if not os.path.isfile(rsa_key_path):
-            raise Exception(u"Não foi possível encontrar Chave RSA. Tentou-se: %s" % rsa_key_path)
-        if os.path.isfile(certificate_path):
-            pass # Nunca sobrescreva um certificado.
-        else:
-            cmd = GENERATE_CERT_RAW_CMD % {'key_path':rsa_key_path,'out':certificate_path, 'conf':CERTIFICATE_CONFIG_PATH,}
-            os.system(cmd)
-    generate_certificate = classmethod(generate_certificate)
 
 ### Storage ###
 class Storage(models.Model):
