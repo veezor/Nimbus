@@ -110,6 +110,7 @@ class Bacula:
 	        	else:
 	        		raw_cmd += "mark %s\n" % item
 	        		break
+        raw_cmd += "done\n"
         raw_cmd += "\nBACULAEOF"
         cmd = raw_cmd % {'bconsole_conf':BCONSOLE_CONF,
                         'client_from':client_from_restore,
@@ -118,7 +119,7 @@ class Bacula:
                         'fileset':fileset_name,
                         'date':date_to_restore,}
         NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
-        os.system(cmd)
+        print(cmd)
     tmp_restore = classmethod(tmp_restore)
         
     def run_restore_last(cls, ClientName, ClientRestore="", Where=WHERE_DEFAULT):
