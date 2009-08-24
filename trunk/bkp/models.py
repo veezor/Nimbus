@@ -105,7 +105,7 @@ class GlobalConfig(models.Model):
     def save(self):
         if not self.id:
             self.generate_passwords()
-            NetworkInterface.networkconfig.save()
+            # NetworkInterface.networkconfig.save()
         self.id = 1 # always use the same row id at database to store the config
         super(GlobalConfig, self).save()
 
