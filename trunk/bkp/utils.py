@@ -81,6 +81,10 @@ def edit_config_path(request):
     """Returns edit config path."""
     return "%s/config/edit" % (request.META['SCRIPT_NAME'])
 
+def edit_offsite_path(request):
+    """Returns edit config path."""
+    return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
+
 def new_device_path(request):
     """Returns new device path."""
     return "%s/config/devices/edit" % (request.META['SCRIPT_NAME'])

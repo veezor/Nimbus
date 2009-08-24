@@ -97,18 +97,18 @@ def edit_offsite(request):
     vars_dict, forms_dict, return_dict = global_vars(request)
     
     if request.method == 'GET':
-        return HttpResponseRedirect(new_offsite_path(request))
+        return HttpResponseRedirect(edit_offsite_path(request))
     
     if request.method == 'POST':
-        forms_dict['offsiteform'] = OffsiteConfigForm(request.POST)
+        global_config = GlobalConfig.objects.get(pk=1)
+        forms_dict['offsiteform'] = OffsiteConfigForm(request.POST, instance=global_config)
+        
+        #import pdb; pdb.set_trace()
         
         if forms_dict['offsiteform'].is_valid():
-            global_config = GlobalConfig.objects.get(pk=1)
-            for i in forms_dict['offsiteform'].cleaned_data:
-                global_config.__setattr__(i, forms_dict['offsiteform'].cleaned_data[i])
-            global_config.save()
+            forms_dict['offsiteform'].save()
             request.user.message_set.create(message="Dados do backup offsite alterados com sucesso.")
-            return HttpResponseRedirect(new_offsite_path(request))
+            return HttpResponseRedirect(edit_offsite_path(request))
         else:
             vars_dict['config_type'] = 'offsite'
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
