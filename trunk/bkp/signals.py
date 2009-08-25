@@ -52,9 +52,13 @@ def update_files(sender, instance, signal, *args, **kwargs):
     elif sender == Storage:
         update_storage_file(instance)
     elif sender == NetworkInterface:
-    	update_iftab_file(instance)
-    	update_interfaces_file(instance)
-    	update_dns_file(instance)
+        from backup_corporativo.settings import DEBUG
+        if DEBUG:
+            pass
+        else: 
+        	update_iftab_file(instance)
+        	update_interfaces_file(instance)
+        	update_dns_file(instance)
     elif sender == GlobalConfig:
         update_default_storage(instance)
         update_config_file(instance)
