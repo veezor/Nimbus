@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 path_re = re.compile('^([a-zA-Z]:)?/([a-zA-Z0-9 .@_-]+/)*$')
 slug_re = re.compile('^[a-zA-Z0-9-_]+$')
 mdayslist_re = re.compile('^([0-9]|[0-2][0-9]|3[0-1])(;([0-9]|[0-2][0-9]|3[0-1]))*$')
+size_unit_re = re.compile(r'^(\d+)\s*([A-Za-z]{1,2})$')
 
 class FormSlugField(forms.CharField):
     def clean(self, value):
@@ -95,5 +96,20 @@ class MACAddressField(models.Field):
         defaults.update(kwargs)
         return super(MACAddressField, self).formfield(**defaults)
 
-
 # Fim MACAddressField
+
+class PoolSizeField(forms.IntegerField):
+    def clean(self, value):
+	pool_size_re = re.match(size_unit_re, value)
+	if pool_size_re:
+	    numbers, unit = pool_size_re.groups()
+	    numbers = int(numbers)
+	    unit = unit.lower()
+	    if unit == 'gb':
+		numbers = numbers * 1024
+	    if unit == 'tb':
+		numbers = numbers * 1024 * 1024
+	    
+	    return numbers
+	else:
+	    raise forms.ValidationError, u'Formato inválido: Utilize sempre números inteiros seguidos da unidade, por exemplo "500MB", "12GB" ou "3TB".'

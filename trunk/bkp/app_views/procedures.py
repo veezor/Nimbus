@@ -42,12 +42,12 @@ def update_procedure(request, computer_id, procedure_id):
     vars_dict['proc'] = get_object_or_404(Procedure, pk=procedure_id)
 
     if request.method == 'POST':
-        forms_dict['procform'] = ProcedureForm(request.POST,instance=vars_dict['proc'])
+        forms_dict['procform'] = ProcedureForm(request.POST, instance=vars_dict['proc'])
         
         if forms_dict['procform'].is_valid():
             forms_dict['procform'].save()
             request.user.message_set.create(message="O procedimento foi alterado com sucesso.")
-            return HttpResponseRedirect(computer_path(request, computer_id))
+            return HttpResponseRedirect(edit_procedure_path(request, procedure_id, computer_id))
         else:
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)

@@ -73,6 +73,10 @@ def procedure_path(request, procedure_id, computer_id):
     """Returns procedure path."""
     return "%s/computer/%s/procedure/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id)
 
+def edit_procedure_path(request, procedure_id, computer_id):
+    """Returns procedure path."""
+    return "%s/computer/%s/procedure/%s/edit" % (request.META['SCRIPT_NAME'],computer_id,procedure_id)
+
 def schedule_path(request, schedule_id, procedure_id, computer_id):
     """Returns schedule path."""
     return "%s/computer/%s/procedure/%s/schedule/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id,schedule_id)
