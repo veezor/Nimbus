@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: iso-8859-1 -*-
+VERSION="0.1"
 
 import os
 import sys
@@ -21,23 +22,28 @@ def dbConnect(HOST,USER,PASSWD,DB):
 	return conn
 
 
-def generateStack(PATH,DBCONN):
-	os.chdir(PATH)
+def generateStack(volumes,PATH,DBCONN):
 	
-	dirlist=os.listdir(".")
 	cursor = DBCONN.cursor()
-	for volume in dirlist :
-		ctime=time.ctime(os.path.getmtime(volume))
+	cursor.execute("UPDATE arquivos SET stacked='no'")
+	stack = pilha.Stack()
+	for volume in volumes :
+		ctime=time.ctime(os.path.getmtime(PATH+volume))
 		cursor.execute("SELECT data FROM arquivos WHERE nomearquivo='"+volume+"'")
 		row = cursor.fetchone ()
 		if row == None: 
 			cursor.execute ("INSERT INTO arquivos(nomearquivo,data,status) VALUES('"+volume+"','"+ctime+"','toup')")
+			stack.push(volume)
+			cursor.execute("UPDATE arquivos SET stacked='yes' WHERE nomearquivo='"+volume+"'")
 		else:
 			if row[0] != ctime:
 				cursor.execute("UPDATE arquivos SET data='"+ctime+"', status='toup' WHERE nomearquivo='"+volume+"'")
+				stack.push(volume)
+				cursor.execute("UPDATE arquivos SET stacked='yes' WHERE nomearquivo='"+volume+"'")
 
-	stack = pilha.Stack()
-	cursor.execute("UPDATE arquivos SET stacked='no'")
+	if stack.isEmpty():
+		return "Empty Stack"
+	
 	
 	cursor.close ()
 	DBCONN.close()
@@ -48,19 +54,11 @@ def SOAPConnect(IPSERVER, PORT):
 	return server
 
 
-def uploadVolumes(DBCONN,STACK,SOAPSERVER,NLOGIN,NPASSWD,NSPEED) :
+def uploadVolumes(DBCONN,STACK,PATH,SOAPSERVER,NLOGIN,NPASSWD,NSPEED) :
+	os.chdir(PATH)
 	cursor = DBCONN.cursor()
-	cursor.execute("SELECT nomearquivo FROM arquivos WHERE status='toup' and stacked='no'")
-	while(1):
-		row = cursor.fetchone ()
-		if row == None:
-			break
-
-		STACK.push(row[0])
-		cursor.execute("UPDATE arquivos SET stacked='yes' WHERE nomearquivo='"+row[0]+"'")
 	if STACK.isEmpty():
 		return "Empty Stack"
-	
 	volume = STACK.pop()
 
 	FILEMD5 = file(volume,'rb')
@@ -118,8 +116,11 @@ def main():
 	NPASS = configclient.get("NIMBUS","password")
 	NSPEED = configclient.get("NIMBUS","speed")
 
+	VOLUMES = sys.argv[1].split("|")
+	print VOLUMES
+	
 	dbconn = dbConnect(HOST,USER,PASSWD,DB)
-	stack = generateStack(PATH,dbconn)
+	stack = generateStack(VOLUMES,PATH,dbconn)
 	soapserver = SOAPConnect(IPSERVER, PORT)
 
 	passwd = md5.new(NPASS).hexdigest()
@@ -129,7 +130,7 @@ def main():
 	while (FDBK == "CONTINUE" and RETRYCOUNT < 3):
 
 		dbconn = dbConnect(HOST,USER,PASSWD,DB)
-		rtncd = uploadVolumes(dbconn,stack,soapserver,NLOGIN,passwd,NSPEED)
+		rtncd = uploadVolumes(dbconn,stack,PATH,soapserver,NLOGIN,passwd,NSPEED)
 		if rtncd == "Empty Stack":
 			FDBK = "STOP"
 		if rtncd == "HTTP Error" or rtncd == "NOAUTH":
