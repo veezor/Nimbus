@@ -285,23 +285,25 @@ def generate_console(filename,dir_dict):
 def update_procedure_file(instance):
     """Procedure update file"""
     proc_name = instance.get_procedure_name()
+    proc_offsite = instance.offsite_on
     restore_name = instance.get_restore_name()
     fset_name = instance.get_fileset_name()
     sched_name = instance.get_schedule_name()
     pool_name = instance.get_pool_name()
     comp_name = instance.computer.get_computer_name()
     sto_name = instance.storage.storage_name
-    jdict = procedure_dict(proc_name, comp_name, fset_name, sched_name, pool_name, sto_name, type='Backup')
+    jdict = procedure_dict(proc_name, proc_offsite, comp_name, fset_name, sched_name, pool_name, sto_name, type='Backup')
     generate_procedure(proc_name,jdict)
 
     
-def procedure_dict(proc_name, comp_name, fset_name, sched_name, pool_name, sto_name, type='Backup', where=None):
+def procedure_dict(proc_name, proc_offsite, comp_name, fset_name, sched_name, pool_name, sto_name, type='Backup', where=None):
     """generate procedure attributes dict"""
     bootstrap = '/var/lib/bacula/%s.bsr' % (proc_name)
-    
+    run_after_job = proc_offsite and "/var/django/NimbusClient/NimbusClient.py %v" or None
+
     return  {'Name':proc_name, 'Client':comp_name, 'Level':'Incremental','FileSet':fset_name,
             'Schedule':sched_name, 'Storage':sto_name, 'Pool':pool_name,'Write Bootstrap':bootstrap,
-            'Priority':'10', 'Messages':'Standard','Type':type,'Where':where
+            'Priority':'10', 'Messages':'Standard','Type':type,'Where':where, 'Run After Job':run_after_job,
             }
 
 def generate_procedure(proc_name,attr_dict):
@@ -309,7 +311,8 @@ def generate_procedure(proc_name,attr_dict):
     f = utils.prepare_to_write(proc_name,'custom/jobs')
 
     f.write("Job {\n")
-    
+    if attr_dict['Run After Job'] is None:
+        del(attr_dict['Run After Job'])
     if attr_dict['Type'] == 'Backup':
         f.write('''\tWrite Bootstrap = "%s"\n''' % (attr_dict['Write Bootstrap']))
     elif attr_dict['Type'] == 'Restore':
