@@ -43,44 +43,29 @@
 {% ifequal config_type 'offsite' %}
 <h2>Backup Offsite</h2>
 
-<p>O backup offsite está "{% if offsite_on %}ATIVO{% endif %}{% if not offsite_on %}INATIVO{% endif %}".</p>
+{% if offsite_on %}
 
-{% if 0 %}
-<form action="{{script_name}}/device/" method="post">
-    <div class="fieldWrapper">
-        {{ devform.device_name.errors }}
-        {{ devform.device_name.label_tag }} {{ devform.device_name }}
-    </div>
-
-    <div class="fieldWrapper">
-        {{ devform.uuid.errors }}
-		{{ devform.uuid.label_tag }}	
-		<select name="uuid" id="id_uuid">
-			{% for value,choice in dev_choices %}
-			<option value="{{value}}" selected="selected">{{choice}} (UUID {{value}})</option>
-			{% endfor %}
-		</select>
-    </div>
-    <p><input type="submit" value="Salvar" /></p>
+<form action="{{script_name}}/offsite/edit" >
+<p>O backup offsite está Habilitado. Deseja desabilitar?</p>
+<button type="submit"><span>Deshabilitar</span></button>
 </form>
-{% endif %}
 
-<form action="{{script_name}}/offsite/" method="post">
-    {% for field in offsiteform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Salvar" /></p>
-</form>
 
 <h3>Procedimentos que executarão bakup offsite:</h3>
 <ul>
     {% for proc in procedures %}
         <li><a href="{{ script_name }}/{{ proc.computer.view_url }}">{{ proc.computer.computer_name }} - {{ proc.procedure_name }}</a></li>
     {% endfor %}
+
+
+{% else %}
+
+<form action="{{script_name}}/offsite/edit" >
+<p>O backup offsite está Desabilitado. Deseja habilitar?</p>
+<button type="submit"><span>Habilitar</span></button>
+</form>
 </ul>
+{% endif %}
 
 {% endifequal %}
 

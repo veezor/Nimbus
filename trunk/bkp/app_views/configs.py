@@ -45,8 +45,8 @@ def edit_config(request, config_type='global'):
             elif config_type == 'offsite':
                 vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
                 vars_dict['offsite_on'] = vars_dict['gconfig'].offsite_on
-                vars_dict['procedures'] = Procedure.objects.filter(offsite_on=True)
-                forms_dict['offsiteform'] = OffsiteConfigForm(instance=vars_dict['gconfig'])
+                if vars_dict['offsite_on']:
+                    vars_dict['procedures'] = Procedure.objects.filter(offsite_on=True)
         else:
             vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
             forms_dict['gconfigform'] = GlobalConfigForm(instance=vars_dict['gconfig'])
@@ -89,9 +89,6 @@ def change_password(request):
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             return render_to_response('bkp/edit/edit_config.html', return_dict, context_instance=RequestContext(request))
 
-
-		
-
 @authentication_required
 def edit_offsite(request):
     vars_dict, forms_dict, return_dict = global_vars(request)
@@ -102,8 +99,6 @@ def edit_offsite(request):
     if request.method == 'POST':
         global_config = GlobalConfig.objects.get(pk=1)
         forms_dict['offsiteform'] = OffsiteConfigForm(request.POST, instance=global_config)
-        
-        #import pdb; pdb.set_trace()
         
         if forms_dict['offsiteform'].is_valid():
             forms_dict['offsiteform'].save()

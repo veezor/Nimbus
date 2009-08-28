@@ -192,7 +192,7 @@ class Computer(models.Model):
             dump.append(str(line))
             
         return '\n'.join(dump)	
-	
+
     
     #TODO: verificar se o PEM que foi gerado é válido.
     def dump_pem(self):
@@ -653,6 +653,14 @@ class Procedure(models.Model):
 
     def __unicode__(self):
         return self.procedure_name
+
+#ClassMethods
+    def disable_offsite(cls):
+        offsite_procedures = cls.objects.filter(offsite_on=True)
+        for proc in offsite_procedures:
+            proc.offsite_on = False
+            proc.save()
+    disable_offsite = classmethod(disable_offsite)
 
 
 ### Schedule ###

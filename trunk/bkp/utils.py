@@ -92,7 +92,7 @@ def edit_offsite_path(request):
 def new_device_path(request):
     """Returns new device path."""
     return "%s/config/devices/edit" % (request.META['SCRIPT_NAME'])
-        
+
 def new_restriction_path(request):
     """Returns new restriction path."""        
     return "%s/config/restrictions/edit" % (request.META['SCRIPT_NAME'])
@@ -126,7 +126,11 @@ def backup_path(request):
 def edit_networkinterface_path(request):
     """Returns edit network config path."""
     return "%s/networkinterface/edit" % (request.META['SCRIPT_NAME'])
-
+    
+def edit_offsite_config_path(request):
+    """Returns edit offsite config path."""
+    return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
+    
 def random_password(size):
     """Generates random password of a given size."""
     import string

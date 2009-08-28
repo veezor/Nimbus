@@ -64,6 +64,7 @@ def update_files(sender, instance, signal, *args, **kwargs):
         update_config_file(instance)
         update_device_file(instance)     
         update_console_file(instance)
+        update_offsite_file(instance)
     elif sender == BandwidthRestriction:
         generate_cron()
     else:
@@ -193,6 +194,39 @@ def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
 
     f.close()
 
+def update_offsite_file(instance):
+    if instance.offsite_on:
+        generate_offsite_file("offsite_job",instance.offsite_hour)
+    else:
+        filepath = utils.absolute_file_path("offsite_job",'custom/jobs')
+        utils.remove_or_leave(filepath)
+        filepath = utils.absolute_file_path('offsite_sched', 'custom/schedules')
+        utils.remove_or_leave(filepath)
+
+def generate_offsite_file(filename, offsite_hour):
+    f = utils.prepare_to_write(filename, 'custom/jobs')
+    
+    proc_dict = procedure_dict("Upload Offsite", False, "empty_client", "empty_fileset", "offsite_schedule", 'empty_pool', 'StorageLocal', 'Admin', None)
+    
+    del(proc_dict['Run After Job'])
+    
+    f.write("Job {\n")
+    for k in proc_dict.keys():
+        f.write('''\t%(key)s = %(value)s\n''' % {'key':k,'value':proc_dict[k]})
+    f.write('''\tRun After Job = "/var/django/NimbusClient/NimbusClient.py -u"\n''')
+    f.write("}\n\n")
+    f.close()
+    
+    f = utils.prepare_to_write('offsite_sched', 'custom/schedules')
+    
+    f.write("Schedule {\n")
+    f.write('''\tName = "%s"\n''' % 'offsite_sched')
+    f.write('''\tRun = daily at %s\n''' %  offsite_hour)
+    f.write("}\n")
+    f.close()
+    
+
+
 ### Device ###
 
 def device_sto_dict(sto_name, sto_port):
@@ -299,7 +333,7 @@ def update_procedure_file(instance):
 def procedure_dict(proc_name, proc_offsite, comp_name, fset_name, sched_name, pool_name, sto_name, type='Backup', where=None):
     """generate procedure attributes dict"""
     bootstrap = '/var/lib/bacula/%s.bsr' % (proc_name)
-    run_after_job = proc_offsite and "/var/django/NimbusClient/NimbusClient.py %v" or None
+    run_after_job = proc_offsite and "/var/django/NimbusClient/NimbusClient.py -m %v" or None
 
     return  {'Name':proc_name, 'Client':comp_name, 'Level':'Incremental','FileSet':fset_name,
             'Schedule':sched_name, 'Storage':sto_name, 'Pool':pool_name,'Write Bootstrap':bootstrap,
@@ -342,7 +376,7 @@ def computer_dict(name,ip,password):
     return {'Name':name, 'Address':ip, 'FDPort':'9102', 'Catalog':'MyCatalog',
     'password':password, 'AutoPrune':'yes'}
 
-def generate_computer_file(name,attr_dict):        
+def generate_computer_file(name,attr_dict):
     """Computer generate file"""
     f = utils.prepare_to_write(name,'custom/computers')
 

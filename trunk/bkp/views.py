@@ -77,3 +77,4 @@ from backup_corporativo.bkp.app_views.triggers import *
 from backup_corporativo.bkp.app_views.tmp_restores import *
 from backup_corporativo.bkp.app_views.wizbkp import *
 from backup_corporativo.bkp.app_views.networkinterfaces import *
+from backup_corporativo.bkp.app_views.offsite import *
