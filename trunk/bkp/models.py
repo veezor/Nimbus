@@ -37,6 +37,35 @@ DAYS_OF_THE_WEEK = {
 ###   Models
 ###
 
+### NimbusUUID ###
+# UUID é gerado automaticamente utilizando o módulo uuid do Python
+# (http://docs.python.org/library/uuid.html) que foi feito de acordo
+# com a RFC 4122 (http://www.ietf.org/rfc/rfc4122.txt)
+# Depois de criado, um uuid nunca deve ser alterado e isso serve para
+# manter a integridade do sistema Nimbus.
+class NimbusUUID(models.Model):
+	# Constantes
+	NIMBUS_VOID = -1
+	# Atributos
+	uuid_hex = models.CharField("Hexadecimal UUID", max_length=32, unique=True, default=NIMBUS_VOID)
+	uuid_created_on = models.DateTimeField("Created On")
+	
+	def save(self):
+		if self.uuid_hex == self.NIMBUS_VOID:
+			import uuid
+			self.uuid_hex = uuid.uuid4().hex
+			self.uuid_created_on = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+			super(NimbusUUID, self).save()
+		else: #TODO: trocar abordagem por editable=False
+			raise Exception("Erro de programação: objeto NimbusUUID não pode ser alterado.")
+	
+	#ClassMethods
+	def build(cls):
+		nuuid = cls()
+		nuuid.save()
+		return nuuid
+	build = classmethod(build)
+	
 ### NetworkConfig ###
 # Futuramente essa classe será substituída por um gerenciamento completo de interfaces
 # Para o momento não faz sentido usar esse nome de modelo, mas vamos usar assim mesmo
@@ -79,9 +108,13 @@ class NetworkInterface(models.Model):
 # por exemplo server_ip e alterar todos os lugares no código
 # onde server_ip é mencionado
 class GlobalConfig(models.Model):
-    bacula_name = cfields.ModelSlugField("Nome da Instância", max_length=50)
+    # Constantes
+    NIMBUS_VOID = -1
+    # Atributos
+    nimbus_uuid = models.ForeignKey(NimbusUUID)
+    globalconfig_name = models.CharField("Nome da Instância", max_length=50)
     server_ip = models.IPAddressField("Endereço IP")
-    director_password = models.CharField(max_length=50,default='defaultpw')
+    director_password = models.CharField(max_length=50,default=NIMBUS_VOID)
     director_port = models.IntegerField("Porta do Director",default='9101')
     storage_port = models.IntegerField("Porta do Storage",default='9103')
     database_name = models.CharField(max_length=50, default='bacula')
@@ -103,27 +136,31 @@ class GlobalConfig(models.Model):
         return GlobalConfig.objects.all().count() > 0
 
     def save(self):
-        if not self.id:
-            self.generate_passwords()
+        if self.director_password == self.NIMBUS_VOID:
+            self.director_password = utils.random_password()
             # NetworkInterface.networkconfig.save()
+            try:
+                self.nimbus_uuid
+            except NimbusUUID.DoesNotExist:
+                self.nimbus_uuid = NimbusUUID.build()
         self.id = 1 # always use the same row id at database to store the config
         super(GlobalConfig, self).save()
-
  
 ### Computer ###
 class Computer(models.Model):
     # Constants
     DEFAULT_LOCATION="/tmp/bacula-restore"
-    BACULA_VOID_ID = -1
-    BACULA_ERROR_ID = 0
+    NIMBUS_VOID = -1
+    NIMBUS_ERROR = 0
     # Attributes
+    nimbus_uuid = models.ForeignKey(NimbusUUID)
     computer_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     computer_ip = models.IPAddressField("Endereço IP")
     computer_so = models.CharField("Sistema Operacional",max_length=50,choices=OS_CHOICES)
     computer_encryption = models.BooleanField("Encriptar Dados?",default=False)
     computer_description = models.TextField("Descrição",max_length=100, blank=True)
-    computer_password = models.CharField("Password",max_length=100, editable=False,default='defaultpw')
-    bacula_id = models.IntegerField("Bacula ID", default=BACULA_VOID_ID)
+    computer_password = models.CharField("Password",max_length=20, editable=False, default=NIMBUS_VOID)
+    computer_bacula_id = models.IntegerField("Bacula ID", default=NIMBUS_VOID)
     
     #TODO: Refatorar código
     def get_status(self):
@@ -341,12 +378,14 @@ class Computer(models.Model):
         return "computer/%s/key_cert_pem/" % (self.id)
 
     def save(self):
-        if not self.id: # Computador está sendo salvo pela primeira vez.
-            self.__set_computer_password()
-            self.__generate_rsa_key()
-            self.__generate_certificate()
+        if self.computer_password == self.NIMBUS_VOID:
+            self.computer_password = utils.random_password()
+        try:
+            self.nimbus_uuid
+        except NimbusUUID.DoesNotExist:
+            self.nimbus_uuid = NimbusUUID.build()
         super(Computer, self).save()
-        if self.bacula_id == self.BACULA_VOID_ID:
+        if self.computer_bacula_id == self.NIMBUS_VOID:
             self.__update_bacula_id()
 
     def __update_bacula_id(self):
@@ -358,16 +397,8 @@ class Computer(models.Model):
         cursor = BaculaDatabase.cursor()
         cursor.execute(cliend_id_query)
         client_id = cursor.fetchone()
-        self.bacula_id = client_id and client_id[0] or self.BACULA_ERROR_ID
+        self.computer_bacula_id = client_id and client_id[0] or self.NIMBUS_ERROR
         self.save()
-
-    def __set_computer_password(self, size=20):
-        """Sets a new random password to the computer.
-        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
-        """
-        from backup_corporativo.bkp.utils import random_password
-        self.computer_password = random_password(size)
-
 
     def __unicode__(self):
         return "%s (%s)" % (self.computer_name, self.computer_ip)
@@ -402,10 +433,14 @@ class Computer(models.Model):
 
 ### Storage ###
 class Storage(models.Model):
+    # Constantes
+    NIMBUS_UUID_VOID = NIMBUS_PASSWORD_VOID = -1
+    # Atributos
+    nimbus_uuid = models.ForeignKey(NimbusUUID, default=NIMBUS_UUID_VOID)
     storage_name = cfields.ModelSlugField("Nome", max_length=50, unique=True)
     storage_ip = models.IPAddressField("Endereço IP")
     storage_port = models.IntegerField("Porta do Storage", default='9103')
-    storage_password = models.CharField(max_length=50, default='defaultpw')
+    storage_password = models.CharField(max_length=50, default=NIMBUS_PASSWORD_VOID)
     storage_description = models.CharField("Descrição", max_length=100, blank=True)
 
     def get_storage_name(self):
@@ -413,23 +448,17 @@ class Storage(models.Model):
         return str.lower(str(self.storage_name))
 
     def save(self):
-        if not self.id: # If this record is not at database yet
-            self.__set_storage_password()
+        if self.storage_password == NIMBUS_PASSWORD_VOID:
+            self.storage_password = utils.random_password()
         super(Storage, self).save()
+        if self.nimbus_uuid == NIMBUS_UUID_VOID:
+            self.nimbus_uuid = NimbusUUID.build()
 
     def delete(self):
         if self.storage_name == 'StorageLocal':
             raise Exception('StorageLocal não pode ser removido.') # TODO: create custom NimbusException classes
         else:
             super(Storage, self).delete()
-        
-    def __set_storage_password(self, size=20):
-        """Sets a new random password to the storage.
-        Dont ever call self.save() inside this function otherwise it will cause infinite loop.
-        """
-        from backup_corporativo.bkp.utils import random_password
-        self.storage_password = random_password(size)
-
 
     def absolute_url(self):
         """Returns absolute url."""
@@ -459,7 +488,7 @@ class Storage(models.Model):
         return def_sto
     get_default_storage = classmethod(get_default_storage)
 
-        
+
 ### Procedure ###
 class Procedure(models.Model):
     computer = models.ForeignKey(Computer)
@@ -833,14 +862,14 @@ class DayOfTheWeek(models.Model):
     day_name = models.CharField("Name",max_length=10)
 
     def __unicode__(self):
-		return self.day_name
+        return self.day_name
 
 ### Restriction Time
 class RestrictionTime(models.Model):
     restriction_time = models.TimeField("Hora")
 
     def __unicode__(self):
-		return '%s' % self.restriction_time
+        return '%s' % self.restriction_time
 
 ### Bandwidth Restriction ###
 class BandwidthRestriction(models.Model):

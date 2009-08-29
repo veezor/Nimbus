@@ -131,7 +131,7 @@ def edit_offsite_config_path(request):
     """Returns edit offsite config path."""
     return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
     
-def random_password(size):
+def random_password(size=20):
     """Generates random password of a given size."""
     import string
     from random import choice
