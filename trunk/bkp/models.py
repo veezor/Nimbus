@@ -818,33 +818,6 @@ class Pool(models.Model):
     procedure = models.ForeignKey(Procedure)
 
 
-### Day of the Week
-class DayOfTheWeek(models.Model):
-    day_name = models.CharField("Name",max_length=10)
-
-    def __unicode__(self):
-        return self.day_name
-
-### Restriction Time
-class RestrictionTime(models.Model):
-    restriction_time = models.TimeField("Hora")
-
-    def __unicode__(self):
-        return '%s' % self.restriction_time
-
-### Bandwidth Restriction ###
-class BandwidthRestriction(models.Model):
-    dayoftheweek = models.ForeignKey(DayOfTheWeek)
-    restrictiontime = models.ForeignKey(RestrictionTime)
-    restriction_value = models.IntegerField("Restrição")
-
-    def delete_url(self):
-        return "restriction/%s/delete" % (self.id)
-
-    def __unicode__(self):
-        day = DAYS_OF_THE_WEEK[self.dayoftheweek.day_name]
-        return '%shs %s %s kbps' % (self.restrictiontime,self.dayoftheweek,self.restriction_value)
-
 class NimbusLog(models.Model):
     entry_timestamp = models.DateTimeField(default='',blank=True)
     entry_category = models.CharField(max_length=30)
