@@ -595,12 +595,9 @@ models.signals.post_delete.connect(remove_files, sender=Schedule)
 # Pool
 models.signals.post_save.connect(update_files, sender=Pool)
 models.signals.post_delete.connect(remove_files, sender=Pool)
-# Cron
+# Storage
 models.signals.post_save.connect(update_files, sender=Storage)
 models.signals.post_delete.connect(remove_files, sender=Storage)
-# Cron
-models.signals.post_save.connect(update_files, sender=BandwidthRestriction)
-models.signals.post_delete.connect(update_files, sender=BandwidthRestriction)
 # Trigger
 models.signals.post_save.connect(update_files, sender=WeeklyTrigger)
 models.signals.post_delete.connect(update_files, sender=WeeklyTrigger)
