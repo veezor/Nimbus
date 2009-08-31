@@ -172,7 +172,7 @@ class Computer(models.Model):
     computer_so = models.CharField("Sistema Operacional",max_length=50,choices=OS_CHOICES)
     computer_encryption = models.BooleanField("Encriptar Dados?",default=False)
     computer_description = models.TextField("Descrição",max_length=100, blank=True)
-    computer_password = models.CharField("Password",max_length=20, editable=False, default=NIMBUS_BLANK)
+    computer_password = models.CharField("Password",max_length=25, editable=False, default=NIMBUS_BLANK)
     computer_bacula_id = models.IntegerField("Bacula ID", default=NIMBUS_BLANK)
     
     def save(self):

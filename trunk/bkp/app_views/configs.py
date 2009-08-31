@@ -3,15 +3,8 @@
 
 # Application
 from backup_corporativo.bkp.utils import *
-from backup_corporativo.bkp.models import GlobalConfig, Procedure
-from backup_corporativo.bkp.forms import GlobalConfigForm, OffsiteConfigForm
-from backup_corporativo.bkp.forms import RestoreDumpForm
-from django.contrib.auth.forms import PasswordChangeForm
-from backup_corporativo.bkp.models import RestrictionTime
-from backup_corporativo.bkp.models import DayOfTheWeek
-from backup_corporativo.bkp.models import BandwidthRestriction
-from backup_corporativo.bkp.models import RestrictionTime
-from backup_corporativo.bkp.forms import BandwidthRestrictionForm
+from backup_corporativo.bkp.models import *
+from backup_corporativo.bkp.forms import *
 from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
 # Misc
 from django.http import HttpResponse

@@ -134,22 +134,3 @@ class FileSetForm(ModelForm):
         model = FileSet
         fields = ('path')
 
-
-
-class BandwidthRestrictionForm(forms.Form):
-	# TODO: import days of the week from its original place
-	DAYS_OF_THE_WEEK = (
-		('monday','Segunda'),
-		('tuesday','Terça'),
-		('wednesday','Quarta'),
-		('thursday','Quinta'),
-		('friday','Sexta'),
-		('saturday','Sábado'),
-		('sunday','Domingo')
-	)
-
-	#DAYS_LIST = DayOfTheWeek.objects.all()
-
-	restrictiontime = forms.TimeField(label=u'Hora de Restrição',input_formats=['%H:%M'])
-	restriction_value =  forms.IntegerField(label=u'Limite de Upload')
-	days = forms.MultipleChoiceField(choices=DAYS_OF_THE_WEEK,widget=forms.CheckboxSelectMultiple())

@@ -65,8 +65,6 @@ def update_files(sender, instance, signal, *args, **kwargs):
         update_device_file(instance)     
         update_console_file(instance)
         update_offsite_file(instance)
-    elif sender == BandwidthRestriction:
-        generate_cron()
     else:
         raise # Oops!
     Bacula.reload()
@@ -549,26 +547,6 @@ def remove_storage_file(sto):
     """Remove Storage file"""
     base_dir,filepath = utils.mount_path(sto.storage_bacula_name(), 'custom/storages')
     utils.remove_or_leave(filepath)
-
-
-
-### Cron file
-def generate_cron(filename="nimbus.cron"):
-	"""Generates cron file"""
-	import commands
-	import time
-	root_user = 'root'
-	script_name = 'speedctl.py'
-	f = utils.prepare_to_write(filename,'custom/')
-	restrictions = BandwidthRestriction.objects.all()
-
-	for rest in restrictions:
-		hour = rest.restrictiontime.restriction_time.hour
-		minute = rest.restrictiontime.restriction_time.minute
-		week_day = rest.dayoftheweek.day_name[0:3]
-		rest_value = rest.restriction_value
-		f.write('%s %s * * %s %s %s %s\n' % (minute,hour,week_day,root_user,script_name,rest_value))
-	f.close()
 
    
 ###
