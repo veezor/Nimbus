@@ -45,13 +45,13 @@ DAYS_OF_THE_WEEK = {
 # manter a integridade do sistema Nimbus.
 class NimbusUUID(models.Model):
 	# Constantes
-	NIMBUS_VOID = -1
+	NIMBUS_BLANK = -1
 	# Atributos
-	uuid_hex = models.CharField("Hexadecimal UUID", max_length=32, unique=True, default=NIMBUS_VOID)
+	uuid_hex = models.CharField("Hexadecimal UUID", max_length=32, unique=True, default=NIMBUS_BLANK)
 	uuid_created_on = models.DateTimeField("Created On")
 	
 	def save(self):
-		if self.uuid_hex == self.NIMBUS_VOID:
+		if self.uuid_hex == self.NIMBUS_BLANK:
 			import uuid
 			self.uuid_hex = uuid.uuid4().hex
 			self.uuid_created_on = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -109,40 +109,53 @@ class NetworkInterface(models.Model):
 # onde server_ip é mencionado
 class GlobalConfig(models.Model):
     # Constantes
-    NIMBUS_VOID = -1
+    NIMBUS_BLANK = -1
     # Atributos
     nimbus_uuid = models.ForeignKey(NimbusUUID)
     globalconfig_name = models.CharField("Nome da Instância", max_length=50)
     server_ip = models.IPAddressField("Endereço IP")
-    director_password = models.CharField(max_length=50,default=NIMBUS_VOID)
+    director_password = models.CharField(max_length=50,default=NIMBUS_BLANK)
     director_port = models.IntegerField("Porta do Director",default='9101')
     storage_port = models.IntegerField("Porta do Storage",default='9103')
-    database_name = models.CharField(max_length=50, default='bacula')
-    database_user = models.CharField(max_length=50, default='root')
-    database_password = models.CharField(max_length=50)
+    database_name = models.CharField("Database Name", max_length=50, default='bacula')
+    database_user = models.CharField("Database USer", max_length=50, default='root')
+    database_password = models.CharField("Database Password", max_length=50)
     max_upload_bandwidth = models.CharField("Limite de Upload", max_length=15, default='100 mbps')
     admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
     offsite_on = models.BooleanField("Offsite ativo?", default=False)
     offsite_hour = models.TimeField("Horário", default="00:00:00")
 
-    def generate_passwords(self):
-        """Generates random passwords."""
-        from backup_corporativo.bkp.utils import random_password
-        self.storage_password = random_password(50)
-        self.director_password = random_password(50)
-
     def system_configured(self):
         """Returns True if system is configured, False otherwise."""
         return GlobalConfig.objects.all().count() > 0
 
+    def director_bacula_name(self):
+        return "%s_director" % (self.nimbus_uuid.uuid_hex)
+
+    def storage_bacula_name(self):
+        return "%s_storage" % (self.nimbus_uuid.uuid_hex)
+
+    #TODO: atualizar porta do storage de acordo com campo do GlobalConfig!!
     def save(self):
-        if self.director_password == self.NIMBUS_VOID:
+        if self.director_password == self.NIMBUS_BLANK:
             self.director_password = utils.random_password()
             # NetworkInterface.networkconfig.save()
-            try:
-                self.nimbus_uuid
-            except NimbusUUID.DoesNotExist:
-                self.nimbus_uuid = NimbusUUID.build()
+        try:
+            self.nimbus_uuid
+        except NimbusUUID.DoesNotExist:
+            self.nimbus_uuid = NimbusUUID.build()
+        try:
+            sto = Storage.objects.get(storage_name='StorageLocal')
+            sto.storage_ip = self.server_ip
+            sto.storage_port = self.storage_port
+            sto.save()
+        except Storage.DoesNotExist:
+            sto = Storage()
+            sto.storage_name = 'StorageLocal'
+            sto.storage_ip = self.server_ip
+            sto.storage_port = self.storage_port
+            sto.storage_description = 'Storage Local Nimbus'
+            sto.save()
         self.id = 1 # always use the same row id at database to store the config
         super(GlobalConfig, self).save()
  
@@ -150,7 +163,7 @@ class GlobalConfig(models.Model):
 class Computer(models.Model):
     # Constants
     DEFAULT_LOCATION="/tmp/bacula-restore"
-    NIMBUS_VOID = -1
+    NIMBUS_BLANK = -1
     NIMBUS_ERROR = 0
     # Attributes
     nimbus_uuid = models.ForeignKey(NimbusUUID)
@@ -159,9 +172,23 @@ class Computer(models.Model):
     computer_so = models.CharField("Sistema Operacional",max_length=50,choices=OS_CHOICES)
     computer_encryption = models.BooleanField("Encriptar Dados?",default=False)
     computer_description = models.TextField("Descrição",max_length=100, blank=True)
-    computer_password = models.CharField("Password",max_length=20, editable=False, default=NIMBUS_VOID)
-    computer_bacula_id = models.IntegerField("Bacula ID", default=NIMBUS_VOID)
+    computer_password = models.CharField("Password",max_length=20, editable=False, default=NIMBUS_BLANK)
+    computer_bacula_id = models.IntegerField("Bacula ID", default=NIMBUS_BLANK)
     
+    def save(self):
+        if self.computer_password == self.NIMBUS_BLANK:
+            self.computer_password = utils.random_password()
+        try:
+            self.nimbus_uuid
+        except NimbusUUID.DoesNotExist:
+            self.nimbus_uuid = NimbusUUID.build()
+        super(Computer, self).save()
+        if self.computer_bacula_id == self.NIMBUS_BLANK:
+            self.__update_bacula_id()
+
+    def computer_bacula_name(self):
+        return "%s_client" % (self.nimbus_uuid.uuid_hex)
+
     #TODO: Refatorar código
     def get_status(self):
         """
@@ -377,17 +404,6 @@ class Computer(models.Model):
     def key_cert_pem_url(self):
         return "computer/%s/key_cert_pem/" % (self.id)
 
-    def save(self):
-        if self.computer_password == self.NIMBUS_VOID:
-            self.computer_password = utils.random_password()
-        try:
-            self.nimbus_uuid
-        except NimbusUUID.DoesNotExist:
-            self.nimbus_uuid = NimbusUUID.build()
-        super(Computer, self).save()
-        if self.computer_bacula_id == self.NIMBUS_VOID:
-            self.__update_bacula_id()
-
     def __update_bacula_id(self):
         """Queries bacula database for client id"""
         from backup_corporativo.bkp.sql_queries import CLIENT_ID_RAW_QUERY
@@ -434,25 +450,27 @@ class Computer(models.Model):
 ### Storage ###
 class Storage(models.Model):
     # Constantes
-    NIMBUS_UUID_VOID = NIMBUS_PASSWORD_VOID = -1
+    NIMBUS_BLANK = -1
     # Atributos
-    nimbus_uuid = models.ForeignKey(NimbusUUID, default=NIMBUS_UUID_VOID)
+    nimbus_uuid = models.ForeignKey(NimbusUUID, default=NIMBUS_BLANK)
     storage_name = cfields.ModelSlugField("Nome", max_length=50, unique=True)
     storage_ip = models.IPAddressField("Endereço IP")
     storage_port = models.IntegerField("Porta do Storage", default='9103')
-    storage_password = models.CharField(max_length=50, default=NIMBUS_PASSWORD_VOID)
+    storage_password = models.CharField(max_length=50, default=NIMBUS_BLANK)
     storage_description = models.CharField("Descrição", max_length=100, blank=True)
 
-    def get_storage_name(self):
-        """Returns storage name lower string."""
-        return str.lower(str(self.storage_name))
-
     def save(self):
-        if self.storage_password == NIMBUS_PASSWORD_VOID:
+        if self.storage_password == self.NIMBUS_BLANK:
             self.storage_password = utils.random_password()
-        super(Storage, self).save()
-        if self.nimbus_uuid == NIMBUS_UUID_VOID:
+        try:
+            self.nimbus_uuid
+        except NimbusUUID.DoesNotExist:    
             self.nimbus_uuid = NimbusUUID.build()
+        super(Storage, self).save()
+
+    def storage_bacula_name(self):
+        return "%s_storage" % (self.nimbus_uuid.uuid_hex)
+
 
     def delete(self):
         if self.storage_name == 'StorageLocal':
@@ -491,12 +509,35 @@ class Storage(models.Model):
 
 ### Procedure ###
 class Procedure(models.Model):
+    nimbus_uuid = models.ForeignKey(NimbusUUID)
     computer = models.ForeignKey(Computer)
-    storage = models.ForeignKey(Storage, default=None)
+    storage = models.ForeignKey(Storage)
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     offsite_on = models.BooleanField("Enviar para offsite?", default=False)
     pool_size = models.IntegerField("Tamanho total ocupado", default=0)
     retention_time = models.IntegerField("Tempo de renteção (dias)", default=0)
+
+    def save(self):
+        try:
+            self.nimbus_uuid
+        except NimbusUUID.DoesNotExist:    
+            self.nimbus_uuid = NimbusUUID.build()
+        super(Procedure, self).save()
+
+    def procedure_bacula_name(self):
+        return "%s_job" % (self.nimbus_uuid.uuid_hex)
+
+    def fileset_bacula_name(self):
+        return "%s_fileset" % (self.nimbus_uuid.uuid_hex)
+    
+    def restore_bacula_name(self):
+        return "%s_restorejob" % (self.nimbus_uuid.uuid_hex)
+        
+    def schedule_bacula_name(self):
+        return "%s_schedule" % (self.nimbus_uuid.uuid_hex)
+
+    def pool_bacula_name(self):
+        return "%s_pool" % (self.nimbus_uuid.uuid_hex)
 
     def build_backup(self, fset, sched, trigg):
         """Saves child objects in correct order."""
@@ -644,25 +685,6 @@ class Procedure(models.Model):
         files = ['%s:%s' % (os.path.join(f['FPath'], f['FName']), f['FId']) for f in file_list]
         return utils.parse_filetree(files)
         
-    def get_fileset_name(self):
-        """Get fileset name for bacula file."""
-        return "%s_Set" % (self.procedure_name)
-        
-    def get_procedure_name(self):
-        """Get procedure name for bacula file."""
-        return "%s_Job" % (self.procedure_name)
-    
-    def get_restore_name(self):
-        """Get restore procedure name for bacula."""
-        return "%s_RestoreJob" % (self.procedure_name)
-        
-    def get_schedule_name(self):
-        """Get schedule name for bacula file."""
-        return "%s_Sched" % (self.procedure_name)
-
-    def get_pool_name(self):
-        """Get pool name for bacula file."""
-        return "%s_Pool" % (self.procedure_name)
 
     def edit_url(self):
         """Returns edit url."""
@@ -697,16 +719,6 @@ class Schedule(models.Model):
     procedure = models.ForeignKey(Procedure)
     type = models.CharField("Tipo",max_length=20,choices=TYPE_CHOICES)
 
-    def get_trigger(self):
-        """Returns the associated trigger or False in case of it doesnt exist."""
-        cmd = "trigger = %sTrigger.objects.get(schedule=self)" % (self.type)
-        try:
-            exec(cmd)
-        except Exception, e: # DoesNotExist Exception means there's no trigger
-            trigger = False
-            #raise Exception("Agendamento inválido, não possui detalhes.")
-        return trigger
-
     def build_backup(self, trigg):
         """Saves child objects in correct order."""
         trigg.schedule = self
@@ -738,6 +750,23 @@ class Schedule(models.Model):
         return "computer/%s/procedure/%s/schedule/%s/delete" % (
                 self.procedure.computer_id, self.procedure_id, self.id)
 
+    # TODO: Otimizar codigo, remover if do schedule type (programaçao dinamica)
+    def get_trigger(self):
+        if self.type == 'Monthly':
+            try:
+                trigger = self.monthlytrigger_set.get()
+                return trigger
+            except MonthlyTrigger.DoesNotExist:
+                return False
+        elif self.type == 'Weekly':
+            try:
+                trigger = self.weeklytrigger_set.get()
+                return trigger
+            except WeeklyTrigger.DoesNotExist:
+                return False
+        else:
+            raise Exception("Erro de programação: tipo de agendamento inválido %s" % self.type)
+        return "%strigger_set" % sched.type.lower()
 
 ### WeeklyTrigger ###
 class WeeklyTrigger(models.Model):
@@ -758,7 +787,7 @@ class MonthlyTrigger(models.Model):
     def save(self):
         self.__sanitize_target_days()
         super(MonthlyTrigger,self).save()
-        
+
     def __sanitize_target_days(self):
         """Removes duplicated day entries"""
         s = set(self.target_days.split(';'))
@@ -787,75 +816,7 @@ class FileSet(models.Model):
 class Pool(models.Model):
     # pools are created when Procedure is created through signals
     procedure = models.ForeignKey(Procedure)
-    
-### External Device ###
-class ExternalDevice(models.Model):
-    device_name = models.CharField("Nome",max_length=20)
-    uuid = models.CharField("Dispositivo", max_length=50, unique=True)
-    mount_index = models.IntegerField(unique=True)
 
-    def mount_cmd(self):
-        """Returns unix mount command"""
-        return '''mount UUID=%s /mnt/%s''' % (self.uuid, self.mount_index)
-
-    def __unicode__(self):
-        return "%s (UUID %s)" % (self.device_name,self.uuid)
-
-    def edit_url(self):
-        """Returns edit url."""
-        return "device/%s/edit" % (self.id)
-
-    def update_url(self):
-        """Returns edit url."""
-        return "device/%s/edit" % (self.id)
-
-    def delete_url(self):
-        """Returns delete url."""
-        return "device/%s/delete" % (self.id)
-
-
-    # ClassMethods
-    def device_choices(cls):
-        dev_choices = []
-        import os
-        import re
-        label_re = '''LABEL="(?P<label>.*?)"'''
-        uuid_re = '''UUID="(?P<uuid>.*?)"'''
-        cmd = 'blkid'
-        output = os.popen(cmd).read()
-        lines = output.split('\n')
-    
-        for line in lines:
-            label = uuid = None
-            label_se = re.search(label_re, line)
-            uuid_se = re.search(uuid_re, line)
-    
-            if label_se:
-                label = label_se.group('label')
-            if uuid_se:
-                uuid = uuid_se.group('uuid')
-            if label and uuid:
-                dev_choices.append([uuid,label])
-       
-        return dev_choices
-    device_choices = classmethod(device_choices)
-
-    #TODO: improve next piece of code
-    def next_device_index(cls):
-        import MySQLdb
-        from backup_corporativo.settings import DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_HOST
-        query = "select max(mount_index) from bkp_externaldevice;"
-        max_index = False
-        try:
-            db = MySQLdb.connect(host=DATABASE_HOST, user=DATABASE_USER, passwd=DATABASE_PASSWORD, db=DATABASE_NAME)
-            cursor = db.cursor()
-            cursor.execute(query)
-            max_index = cursor.fetchall()[0][0]+1
-        except:
-            pass
-        return max_index and max_index or 0
-    next_device_index = classmethod(next_device_index)
-   
 
 ### Day of the Week
 class DayOfTheWeek(models.Model):

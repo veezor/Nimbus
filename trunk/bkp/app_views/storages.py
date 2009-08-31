@@ -106,19 +106,19 @@ def delete_storage(request, storage_id):
         return redirect_back_or_default(request, default=root_path(request))
 
 # TODO remove code from view, move it to models.py
-def generate_storage_dump_file(storage, config):
+def generate_storage_dump_file(storage, gconf):
     "generate config file"
     sto_dict = {'Name': storage.storage_name, 'SDPort': storage.storage_port,
                     'WorkingDirectory': '"/var/bacula/working"',
                     'Pid Directory': '"/var/run"',
                     'Maximum Concurrent Jobs': '20'}
-    dir_dict = {'Name': config.bacula_name,
-                    'Password': '"%s"' % config.storage_password}
+    dir_dict = {'Name': gconf.director_bacula_name(),
+                    'Password': '"%s"' % storage.storage_password}
     dev_dict = {'Name': "FileStorage", 'Media Type': 'File',
                     'Archive Device': '/var/backup', 'LabelMedia': 'yes', 
                     'Random Access': 'yes', 'AutomaticMount': 'yes',
                     'RemovableMedia': 'no', 'AlwaysOpen': 'no'}
-    msg_dict = {'Name': "Standard", 'Director':'%s = all' % config.bacula_name}
+    msg_dict = {'Name': "Standard", 'Director':'%s = all' % gconf.director_bacula_name()}
     
     s = []
 
@@ -149,10 +149,10 @@ def generate_storage_dump_file(storage, config):
 def storage_config_dump(request, storage_id):
     """Generates and offers to download a storage config file."""
     storage = Storage.objects.get(id=storage_id)
-    config = GlobalConfig.objects.get(pk=1)
-    dump_file = generate_storage_dump_file(storage, config)
+    gconf = GlobalConfig.objects.get(pk=1)
+    dump_file = generate_storage_dump_file(storage, gconf)
     
-	# Return file for download
+    # Return file for download
     response = HttpResponse(mimetype='text/plain')
     response['Content-Disposition'] = 'attachment; filename=bacula-sd.conf'
     response.write(dump_file)

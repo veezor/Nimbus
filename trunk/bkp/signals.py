@@ -109,16 +109,15 @@ def update_dns_file(instance):
 	
 ### Global Config ###
 
-def update_config_file(instance):
+def update_config_file(gconf):
     """Config update file"""
-    i = instance
-    dir_dict = config_dir_dict("%s" % i.bacula_name, i.director_port, i.director_password)
+    dir_dict = config_dir_dict(gconf.director_bacula_name(), gconf.director_port, gconf.director_password)
     sto_list = []
     for sto in Storage.objects.all():
-        sto_list.append(config_sto_dict(sto.storage_name, sto.storage_ip, sto.storage_port, sto.storage_password))
-    cat_dict = config_cat_dict("MyCatalog",i.database_name, i.database_user, i.database_password)
-    smsg_dict = config_msg_dict("Standard",i.admin_mail)
-    dmsg_dict = config_msg_dict("Daemon",i.admin_mail)    
+        sto_list.append(config_sto_dict(sto.storage_bacula_name(), sto.storage_ip, sto.storage_port, sto.storage_password))
+    cat_dict = config_cat_dict("MyCatalog",gconf.database_name, gconf.database_user, gconf.database_password)
+    smsg_dict = config_msg_dict("Standard",gconf.admin_mail)
+    dmsg_dict = config_msg_dict("Daemon",gconf.admin_mail)    
     generate_config("bacula-dir.conf", dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
 
 def config_dir_dict(dir_name, dir_port, dir_passwd):
@@ -194,9 +193,9 @@ def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
 
     f.close()
 
-def update_offsite_file(instance):
-    if instance.offsite_on:
-        generate_offsite_file("offsite_job",instance.offsite_hour)
+def update_offsite_file(gconf):
+    if gconf.offsite_on:
+        generate_offsite_file("offsite_job",gconf.offsite_hour)
     else:
         filepath = utils.absolute_file_path("offsite_job",'custom/jobs')
         utils.remove_or_leave(filepath)
@@ -253,14 +252,13 @@ def device_msg_dict(msg_name, dir_name):
     return {'Name':msg_name, 'Director':'%s = all' % dir_name}
 
     
-def update_device_file(instance):
+def update_device_file(gconf):
     """Update Device File"""
-    i = instance
     def_sto = Storage.get_default_storage()
     sto_dict = device_sto_dict("StorageLocal", def_sto.storage_port)
-    dir_dict = device_dir_dict("%s" % i.bacula_name,def_sto.storage_password)
+    dir_dict = device_dir_dict(gconf.director_bacula_name(),def_sto.storage_password)
     dev_dict = device_dev_dict("FileStorage")
-    msg_dict = device_msg_dict("Standard","%s" % i.bacula_name)
+    msg_dict = device_msg_dict("Standard","%s" % gconf.director_bacula_name())
     generate_device("bacula-sd.conf", sto_dict, dir_dict, dev_dict, msg_dict)
 
 def generate_device(filename,sto_dict, dir_dict, dev_dict, msg_dict):
@@ -296,10 +294,9 @@ def console_dir_dict(dir_name, dir_port, dir_passwd):
     return {'Name':dir_name, 'DIRPort':dir_port, 'Address':'127.0.0.1', 'Password':'"%s"' % dir_passwd}
 
 
-def update_console_file(instance):
+def update_console_file(gconf):
     """Update Console File"""
-    i = instance
-    dir_dict = console_dir_dict("%s" % i.bacula_name, i.director_port, i.director_password)
+    dir_dict = console_dir_dict("%s" % gconf.director_bacula_name(), gconf.director_port, gconf.director_password)
     generate_console("bconsole.conf", dir_dict)
     
 
@@ -316,16 +313,16 @@ def generate_console(filename,dir_dict):
     
 #### Procedure #####
 
-def update_procedure_file(instance):
+def update_procedure_file(proc):
     """Procedure update file"""
-    proc_name = instance.get_procedure_name()
-    proc_offsite = instance.offsite_on
-    restore_name = instance.get_restore_name()
-    fset_name = instance.get_fileset_name()
-    sched_name = instance.get_schedule_name()
-    pool_name = instance.get_pool_name()
-    comp_name = instance.computer.get_computer_name()
-    sto_name = instance.storage.storage_name
+    proc_name = proc.procedure_bacula_name()
+    proc_offsite = proc.offsite_on
+    restore_name = proc.restore_bacula_name()
+    fset_name = proc.fileset_bacula_name()
+    sched_name = proc.schedule_bacula_name()
+    pool_name = proc.pool_bacula_name()
+    comp_name = proc.computer.computer_bacula_name()
+    sto_name = proc.storage.storage_bacula_name()
     jdict = procedure_dict(proc_name, proc_offsite, comp_name, fset_name, sched_name, pool_name, sto_name, type='Backup')
     generate_procedure(proc_name,jdict)
 
@@ -359,17 +356,17 @@ def generate_procedure(proc_name,attr_dict):
     f.write("}\n")
     f.close()
 
-def remove_procedure_file(instance):
+def remove_procedure_file(proc):
     """remove procedure file"""
-    base_dir,filepath = utils.mount_path(instance.get_procedure_name(),'custom/jobs')
+    base_dir,filepath = utils.mount_path(proc.procedure_bacula_name(),'custom/jobs')
     utils.remove_or_leave(filepath)
     
 #### Computer #####
 
-def update_computer_file(instance):
+def update_computer_file(comp):
     """Computer update file"""
-    cdict = computer_dict(instance.get_computer_name(),instance.computer_ip,instance.computer_password)
-    generate_computer_file(instance.get_computer_name(),cdict)
+    cdict = computer_dict(comp.computer_bacula_name(),comp.computer_ip,comp.computer_password)
+    generate_computer_file(comp.computer_bacula_name(),cdict)
 
 def computer_dict(name,ip,password):
     """generate computer attributes dict"""
@@ -386,20 +383,20 @@ def generate_computer_file(name,attr_dict):
     f.write("}\n")
     f.close()
 
-def remove_computer_file(instance):
+def remove_computer_file(comp):
     """Computer remove file"""
-    base_dir,filepath = utils.mount_path(instance.get_computer_name(),'custom/computers')
+    base_dir,filepath = utils.mount_path(comp.computer_bacula_name(),'custom/computers')
     utils.remove_or_leave(filepath)
     
 #### FileSet #####
 
 
-def update_fileset_file(procedure):
+def update_fileset_file(proc):
     """FileSet update filesets to a procedure instance"""
-    fsets = procedure.fileset_set.all()
-    name = procedure.get_fileset_name()
+    fsets = proc.fileset_set.all()
+    fset_name = proc.fileset_bacula_name()
     farray = generate_file_array(fsets)
-    generate_fileset_file(name,farray)
+    generate_fileset_file(fset_name,farray)
 
 def generate_file_array(fsets):
     """generate file_array"""
@@ -425,17 +422,17 @@ def generate_fileset_file(name,file_array):
     f.write("}\n")
     f.close()
 
-def remove_fileset_file(procedure):
+def remove_fileset_file(proc):
     """remove FileSet file"""
-    name = procedure.get_fileset_name()
+    name = proc.fileset_bacula_name()
     base_dir,filepath = utils.mount_path(name,'custom/filesets')
     utils.remove_or_leave(filepath)    
 
 #### Pool #####
 
-def update_pool_file(procedure):
+def update_pool_file(proc):
     """Pool update pool bacula file""" 
-    pool_name = procedure.get_pool_name()
+    pool_name = proc.pool_bacula_name()
     pdict = pool_dict(pool_name)
     generate_pool(pool_name,pdict)
 
@@ -461,12 +458,13 @@ def generate_pool(name,attr_dict):
     f.write("}\n")
     f.close()
 
-def remove_pool_file(instance):
+def remove_pool_file(proc):
     """pool remove file"""
-    base_dir,filepath = utils.mount_path(instance.get_pool_name(),'custom/pools')
+    base_dir,filepath = utils.mount_path(proc.pool_bacula_name(),'custom/pools')
     utils.remove_or_leave(filepath)
 
 ### Schedule ###
+# TODO: Otimizar codigo, remover if do schedule type (programaçao dinamica)
 def run_dict(schedules_list):
     """build a dict with bacula run specification"""
     dict = {}
@@ -489,9 +487,9 @@ def run_dict(schedules_list):
     return dict
 
 
-def update_schedule_file(procedure):
-    sched_name = procedure.get_schedule_name()
-    scheds = procedure.schedule_set.all()
+def update_schedule_file(proc):
+    sched_name = proc.schedule_bacula_name()
+    scheds = proc.schedule_set.all()
     rdict = run_dict(scheds)
     generate_schedule(sched_name,rdict)
 
@@ -505,30 +503,30 @@ def generate_schedule(schedule_name,run_dict):
     f.write("}\n")
     f.close()
 
-def remove_schedule_file(procedure):
-    base_dir,filepath = utils.mount_path(procedure.get_schedule_name(),'custom/schedules')
+def remove_schedule_file(proc):
+    base_dir,filepath = utils.mount_path(proc.schedule_bacula_name(),'custom/schedules')
     utils.remove_or_leave(filepath)
     
 
 
 #### Storage #####
-def update_default_storage(globalconfig):
+def update_default_storage(gconf):
     """Updates default storage object or creates it if doesnt exists."""
     def_sto = Storage.get_default_storage()
     def_sto = def_sto and def_sto or Storage() # Assign new storage if it doesnt exist
     def_sto.storage_name = 'StorageLocal'
-    def_sto.storage_ip = globalconfig.server_ip
-    def_sto.storage_port = globalconfig.storage_port
+    def_sto.storage_ip = gconf.server_ip
+    def_sto.storage_port = gconf.storage_port
     def_sto.save()
 
 
-def update_storage_file(instance):
+def update_storage_file(sto):
     """Storage update file."""
-    sdict = storage_dict(instance.get_storage_name(),
-                         instance.storage_ip,
-                         instance.storage_port,
-                         instance.storage_password)
-    generate_storage_file(instance.get_storage_name(), sdict)
+    sdict = storage_dict(sto.storage_bacula_name(),
+                         sto.storage_ip,
+                         sto.storage_port,
+                         sto.storage_password)
+    generate_storage_file(sto.storage_bacula_name(), sdict)
 
 def storage_dict(name, ip, port, password):
     """Generate Storage attributes dict."""
@@ -547,9 +545,9 @@ def generate_storage_file(name, attr_dict):
     f.write("}\n")
     f.close()
 
-def remove_storage_file(instance):
+def remove_storage_file(sto):
     """Remove Storage file"""
-    base_dir,filepath = utils.mount_path(instance.get_storage_name(), 'custom/storages')
+    base_dir,filepath = utils.mount_path(sto.storage_bacula_name(), 'custom/storages')
     utils.remove_or_leave(filepath)
 
 

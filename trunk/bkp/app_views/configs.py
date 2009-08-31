@@ -4,11 +4,8 @@
 # Application
 from backup_corporativo.bkp.utils import *
 from backup_corporativo.bkp.models import GlobalConfig, Procedure
-from backup_corporativo.bkp.models import ExternalDevice
 from backup_corporativo.bkp.forms import GlobalConfigForm, OffsiteConfigForm
 from backup_corporativo.bkp.forms import RestoreDumpForm
-from backup_corporativo.bkp.forms import ExternalDeviceForm
-from backup_corporativo.bkp.forms import ExternalDeviceEditForm
 from django.contrib.auth.forms import PasswordChangeForm
 from backup_corporativo.bkp.models import RestrictionTime
 from backup_corporativo.bkp.models import DayOfTheWeek

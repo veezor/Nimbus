@@ -56,7 +56,7 @@ class RestoreDumpForm(forms.Form):
 class GlobalConfigForm(ModelForm):
     class Meta:
         model = GlobalConfig
-        fields = ('bacula_name','server_ip','director_port','storage_port','database_name','database_user','database_password','admin_mail','offsite_on')
+        fields = ('globalconfig_name','server_ip','director_port','storage_port','database_name','database_user','database_password','admin_mail','offsite_on')
 
 class OffsiteConfigForm(ModelForm):
     class Meta:
@@ -134,18 +134,10 @@ class FileSetForm(ModelForm):
         model = FileSet
         fields = ('path')
 
-class ExternalDeviceForm(ModelForm):
-    class Meta:
-        model = ExternalDevice
-        fields = ('device_name','uuid')
-
-class ExternalDeviceEditForm(forms.Form):
-    device_name = forms.CharField(label='Nome',max_length=20)
-
 
 
 class BandwidthRestrictionForm(forms.Form):
-    # TODO: import days of the week from its original place
+	# TODO: import days of the week from its original place
 	DAYS_OF_THE_WEEK = (
 		('monday','Segunda'),
 		('tuesday','Terça'),
