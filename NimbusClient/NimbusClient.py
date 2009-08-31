@@ -61,7 +61,11 @@ def generateStack(DBCONN):
 	return stack
 
 def SOAPConnect(IPSERVER, PORT):
-	server = SOAPProxy("https://"+IPSERVER+":"+PORT)
+	try:
+		server = SOAPProxy("https://"+IPSERVER+":"+PORT)
+	except :
+		print "Error: Cannot connect to Nimbus Gateway"
+		sys.exit (1)
 	return server
 
 
