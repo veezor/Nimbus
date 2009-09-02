@@ -145,7 +145,7 @@ class GlobalConfig(models.Model):
         except NimbusUUID.DoesNotExist:
             self.nimbus_uuid = NimbusUUID.build()
         try:
-            sto = Storage.objects.get(storage_name='StorageLocal')
+            sto = Storage.default_storage()
             sto.storage_ip = self.server_ip
             sto.storage_port = self.storage_port
             sto.save()
@@ -197,7 +197,7 @@ class Computer(models.Model):
         """
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_STATUS_RAW_QUERY
-        status_query = CLIENT_STATUS_RAW_QUERY % {'client_name':self.computer_name,}
+        status_query = CLIENT_STATUS_RAW_QUERY % {'client_name':self.computer_bacula_name(),}
         cursor = BaculaDatabase.execute(status_query)
         result = cursor.fetchone()
         status = result and result[0] or ''
@@ -296,20 +296,20 @@ class Computer(models.Model):
             elif self.computer_so == 'WIN':
                 fd_dict.update( {'PKI Signatures':'Yes',
                                 'PKI Encryption':'Yes',
-                                'PKI Keypair':'''"C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\%s"''' % (self.computer_pem()),
-                                'PKI Master Key':'''"C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work\\\\master.cert"''',})
+                                'PKI Keypair':'''"C:\\\\Nimbus\\\\%s"''' % (self.computer_pem()),
+                                'PKI Master Key':'''"C:\\\\Nimbus\\\\master.cert"''',})
             
         if self.computer_so == 'UNIX':
             fd_dict.update( {'WorkingDirectory':'/var/bacula/working ',
                             'Pid Directory':'/var/run ',})
         elif self.computer_so == 'WIN':
-            fd_dict.update( {'WorkingDirectory':'''"C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work"''',
-                            'Pid Directory':'''"C:\\\\Documents and Settings\\\\All Users\\\\Dados de aplicativos\\\\Bacula\\\\Work"''',})
+            fd_dict.update( {'WorkingDirectory':'''"C:\\\\Nimbus"''',
+                            'Pid Directory':'''"C:\\\\Nimbus"''',})
         gconf = GlobalConfig.objects.get(pk=1)
-        dir_dict =  {'Name':gconf.bacula_name,
+        dir_dict =  {'Name':gconf.director_bacula_name(),
                     'Password':'''"%s"''' % (self.computer_password),}
         msg_dict =  {'Name':'Standard',
-                    'director':'%s = all, !skipped, !restored' % (gconf.bacula_name),}
+                    'director':'%s = all, !skipped, !restored' % (gconf.director_bacula_name()),}
         dump = []
     
         dump.append("#\n")
@@ -344,30 +344,21 @@ class Computer(models.Model):
     def running_jobs(self):
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY
-        running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {'client_name':self.computer_name,}
+        running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {'client_name':self.computer_bacula_name(),}
         running_jobs_cursor = BaculaDatabase.execute(running_jobs_query)
         return utils.dictfetch(running_jobs_cursor)
 
     def last_jobs(self):
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_LAST_JOBS_RAW_QUERY
-        last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {'client_name':self.computer_name,}
+        last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {'client_name':self.computer_bacula_name(),}
         last_jobs_cursor = BaculaDatabase.execute(last_jobs_query)
         return utils.dictfetch(last_jobs_cursor)
 
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
         from backup_corporativo.bkp.bacula import Bacula;
-        Bacula.run_backup(JobName='Teste Conectividade', client_name=self.computer_name)
-
-    def get_computer_name(self):
-        """Returns computer name lower string."""
-        return str.lower(str(self.computer_name))
-
-    def change_password(self):
-        """Changes the password to a new random password."""
-        self.__set_computer_password(size)
-        self.save()
+        Bacula.run_backup(JobName='Teste Conectividade', client_name=self.computer_bacula_name())
 
     def absolute_url(self):
         """Returns absolute url."""
@@ -498,13 +489,9 @@ class Storage(models.Model):
         return "%s (%s:%s)" % (self.storage_name, self.storage_ip, self.storage_port)
 
     # ClassMethods
-    def get_default_storage(cls):
-        try:
-            def_sto = cls.objects.get(storage_name='StorageLocal')
-        except cls.DoesNotExist:
-            def_sto = False
-        return def_sto
-    get_default_storage = classmethod(get_default_storage)
+    def default_storage(cls):
+        return cls.objects.get(storage_name='StorageLocal')
+    default_storage = classmethod(default_storage)
 
 
 ### Procedure ###
@@ -514,8 +501,8 @@ class Procedure(models.Model):
     storage = models.ForeignKey(Storage)
     procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
     offsite_on = models.BooleanField("Enviar para offsite?", default=False)
-    pool_size = models.IntegerField("Tamanho total ocupado", default=0)
-    retention_time = models.IntegerField("Tempo de renteção (dias)", default=0)
+    pool_size = models.IntegerField("Tamanho total ocupado", default=2048)
+    retention_time = models.IntegerField("Tempo de renteção (dias)", default=30)
 
     def save(self):
         try:
@@ -550,8 +537,8 @@ class Procedure(models.Model):
     def restore_jobs(self):
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_RESTORE_JOBS_RAW_QUERY
-        restore_jobs_query = CLIENT_RESTORE_JOBS_RAW_QUERY %   {'client_name':self.computer.computer_name, 
-                                                        'file_set':self.get_fileset_name(),}
+        restore_jobs_query = CLIENT_RESTORE_JOBS_RAW_QUERY %   {'client_name':self.computer.computer_bacula_name(), 
+                                                        'file_set':self.fileset_bacula_name(),}
         cursor = BaculaDatabase.execute(restore_jobs_query)
         return utils.dictfetch(cursor)
 

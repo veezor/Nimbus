@@ -60,14 +60,13 @@ def update_files(sender, instance, signal, *args, **kwargs):
         	update_interfaces_file(instance)
         	update_dns_file(instance)
     elif sender == GlobalConfig:
-        update_default_storage(instance)
         update_config_file(instance)
         update_device_file(instance)     
         update_console_file(instance)
         update_offsite_file(instance)
     else:
         raise # Oops!
-    Bacula.reload()
+    #Bacula.reload()
 
 def remove_files(sender, instance, signal, *args, **kwargs):
     """entry point for remove files"""
@@ -202,8 +201,9 @@ def update_offsite_file(gconf):
 
 def generate_offsite_file(filename, offsite_hour):
     f = utils.prepare_to_write(filename, 'custom/jobs')
+    def_sto_name = Storage.default_storage().storage_name
     
-    proc_dict = procedure_dict("Upload Offsite", False, "empty_client", "empty_fileset", "offsite_schedule", 'empty_pool', 'StorageLocal', 'Admin', None)
+    proc_dict = procedure_dict("Upload Offsite", False, "empty_client", "empty_fileset", "offsite_schedule", 'empty_pool', def_sto_name, 'Admin', None)
     
     del(proc_dict['Run After Job'])
     
@@ -252,8 +252,8 @@ def device_msg_dict(msg_name, dir_name):
     
 def update_device_file(gconf):
     """Update Device File"""
-    def_sto = Storage.get_default_storage()
-    sto_dict = device_sto_dict("StorageLocal", def_sto.storage_port)
+    def_sto = Storage.default_storage()
+    sto_dict = device_sto_dict(def_sto.storage_name, def_sto.storage_port)
     dir_dict = device_dir_dict(gconf.director_bacula_name(),def_sto.storage_password)
     dev_dict = device_dev_dict("FileStorage")
     msg_dict = device_msg_dict("Standard","%s" % gconf.director_bacula_name())
@@ -508,16 +508,6 @@ def remove_schedule_file(proc):
 
 
 #### Storage #####
-def update_default_storage(gconf):
-    """Updates default storage object or creates it if doesnt exists."""
-    def_sto = Storage.get_default_storage()
-    def_sto = def_sto and def_sto or Storage() # Assign new storage if it doesnt exist
-    def_sto.storage_name = 'StorageLocal'
-    def_sto.storage_ip = gconf.server_ip
-    def_sto.storage_port = gconf.storage_port
-    def_sto.save()
-
-
 def update_storage_file(sto):
     """Storage update file."""
     sdict = storage_dict(sto.storage_bacula_name(),
