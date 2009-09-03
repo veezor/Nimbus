@@ -47,8 +47,8 @@ class NimbusUUID(models.Model):
 	# Constantes
 	NIMBUS_BLANK = -1
 	# Atributos
-	uuid_hex = models.CharField("Hexadecimal UUID", max_length=32, unique=True, default=NIMBUS_BLANK)
-	uuid_created_on = models.DateTimeField("Created On")
+	uuid_hex = models.CharField(editable=False, max_length=32, unique=True, default=NIMBUS_BLANK)
+	uuid_created_on = models.DateTimeField(editable=False)
 	
 	def save(self):
 		if self.uuid_hex == self.NIMBUS_BLANK:
@@ -56,8 +56,11 @@ class NimbusUUID(models.Model):
 			self.uuid_hex = uuid.uuid4().hex
 			self.uuid_created_on = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 			super(NimbusUUID, self).save()
-		else: #TODO: trocar abordagem por editable=False
+		else: #TODO: Criar exceção do tipo Nimbus
 			raise Exception("Erro de programação: objeto NimbusUUID não pode ser alterado.")
+
+	def __unicode__(self):
+		return "uuid_hex = %s" % self.uuid_hex
 	
 	#ClassMethods
 	def build(cls):
@@ -65,6 +68,16 @@ class NimbusUUID(models.Model):
 		nuuid.save()
 		return nuuid
 	build = classmethod(build)
+
+	# Esse método é chamado sempre que um objeto que possua
+	# um NimbusUUID é alterado. UUID é gerado Apenas nos casos
+	# em que o objeto ainda não possui um NimbusUUID
+	def generate_uuid_or_leave(cls,object):
+		try:
+			object.nimbus_uuid
+		except cls.DoesNotExist:
+			object.nimbus_uuid = cls.build()
+	generate_uuid_or_leave = classmethod(generate_uuid_or_leave)
 	
 ### NetworkConfig ###
 # Futuramente essa classe será substituída por um gerenciamento completo de interfaces
@@ -140,22 +153,8 @@ class GlobalConfig(models.Model):
         if self.director_password == self.NIMBUS_BLANK:
             self.director_password = utils.random_password()
             # NetworkInterface.networkconfig.save()
-        try:
-            self.nimbus_uuid
-        except NimbusUUID.DoesNotExist:
-            self.nimbus_uuid = NimbusUUID.build()
-        try:
-            sto = Storage.default_storage()
-            sto.storage_ip = self.server_ip
-            sto.storage_port = self.storage_port
-            sto.save()
-        except Storage.DoesNotExist:
-            sto = Storage()
-            sto.storage_name = 'StorageLocal'
-            sto.storage_ip = self.server_ip
-            sto.storage_port = self.storage_port
-            sto.storage_description = 'Storage Local Nimbus'
-            sto.save()
+        NimbusUUID.generate_uuid_or_leave(self)
+        Storage.update_default_storage(self.server_ip, self.storage_port)
         self.id = 1 # always use the same row id at database to store the config
         super(GlobalConfig, self).save()
  
@@ -167,7 +166,7 @@ class Computer(models.Model):
     NIMBUS_ERROR = 0
     # Attributes
     nimbus_uuid = models.ForeignKey(NimbusUUID)
-    computer_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
+    computer_name = models.CharField("Nome",max_length=50,unique=True)
     computer_ip = models.IPAddressField("Endereço IP")
     computer_so = models.CharField("Sistema Operacional",max_length=50,choices=OS_CHOICES)
     computer_encryption = models.BooleanField("Encriptar Dados?",default=False)
@@ -178,10 +177,7 @@ class Computer(models.Model):
     def save(self):
         if self.computer_password == self.NIMBUS_BLANK:
             self.computer_password = utils.random_password()
-        try:
-            self.nimbus_uuid
-        except NimbusUUID.DoesNotExist:
-            self.nimbus_uuid = NimbusUUID.build()
+        NimbusUUID.generate_uuid_or_leave(self)
         super(Computer, self).save()
         if self.computer_bacula_id == self.NIMBUS_BLANK:
             self.__update_bacula_id()
@@ -400,7 +396,7 @@ class Computer(models.Model):
         from backup_corporativo.bkp.sql_queries import CLIENT_ID_RAW_QUERY
         from backup_corporativo.bkp.bacula import BaculaDatabase
         
-        cliend_id_query = CLIENT_ID_RAW_QUERY % {'client_name':self.get_computer_name()}
+        cliend_id_query = CLIENT_ID_RAW_QUERY % {'client_name':self.computer_bacula_name()}
         cursor = BaculaDatabase.cursor()
         cursor.execute(cliend_id_query)
         client_id = cursor.fetchone()
@@ -444,7 +440,7 @@ class Storage(models.Model):
     NIMBUS_BLANK = -1
     # Atributos
     nimbus_uuid = models.ForeignKey(NimbusUUID, default=NIMBUS_BLANK)
-    storage_name = cfields.ModelSlugField("Nome", max_length=50, unique=True)
+    storage_name = models.CharField("Nome", max_length=50, unique=True)
     storage_ip = models.IPAddressField("Endereço IP")
     storage_port = models.IntegerField("Porta do Storage", default='9103')
     storage_password = models.CharField(max_length=50, default=NIMBUS_BLANK)
@@ -453,10 +449,7 @@ class Storage(models.Model):
     def save(self):
         if self.storage_password == self.NIMBUS_BLANK:
             self.storage_password = utils.random_password()
-        try:
-            self.nimbus_uuid
-        except NimbusUUID.DoesNotExist:    
-            self.nimbus_uuid = NimbusUUID.build()
+        NimbusUUID.generate_uuid_or_leave(self)
         super(Storage, self).save()
 
     def storage_bacula_name(self):
@@ -464,8 +457,8 @@ class Storage(models.Model):
 
 
     def delete(self):
-        if self.storage_name == 'StorageLocal':
-            raise Exception('StorageLocal não pode ser removido.') # TODO: create custom NimbusException classes
+        if self.storage_name == 'Storage Local': # TODO: criar exceção do tipo Nimbus
+            raise Exception('Erro de Programação: Storage Local não pode ser removido.') 
         else:
             super(Storage, self).delete()
 
@@ -490,25 +483,36 @@ class Storage(models.Model):
 
     # ClassMethods
     def default_storage(cls):
-        return cls.objects.get(storage_name='StorageLocal')
+        return cls.objects.get(storage_name='Storage Local')
     default_storage = classmethod(default_storage)
 
+    # Esse método é chamado toda vez que GlobalConfig é
+    # modificado. Assim, a única forma de alterar as configurações
+    # do Storage Local é através de GlobalConfig.
+    def update_default_storage(cls, server_ip, storage_port):
+        try:
+            sto = cls.default_storage()
+        except Storage.DoesNotExist:
+            sto = cls()
+        sto.storage_name = 'Storage Local'
+        sto.storage_description = 'Storage Local do Nimbus'
+        sto.storage_ip = server_ip
+        sto.storage_port = storage_port
+        sto.save()
+    update_default_storage = classmethod(update_default_storage)
 
 ### Procedure ###
 class Procedure(models.Model):
     nimbus_uuid = models.ForeignKey(NimbusUUID)
     computer = models.ForeignKey(Computer)
     storage = models.ForeignKey(Storage)
-    procedure_name = cfields.ModelSlugField("Nome",max_length=50,unique=True)
+    procedure_name = models.CharField("Nome",max_length=50,unique=True)
     offsite_on = models.BooleanField("Enviar para offsite?", default=False)
     pool_size = models.IntegerField("Tamanho total ocupado", default=2048)
     retention_time = models.IntegerField("Tempo de renteção (dias)", default=30)
 
     def save(self):
-        try:
-            self.nimbus_uuid
-        except NimbusUUID.DoesNotExist:    
-            self.nimbus_uuid = NimbusUUID.build()
+        NimbusUUID.generate_uuid_or_leave(self)
         super(Procedure, self).save()
 
     def procedure_bacula_name(self):
@@ -601,7 +605,6 @@ class Procedure(models.Model):
         """
         from backup_corporativo.bkp.bacula import BaculaDatabaseWrapper
         from backup_corporativo.bkp.sql_queries import LOAD_FULL_MEDIA_INFO_QUERY
-        #TODO refactore BaculaDatabase so we can commit through there.            
         b2 = BaculaDatabaseWrapper()
         cursor = b2.cursor()
         cursor.execute(LOAD_FULL_MEDIA_INFO_QUERY)
@@ -783,7 +786,7 @@ class MonthlyTrigger(models.Model):
 ### FileSet ###
 class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
-    path = cfields.ModelPathField("Diretório", max_length="255")
+    path = cfields.ModelPathField("Caminho Completo", max_length="255")
 
     def add_url(self):
         """Returns add url."""

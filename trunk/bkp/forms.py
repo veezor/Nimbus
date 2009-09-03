@@ -10,6 +10,10 @@ from backup_corporativo.bkp.models import *
 # Custom
 from backup_corporativo.bkp import customfields as cfields
 
+
+BOOLEAN_CHOICES = ( (True,'Ativo'), (0,'Desativado'), )
+
+
 class NetworkInterfaceEditForm(ModelForm):
     class Meta:
         model = NetworkInterface
@@ -70,7 +74,7 @@ class LoginForm(forms.Form):
 class ComputerForm(ModelForm):
     class Meta:
         model = Computer
-        fields = ('computer_name','computer_ip','computer_so','computer_encryption','computer_description',)
+        fields = ('computer_name','computer_ip','computer_so','computer_description',)
 
 class StorageForm(ModelForm):
     class Meta:
@@ -79,6 +83,8 @@ class StorageForm(ModelForm):
                   'storage_description')
         
 class ProcedureForm(ModelForm):
+    BOOLEAN_CHOICES
+    offsite_on = forms.ChoiceField(choices=BOOLEAN_CHOICES,widget=forms.RadioSelect)
     class Meta:
         model = Procedure
         fields = ('procedure_name', 'storage', 'offsite_on')

@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.forms import PasswordChangeForm
 
 ### Global Config ###
 @authentication_required
