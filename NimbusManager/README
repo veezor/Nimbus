@@ -6,5 +6,5 @@ Instalação
     - $ sudo mv nimbus_manager.conf /etc/nimbus
 
 
-2) Rode NimbusManagerD.py como root. (#sudo python NimbusManagerD.py)
+2) Rode NimbusManagerD.py como root.
     - $ sudo python NimbusManagerD.py
