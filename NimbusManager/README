@@ -1,0 +1,10 @@
+Instalação
+
+1) Coloque o arquivo de configuração nimbus_manager.conf dentro da pasta /etc/nimbus/
+    - $ cp nimbus_manager_example.conf nimbus_manager.conf
+    - $ sudo mkdir /etc/nimbus
+    - $ sudo mv nimbus_manager.conf /etc/nimbus
+
+
+2) Rode NimbusManagerD.py como root. (#sudo python NimbusManagerD.py)
+    - $ sudo python NimbusManagerD.py
