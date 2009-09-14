@@ -87,8 +87,7 @@ class ProcedureForm(ModelForm):
     offsite_on = forms.ChoiceField(choices=BOOLEAN_CHOICES,widget=forms.RadioSelect)
     class Meta:
         model = Procedure
-        fields = ('procedure_name', 'storage', 'offsite_on')
-    #pool_size = cfields.PoolSizeField(label="Tamanho total a ser ocupado")
+        fields = ('procedure_name', 'storage', 'offsite_on', 'retention_time', 'pool_size')
 
 class ScheduleAuxForm(forms.Form):
     schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput, initial="Monthly")

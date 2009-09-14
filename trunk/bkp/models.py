@@ -508,7 +508,7 @@ class Procedure(models.Model):
     storage = models.ForeignKey(Storage)
     procedure_name = models.CharField("Nome",max_length=50,unique=True)
     offsite_on = models.BooleanField("Enviar para offsite?", default=False)
-    pool_size = models.IntegerField("Tamanho total ocupado", default=2048)
+    pool_size = models.IntegerField("Tamanho total ocupado (MB)", default=2048)
     retention_time = models.IntegerField("Tempo de renteção (dias)", default=30)
 
     def save(self):
