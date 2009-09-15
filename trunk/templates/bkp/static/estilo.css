@@ -297,6 +297,29 @@ color: #939393;
 font-weight: normal;
 }
 
+.backup h2,
+.titulo_botoes h2 {
+cursor: pointer;
+}
+
+.descricao_comp {
+overflow: hidden;
+}
+
+.descricao_comp .esq {
+width: 320px;
+float: left;
+}
+
+.descricao_comp .esq .label {
+width: 130px;
+}
+
+.descricao_comp .dir {
+width: 320px;
+float: right;
+}
+
 img.ico_secao {
 float: left;
 margin-right: 13px;
@@ -315,12 +338,12 @@ float: left;
 letter-spacing: -0.05em;
 }
 
-.titulo_botoes h2 span {
+.titulo_botoes h2 span.pequeno {
 line-height: 13px;
 vertical-align: bottom;
 }
 
-.titulo_botoes h2 span,
+.titulo_botoes h2 span.pequeno,
 .titulo_botoes h3 {
 font-size: 14px;
 font-weight: normal;
@@ -391,6 +414,29 @@ width: 100%;
 overflow: hidden;
 }
 
+.detalhes_procedimento {
+width: 100%;
+overflow: hidden;
+padding: 10px;
+background: #F7F7F7;
+}
+
+.detalhes_procedimento .coluna {
+width: 213px;
+float: left;
+padding-right: 10px;
+}
+
+.detalhes_procedimento .coluna.ultima {
+padding: 0;
+}
+
+.detalhes_procedimento .bloco_bg {
+padding: 5px;
+background: #E5E5E5;
+margin-bottom: 5px; 
+}
+
 .fieldWrapper {
 padding: 5px;
 border-bottom: 1px solid #eee;
@@ -457,6 +503,52 @@ float: left;
 .nb_passos .passo1.on { background-image: url(/static/imagens/nb_passo1-on.gif); }
 .nb_passos .passo2.on { background-image: url(/static/imagens/nb_passo2-on.gif); }
 .nb_passos .passo3.on { background-image: url(/static/imagens/nb_passo3-on.gif); }
+
+
+.backup {
+overflow: hidden;
+border-bottom: 3px solid #999;
+}
+
+.inner-backup {
+background: #DEDEDE;
+overflow: hidden;
+padding: 10px;
+}
+
+.backup h2 {
+margin: 0;
+font-size: 16px
+}
+
+.backup .pequeno {
+font-size: 11px;
+color: #666;
+}
+
+.backup .nome_detalhes {
+width: 170px;
+float: left;
+}
+
+.backup .info_basica {
+width: 420px;
+float: left;
+}
+
+.backup .info_basica span {
+float: left;
+padding-right: 20px;
+color: #666;
+}
+
+.backup .info_basica strong {
+color: #333;
+}
+
+.backup .acoes {
+float: right;
+}
 
 
 #rodape {
