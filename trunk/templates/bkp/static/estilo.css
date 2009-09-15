@@ -341,6 +341,7 @@ letter-spacing: -0.05em;
 .titulo_botoes h2 span.pequeno {
 line-height: 13px;
 vertical-align: bottom;
+font-weight: normal;
 }
 
 .titulo_botoes h2 span.pequeno,
@@ -349,6 +350,7 @@ font-size: 14px;
 font-weight: normal;
 color: #939393;
 letter-spacing: 0em;
+font-weight: normal;
 }
 
 .titulo_botoes h3 {
@@ -524,6 +526,7 @@ font-size: 16px
 .backup .pequeno {
 font-size: 11px;
 color: #666;
+font-weight: normal;
 }
 
 .backup .nome_detalhes {
