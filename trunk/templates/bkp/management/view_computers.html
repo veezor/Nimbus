@@ -1,0 +1,29 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Ip</th>
+                <th>Sist. Operacional</th>
+                <th>Encriptação</th>                
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comp in comps %}
+            <tr>
+                <td>{{comp.computer_name}}</td>
+                <td>{{comp.computer_ip}}</td>
+                <td>{{comp.computer_so_friendly }}</td>
+                <td>{{comp.computer_encryption_friendly}}</td>
+                <td><button onclick="location.href='{{script_name}}/{{comp.edit_url}}';return false"><span>Editar</span></button>
+	            <button onclick="location.href='{{script_name}}/{{comp.delete_url}}';return false" class="red"><span>Remover</span></button></td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

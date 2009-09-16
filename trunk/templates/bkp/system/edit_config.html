@@ -1,0 +1,73 @@
+{% extends "bkp/base.html" %}
+{% load bkp_extras %}
+{% block content %}
+
+<ul class="aux menu_horizontal config">
+    <li><a href="{{script_name}}/config/global/edit"{% ifequal config_type 'global' %} class="ativo"{% endifequal %}>Configurações globais</a></li>
+    <li><a href="{{script_name}}/config/password/edit"{% ifequal config_type 'password' %} class="ativo"{% endifequal %}>Senha</a></li>
+    <li><a href="{{script_name}}/config/offsite/edit"{% ifequal config_type 'offsite' %} class="ativo"{% endifequal %}>Offsite</a></li>
+</ul>
+
+{% ifequal config_type 'global' %}
+	    <h2>Configurações Globais</h2>
+
+    <form action="{{script_name}}/config/edit" method="post">
+        {% for field in gconfigform %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+            </div>
+        {% endfor %}
+        <p><input type="submit" value="Salvar" /></p>
+    </form>
+{% endifequal %}
+
+
+{% ifequal config_type 'password' %}
+<h2>Alterar Senha do Administrador</h2>
+
+<form action="{{script_name}}/password/" method="post">
+    {% for field in pwdform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+{% endifequal %}
+
+
+
+
+{% ifequal config_type 'offsite' %}
+<h2>Backup Offsite</h2>
+
+{% if offsite_on %}
+
+<form action="{{script_name}}/offsite/edit" >
+<p>O backup offsite está Habilitado. Deseja desabilitar?</p>
+<button type="submit"><span>Deshabilitar</span></button>
+</form>
+
+
+<h3>Procedimentos que executarão bakup offsite:</h3>
+<ul>
+    {% for proc in procedures %}
+        <li><a href="{{ script_name }}/{{ proc.computer.view_url }}">{{ proc.computer.computer_name }} - {{ proc.procedure_name }}</a></li>
+    {% endfor %}
+
+
+{% else %}
+
+<form action="{{script_name}}/offsite/edit" >
+<p>O backup offsite está Desabilitado. Deseja habilitar?</p>
+<button type="submit"><span>Habilitar</span></button>
+</form>
+</ul>
+{% endif %}
+
+{% endifequal %}
+
+
+{% endblock %}

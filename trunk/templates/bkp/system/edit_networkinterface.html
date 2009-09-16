@@ -1,0 +1,20 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h2> Alterar Interface de Rede </h2>
+
+
+<form action="{{script_name}}/networkinterface/update" method="post">
+    {% for field in netform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
+<a href="{{script_name}}/networkinterface/new">Cancelar</a>
+<br />
+
+{% endblock %}

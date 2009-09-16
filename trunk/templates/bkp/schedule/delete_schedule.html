@@ -1,0 +1,15 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+
+<p>Deseja realmente remover o agendamento '{{sched}}' ?</p>
+
+<form name="delete_schedule" action="{{script_name}}/{{sched.delete_url}}" method="POST">
+	<input type="submit" value="Sim">
+</form>
+
+<br />
+
+<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+
+{% endblock %}

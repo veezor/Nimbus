@@ -1,0 +1,35 @@
+{% extends "bkp/base.html" %}
+{% load bkp_extras %}
+{% block content %}
+
+    <div class="titulo_botoes">
+        <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_storage.gif" />
+	    <h2>
+	        <span>Storage</span><br/>
+	        {{ storage.storage_name }} <span class="toggle pequeno" rel="detalhes_computador">(ver detalhes)</span>
+	    </h2>
+	    <div class="botao_acoes">
+	        <button onclick="location.href='{{script_name}}/{{storage.storage_config_url}}'"><span>Configuraçao</span></button>
+	        <button onclick="location.href='{{script_name}}/{{storage.edit_url}}'"><span>Alterar</span></button>
+		    <button onclick="location.href='{{script_name}}/{{storage.delete_url}}';" class="red"><span>Remover</span></button>
+	    </div>
+	</div>
+	
+	<div class="bloco_texto" id="detalhes_computador">
+	    <ul class="aux">
+	        <li><strong class="label">IP:</strong> <span class="value">{{storage.storage_ip}}</span></li>
+	        <li><strong class="label">Descrição:</strong> <span class="value">{{storage.storage_description}}</span></li>
+	        <li><strong class="label">Password:</strong> <span class="value">{{storage.storage_password}}</span></li>
+	        {% if procedures.count %}
+	        <li><strong class="label">Procedimento{{procedures.count|pluralize}}:</strong>
+	            <span class="value">
+	                {% for proc in procedures %}
+	                    <a href="{{script_name}}/{{proc.computer.view_url}}">{{proc}} - {{proc.computer}} </a><br/>
+	                {% endfor %}
+	            </span>
+	        </li>
+	        {% endif %}
+	    </ul>
+	</div>
+
+{% endblock %}
