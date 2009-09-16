@@ -15,7 +15,8 @@ from backup_corporativo.bkp.app_models.schedule import Schedule
 class WeeklyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
     for day in DAYS_OF_THE_WEEK.keys():
-        exec('''%s = models.BooleanField("%s")''' % (day,DAYS_OF_THE_WEEK[day]))    
+        exec('''%s = models.BooleanField("%s")''' % (
+            day,DAYS_OF_THE_WEEK[day]))    
     hour = models.TimeField("Horário")
     level = models.CharField("Nível", max_length=20,choices=LEVEL_CHOICES)
 

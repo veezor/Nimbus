@@ -15,8 +15,13 @@ from backup_corporativo.bkp.app_models.schedule import Schedule
 class MonthlyTrigger(models.Model):
     schedule = models.ForeignKey(Schedule)
     hour = models.TimeField("Horário")
-    level = models.CharField("Nível", max_length=20,choices=LEVEL_CHOICES)
-    target_days = cfields.ModelMonthDaysListField("Dias do Mês", max_length=100)
+    level = models.CharField(
+        "Nível",
+        max_length=20,
+        choices=LEVEL_CHOICES)
+    target_days = cfields.ModelMonthDaysListField(
+        "Dias do Mês",
+        max_length=100)
 
     # Classe Meta é necessária para resolver um problema gerado quando se
     # declara um model fora do arquivo models.py. Foi utilizada uma solução

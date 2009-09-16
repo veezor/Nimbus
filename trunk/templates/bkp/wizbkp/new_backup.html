@@ -30,7 +30,7 @@
 {% if proc %}{# Se já existe procedimento, não precisa cadastrar um novo #}
 <p>Nome: {{proc.procedure_name}}</p>
 {% else %}
-    <h3>Selecione um Nome para a configuraçao</h3>
+    <h3>Escolha um Nome para o Backup</h3>
         <div class="fieldWrapper">
             {{ procform.procedure_name.errors }}
             {{ procform.procedure_name.label_tag }} {{ procform.procedure_name }}

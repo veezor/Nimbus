@@ -22,17 +22,41 @@ class GlobalConfig(models.Model):
     NIMBUS_BLANK = -1
     # Atributos
     nimbus_uuid = models.ForeignKey(NimbusUUID)
-    globalconfig_name = models.CharField("Nome da Instância", max_length=50)
+    globalconfig_name = models.CharField(
+        "Nome da Instância",
+        max_length=50)
     server_ip = models.IPAddressField("Endereço IP")
-    director_password = models.CharField(max_length=50,default=NIMBUS_BLANK)
-    director_port = models.IntegerField("Porta do Director",default='9101')
-    storage_port = models.IntegerField("Porta do Storage",default='9103')
-    database_name = models.CharField("Database Name", max_length=50, default='bacula')
-    database_user = models.CharField("Database USer", max_length=50, default='root')
-    database_password = models.CharField("Database Password", max_length=50)
-    max_upload_bandwidth = models.CharField("Limite de Upload", max_length=15, default='100 mbps')
-    admin_mail = models.EmailField("E-mail do Admin", max_length=50, blank=True)
-    offsite_on = models.BooleanField("Offsite ativo?", default=False)
+    director_password = models.CharField(
+        max_length=50,
+        default=NIMBUS_BLANK)
+    director_port = models.IntegerField(
+        "Porta do Director",
+        default='9101')
+    storage_port = models.IntegerField(
+        "Porta do Storage",
+        default='9103')
+    database_name = models.CharField(
+        "Database Name",
+        max_length=50,
+        default='bacula')
+    database_user = models.CharField(
+        "Database USer",
+        max_length=50,
+        default='root')
+    database_password = models.CharField(
+        "Database Password",
+        max_length=50)
+    max_upload_bandwidth = models.CharField(
+        "Limite de Upload",
+        max_length=15,
+        default='100 mbps')
+    admin_mail = models.EmailField(
+        "E-mail do Admin",
+        max_length=50,
+        blank=True)
+    offsite_on = models.BooleanField(
+        "Offsite ativo?",
+        default=False)
     offsite_hour = models.TimeField("Horário", default="00:00:00")
 
     # Classe Meta é necessária para resolver um problema gerado quando se
@@ -60,7 +84,8 @@ class GlobalConfig(models.Model):
             # NetworkInterface.networkconfig.save()
         NimbusUUID.generate_uuid_or_leave(self)
         Storage.update_default_storage(self.server_ip, self.storage_port)
-        self.id = 1 # always use the same row id at database to store the config
+        # always use the same row id at database to store the config
+        self.id = 1
         super(GlobalConfig, self).save()
 
     def system_configured(self):
@@ -68,7 +93,7 @@ class GlobalConfig(models.Model):
         return GlobalConfig.objects.all().count() > 0
 
     def director_bacula_name(self):
-        return "%s_director" % (self.nimbus_uuid.uuid_hex)
+        return "%s_director" % self.nimbus_uuid.uuid_hex
 
     def storage_bacula_name(self):
-        return "%s_storage" % (self.nimbus_uuid.uuid_hex)
+        return "%s_storage" % self.nimbus_uuid.uuid_hex

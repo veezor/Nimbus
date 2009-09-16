@@ -31,11 +31,9 @@ def new_backup(request, computer_id=None, procedure_id=None):
         if vars_dict['backup_step'] == 1:
             forms_dict['compform'] = ComputerForm()
         elif vars_dict['backup_step'] == 2:
-            vars_dict['backup_prefix'] = "/computer/%s" % vars_dict['comp'].id
             forms_dict['procform'] = ProcedureForm()
             forms_dict['fsetform'] = FileSetForm()
         elif vars_dict['backup_step'] == 3:
-            vars_dict['backup_prefix'] = "/computer/%s" % vars_dict['comp'].id
             forms_dict['schedform'] = ScheduleForm()
             forms_dict['wtriggform'] = WeeklyTriggerForm()
             forms_dict['mtriggform'] = MonthlyTriggerForm()

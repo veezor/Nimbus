@@ -11,6 +11,10 @@ urlpatterns = patterns('',
     (r'^$', 'backup_corporativo.bkp.views.view_stats'),
     (r'^static/(?P<path>.*)', 'django.views.static.serve',
         {'document_root': '%s/templates/bkp/static' % dirname(__file__)}),
+    # management
+    (r'^management/$', 'backup_corporativo.bkp.views.view_management'),
+    (r'^management/computers/$', 'backup_corporativo.bkp.views.view_computers'),
+    (r'^management/storages/$', 'backup_corporativo.bkp.views.view_storages'),
     # views_app/configs.py
     (r'^config/edit$', 'backup_corporativo.bkp.views.edit_config'),
     (r'^config/(?P<config_type>.*?)/edit$', 'backup_corporativo.bkp.views.edit_config'),
@@ -34,18 +38,17 @@ urlpatterns = patterns('',
     (r'^computer/(?P<computer_id>\d+)/update$', 'backup_corporativo.bkp.views.update_computer'),
     (r'^computer/(?P<computer_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_computer'),
     (r'^computer/(?P<computer_id>\d+)/test$', 'backup_corporativo.bkp.views.test_computer'),
-    (r'^computer/(?P<computer_id>\d+)/config_dump/$', 'backup_corporativo.bkp.views.client_config_dump'),
-    (r'^computer/(?P<computer_id>\d+)/pem_dump/$', 'backup_corporativo.bkp.views.client_pem_dump'),
-    (r'^computer/(?P<computer_id>\d+)/key_cert_pem/$', 'backup_corporativo.bkp.views.key_cert_pem'),
-    (r'^computer/master_certificate/$', 'backup_corporativo.bkp.views.master_certificate_dump'),
+    (r'^computer/(?P<computer_id>\d+)/config/$', 'backup_corporativo.bkp.views.view_computer_config'),
+    (r'^computer/(?P<computer_id>\d+)/config/dump$', 'backup_corporativo.bkp.views.dump_computer_config'),
     # views_app/storages.py
     (r'^storage/$', 'backup_corporativo.bkp.views.create_storage'),
     (r'^storage/new$', 'backup_corporativo.bkp.views.new_storage'),
     (r'^storage/(?P<storage_id>\d+)$', 'backup_corporativo.bkp.views.view_storage'),
-    (r'^storage/(?P<storage_id>\d+)/dump_config$', 'backup_corporativo.bkp.views.storage_config_dump'),
     (r'^storage/(?P<storage_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_storage'),
     (r'^storage/(?P<storage_id>\d+)/update$', 'backup_corporativo.bkp.views.update_storage'),
     (r'^storage/(?P<storage_id>\d+)/delete$', 'backup_corporativo.bkp.views.delete_storage'),
+    (r'^storage/(?P<storage_id>\d+)/config/$', 'backup_corporativo.bkp.views.view_storage_config'),
+    (r'^storage/(?P<storage_id>\d+)/config/dump$', 'backup_corporativo.bkp.views.dump_storage_config'),
     # views_app/procedures.py
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/edit$', 'backup_corporativo.bkp.views.edit_procedure'),
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/update$', 'backup_corporativo.bkp.views.update_procedure'),
@@ -66,6 +69,8 @@ urlpatterns = patterns('',
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/restore/new$', 'backup_corporativo.bkp.views.new_restore'),    # PASSO 3: Selecione Data
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'backup_corporativo.bkp.views.new_restore'),    # PASSO 4: Selecione Arquivos e Detalhes do Restore
     (r'^computer/(?P<computer_id>\d+)/procedure/(?P<procedure_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'backup_corporativo.bkp.views.restore_files'),    # PASSO 5: Execute!
-
+    # Tools
+    (r'^tools/$', 'backup_corporativo.bkp.views.view_tools'),
+    (r'^tools/ssl/$', 'backup_corporativo.bkp.views.tools_ssl'),
     (r'^admin/(.*)', admin.site.root),
 )

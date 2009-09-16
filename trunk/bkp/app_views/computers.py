@@ -37,7 +37,9 @@ def new_computer(request):
         forms_dict['mtriggform'] = MonthlyTriggerForm()
         forms_dict['wtriggform'] = WeeklyTriggerForm()
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/new/new_computer.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response(
+            'bkp/new/new_computer.html',
+            return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -86,20 +88,23 @@ def create_computer(request):
                 # Load forms and vars
                 request.user.message_set.create(message="Existem erros e o computador não foi cadastrado.")
                 return_dict = merge_dicts(return_dict, forms_dict, vars_dict, temp_dict)
-                return render_to_response('bkp/new/new_computer.html', return_dict, context_instance=RequestContext(request))
+                return render_to_response(
+                    'bkp/new/new_computer.html',
+                    return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
 def edit_computer(request, computer_id):
     vars_dict, forms_dict, return_dict = global_vars(request)
     vars_dict['comp'] = get_object_or_404(Computer, pk=computer_id)
-    vars_dict['restore_prefix'] = "/computer/%s" % vars_dict['comp'].id
 
     if request.method == 'GET': # Edit computer
         forms_dict['compform'] = ComputerForm(instance=vars_dict['comp'])
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/edit/edit_computer.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response(
+            'bkp/edit/edit_computer.html',
+            return_dict, context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -119,7 +124,9 @@ def update_computer(request, computer_id):
             # Load forms and vars
             return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
             request.user.message_set.create(message="Existem erros e o computador não foi alterado.")
-            return render_to_response('bkp/edit/edit_computer.html', return_dict, context_instance=RequestContext(request))   
+            return render_to_response(
+                'bkp/edit/edit_computer.html',
+                return_dict, context_instance=RequestContext(request))   
 
 
 @authentication_required
@@ -128,8 +135,6 @@ def view_computer(request, computer_id):
     store_location(request)
     if request.method == 'GET':
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
-        vars_dict['restore_prefix'] = "/computer/%s" % vars_dict['comp'].id
-        vars_dict['backup_prefix'] = "/computer/%s" % vars_dict['comp'].id
         vars_dict['procs'] = vars_dict['comp'].procedure_set.all()
         vars_dict['running_jobs'] = vars_dict['comp'].running_jobs()
         vars_dict['last_jobs'] = vars_dict['comp'].last_jobs()
@@ -137,7 +142,9 @@ def view_computer(request, computer_id):
         vars_dict['compstatus'] = vars_dict['comp'].get_status()
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/view/view_computer.html', return_dict, context_instance=RequestContext(request))    
+        return render_to_response(
+            'bkp/view/view_computer.html',
+            return_dict, context_instance=RequestContext(request))    
 
 
 @authentication_required
@@ -145,11 +152,12 @@ def delete_computer(request, computer_id):
     if request.method == 'GET':
         vars_dict, forms_dict, return_dict = global_vars(request)
         vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
-        vars_dict['restore_prefix'] = "/computer/%s" % vars_dict['comp'].id
         request.user.message_set.create(message="Confirme a remoção do computador.")
         # Load forms and vars
         return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/delete/delete_computer.html', return_dict, context_instance=RequestContext(request))    
+        return render_to_response(
+            'bkp/delete/delete_computer.html',
+            return_dict, context_instance=RequestContext(request))    
 
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=computer_id)
@@ -157,7 +165,7 @@ def delete_computer(request, computer_id):
         request.user.message_set.create(message="Computador removido permanentemente.")            
         return redirect_back_or_default(request, default=root_path(request))  
 
-
+@authentication_required
 def test_computer(request, computer_id):
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=computer_id)
@@ -167,61 +175,31 @@ def test_computer(request, computer_id):
 
 
 @authentication_required
-def client_config_dump(request, computer_id):
-    """Generates and provides download to a file deamon client config file."""
+def view_computer_config(request, computer_id):
     if request.method == 'GET':
+        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict['comp'] = Computer.objects.get(pk=computer_id)
+        vars_dict['computer_config'] = vars_dict['comp'].dump_filedaemon_config()
+        # Load forms and vars
+        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response(
+            'bkp/view/view_computer_config.html',
+            return_dict, context_instance=RequestContext(request))
+
+@authentication_required
+def dump_computer_config(request, computer_id):
+    if request.method == 'POST':
         computer = Computer.objects.get(pk=computer_id)
-        dump_file = computer.dump_filedaemon_config()
+        dump_list = computer.dump_filedaemon_config()
+        dump_file = ''.join(dump_list)
+        
         
         # Return file for download
         response = HttpResponse(mimetype='text/plain')
         response['Content-Disposition'] = 'attachment; filename=bacula-fd.conf'
         response.write(dump_file)
         return response
-        
-        
-@authentication_required
-def client_pem_dump(request, computer_id):
-    """Generates and provides download to a file deamon client config file."""
-    if request.method == 'GET':
-        computer = Computer.objects.get(pk=computer_id)
-        dump_file = computer.dump_pem()
-        
-        # Return file for download
-        response = HttpResponse(mimetype='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=%s.pem'% (computer.computer_name)
-        response.write(dump_file)
-        return response
 
 
-@authentication_required
-def master_certificate_dump(request):
-    """Generates and provides download to a file master key file."""
-    if request.method == 'GET':
-        Computer.generate_master_rsa_key()
-        Computer.generate_master_certificate()
-        
-        dump_file = Computer.get_master_certificate()
-
-        # Return file for download
-        response = HttpResponse(mimetype='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=master.cert'
-        response.write(dump_file)
-        return response
-
-
-@authentication_required
-def key_cert_pem(request, computer_id):
-    """Generates and provides download to a file deamon client config file."""
-    if request.method == 'GET':
-        vars_dict, forms_dict, return_dict = global_vars(request)
-        vars_dict['comp'] = get_object_or_404(Computer,pk=computer_id)
-        vars_dict['rsa_key'] = vars_dict['comp'].dump_rsa_key()		
-        vars_dict['certificate'] = vars_dict['comp'].dump_certificate()
-        vars_dict['pem'] = vars_dict['comp'].dump_pem()
-        return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/view/view_key_cert_pem.html', return_dict, context_instance=RequestContext(request))    
-        
-        
 
 

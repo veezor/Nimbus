@@ -48,22 +48,26 @@ class Schedule(models.Model):
     def add_url(self):
         """Returns add url."""
         return "computer/%s/procedure/%s/schedule/" % (
-                self.procedure.computer_id, self.procedure_id)
+            self.procedure.computer_id,
+            self.procedure_id)
 
     def edit_url(self):
         """Returns edit url."""
         return "computer/%s/procedure/%s/schedule/%s/edit" % (
-                self.procedure.computer_id, self.procedure_id, self.id)
+            self.procedure.computer_id,
+            self.procedure_id, self.id)
 
     def update_url(self):
         """Returns edit url."""
         return "computer/%s/procedure/%s/schedule/%s/update" % (
-                self.procedure.computer_id, self.procedure_id, self.id)
+            self.procedure.computer_id,
+            self.procedure_id, self.id)
 
     def delete_url(self):
         """Returns delete url."""
         return "computer/%s/procedure/%s/schedule/%s/delete" % (
-                self.procedure.computer_id, self.procedure_id, self.id)
+            self.procedure.computer_id,
+            self.procedure_id, self.id)
 
     # TODO: Otimizar codigo, remover if do schedule type (programaçao dinamica)
     def get_trigger(self):
@@ -80,5 +84,7 @@ class Schedule(models.Model):
             except WeeklyTrigger.DoesNotExist:
                 return False
         else:
-            raise Exception("Erro de programação: tipo de agendamento inválido %s" % self.type)
+            raise Exception(
+                "Erro de programação: tipo de agendamento inválido %s" % \
+                    self.type)
         return "%strigger_set" % sched.type.lower()

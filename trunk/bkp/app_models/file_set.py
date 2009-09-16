@@ -14,7 +14,9 @@ from backup_corporativo.bkp.app_models.procedure import Procedure
 ### FileSet ###
 class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
-    path = cfields.ModelPathField("Caminho Completo", max_length="255")
+    path = cfields.ModelPathField(
+        "Caminho Completo",
+        max_length="255")
 
     # Classe Meta é necessária para resolver um problema gerado quando se
     # declara um model fora do arquivo models.py. Foi utilizada uma solução
@@ -37,12 +39,15 @@ class FileSet(models.Model):
     def add_url(self):
         """Returns add url."""
         return "computer/%s/procedure/%s/fileset/" % (
-                self.procedure.computer_id, self.procedure_id)
+            self.procedure.computer_id,
+            self.procedure_id)
 
     def delete_url(self):
         """Returns delete url."""
         return "computer/%s/procedure/%s/fileset/%s/delete" % (
-                self.procedure.computer_id, self.procedure_id, self.id)
+            self.procedure.computer_id,
+            self.procedure_id,
+            self.id)
 
     def __unicode__(self):
         return self.path

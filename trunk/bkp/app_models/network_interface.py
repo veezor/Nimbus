@@ -17,8 +17,13 @@ import os, string, time
 # Já que centraliza toda a configuração de rede do sistema em um único objeto
 # TODO: Gerenciamento completo de rede
 class NetworkInterface(models.Model):
-    interface_mac = cfields.MACAddressField("Endereço MAC", unique=True) #,choices=()
-    interface_name = cfields.ModelSlugField("Nome da Interface", max_length=30)
+    interface_mac = cfields.MACAddressField(
+        "Endereço MAC",
+        unique=True)
+        #,choices=())
+    interface_name = cfields.ModelSlugField(
+        "Nome da Interface",
+        max_length=30)
     interface_address = models.IPAddressField("Endereço IP")
     interface_netmask = models.IPAddressField("Máscara")
     interface_network = models.IPAddressField("Network")
@@ -49,7 +54,8 @@ class NetworkInterface(models.Model):
         if self.interface_mac == 'MAC':
             from backup_corporativo.bkp.network_utils import NetworkInfo
             self.interface_mac = NetworkInfo.main_mac_address()
-        self.id = 1 # always use the same row id at database to store the config
+        # always use the same row id at database to store the config
+        self.id = 1 
         super(NetworkInterface, self).save()
     
     def __unicode__(self):

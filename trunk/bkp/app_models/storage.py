@@ -21,7 +21,8 @@ class Storage(models.Model):
     storage_ip = models.IPAddressField("Endereço IP")
     storage_port = models.IntegerField("Porta do Storage", default='9103')
     storage_password = models.CharField(max_length=50, default=NIMBUS_BLANK)
-    storage_description = models.CharField("Descrição", max_length=100, blank=True)
+    storage_description = models.CharField(
+        "Descrição", max_length=100, blank=True)
 
     # Classe Meta é necessária para resolver um problema gerado quando se
     # declara um model fora do arquivo models.py. Foi utilizada uma solução
@@ -48,33 +49,90 @@ class Storage(models.Model):
         super(Storage, self).save()
 
     def storage_bacula_name(self):
-        return "%s_storage" % (self.nimbus_uuid.uuid_hex)
+        return "%s_storage" % self.nimbus_uuid.uuid_hex
 
 
     def delete(self):
-        if self.storage_name == 'Storage Local': # TODO: criar exceção do tipo Nimbus
-            raise Exception('Erro de Programação: Storage Local não pode ser removido.') 
+        # TODO: criar exceção do tipo Nimbus
+        if self.storage_name == 'Storage Local': 
+            raise Exception(
+                'Erro de Programação: Storage Local não pode ser removido.') 
         else:
             super(Storage, self).delete()
 
+    def dump_storagedaemon_config(self):
+        gconf = GlobalConfig.objects.get(pk=1)
+        sto_dict = {
+            'Name':self.storage_bacula_name,
+            'SDPort':self.storage_port,
+            'WorkingDirectory':'"/var/bacula/working"',
+            'Pid Directory':'"/var/run"',
+            'Maximum Concurrent Jobs':'20'}
+        dir_dict = {
+            'Name':gconf.director_bacula_name(),
+            'Password':'"%s"' % self.storage_password}
+        dev_dict = {
+            'Name':"FileStorage",
+            'Media Type':'File',
+            'Archive Device':'/var/backup',
+            'LabelMedia':'yes', 
+            'Random Access':'yes',
+            'AutomaticMount':'yes',
+            'RemovableMedia':'no',
+            'AlwaysOpen':'no'}
+        msg_dict = {
+            'Name':"Standard",
+            'Director':'%s = all' % gconf.director_bacula_name()}
+        
+        dump = []
+    
+        dump.append("Storage {\n")
+        for k in sto_dict.keys():
+            dump.append('''\t%(key)s = %(value)s\n''' % {
+                'key':k,'value':sto_dict[k]})
+        dump.append("}\n\n")
+    
+        dump.append("Director {\n")
+        for k in dir_dict.keys():
+            dump.append('''\t%(key)s = %(value)s\n''' % {
+                'key':k,'value':dir_dict[k]})
+        dump.append("}\n\n")
+        
+        dump.append("Device {\n")
+        for k in dev_dict.keys():
+            dump.append('''\t%(key)s = %(value)s\n''' % {
+                'key':k,'value':dev_dict[k]})
+        dump.append("}\n\n")
+        
+        dump.append("Messages {\n")
+        for k in msg_dict.keys():
+            dump.append('''\t%(key)s = %(value)s\n''' % {
+                'key':k,'value':msg_dict[k]})
+        dump.append("}\n\n")
+        
+        return dump
+
     def absolute_url(self):
         """Returns absolute url."""
-        return "storage/%s" % (self.id)
+        return "storage/%s" % self.id
 
     def view_url(self):
         """Returns absolute url."""
-        return "storage/%s" % (self.id)
+        return "storage/%s" % self.id
 
     def edit_url(self):
         """Returns absolute url."""
-        return "storage/%s/edit" % (self.id)
+        return "storage/%s/edit" % self.id
 
     def delete_url(self):
         """Returns delete url."""
-        return "storage/%s/delete" % (self.id)
+        return "storage/%s/delete" % self.id
 
     def __unicode__(self):
-        return "%s (%s:%s)" % (self.storage_name, self.storage_ip, self.storage_port)
+        return "%s (%s:%s)" % (
+            self.storage_name,
+            self.storage_ip,
+            self.storage_port)
 
     # ClassMethods
     def default_storage(cls):

@@ -35,26 +35,39 @@ class NimbusLog(models.Model):
         app_label = 'bkp'    
     
     def save(self):
-        self.entry_timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.entry_timestamp = time.strftime(
+            "%Y-%m-%d %H:%M:%S",
+            time.localtime())
         try:
-            from backup_corporativo.settings import LOG_LEVEL #TODO colocar LOG_LEVEL dentro de GlobalConfig
-            if LOG_LEVEL == 0:          # Nenhum log
+            #TODO colocar LOG_LEVEL dentro de GlobalConfig
+            from backup_corporativo.settings import LOG_LEVEL
+            # Nenhum log
+            if LOG_LEVEL == 0:
                 pass
-            elif LOG_LEVEL == 1:        # Somente em arquivo
+            # Somente em arquivo
+            elif LOG_LEVEL == 1:
                 self.new_file_entry()
-            elif LOG_LEVEL == 2:        # Somente em banco de dados
+            # Somente em banco de dados
+            elif LOG_LEVEL == 2:
                 super(NimbusLog, self).save()
-            elif LOG_LEVEL == 3:        # Arquivo + banco de dados
+            # Arquivo + banco de dados
+            elif LOG_LEVEL == 3:
                 self.new_file_entry()
                 super(NimbusLog, self).save()
-            else:                       # LOG_LEVEL desconhecido
-                raise Exception('Erro de configuração: LOG_LEVEL desconhecido.')
+            # LOG_LEVEL desconhecido
+            else:
+                raise Exception(
+                    'Erro de configuração: LOG_LEVEL desconhecido.')
         except ImportError:
             pass
 
     def new_file_entry(self):
         nlog = NimbusLog.get_log_file()
-        log_entry = "%s [%s] - %s: %s" % (self.entry_timestamp, self.entry_category, self.entry_type, self.entry_content)
+        log_entry = "%s [%s] - %s: %s" % (
+            self.entry_timestamp,
+            self.entry_category,
+            self.entry_type,
+            self.entry_content)
         nlog.write(str(log_entry).encode("string-escape"))
         nlog.write("\n")
         nlog.close()

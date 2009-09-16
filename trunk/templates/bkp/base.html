@@ -21,10 +21,10 @@
                 <h1><a href="{{script_name}}/" title="Home">Linconet - Tencnologia Estratégica</a></h1>
                 <div id="main_menu" class="menu">
                     <ul class="links">
-                        <li {% if request.META.PATH_INFO|contains:"/backup" %}class="active"{% endif %}><a href="{{script_name}}{{backup_prefix}}/backup/new" title="">Backup</a></li>
-                        <li {% if request.META.PATH_INFO|contains:"/restore" %}class="active"{% endif %}><a href="{{script_name}}{{restore_prefix}}/restore/new" title="">Restore</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/management" %}class="active"{% endif %}><a href="{{script_name}}/management/" title="">Gerenciar</a></li>
                         <li {% if request.META.PATH_INFO|contains:"/stats" %}class="active"{% endif %}><a href="{{script_name}}/stats" title="">Estatísticas</a></li>
-                        <li {% if request.META.PATH_INFO|contains:"/config" %}class="active"{% endif %}><a href="{{script_name}}/config/edit" title="">Configurações</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/tools" %}class="active"{% endif %}><a href="{{script_name}}/tools/" title="">Ferramentas</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/config" %}class="active"{% endif %}><a href="{{script_name}}/config/edit" title="">Sistema</a></li>
                     </ul>
                     {% if current_user.username %}
                     <form class="link" action="{{script_name}}/session/delete" method="post">
@@ -38,6 +38,13 @@
 			</div>
 			<div id="conteudo">	
 				<div id="sidebar">
+                    <h3>Atalhos</h3>
+                    <ul class="aux">
+					<li><a href="{{script_name}}/backup/new">Adicionar Computador</a></li>
+                    <li><a href="{{script_name}}/backup/new" title="">Adicionar Backup</a></li>
+                    <li><a href="{{script_name}}/restore/new" title="">Restaurar Arquivos</a></li>
+                    </ul>
+                    <br /><br />
 				    <!-- start computers block -->
 				    {% block computers %}
 				    {% if comps.count %}
@@ -52,25 +59,9 @@
 						{% endfor %}
 					</ul>
 					{% endif %}
-					<p><a href="{{script_name}}/backup/new">[+] Adicionar computador</a></p>
 					{% endblock %}
 					
 					{% block storages %}
-				    <h3>Storages</h3>
-				    {% if stors.count %}
-					<ul class="aux list_computers">
-						{% for s in stors %}
-						{% ifequal s.id storage.id %}
-						<li><strong><a href="{{script_name}}/storage/{{s.id}}">{{ s.storage_name }}</a> <span>{{ s.storage_ip }}</span></strong></li>
-						{% else %}
-						<li><a href="{{script_name}}/storage/{{s.id}}">{{ s.storage_name }}</a> <span>{{ s.storage_ip }}</span></li>
-						{% endifequal %}
-						{% endfor %}
-					</ul>
-					{% else %}
-						<p><a href="{{script_name}}/config/edit">Configure o Sistema</a></p>
-					{% endif %}
-					<p><a href="{{script_name}}/storage/new">[+] Adicionar storage</a></p>
 					{% endblock %}
 					<!-- end computers block -->
 				</div>

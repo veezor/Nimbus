@@ -19,7 +19,11 @@ class NimbusUUID(models.Model):
     # Constantes
     NIMBUS_BLANK = -1
     # Atributos
-    uuid_hex = models.CharField(editable=False, max_length=32, unique=True, default=NIMBUS_BLANK)
+    uuid_hex = models.CharField(
+        editable=False,
+        max_length=32,
+        unique=True,
+        default=NIMBUS_BLANK)
     uuid_created_on = models.DateTimeField(editable=False)
     
     # Classe Meta é necessária para resolver um problema gerado quando se
@@ -45,10 +49,15 @@ class NimbusUUID(models.Model):
         if self.uuid_hex == self.NIMBUS_BLANK:
             import uuid
             self.uuid_hex = uuid.uuid4().hex
-            self.uuid_created_on = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            self.uuid_created_on = time.strftime(
+                "%Y-%m-%d %H:%M:%S",
+                time.localtime())
             super(NimbusUUID, self).save()
-        else: #TODO: Criar exceção do tipo Nimbus
-            raise Exception("Erro de programação: objeto NimbusUUID não pode ser alterado.")
+        else:
+            #TODO: Criar exceção do tipo Nimbus
+            raise Exception(
+                """Erro de programação: objeto NimbusUUID
+                não pode ser alterado.""")
 
     def __unicode__(self):
         return "uuid_hex = %s" % self.uuid_hex

@@ -18,10 +18,18 @@ class Procedure(models.Model):
     nimbus_uuid = models.ForeignKey(NimbusUUID)
     computer = models.ForeignKey(Computer)
     storage = models.ForeignKey(Storage)
-    procedure_name = models.CharField("Nome",max_length=50,unique=True)
-    offsite_on = models.BooleanField("Enviar para offsite?", default=False)
-    pool_size = models.IntegerField("Tamanho total ocupado (MB)", default=2048)
-    retention_time = models.IntegerField("Tempo de renteção (dias)", default=30)
+    procedure_name = models.CharField(
+        "Nome",
+        max_length=50,unique=True)
+    offsite_on = models.BooleanField(
+        "Enviar para offsite?",
+        default=False)
+    pool_size = models.IntegerField(
+        "Tamanho total ocupado (MB)",
+        default=2048)
+    retention_time = models.IntegerField(
+        "Tempo de renteção (dias)",
+        default=30)
 
     # Classe Meta é necessária para resolver um problema gerado quando se
     # declara um model fora do arquivo models.py. Foi utilizada uma solução
@@ -46,19 +54,19 @@ class Procedure(models.Model):
         super(Procedure, self).save()
 
     def procedure_bacula_name(self):
-        return "%s_job" % (self.nimbus_uuid.uuid_hex)
+        return "%s_job" % self.nimbus_uuid.uuid_hex
 
     def fileset_bacula_name(self):
-        return "%s_fileset" % (self.nimbus_uuid.uuid_hex)
+        return "%s_fileset" % self.nimbus_uuid.uuid_hex
     
     def restore_bacula_name(self):
-        return "%s_restorejob" % (self.nimbus_uuid.uuid_hex)
+        return "%s_restorejob" % self.nimbus_uuid.uuid_hex
         
     def schedule_bacula_name(self):
-        return "%s_schedule" % (self.nimbus_uuid.uuid_hex)
+        return "%s_schedule" % self.nimbus_uuid.uuid_hex
 
     def pool_bacula_name(self):
-        return "%s_pool" % (self.nimbus_uuid.uuid_hex)
+        return "%s_pool" % self.nimbus_uuid.uuid_hex
 
     def build_backup(self, fset, sched, trigg):
         """Saves child objects in correct order."""
@@ -71,8 +79,9 @@ class Procedure(models.Model):
     def restore_jobs(self):
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_RESTORE_JOBS_RAW_QUERY
-        restore_jobs_query = CLIENT_RESTORE_JOBS_RAW_QUERY %   {'client_name':self.computer.computer_bacula_name(), 
-                                                        'file_set':self.fileset_bacula_name(),}
+        restore_jobs_query = CLIENT_RESTORE_JOBS_RAW_QUERY % {
+            'client_name':self.computer.computer_bacula_name(), 
+            'file_set':self.fileset_bacula_name(),}
         cursor = BaculaDatabase.execute(restore_jobs_query)
         return utils.dictfetch(cursor)
 
@@ -80,7 +89,7 @@ class Procedure(models.Model):
         """Returns a dict with job information of a given job id"""
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import JOB_INFO_RAW_QUERY
-        starttime_query = JOB_INFO_RAW_QUERY %    {'job_id':bkp_jid,}
+        starttime_query = JOB_INFO_RAW_QUERY % {'job_id':bkp_jid,}
         cursor = BaculaDatabase.execute(starttime_query)
         result = utils.dictfetch(cursor)
         return result and result[0] or {}
@@ -107,12 +116,18 @@ class Procedure(models.Model):
         from backup_corporativo.bkp.sql_queries import LOAD_LAST_FULL_RAW_QUERY
         from backup_corporativo.bkp.sql_queries import LOAD_FULL_RAW_QUERY
         self.clean_temp()
-        if 'StartTime' in initial_bkp and 'Level' in initial_bkp and initial_bkp['Level'] == 'I':
-            load_full_query = LOAD_LAST_FULL_RAW_QUERY %  {'client_id':self.computer.bacula_id,
-                                                    'start_time':initial_bkp['StartTime'],
-                                                    'fileset':self.get_fileset_name(),}
-        elif 'JobId' in initial_bkp and 'Level' in initial_bkp and initial_bkp['Level'] == 'F':
-            load_full_query = LOAD_FULL_RAW_QUERY % {'jid':initial_bkp['JobId']}
+        if ('StartTime' in initial_bkp and
+            'Level' in initial_bkp
+            and initial_bkp['Level'] == 'I'):
+            load_full_query = LOAD_LAST_FULL_RAW_QUERY % {
+                'client_id':self.computer.bacula_id,
+                'start_time':initial_bkp['StartTime'],
+                'fileset':self.get_fileset_name(),}
+        elif ('JobId' in initial_bkp
+              and 'Level' in initial_bkp
+              and initial_bkp['Level'] == 'F'):
+            load_full_query = LOAD_FULL_RAW_QUERY % {
+                'jid':initial_bkp['JobId']}
         #TODO refactore BaculaDatabase so we can commit through there.            
         b2 = BaculaDatabaseWrapper()
         cursor = b2.cursor()
@@ -120,7 +135,9 @@ class Procedure(models.Model):
         b2.commit()
 
     def get_tdate(self):
-        """Gets tdate from a 1-row-table called temp1 which holds last full backup when properly loaded."""
+        """Gets tdate from a 1-row-table called temp1 which
+        holds last full backup when properly loaded.
+        """
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import TEMP1_TDATE_QUERY
         cursor = BaculaDatabase.execute(TEMP1_TDATE_QUERY)
@@ -130,8 +147,9 @@ class Procedure(models.Model):
 
     def load_full_media(self):
         """
-        Loads media information for lasfull backup at table called temp.
-        for more information, see LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
+        Loads media information for lasfull backup at table
+        called temp. For more information, see
+        LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
         """
         from backup_corporativo.bkp.bacula import BaculaDatabaseWrapper
         from backup_corporativo.bkp.sql_queries import LOAD_FULL_MEDIA_INFO_QUERY
@@ -142,18 +160,20 @@ class Procedure(models.Model):
         
     def load_inc_media(self,initial_bkp):
         """
-        Loads media information for incremental backups at table called temp.
-        for more information, see LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
+        Loads media information for incremental backups at
+        table called temp. For more information, see
+        LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
         """
         from backup_corporativo.bkp.bacula import BaculaDatabaseWrapper
         from backup_corporativo.bkp.sql_queries import LOAD_INC_MEDIA_INFO_RAW_QUERY
         tdate = self.get_tdate()
         
         if 'StartTime' in initial_bkp:
-            incmedia_query = LOAD_INC_MEDIA_INFO_RAW_QUERY %    {'tdate':tdate,
-                                                                'start_time':initial_bkp['StartTime'],
-                                                                'client_id':self.computer.bacula_id,
-                                                                'fileset':self.get_fileset_name(),}
+            incmedia_query = LOAD_INC_MEDIA_INFO_RAW_QUERY % {
+                'tdate':tdate,
+                'start_time':initial_bkp['StartTime'],
+                'client_id':self.computer.bacula_id,
+                'fileset':self.get_fileset_name(),}
             #TODO refactore BaculaDatabase so we can commit through there.            
             b2 = BaculaDatabaseWrapper()
             cursor = b2.cursor()
@@ -161,16 +181,20 @@ class Procedure(models.Model):
             b2.commit()
 
     def load_backups_information(self,initial_bkp):
-        self.load_full_bkp(initial_bkp)         # load full bkp general info into temp1
-        self.load_full_media()                  # load full bkp media info into temp
+        # load full bkp general info into temp1
+        self.load_full_bkp(initial_bkp)
+        # load full bkp media info into temp
+        self.load_full_media() 
         if 'Level' in initial_bkp and initial_bkp['Level'] == 'I':
-            self.load_inc_media(initial_bkp)    # load inc bkps media info into temp
+            # load inc bkps media info into temp
+            self.load_inc_media(initial_bkp) 
             
 
     def build_jid_list(self,bkp_jid):
         """
-        If temp1 and temp tables are properly feeded, will build a list with all
-        job ids included at this restore. For more information, see 
+        If temp1 and temp tables are properly feeded, will
+        build a list with all job ids included at this restore.
+        For more information, see 
         JOBS_FOR_RESTORE_QUERY at sql_queries.py
         """
         from backup_corporativo.bkp.sql_queries import JOBS_FOR_RESTORE_QUERY
@@ -178,7 +202,8 @@ class Procedure(models.Model):
         initial_bkp = self.get_bkp_dict(bkp_jid)
         jid_list = []
         if initial_bkp:
-            self.load_backups_information(initial_bkp)  # loads full bkp info and inc bkps information if exists
+            # loads full bkp info and inc bkps information if exists
+            self.load_backups_information(initial_bkp)
             cursor = BaculaDatabase.execute(JOBS_FOR_RESTORE_QUERY)
             job_list = utils.dictfetch(cursor)
 
@@ -190,9 +215,11 @@ class Procedure(models.Model):
         """Retrieves tree with files from a job id list"""
         from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import FILE_TREE_RAW_QUERY
-        jid_list = self.build_jid_list(bkp_jid)    # build list with all job ids
+        # build list with all job ids
+        jid_list = self.build_jid_list(bkp_jid)    
         if jid_list:
-            filetree_query = FILE_TREE_RAW_QUERY %  {'jid_string_list':','.join(jid_list),}
+            filetree_query = FILE_TREE_RAW_QUERY % {
+                'jid_string_list':','.join(jid_list),}
             cursor = BaculaDatabase.execute(filetree_query)
             count = cursor.rowcount
             file_list = utils.dictfetch(cursor)
@@ -202,25 +229,38 @@ class Procedure(models.Model):
     def build_file_tree(self, file_list):
         """Build tree from file list"""
         import os
-        files = ['%s:%s' % (os.path.join(f['FPath'], f['FName']), f['FId']) for f in file_list]
+        files = [
+            '%s:%s' % (
+                os.path.join(f['FPath'],
+                f['FName']),
+                f['FId']) \
+            for f in file_list]
         return utils.parse_filetree(files)
         
 
     def edit_url(self):
         """Returns edit url."""
-        return "computer/%s/procedure/%s/edit" % (self.computer_id, self.id)
+        return "computer/%s/procedure/%s/edit" % (
+            self.computer_id,
+            self.id)
     
     def delete_url(self):
         """Returns delete url."""
-        return "computer/%s/procedure/%s/delete" % (self.computer_id, self.id)
+        return "computer/%s/procedure/%s/delete" % (
+            self.computer_id,
+            self.id)
 
     def new_run_url(self):
         """Returns run url."""
-        return "computer/%s/procedure/%s/run/new" % (self.computer_id, self.id)
+        return "computer/%s/procedure/%s/run/new" % (
+            self.computer_id,
+            self.id)
 
     def create_run_url(self):
         """Returns run url."""
-        return "computer/%s/procedure/%s/run/" % (self.computer_id, self.id)
+        return "computer/%s/procedure/%s/run/" % (
+            self.computer_id,
+            self.id)
 
     def __unicode__(self):
         return self.procedure_name

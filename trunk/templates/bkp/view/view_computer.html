@@ -40,12 +40,10 @@
 	    <div class="botao_acoes">
 	        <button class="popup" rel="view_comp_02"><span>avançado</span></button>
 	        <div id="view_comp_02" class="escondido">
-    	        <button onclick="location.href='{{script_name}}/{{comp.master_cert_dump_url}}'"><span>Dump Master Cert</span></button>
-	            <button onclick="location.href='{{script_name}}/{{comp.key_cert_pem_url}}'"><span>Key Cert Pem</span></button>
-	            <button onclick="location.href='{{script_name}}/{{comp.config_dump_url}}'"><span>Dump CFG</span></button>
-	            <form action="{{script_name}}/{{comp.run_test_url}}" method="post">
-	                <button type="submit"><span>Testar Conexão</span></button>
-	            </form>
+				<button onclick="location.href='{{script_name}}/{{comp.computer_config_url}}'"><span>Configuração</span></button>
+				<form action="{{script_name}}/{{comp.run_test_url}}" method="post">
+					<button type="submit"><span>Testar Conexão</span></button>
+				</form>
 	    	</div>
 	        <button class="popup" rel="view_comp_01"><span>ações</span></button>
 	        <div id="view_comp_01" class="escondido">
@@ -58,10 +56,10 @@
 	<div class="descricao_comp bloco_texto escondido cookie_toggle" id="detalhes_computador_{{ comp.id }}">
 	    <ul class="aux esq" style="width: 325px; float: left;">
 	        <li><strong class="label">IP:</strong> <span class="value">{{ comp.computer_ip }}</span></li>
-	        <li><strong class="label">Sist. Operacional:</strong> <span class="value">{{ comp.computer_so }}</span></li>
+	        <li><strong class="label">Sist. Operacional:</strong> <span class="value">{{ comp.computer_so_friendly }}</span></li>
 	        <li><strong class="label">Status:</strong> <span class="value">{{ compstatus }}</span></li>
 	        <li><strong class="label">Password:</strong> <span class="value">{{ comp.computer_password }}</span></li>
-	        <li><strong class="label">Encriptação:</strong> <span class="value">{{ comp.computer_encryption }}</span></li>
+	        <li><strong class="label">Encriptação:</strong> <span class="value">{{ comp.computer_encryption_friendly }}</span></li>
 	    </ul>
 	    <div class="dir">
 	        <strong>Descrição:</strong><br/>

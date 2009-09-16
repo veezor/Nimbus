@@ -150,7 +150,6 @@ def dictfetch(cursor):
         result.append(row_dict)
     return result
 
-
 ###
 ###   File Handling Specific Definitions
 ###
@@ -252,6 +251,5 @@ def parse_filetree(files):
                     if n == len(file_path) - 1 and file_name:
                         local_tree.append(file_name)
     return file_tree
-    
-  
+      
 CERTIFICATE_CONFIG_PATH = absolute_file_path('certificate.conf','custom/crypt')
