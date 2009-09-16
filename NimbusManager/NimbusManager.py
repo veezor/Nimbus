@@ -3,8 +3,10 @@
 VERSION = "1.3"
 
 from SOAPpy import SOAPServer
-import sys,os
+import sys
+import os
 import ConfigParser
+import netifaces
 
 
 try:
@@ -51,7 +53,7 @@ def generate_dns(ns1,ns2=None,ns3=None):
 	dns.close()
 	print "DNS file created"
 
-def generate_interfaces(iface, ip, netmask, broad=None, network=None, gateway=None):
+def generate_interfaces(iface, ip, netmask, type="static", broad=None, network=None, gateway=None):
 	if os.path.isfile(interfacespath):
 		os.rename(interfacespath,interfacespath+".old")	
 		print "Backuping interfaces file. A .old file created"
@@ -61,17 +63,27 @@ def generate_interfaces(iface, ip, netmask, broad=None, network=None, gateway=No
 	interfaces.write("auto lo\n")
 	interfaces.write("iface lo inet loopback\n")
 	interfaces.write("auto %s\n" % iface)
-	interfaces.write("iface %s inet static\n" % iface)
-	interfaces.write("\taddress %s\n" % ip)
-	interfaces.write("\tnetmask %s\n" % netmask)
-	if broad:
-		interfaces.write("\tbroadcast %s\n" % broad)
-	if network:
-		interfaces.write("\tnetwork %s\n" % network)
-	if gateway:
-		interfaces.write("\tgateway %s\n" % gateway)
+	if type == "dhcp":
+		interfaces.write("iface %s inet dhcp\n" % iface)
+	else:
+		interfaces.write("iface %s inet static\n" % iface)
+		interfaces.write("\taddress %s\n" % ip)
+		interfaces.write("\tnetmask %s\n" % netmask)
+		if broad:
+			interfaces.write("\tbroadcast %s\n" % broad)
+		if network:
+			interfaces.write("\tnetwork %s\n" % network)
+		if gateway:
+			interfaces.write("\tgateway %s\n" % gateway)
 	interfaces.close()
 	print "Interfaces file created"
+
+def get_interfaces():
+	return netifaces.interfaces()
+
+def get_interface_set(iface):
+	set = netifaces.ifaddresses(iface)
+	return[set[2][0]['addr'],set[2][0]['broadcast'],set[2][0]['netmask']]
 
 def __control_daemon(op, daemonname):
 	operations = ("start","stop","restart")
@@ -117,6 +129,8 @@ def main():
 	server.registerFunction(status_director)
 	server.registerFunction(status_storage)
 	server.registerFunction(status_client)
+	server.registerFunction(get_interfaces)
+	server.registerFunction(get_interface_set)
 	print "Inicializing NimbusManager version %s by Linconet" % VERSION
 	server.serve_forever()
 
