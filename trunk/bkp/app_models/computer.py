@@ -10,6 +10,7 @@ from backup_corporativo.bkp import utils
 import os, string, time
 
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
+from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 
 
 ### Computer ###
@@ -223,9 +224,12 @@ class Computer(models.Model):
         """Returns delete url."""
         return "computer/%s/delete" % self.id
 
-    def config_dump_url(self):
+    def computer_config_url(self):
+        return "computer/%s/config/" % self.id 
+    
+    def computer_dump_config_url(self):
         """Returns config dump url."""
-        return "computer/%s/config_dump" % self.id
+        return "computer/%s/config/dump" % self.id
    
     def run_test_url(self):
         """Returns run test url."""
@@ -246,4 +250,4 @@ class Computer(models.Model):
         self.save()
 
     def __unicode__(self):
-        return "%s (%s)" % self.computer_name, self.computer_ip
+        return "%s (%s)" % (self.computer_name, self.computer_ip)

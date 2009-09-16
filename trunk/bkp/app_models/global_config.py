@@ -11,7 +11,7 @@ from backup_corporativo.bkp import utils
 import os, string, time
 
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
-from backup_corporativo.bkp.app_models.storage import Storage
+
 
 ### GlobalConfig ###
 # TODO: remover campos redundantes com NetworkInterface
@@ -83,8 +83,13 @@ class GlobalConfig(models.Model):
             self.director_password = utils.random_password()
             # NetworkInterface.networkconfig.save()
         NimbusUUID.generate_uuid_or_leave(self)
+        # O import do Storage deve ser dentro da função porque existe uma
+        # dependência mútua entre Storage e GlobalConfig. Assim ambos não
+        # podem um referenciar ao outro no escopo geral do arquivo ao
+        # mesmo tempo.
+        from backup_corporativo.bkp.app_models.storage import Storage
         Storage.update_default_storage(self.server_ip, self.storage_port)
-        # always use the same row id at database to store the config
+        # Use sempre o mesmo id para armazenar o Storage Local
         self.id = 1
         super(GlobalConfig, self).save()
 

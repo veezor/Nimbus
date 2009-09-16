@@ -10,6 +10,7 @@ from backup_corporativo.bkp import utils
 import os, string, time
 
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
+from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 
 ### Storage ###
 class Storage(models.Model):
@@ -127,6 +128,12 @@ class Storage(models.Model):
     def delete_url(self):
         """Returns delete url."""
         return "storage/%s/delete" % self.id
+
+    def storage_config_url(self):
+        return "storage/%s/config/" % self.id
+    
+    def storage_dump_config_url(self):
+        return "storage/%s/config/dump" % self.id
 
     def __unicode__(self):
         return "%s (%s:%s)" % (
