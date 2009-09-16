@@ -9,6 +9,7 @@ from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
 import os, string, time
 
+from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 
 class NimbusSSL(models.Model):
     nimbus_uuid = models.ForeignKey(NimbusUUID)
