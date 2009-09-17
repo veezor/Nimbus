@@ -5,11 +5,11 @@ from django.core import serializers
 from django.db import models
 from django import forms
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
+from backup_corporativo.bkp.models import Procedure
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
 import os, string, time
 
-from backup_corporativo.bkp.app_models.procedure import Procedure
 
 ### Schedule ###
 class Schedule(models.Model):
@@ -45,32 +45,23 @@ class Schedule(models.Model):
         elif self.type == "Monthly":
             return "Mensal"
 
-    def add_url(self):
-        """Returns add url."""
-        return "computer/%s/procedure/%s/schedule/" % (
-            self.procedure.computer_id,
-            self.procedure_id)
-
     def edit_url(self):
         """Returns edit url."""
-        return "computer/%s/procedure/%s/schedule/%s/edit" % (
-            self.procedure.computer_id,
-            self.procedure_id, self.id)
+        return "schedule/%s/edit" % self.id
 
     def update_url(self):
         """Returns edit url."""
-        return "computer/%s/procedure/%s/schedule/%s/update" % (
-            self.procedure.computer_id,
-            self.procedure_id, self.id)
+        return "schedule/%s/update" % self.id
 
     def delete_url(self):
         """Returns delete url."""
-        return "computer/%s/procedure/%s/schedule/%s/delete" % (
-            self.procedure.computer_id,
-            self.procedure_id, self.id)
+        return "schedule/%s/delete" % self.id
 
     # TODO: Otimizar codigo, remover if do schedule type (programaçao dinamica)
     def get_trigger(self):
+        # Objetos precisam ser importados aqui, já que existe uma
+        # dependência mútua entre Schedule e os Triggers.
+        from backup_corporativo.bkp.models import WeeklyTrigger, MonthlyTrigger
         if self.type == 'Monthly':
             try:
                 trigger = self.monthlytrigger_set.get()

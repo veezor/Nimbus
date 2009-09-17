@@ -13,25 +13,36 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 
 @authentication_required
-def view_management(request):
+def index_management(request):
     vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.method == 'GET':
         return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/view/view_management.html', return_dict, context_instance=RequestContext(request))
-        
-@authentication_required
-def view_computers(request):
-    vars_dict, forms_dict, return_dict = global_vars(request)
-
-    if request.method == 'GET':
-        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/view/view_computers.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response(
+            'bkp/management/index_management.html',
+            return_dict,
+            context_instance=RequestContext(request))
 
 @authentication_required
-def view_storages(request):
+def list_computers(request):
     vars_dict, forms_dict, return_dict = global_vars(request)
 
     if request.method == 'GET':
+        # Reaproveitar lista de computadores declarada em global_vars()
+        vars_dict['comp_list'] = vars_dict['comps']
         return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
-        return render_to_response('bkp/view/view_storages.html', return_dict, context_instance=RequestContext(request))
+        return render_to_response(
+            'bkp/management/list_computers.html',
+            return_dict, context_instance=RequestContext(request))
+
+@authentication_required
+def list_storages(request):
+    vars_dict, forms_dict, return_dict = global_vars(request)
+
+    if request.method == 'GET':
+        vars_dict['sto_list'] = Storage.objects.all()
+        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+        return render_to_response(
+            'bkp/management/list_storages.html',
+            return_dict,
+            context_instance=RequestContext(request))

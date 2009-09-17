@@ -36,18 +36,9 @@ class FileSet(models.Model):
     class Meta:
         app_label = 'bkp'    
 
-    def add_url(self):
-        """Returns add url."""
-        return "computer/%s/procedure/%s/fileset/" % (
-            self.procedure.computer_id,
-            self.procedure_id)
-
     def delete_url(self):
         """Returns delete url."""
-        return "computer/%s/procedure/%s/fileset/%s/delete" % (
-            self.procedure.computer_id,
-            self.procedure_id,
-            self.id)
+        return "fileset/%s/delete" % self.id
 
     def __unicode__(self):
         return self.path

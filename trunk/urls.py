@@ -1,16 +1,25 @@
-from os.path import dirname
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
+from os.path import dirname
 from django.conf.urls.defaults import *
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
 base_url = 'backup_corporativo'
 
-urlpatterns = patterns('backup_corporativo.bkp.views',
-    (r'^$', 'view_stats'),
+# Declarando primeiro a rota estática, que no futuro será removida
+# já que o conteúdo estático será servido pelo próprio servidor
+# web seja lá qual for que o Nimbus utilize
+urlpatterns = patterns(
+    '',
     (r'^static/(?P<path>.*)', 'django.views.static.serve', {
-        'document_root':'%s/templates/bkp/static' % dirname(__file__)}),
+        'document_root':'%s/templates/bkp/static' % dirname(__file__)}))
+
+# O resto das rotas é declarado separadamente
+# já que todas tem o prefixo 'backup_corporativo.bkp.views'
+# em comum.
+urlpatterns += patterns(
+    'backup_corporativo.bkp.views',
+    (r'^$', 'view_stats'),
     # management
     (r'^management/$', 'index_management'),
     (r'^management/computers/list$', 'list_computers'),
@@ -63,6 +72,13 @@ urlpatterns = patterns('backup_corporativo.bkp.views',
     (r'^schedule/(?P<sched_id>\d+)/edit$', 'edit_schedule'),
     (r'^schedule/(?P<sched_id>\d+)/update$', 'update_schedule'),
     (r'^schedule/(?P<sched_id>\d+)/delete$', 'delete_schedule'),
+    #
+    #
+    #
+    # Próxima parte do código não será organizada porque será refeita
+    #
+    #
+    #
     # TODO: Refazer wizard. Toda a comunicação entre as etapas do
     # novo wizard será feita através de POST, permitindo ida e volta
     # nas etapas e os objetos só serão salvos ao final do wizard.
@@ -92,5 +108,5 @@ urlpatterns = patterns('backup_corporativo.bkp.views',
     # Tools
     (r'^tools/$', 'view_tools'),
     (r'^tools/ssl/$', 'tools_ssl'),
-    (r'^admin/(.*)', admin.site.root),
+#    (r'^admin/(.*)', admin.site.root),
 )

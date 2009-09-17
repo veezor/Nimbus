@@ -128,7 +128,6 @@ class Procedure(models.Model):
               and initial_bkp['Level'] == 'F'):
             load_full_query = LOAD_FULL_RAW_QUERY % {
                 'jid':initial_bkp['JobId']}
-        #TODO refactore BaculaDatabase so we can commit through there.            
         b2 = BaculaDatabaseWrapper()
         cursor = b2.cursor()
         cursor.execute(load_full_query)
@@ -174,7 +173,6 @@ class Procedure(models.Model):
                 'start_time':initial_bkp['StartTime'],
                 'client_id':self.computer.bacula_id,
                 'fileset':self.get_fileset_name(),}
-            #TODO refactore BaculaDatabase so we can commit through there.            
             b2 = BaculaDatabaseWrapper()
             cursor = b2.cursor()
             cursor.execute(incmedia_query)
@@ -240,27 +238,15 @@ class Procedure(models.Model):
 
     def edit_url(self):
         """Returns edit url."""
-        return "computer/%s/procedure/%s/edit" % (
-            self.computer_id,
-            self.id)
+        return "procedure/%s/edit" % self.id
     
+    def update_url(self):
+        """Returns edit url."""
+        return "procedure/%s/update" % self.id
+
     def delete_url(self):
         """Returns delete url."""
-        return "computer/%s/procedure/%s/delete" % (
-            self.computer_id,
-            self.id)
-
-    def new_run_url(self):
-        """Returns run url."""
-        return "computer/%s/procedure/%s/run/new" % (
-            self.computer_id,
-            self.id)
-
-    def create_run_url(self):
-        """Returns run url."""
-        return "computer/%s/procedure/%s/run/" % (
-            self.computer_id,
-            self.id)
+        return "procedure/%s/delete" % self.id
 
     def __unicode__(self):
         return self.procedure_name

@@ -32,12 +32,13 @@ from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_T
 # vazio presente em forms_dict.values()
 def global_vars(request):
     """Declare system-wide variables."""
-    vars_dict = {}; forms_dict = {}; return_dict = {}
+    vars_dict = {}
+    forms_dict = {}
+    return_dict = {}
     return_dict['script_name'] = request.META['SCRIPT_NAME']
     return_dict['current_user'] = request.user
     # Lista de computadores e storages.
     vars_dict['comps'] = Computer.objects.all()
-    vars_dict['stors'] = Storage.objects.all()
     # Algumas variáveis importantes.
     vars_dict['TYPE_CHOICES'] = TYPE_CHOICES
     vars_dict['LEVEL_CHOICES'] = LEVEL_CHOICES

@@ -9,10 +9,6 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 import string, re, os
 
-
-
-
-
 ###
 ###   Auxiliar Definitions
 ###
@@ -52,34 +48,28 @@ def redirect_back_or_default(request, default, except_pattern=None):
     redirect = ("location" in request.session) and request.session["location"] or default
     return HttpResponseRedirect(redirect)
 
+# Novo sistema de caminhos está sendo implementado aos poucos.
+# TODO: aceitar instâncias no argumento.
+def edit_path(object_name, object_id, request):
+    return "%s/%s/%s/edit" % (
+        request.META['SCRIPT_NAME'],
+        object_name,
+        object_id)
 
+def path(object_name, object_id, request):
+    return "%s/%s/%s" % (
+        request.META['SCRIPT_NAME'],
+        object_name,
+        object_id)
+
+# Definições antigas de caminho
 def root_path(request):
     """Return root path."""
     return "%s/" % (request.META['SCRIPT_NAME'])
-    
+
 def login_path(request):
     """Returns login path."""
     return "%s/session/new" % (request.META['SCRIPT_NAME'])
-
-def computer_path(request, computer_id):
-    """Returns computer path."""
-    return "%s/computer/%s" % (request.META['SCRIPT_NAME'],computer_id)
-
-def storage_path(request, storage_id):
-    """Returns storage path."""
-    return "%s/storage/%s" % (request.META['SCRIPT_NAME'], storage_id)
-
-def procedure_path(request, procedure_id, computer_id):
-    """Returns procedure path."""
-    return "%s/computer/%s/procedure/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id)
-
-def edit_procedure_path(request, procedure_id, computer_id):
-    """Returns procedure path."""
-    return "%s/computer/%s/procedure/%s/edit" % (request.META['SCRIPT_NAME'],computer_id,procedure_id)
-
-def schedule_path(request, schedule_id, procedure_id, computer_id):
-    """Returns schedule path."""
-    return "%s/computer/%s/procedure/%s/schedule/%s" % (request.META['SCRIPT_NAME'],computer_id,procedure_id,schedule_id)
 
 def edit_config_path(request):
     """Returns edit config path."""
@@ -88,14 +78,6 @@ def edit_config_path(request):
 def edit_offsite_path(request):
     """Returns edit config path."""
     return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
-
-def new_device_path(request):
-    """Returns new device path."""
-    return "%s/config/devices/edit" % (request.META['SCRIPT_NAME'])
-
-def new_restriction_path(request):
-    """Returns new restriction path."""        
-    return "%s/config/restrictions/edit" % (request.META['SCRIPT_NAME'])
 
 # Passo 1
 def restore_computer_path(request, computer_id):

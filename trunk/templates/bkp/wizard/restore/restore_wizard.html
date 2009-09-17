@@ -15,7 +15,7 @@
 {% block content %}
 <hr />
 
-    {% include 'bkp/restore_steps.html' %}
+    {% include 'bkp/wizard/restore/restore_wizard_partial.html' %}
 
 <!--
 	<div class="bloco_texto">
@@ -153,7 +153,7 @@
 	
 	<div class="bloco_texto">
 		<ul class="filetree">
-		{% include 'bkp/tmp/new_tmp_restore_tree.html' %}
+		{% include 'bkp/wizard/restore/restore_wizard_tree_partial.html' %}
 		</ul>
 
 	{% for field in restore_form %}
