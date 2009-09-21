@@ -3,12 +3,9 @@
 
 # Application
 from backup_corporativo.bkp import utils
-#TODO: trocar imports explicitando quais objetos serão importados
 from backup_corporativo.bkp.models import GlobalConfig, Procedure
 from backup_corporativo.bkp.forms import GlobalConfigForm
-#from backup_corporativo.bkp.models import *
-#from backup_corporativo.bkp.forms import *
-from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
+from backup_corporativo.bkp.views import global_vars, authentication_required
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -20,13 +17,13 @@ from django.contrib.auth.forms import PasswordChangeForm
 ### Global Config ###
 @authentication_required
 def edit_config(request, config_type='global'):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     
     vars_dict['config_type'] = config_type
     vars_dict['request'] = request
-    try:
-        vars_dict['gconfig'] = GlobalConfig.objects.get(pk=1)    
-    except GlobalConfig.DoesNotExist:
+    if GlobalConfig.system_configured():
+        vars_dict['gconfig'] = GlobalConfig.objects.get(pk=1)
+    else:
         vars_dict['gconfig'] = None
 
     if request.method == 'GET':
@@ -48,7 +45,7 @@ def edit_config(request, config_type='global'):
             vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
             forms_dict['gconfigform'] = GlobalConfigForm(
                 instance=vars_dict['gconfig'])
-        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/system/edit_globalconfig.html',
             return_dict,
@@ -60,7 +57,7 @@ def edit_config(request, config_type='global'):
 
         if forms_dict['gconfigform'].is_valid():
             vars_dict['gconfig'] = forms_dict['gconfigform'].save()
-            return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
             request.user.message_set.create(
                 message="Configurações aplicadas com sucesso.")
             #TODO: criar página estática com resumo das configurações atuais
@@ -69,7 +66,7 @@ def edit_config(request, config_type='global'):
                 return_dict,
                 context_instance=RequestContext(request))
         else:
-            return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
             request.user.message_set.create(
                 message="Existem erros e a configuração não foi alterada.")
             return render_to_response(
@@ -81,7 +78,7 @@ def edit_config(request, config_type='global'):
 ### Password Management ###
 @authentication_required
 def change_password(request):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
 
     if request.method == 'POST':
         forms_dict['pwdform'] = PasswordChangeForm(
@@ -99,7 +96,7 @@ def change_password(request):
             vars_dict['config_type'] = 'password'
             request.user.message_set.create(
                 message="Existem erros e a senha não foi alterada.")
-            return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
             # TODO: tirar mudança de senha de globalconfig
             return render_to_response(
                 'bkp/system/edit_globalconfig.html',
@@ -108,7 +105,7 @@ def change_password(request):
 
 @authentication_required
 def edit_offsite(request):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     
     if request.method == 'GET':
         return HttpResponseRedirect(edit_offsite_path(request))
@@ -126,7 +123,7 @@ def edit_offsite(request):
             return HttpResponseRedirect(edit_offsite_path(request))
         else:
             vars_dict['config_type'] = 'offsite'
-            return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
             request.user.message_set.create(
                 message="Existem erros e o backup offsite não foi alterado.")
             #return HttpResponseRedirect(new_offsite_path(request))

@@ -5,7 +5,7 @@
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.forms import LoginForm
 from backup_corporativo.bkp.models import GlobalConfig
-from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
+from backup_corporativo.bkp.views import global_vars, authentication_required
 # Auth
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -22,22 +22,20 @@ from django.shortcuts import get_object_or_404
 
 ### Sessions ###
 def new_session(request):
-    vars_dict, forms_dict, return_dict = utils.global_vars(request)
+    vars_dict, forms_dict = utils.global_vars(request)
     if not request.user.is_authenticated():
         forms_dict['loginform'] = LoginForm()
-        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/session/new_session.html',
             return_dict,
             context_instance=RequestContext(request))
     else:
-        return utils.redirect_back_or_default(
-            request,
-            default=root_path(request))
+        return utils.redirect_back(request)
     
 
 def create_session(request):
-    vars_dict, forms_dict, return_dict = utils.global_vars(request)
+    vars_dict, forms_dict = utils.global_vars(request)
     if not request.user.is_authenticated():
         if request.method == 'POST':
             forms_dict['loginform'] = LoginForm(request.POST)
@@ -47,30 +45,29 @@ def create_session(request):
                 user = authenticate(username=auth_login, password=auth_passwd)
                 if user:
                     login(request, user)
-                    default = GlobalConfig.system_configured(
-                        GlobalConfig()) and \
-                        root_path(request) or \
-                        edit_config_path(request)
-                    request.user.message_set.create(
-                        message="Bem-vindo ao Sistema de Backups Corporativo.")
-                    return utils.redirect_back_or_default(request, default)
+                    if GlobalConfig.system_configured():
+                        location = root_path(request)
+                        request.user.message_set.create(
+                            message="Bem-vindo ao Sistema de Backups Corporativo.")
+                    else:
+                        location = edit_config_path(request)
+                        request.user.message_set.create(
+                            message="Configure seu sistema.")
+                    return utils.redirect_back(request, default=location)
                 else:
-                    return_dict = utils.merge_dicts(
-                        return_dict,
-                        forms_dict,
-                        vars_dict)
+                    return_dict = utils.merge_dicts(forms_dict, vars_dict)
                     return render_to_response(
                         'bkp/session/new_session.html',
                         return_dict,
                         context_instance=RequestContext(request))                
             else:
-                return_dict = merge_dicts(return_dict, forms_dict, vars_dict)
+                return_dict = merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
                     'bkp/session/new_session.html',
                     return_dict,
                     context_instance=RequestContext(request))
     else:
-        return redirect_back_or_default(request, default=root_path(request))
+        return redirect_back(request)
 
 @authentication_required
 def delete_session(request):

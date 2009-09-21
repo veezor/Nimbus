@@ -1,12 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# TODO:
-# Falta tratar erros URL caso o ID esteja faltando 
-# Validar gatilho c/ tipo de agendamento
-
-# Application
-from backup_corporativo.bkp.utils import *
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -34,18 +28,19 @@ def global_vars(request):
     """Declare system-wide variables."""
     vars_dict = {}
     forms_dict = {}
-    return_dict = {}
-    return_dict['script_name'] = request.META['SCRIPT_NAME']
-    return_dict['current_user'] = request.user
+    vars_dict['script_name'] = request.META['SCRIPT_NAME']
+    vars_dict['current_user'] = request.user
     # Lista de computadores e storages.
     vars_dict['comps'] = Computer.objects.all()
     # Algumas variáveis importantes.
     vars_dict['TYPE_CHOICES'] = TYPE_CHOICES
     vars_dict['LEVEL_CHOICES'] = LEVEL_CHOICES
     vars_dict['DAYS_OF_THE_WEEK'] = DAYS_OF_THE_WEEK
+    # TODO: verificar se é realmente necessário enviar request inteiro
+    # em TODAS as views.
     vars_dict['request'] = request
     
-    return vars_dict, forms_dict, return_dict        
+    return vars_dict, forms_dict        
 
 
 def require_authentication(request):

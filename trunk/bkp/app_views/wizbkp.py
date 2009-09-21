@@ -3,7 +3,7 @@
 
 # Application
 from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
+from backup_corporativo.bkp.views import global_vars, authentication_required
 from backup_corporativo.bkp.models import Computer, Procedure, Storage, FileSet, Schedule, MonthlyTrigger, WeeklyTrigger
 from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, ScheduleAuxForm, ScheduleForm, WeeklyTriggerForm, MonthlyTriggerForm, FileSetForm
 # Misc
@@ -19,7 +19,7 @@ from django.shortcuts import get_object_or_404
 
 @authentication_required
 def new_backup(request, comp_id=None, proc_id=None):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     temp_dict = {}
     if comp_id is not None:
         vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)
@@ -38,7 +38,7 @@ def new_backup(request, comp_id=None, proc_id=None):
             forms_dict['wtriggform'] = WeeklyTriggerForm()
             forms_dict['mtriggform'] = MonthlyTriggerForm()
 
-        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/wizard/computer/computer_wizard.html',
             return_dict,
@@ -49,8 +49,8 @@ def new_backup(request, comp_id=None, proc_id=None):
             forms_dict['compform'] = ComputerForm(request.POST)
             if forms_dict['compform'].is_valid():
                 comp = forms_dict['compform'].save()
-                return HttpResponseRedirect(
-                    utils.backup_computer_path(request, comp.id))
+                location = utils.backup_computer_path(request, comp.id)
+                return HttpResponseRedirect(location)
             else:
                 return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
                 return render_to_response(
@@ -68,10 +68,13 @@ def new_backup(request, comp_id=None, proc_id=None):
                 proc.save()
                 fset.procedure_id = proc.id
                 fset.save()
-                return HttpResponseRedirect(
-                    utils.backup_procedure_path(request, comp_id, proc.id))
+                location = utils.backup_procedure_path(
+                    request,
+                    comp_id,
+                    proc.id)
+                return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+                return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
                     'bkp/wizard/computer/computer_wizard.html',
                     return_dict,
@@ -88,11 +91,14 @@ def new_backup(request, comp_id=None, proc_id=None):
                 sched.save()
                 mtrigg.schedule_id = sched.id
                 mtrigg.save()
-                return HttpResponseRedirect(
-                    utils.path("computer", comp_id, request))
+                location = utils.path("computer", comp_id, request)
+                return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
-                return render_to_response('bkp/wizard/computer/computer_wizard.html', return_dict, context_instance=RequestContext(request))
+                return_dict = utils.merge_dicts(forms_dict, vars_dict)
+                return render_to_response(
+                    'bkp/wizard/computer/computer_wizard.html',
+                    return_dict,
+                    context_instance=RequestContext(request))
 
 def __backup_step(comp_id=None ,proc_id=None, job_id=None):
     if all([arg is None for arg in [comp_id,proc_id]]):

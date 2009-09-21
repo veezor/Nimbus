@@ -3,12 +3,9 @@
 
 # Application
 from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
-from backup_corporativo.bkp.models import Computer
-from backup_corporativo.bkp.models import Procedure
-from backup_corporativo.bkp.forms import RestoreForm
-from backup_corporativo.bkp.forms import HiddenRestoreForm
-from backup_corporativo.bkp.forms import RestoreCompForm, RestoreProcForm
+from backup_corporativo.bkp.views import global_vars, authentication_required
+from backup_corporativo.bkp.models import Computer, Procedure
+from backup_corporativo.bkp.forms import RestoreForm, HiddenRestoreForm, RestoreCompForm, RestoreProcForm
 from backup_corporativo.bkp.bacula import Bacula
 # Misc
 from django.http import HttpResponse
@@ -29,7 +26,7 @@ from django.shortcuts import get_object_or_404
 # TODO: trocar get_object_or_404 por Try classe.objects.get e Except classe.DoesNotExist
 @authentication_required
 def new_restore(request, comp_id=None, proc_id=None, job_id=None):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     temp_dict = {}
     if comp_id is not None:
         vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)
@@ -58,10 +55,7 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
             vars_dict['fileset_name'] = request.GET['fset']
             vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)            
             forms_dict['restore_form'] = RestoreForm()
-        return_dict = utils.merge_dicts(
-            return_dict,
-            forms_dict,
-            vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/wizard/restore/restore_wizard.html',
             return_dict,
@@ -76,13 +70,10 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
             forms_dict['restorecomp_form'] = RestoreCompForm(request.POST)
             if forms_dict['restorecomp_form'].is_valid():
                 comp_id = forms_dict['restorecomp_form'].cleaned_data['target_client']
-                return HttpResponseRedirect(
-                    utils.restore_computer_path(request, comp_id))
+                location = utils.restore_computer_path(request, comp_id)
+                return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(
-                    return_dict,
-                    forms_dict,
-                    vars_dict)
+                return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
                     'bkp/wizard/restore/restore_rizard.html',
                     return_dict,
@@ -93,14 +84,11 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
             forms_dict['restoreproc_form'].load_choices(comp_id)
             if forms_dict['restoreproc_form'].is_valid():
                 proc_id = forms_dict['restoreproc_form'].cleaned_data['target_procedure']
-                return HttpResponseRedirect(
-                    utils.restore_procedure_path(
-                        request, comp_id, proc_id))
+                location = utils.restore_procedure_path(
+                    request, comp_id, proc_id)
+                return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(
-                    return_dict,
-                    forms_dict,
-                    vars_dict)
+                return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
                     'bkp/wizard/restore/restore_wizard.html',
                     return_dict,
@@ -125,12 +113,19 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
                     for f in raw_file_list:
                         f = f.split('/')
                         file_list.append(['%s/' % i for i in f[:-1]] + [f[-1]])
-                    Bacula.tmp_restore(client_from_restore, client_to_restore, date_to_restore, directory_to_restore, fileset_name, file_list)
-                    return HttpResponseRedirect(computer_path(request, comp_id))
+                    Bacula.tmp_restore(
+                        client_from_restore,
+                        client_to_restore,
+                        date_to_restore,
+                        directory_to_restore,
+                        fileset_name,
+                        file_list)
+                    location = utils.computer_path(request, comp_id)
+                    return HttpResponseRedirect(location)
 #                    return HttpResponse(request.POST.getlist('file'))
                 else:
                     vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)        
-                    return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+                    return_dict = utils.merge_dicts(forms_dict, vars_dict)
                     return render_to_response(
                         'bkp/wizard/restore/restore_wizard.html',
                         return_dict,

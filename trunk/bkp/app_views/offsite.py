@@ -5,7 +5,7 @@
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import GlobalConfig, Procedure
 from backup_corporativo.bkp.forms import OffsiteConfigForm
-from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
+from backup_corporativo.bkp.views import global_vars, authentication_required
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -17,12 +17,12 @@ from django.shortcuts import get_object_or_404
 @authentication_required
 def edit_offsite_config(request):
     if request.method == 'GET':
-        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict, forms_dict = global_vars(request)
         vars_dict['gconfig'] = get_object_or_404(GlobalConfig, pk=1)
         vars_dict['offsite_on'] = vars_dict['gconfig'].offsite_on
         forms_dict['offsiteform'] = OffsiteConfigForm(
             instance=vars_dict['gconfig'])
-        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/system/config_offsite_feature.html',
             return_dict,
@@ -31,7 +31,7 @@ def edit_offsite_config(request):
 @authentication_required
 def enable_offsite(request):
     if request.method == 'POST':
-        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict, forms_dict = global_vars(request)
         vars_dict['gconfig'] = get_object_or_404(GlobalConfig, pk=1)
         forms_dict['offsiteform'] = OffsiteConfigForm(
             request.POST,
@@ -41,10 +41,7 @@ def enable_offsite(request):
             return HttpResponseRedirect(
                 utils.edit_offsite_config_path(request))
         else:
-            return_dict = utils.merge_dicts(
-                return_dict,
-                forms_dict,
-                vars_dict)
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
             return render_to_response(
                 'bkp/system/config_offsite_feature.html',
                 return_dict,
@@ -58,5 +55,5 @@ def disable_offsite(request):
         gconfig.offsite_hour = '00:00:00'
         gconfig.save()
         Procedure.disable_offsite()
-        return HttpResponseRedirect(
-            utils.edit_offsite_config_path(request))
+        location = utils.edit_offsite_config_path(request)
+        return HttpResponseRedirect(location)

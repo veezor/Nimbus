@@ -6,7 +6,7 @@ from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import Computer, GlobalConfig
 from backup_corporativo.bkp.forms import ComputerForm
 # TODO move to utils
-from backup_corporativo.bkp.views import global_vars, require_authentication, authentication_required
+from backup_corporativo.bkp.views import global_vars, authentication_required
 # Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -17,14 +17,11 @@ from django.shortcuts import get_object_or_404
 
 @authentication_required
 def edit_computer(request, comp_id):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)
     if request.method == 'GET':
         forms_dict['compform'] = ComputerForm(instance=vars_dict['comp'])
-        return_dict = utils.merge_dicts(
-            return_dict,
-            forms_dict,
-            vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/computer/edit_computer.html',
             return_dict, context_instance=RequestContext(request))
@@ -43,7 +40,7 @@ def edit_computer(request, comp_id):
 
 @authentication_required
 def update_computer(request, comp_id):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     comp = get_object_or_404(Computer, pk=comp_id)
     vars_dict['comp'] = comp
     if request.method == 'POST':
@@ -55,7 +52,7 @@ def update_computer(request, comp_id):
             return HttpResponseRedirect(
                 utils.path("computer", comp_id, request))
         else:
-            return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
             request.user.message_set.create(
                 message="Existem erros e o computador não foi alterado.")
             return render_to_response(
@@ -64,7 +61,7 @@ def update_computer(request, comp_id):
 
 @authentication_required
 def view_computer(request, comp_id):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     utils.store_location(request)
     if request.method == 'GET':
         vars_dict['comp'] = get_object_or_404(Computer,pk=comp_id)
@@ -74,7 +71,7 @@ def view_computer(request, comp_id):
         from backup_corporativo.bkp.bacula import Bacula
         vars_dict['compstatus'] = vars_dict['comp'].get_status()
         # Load forms and vars
-        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/computer/view_computer.html',
             return_dict, context_instance=RequestContext(request))    
@@ -84,11 +81,11 @@ def view_computer(request, comp_id):
 @authentication_required
 def delete_computer(request, comp_id):
     if request.method == 'GET':
-        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict, forms_dict = global_vars(request)
         vars_dict['comp'] = get_object_or_404(Computer,pk=comp_id)
         request.user.message_set.create(
             message="Confirme a remoção do computador.")
-        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/computer/delete_computer.html',
             return_dict, context_instance=RequestContext(request))    
@@ -113,11 +110,11 @@ def test_computer(request, comp_id):
 @authentication_required
 def view_computer_config(request, comp_id):
     if request.method == 'GET':
-        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict, forms_dict = global_vars(request)
         vars_dict['comp'] = Computer.objects.get(pk=comp_id)
         vars_dict['comp_config'] = vars_dict['comp'].dump_filedaemon_config()
         # Load forms and vars
-        return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/computer/view_computer_config.html',
             return_dict, context_instance=RequestContext(request))

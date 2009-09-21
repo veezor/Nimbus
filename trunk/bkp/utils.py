@@ -24,10 +24,11 @@ def store_location(request):
     """Stores current user location"""
     request.session["location"] = request.build_absolute_uri()
 
-def redirect_back_or_default(request, default, except_pattern=None):
+def redirect_back(request, default=None, except_pattern=None):
     """Redirects user back or to a given default place
     unless default place matches an except_pattern
     """
+    
     if "location" in request.session:
         import re
         
@@ -45,8 +46,9 @@ def redirect_back_or_default(request, default, except_pattern=None):
                     del(request.session["location"]) # use default location
             except Exception:
                 pass
-    redirect = ("location" in request.session) and request.session["location"] or default
-    return HttpResponseRedirect(redirect)
+    if default is None: default = root_path(request)
+    location = ("location" in request.session) and request.session["location"] or default
+    return HttpResponseRedirect(location)
 
 # Novo sistema de caminhos está sendo implementado aos poucos.
 # TODO: aceitar instâncias no argumento.

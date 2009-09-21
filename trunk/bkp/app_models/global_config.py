@@ -93,12 +93,13 @@ class GlobalConfig(models.Model):
         self.id = 1
         super(GlobalConfig, self).save()
 
-    def system_configured(self):
-        """Returns True if system is configured, False otherwise."""
-        return GlobalConfig.objects.all().count() > 0
-
     def director_bacula_name(self):
         return "%s_director" % self.nimbus_uuid.uuid_hex
 
     def storage_bacula_name(self):
         return "%s_storage" % self.nimbus_uuid.uuid_hex
+
+    def system_configured(cls):
+        """Returns True if system is configured, False otherwise."""
+        return cls.objects.all().count() > 0
+    system_configured = classmethod(system_configured)
