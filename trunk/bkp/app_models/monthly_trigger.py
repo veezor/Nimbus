@@ -45,6 +45,12 @@ class MonthlyTrigger(models.Model):
         self.__sanitize_target_days()
         super(MonthlyTrigger,self).save()
 
+    def level_friendly(self):
+        if self.level == 'Full':
+            return "Backup completo"
+        elif self.level == 'Incremental':
+            return "Backup incremental"
+
     def __sanitize_target_days(self):
         """Removes duplicated day entries"""
         s = set(self.target_days.split(';'))

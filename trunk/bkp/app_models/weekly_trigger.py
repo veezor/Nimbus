@@ -20,6 +20,7 @@ class WeeklyTrigger(models.Model):
     hour = models.TimeField("Horário")
     level = models.CharField("Nível", max_length=20,choices=LEVEL_CHOICES)
 
+
     # Classe Meta é necessária para resolver um problema gerado quando se
     # declara um model fora do arquivo models.py. Foi utilizada uma solução
     # temporária que aparentemente funciona normalmente. 
@@ -37,3 +38,10 @@ class WeeklyTrigger(models.Model):
     # http://code.djangoproject.com/ticket/3591
     class Meta:
         app_label = 'bkp'    
+
+
+    def level_friendly(self):
+        if self.level == 'Full':
+            return "Backup completo"
+        elif self.level == 'Incremental':
+            return "Backup incremental"

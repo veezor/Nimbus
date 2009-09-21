@@ -34,6 +34,12 @@ class Schedule(models.Model):
     class Meta:
         app_label = 'bkp'    
 
+    def type_friendly(self):
+        if self.type == 'Weekly':
+            return "Semanalmente nos dias"
+        elif self.type == 'Monthly':
+            return "Mensalmente nos dias"
+
     def build_backup(self, trigg):
         """Saves child objects in correct order."""
         trigg.schedule = self
