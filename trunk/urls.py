@@ -21,7 +21,7 @@ urlpatterns += patterns(
     'backup_corporativo.bkp.views',
     (r'^$', 'main_statistics'),
     # management
-    (r'^management/$', 'index_management'),
+    (r'^management/$', 'main_management'),
     (r'^management/computers/list$', 'list_computers'),
     (r'^management/storages/list$', 'list_storages'),
     # TODO: Reorganizar configurações de networkconfig.

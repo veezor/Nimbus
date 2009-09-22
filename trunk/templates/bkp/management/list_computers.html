@@ -1,6 +1,21 @@
 {% extends "bkp/base.html" %}
 
 {% block content %}
+
+<h2>Gerenciar</h2>
+<ul>
+<li><a href="{{script_name}}/management/">Principal</a></li>
+<li><a href="{{script_name}}/management/computers/list">Computadores</a></li>
+<li>Backups</li>
+<li><a href="{{script_name}}/management/storages/list">Storages</a></li>
+</ul>
+<br />
+
+<div class="titulo_botoes">
+<h2>Computadores</h2>
+</div>
+
+<div class="bloco_texto">
     <table>
         <thead>
             <tr>
@@ -25,5 +40,6 @@
             {% endfor %}
         </tbody>
     </table>
-
+</div>
+    
 {% endblock %}

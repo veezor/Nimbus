@@ -13,13 +13,13 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 
 @authentication_required
-def index_management(request):
+def main_management(request):
     vars_dict, forms_dict = global_vars(request)
 
     if request.method == 'GET':
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/management/index_management.html',
+            'bkp/management/main_management.html',
             return_dict,
             context_instance=RequestContext(request))
 
