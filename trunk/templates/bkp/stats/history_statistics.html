@@ -2,18 +2,18 @@
 {% load bkp_extras %}
 {% block content %}
 <!-- Begin Stats -->
-<h2>Informações Gerais</h2>
 
-<p>Banco de Dados: {{ dbsize }} MB</p>
-<p>Procedimentos: {{ numproc }}</p>
-<p>Computadores: {{ numcli }}</p>
-<p>Total Armazenado: {{ tmbytes }} MB</p>
-<p>Director: {{dir_status}}</p>
-<p>Storage: {{sd_status}}</p>
-<p>FileDaemon: {{fd_status}}</p>
-<br />
+<h2>Estatísticas</h2>
+<ul>
+    <li><a href="{{script_name}}/statistics/main">Principal</a></li>
+    <li><a href="{{script_name}}/statistics/history">Histórico</a></li>
+</ul>
 
+
+<div class="titulo_botoes">
 <h2>Procedimentos Executando</h2>
+</div>
+<div class="bloco_texto">
 {% if runningjobs %}
 <table>
 <thead>
@@ -43,10 +43,14 @@
 {% else %}
 <p>Nenhum procedimento executando.</p>
 {% endif %}
-
+</div>
 <br />
-<h2>Últimos Procedimentos Executados</h2>
 
+<div class="titulo_botoes">
+<h2>Últimos Procedimentos Executados</h2>
+</div>
+
+<div class="bloco_texto">
 {% if lastjobs %}
 
 <table>
@@ -84,6 +88,7 @@
 {% else %}
 <p>Nenhum procedimento recente.</p>
 {% endif %}
+</div>
 
 
 <!-- End Stats -->

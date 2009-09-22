@@ -19,7 +19,7 @@ urlpatterns = patterns(
 # em comum.
 urlpatterns += patterns(
     'backup_corporativo.bkp.views',
-    (r'^$', 'view_stats'),
+    (r'^$', 'main_statistics'),
     # management
     (r'^management/$', 'index_management'),
     (r'^management/computers/list$', 'list_computers'),
@@ -40,7 +40,8 @@ urlpatterns += patterns(
     (r'^offsite/enable$', 'enable_offsite'),
     (r'^offsite/disable$', 'disable_offsite'),
     # views_app/stats.py
-    (r'^statistics/$', 'view_stats'),
+    (r'^statistics/main$', 'main_statistics'),
+    (r'^statistics/history$', 'history_statistics'),    
     # views_app/authentications.py
     (r'^session/$', 'create_session'),
     (r'^session/new$', 'new_session'),

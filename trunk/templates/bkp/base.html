@@ -22,7 +22,7 @@
                 <div id="main_menu" class="menu">
                     <ul class="links">
                         <li {% if request.META.PATH_INFO|contains:"/management" %}class="active"{% endif %}><a href="{{script_name}}/management/" title="">Gerenciar</a></li>
-                        <li {% if request.META.PATH_INFO|contains:"/statistics" %}class="active"{% endif %}><a href="{{script_name}}/statistics/" title="">Estatísticas</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/statistics" %}class="active"{% endif %}><a href="{{script_name}}/statistics/main" title="">Estatísticas</a></li>
                         <li {% if request.META.PATH_INFO|contains:"/tools" %}class="active"{% endif %}><a href="{{script_name}}/tools/" title="">Ferramentas</a></li>
                         <li {% if request.META.PATH_INFO|contains:"/config" %}class="active"{% endif %}><a href="{{script_name}}/config/edit" title="">Sistema</a></li>
                     </ul>

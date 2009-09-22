@@ -1,0 +1,24 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+<h2>Estatísticas</h2>
+<ul>
+    <li><a href="{{script_name}}/statistics/main">Principal</a></li>
+    <li><a href="{{script_name}}/statistics/history">Histórico</a></li>
+</ul>
+
+<br />
+<div class="titulo_botoes">
+<h2>Informações Gerais</h2>
+</div>
+<div class="bloco_texto">
+<p>Banco de Dados: {{ dbsize }} MB</p>
+<p>Procedimentos: {{ numproc }}</p>
+<p>Computadores: {{ numcli }}</p>
+<p>Total Armazenado: {{ tmbytes }} MB</p>
+<p>Director: {{dir_status}}</p>
+<p>Storage: {{sd_status}}</p>
+<p>FileDaemon: {{fd_status}}</p>
+<br />
+</div>
+
+{% endblock %}
