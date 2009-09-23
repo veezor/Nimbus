@@ -4,7 +4,7 @@
 # Application
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import Computer, GlobalConfig
-from backup_corporativo.bkp.forms import ComputerForm
+from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm
 # TODO move to utils
 from backup_corporativo.bkp.views import global_vars, authentication_required
 # Misc
@@ -59,6 +59,7 @@ def update_computer(request, comp_id):
                 'bkp/computer/edit_computer.html',
                 return_dict, context_instance=RequestContext(request))   
 
+
 @authentication_required
 def view_computer(request, comp_id):
     vars_dict, forms_dict = global_vars(request)
@@ -96,6 +97,7 @@ def delete_computer(request, comp_id):
             message="Computador removido permanentemente.")            
         return HttpResponseRedirect(utils.root_path(request))
 
+
 @authentication_required
 def test_computer(request, comp_id):
     if request.method == 'POST':
@@ -117,7 +119,8 @@ def view_computer_config(request, comp_id):
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/computer/view_computer_config.html',
-            return_dict, context_instance=RequestContext(request))
+            return_dict,
+            context_instance=RequestContext(request))
 
 
 @authentication_required
@@ -131,3 +134,43 @@ def dump_computer_config(request, comp_id):
         response['Content-Disposition'] = 'attachment; filename=bacula-fd.conf'
         response.write(dump_file)
         return response
+    
+    
+@authentication_required
+def new_computer_backup(request, comp_id):
+    if request.method == 'GET':
+        vars_dict, forms_dict = global_vars(request)
+        temp_dict = {}
+        vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)            
+        forms_dict['procform'] = ProcedureForm()
+        forms_dict['fsetform'] = FileSetForm()    
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
+        return render_to_response(
+            'bkp/computer/new_computer_backup.html',
+            return_dict,
+            context_instance=RequestContext(request))
+
+
+@authentication_required
+def create_computer_backup(request, comp_id):
+    if request.method == 'POST':
+        vars_dict, forms_dict = global_vars(request)
+        vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)            
+        forms_dict['procform'] = ProcedureForm(request.POST)
+        forms_dict['fsetform'] = FileSetForm(request.POST)
+        forms_list = forms_dict.values()
+        if all([form.is_valid() for form in forms_list]):
+            proc = forms_dict['procform'].save(commit=False)
+            fset = forms_dict['fsetform'].save(commit=False)
+            proc.computer_id = comp_id
+            proc.save()
+            fset.procedure_id = proc.id
+            fset.save()
+            location = utils.new_procedure_schedule(request, proc.id)
+            return HttpResponseRedirect(location)
+        else:
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
+            return render_to_response(
+                'bkp/computer/new_computer_backup.html',
+                return_dict,
+                context_instance=RequestContext(request))

@@ -24,6 +24,7 @@ def store_location(request):
     """Stores current user location"""
     request.session["location"] = request.build_absolute_uri()
 
+# TODO: refatorar
 def redirect_back(request, default=None, except_pattern=None):
     """Redirects user back or to a given default place
     unless default place matches an except_pattern
@@ -53,18 +54,24 @@ def redirect_back(request, default=None, except_pattern=None):
 # Novo sistema de caminhos está sendo implementado aos poucos.
 # TODO: aceitar instâncias no argumento.
 def edit_path(object_name, object_id, request):
-    return "%s/%s/%s/edit" % (
-        request.META['SCRIPT_NAME'],
-        object_name,
-        object_id)
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/%s/%s/edit" % (script_name, object_name, object_id)
 
 def path(object_name, object_id, request):
-    return "%s/%s/%s" % (
-        request.META['SCRIPT_NAME'],
-        object_name,
-        object_id)
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/%s/%s" % (script_name, object_name, object_id)
 
-# Definições antigas de caminho
+# Definição para novo esquema de wizards (temporário)
+def new_procedure_schedule(request, proc_id):
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/procedure/%s/schedule/new" % (script_name, proc_id)
+#
+#
+#
+# Definições antigas de caminho (precisam ser refatoradas)
+#
+#
+#
 def root_path(request):
     """Return root path."""
     return "%s/" % (request.META['SCRIPT_NAME'])
@@ -144,10 +151,9 @@ def create_or_leave(dirpath):
         os.makedirs(dirpath)
     except OSError:
         if os.path.isdir(dirpath):
-            # Leave
             pass
         else:
-            # There was an error on creation, so make sure we know about it
+            #TODO: ajeitar
             raise
 
 def remove_or_leave(filepath):
@@ -155,7 +161,6 @@ def remove_or_leave(filepath):
     try:
         os.remove(filepath)
     except os.error:
-        # Leave
         pass
 
 def prepare_to_write(filename,rel_dir,mod="w",remove_old=False):

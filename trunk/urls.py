@@ -54,6 +54,8 @@ urlpatterns += patterns(
     (r'^computer/(?P<comp_id>\d+)/test$', 'test_computer'),
     (r'^computer/(?P<comp_id>\d+)/config/$', 'view_computer_config'),
     (r'^computer/(?P<comp_id>\d+)/config/dump$', 'dump_computer_config'),
+    (r'^computer/(?P<comp_id>\d+)/backup/new$', 'new_computer_backup'),        
+    (r'^computer/(?P<comp_id>\d+)/backup/create$', 'create_computer_backup'),        
     # views_app/storages.py
     (r'^storage/create$', 'create_storage'),
     (r'^storage/new$', 'new_storage'),
@@ -67,6 +69,7 @@ urlpatterns += patterns(
     (r'^procedure/(?P<proc_id>\d+)/edit$', 'edit_procedure'),
     (r'^procedure/(?P<proc_id>\d+)/update$', 'update_procedure'),
     (r'^procedure/(?P<proc_id>\d+)/delete$', 'delete_procedure'),
+#   (r'^procedure/(?P<proc_id>\d+)/schedule/new$', ''),
     # views_app/filesets.py
     (r'^fileset/(?P<fset_id>\d+)/delete$', 'delete_fileset'),
     # views_app/schedules.py
