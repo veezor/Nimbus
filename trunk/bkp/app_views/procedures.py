@@ -3,8 +3,8 @@
 
 # Application
 from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.models import Computer, Procedure
-from backup_corporativo.bkp.forms import ProcedureForm
+from backup_corporativo.bkp.models import Computer, Procedure, Schedule
+from backup_corporativo.bkp.forms import ProcedureForm, MonthlyTriggerForm, WeeklyTriggerForm, ScheduleAuxForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 # Misc
 from django.http import HttpResponse
@@ -19,7 +19,6 @@ def edit_procedure(request, proc_id):
     vars_dict, forms_dict = global_vars(request)
     vars_dict['proc'] = get_object_or_404(Procedure, pk=proc_id)
     vars_dict['comp'] = vars_dict['proc'].computer
-    
     if request.method == 'GET':
         forms_dict['procform'] = ProcedureForm(
             instance=vars_dict['proc'])
@@ -35,7 +34,6 @@ def update_procedure(request, proc_id):
     vars_dict, forms_dict = global_vars(request)
     vars_dict['proc'] = get_object_or_404(Procedure, pk=proc_id)
     vars_dict['comp'] = vars_dict['proc'].computer
-
     if request.method == 'POST':
         forms_dict['procform'] = ProcedureForm(
             request.POST,
@@ -78,3 +76,68 @@ def delete_procedure(request, proc_id):
             message="Procedimento removido permanentemente.")
         location = utils.path("computer", comp.id,request)
         return HttpResponseRedirect(location)
+
+
+@authentication_required
+def new_procedure_schedule(request, proc_id):
+    vars_dict, forms_dict = global_vars(request)
+    if request.method == 'GET':
+        type = request.GET['type']
+        __ensure_valid_type(type)
+        vars_dict['sched_type'] = type
+        vars_dict['proc'] = get_object_or_404(Procedure, pk=proc_id)
+        vars_dict['comp'] = vars_dict['proc'].computer
+        vars_dict['new_schedule_url'] = utils.new_procedure_schedule(
+            request,
+            vars_dict['proc'].id,
+            type=utils.schedule_inverse(type))
+        triggform = "forms_dict['triggform'] = %sTriggerForm()" % type
+        exec(triggform)
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
+        return render_to_response(
+            'bkp/procedure/new_procedure_schedule.html',
+            return_dict,
+            context_instance=RequestContext(request))
+
+
+@authentication_required
+def create_procedure_schedule(request, proc_id):
+    vars_dict, forms_dict = global_vars(request)
+    if request.method == 'POST':
+        vars_dict['proc'] = get_object_or_404(Procedure, pk=proc_id)
+        vars_dict['comp'] = vars_dict['proc'].computer
+        forms_dict['sched_aux_form'] = ScheduleAuxForm(request.POST)
+        if not(forms_dict['sched_aux_form'].is_valid()):
+            raise Exception("Erro de programaçao: sched_aux_form malformado.")
+        type = forms_dict['sched_aux_form'].cleaned_data['schedule_type']
+        triggform = \
+            "forms_dict['triggform'] = %sTriggerForm(request.POST)" % type
+        exec(triggform)
+        if forms_dict['triggform'].is_valid():
+            sched = Schedule(type=type)
+            sched.procedure = vars_dict['proc']
+            sched.save()
+            trigg = forms_dict['triggform'].save(commit=False)
+            trigg.schedule = sched
+            trigg.save()
+            return HttpResponseRedirect(utils.path(
+                "computer",
+                vars_dict['comp'].id,
+                request
+                ))
+        else:
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
+            return render_to_response(
+                'bkp/procedure/new_procedure_schedule.html',
+                return_dict,
+                context_instance=RequestContext(request))
+
+
+#
+# Definições auxiliares
+#
+def __ensure_valid_type(type):
+    if type in ('Weekly','Monthly'):
+        pass
+    else:
+        raise Exception("Erro de programação: tipo de agendamento inválido")

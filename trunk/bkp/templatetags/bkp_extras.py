@@ -12,7 +12,6 @@ register = template.Library()
 def get_trigger_level(obj):
     """ Try to get an attribute from an object.
     Example: {% schedule|get_trigger_level %}
-
     """
     trigg = obj.get_trigger()
     
@@ -35,7 +34,7 @@ def get_trigger_hour(obj):
     else:
         return ''
 
-        
+
 @register.filter
 def friendly_level(obj):
     """ Try to get an attribute from an object.
@@ -213,3 +212,9 @@ def netmask(iface):
 	netmask = NetworkInfo.netmask(iface)
 	return netmask
 
+@register.filter
+def friendly_sched_type(type):
+    if type == 'Weekly':
+        return 'Semanal'
+    elif type == 'Monthly':
+        return 'Mensal'

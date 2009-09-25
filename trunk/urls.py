@@ -69,7 +69,8 @@ urlpatterns += patterns(
     (r'^procedure/(?P<proc_id>\d+)/edit$', 'edit_procedure'),
     (r'^procedure/(?P<proc_id>\d+)/update$', 'update_procedure'),
     (r'^procedure/(?P<proc_id>\d+)/delete$', 'delete_procedure'),
-#   (r'^procedure/(?P<proc_id>\d+)/schedule/new$', ''),
+    (r'^procedure/(?P<proc_id>\d+)/schedule/new$', 'new_procedure_schedule'),
+    (r'^procedure/(?P<proc_id>\d+)/schedule/create$', 'create_procedure_schedule'),
     # views_app/filesets.py
     (r'^fileset/(?P<fset_id>\d+)/delete$', 'delete_fileset'),
     # views_app/schedules.py

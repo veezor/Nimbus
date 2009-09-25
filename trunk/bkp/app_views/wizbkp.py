@@ -19,6 +19,7 @@ from django.shortcuts import get_object_or_404
 
 @authentication_required
 def new_backup(request, comp_id=None, proc_id=None):
+    import pdb; pdb.set_trace()
     vars_dict, forms_dict = global_vars(request)
     temp_dict = {}
     if comp_id is not None:
@@ -52,7 +53,7 @@ def new_backup(request, comp_id=None, proc_id=None):
                 location = utils.backup_computer_path(request, comp.id)
                 return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(return_dict, forms_dict, vars_dict)
+                return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
                     'bkp/wizard/computer/computer_wizard.html',
                     return_dict,

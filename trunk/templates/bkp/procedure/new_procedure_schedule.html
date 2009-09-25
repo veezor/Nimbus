@@ -1,0 +1,43 @@
+{% extends "bkp/base.html" %}
+{% load bkp_extras %}
+{% block content %}
+
+<form action="{{script_name}}/procedure/{{proc.id}}/schedule/create" method="post">
+<div class='titulo_botões'
+	<h3>Agendamento</h3><br />
+	<p>Tipo: {{sched_type|friendly_sched_type}} ( <a href="{{new_schedule_url}}">trocar</a> )</p>
+</div>
+<div class='bloco_texto'>
+    {% if sched_aux_form %}
+    {# Template foi chamado pela view 'create_procedure_schedule' #}
+    {# e como temos um formulário válido, vamos renderizá-lo. #}
+
+        {% for field in sched_aux_form %}
+            {{ field }}
+        {% endfor %}
+
+    {% else %}
+    {# Template foi chamado pela view 'new_procedure_schedule' #}
+    {# e como não temos um formulário válido, vamos fazê-lo manualmente. #}
+
+        <input type="hidden" name="schedule_type" value="{{sched_type}}" id="id_schedule_type" />
+
+    {% endif %}
+
+    {% for field in triggform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    
+
+{# TODO: fazer botão de cancelar #}
+{#<button onclick="location.href='{{script_name}}/computer/{{comp.id}}/backup/new';return false"><span>Cancelar</span></button>#}
+
+	
+<button type="submit"><span>Prosseguir</span></button>
+</form>
+</div>
+
+{% endblock %}

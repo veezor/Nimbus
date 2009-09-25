@@ -64,13 +64,11 @@ from backup_corporativo.bkp.app_views.management import *
 from backup_corporativo.bkp.app_views.authentications import *
 from backup_corporativo.bkp.app_views.computers import *
 from backup_corporativo.bkp.app_views.configs import *
-from backup_corporativo.bkp.app_views.dumps import *
 from backup_corporativo.bkp.app_views.filesets import *
 from backup_corporativo.bkp.app_views.procedures import *
 from backup_corporativo.bkp.app_views.schedules import *
 from backup_corporativo.bkp.app_views.storages import *
 from backup_corporativo.bkp.app_views.stats import *
-from backup_corporativo.bkp.app_views.triggers import *
 from backup_corporativo.bkp.app_views.tmp_restores import *
 from backup_corporativo.bkp.app_views.wizbkp import *
 from backup_corporativo.bkp.app_views.networkinterfaces import *

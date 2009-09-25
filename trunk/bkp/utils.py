@@ -1,13 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Misc
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
+import string
+import re
+import os
+
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.shortcuts import get_object_or_404
-import string, re, os
+from django.shortcuts import render_to_response, get_object_or_404
+
+
 
 ###
 ###   Auxiliar Definitions
@@ -20,19 +22,19 @@ def merge_dicts(main_dict, *dicts_list):
         main_dict.update(dict)
     return main_dict        
 
+
 def store_location(request):
     """Stores current user location"""
     request.session["location"] = request.build_absolute_uri()
+
 
 # TODO: refatorar
 def redirect_back(request, default=None, except_pattern=None):
     """Redirects user back or to a given default place
     unless default place matches an except_pattern
     """
-    
     if "location" in request.session:
         import re
-        
         if except_pattern:
             if re.search(except_pattern,request.session["location"]):
                 del(request.session["location"]) # use default location
@@ -51,20 +53,35 @@ def redirect_back(request, default=None, except_pattern=None):
     location = ("location" in request.session) and request.session["location"] or default
     return HttpResponseRedirect(location)
 
+
 # Novo sistema de caminhos está sendo implementado aos poucos.
 # TODO: aceitar instâncias no argumento.
 def edit_path(object_name, object_id, request):
     script_name = request.META['SCRIPT_NAME']
     return "%s/%s/%s/edit" % (script_name, object_name, object_id)
 
+
 def path(object_name, object_id, request):
     script_name = request.META['SCRIPT_NAME']
     return "%s/%s/%s" % (script_name, object_name, object_id)
 
+
 # Definição para novo esquema de wizards (temporário)
-def new_procedure_schedule(request, proc_id):
+def new_procedure_schedule(request, proc_id, type='Weekly'):
     script_name = request.META['SCRIPT_NAME']
-    return "%s/procedure/%s/schedule/new" % (script_name, proc_id)
+    return "%s/procedure/%s/schedule/new?type=%s" % (
+        script_name,
+        proc_id,
+        type)
+
+
+def schedule_inverse(type):
+    if type == 'Weekly':
+        return 'Monthly'
+    elif type == 'Monthly':
+        return 'Weekly'
+
+    
 #
 #
 #
@@ -76,13 +93,16 @@ def root_path(request):
     """Return root path."""
     return "%s/" % (request.META['SCRIPT_NAME'])
 
+
 def login_path(request):
     """Returns login path."""
     return "%s/session/new" % (request.META['SCRIPT_NAME'])
 
+
 def edit_config_path(request):
     """Returns edit config path."""
     return "%s/config/edit" % (request.META['SCRIPT_NAME'])
+
 
 def edit_offsite_path(request):
     """Returns edit config path."""
@@ -92,6 +112,7 @@ def edit_offsite_path(request):
 def restore_computer_path(request, computer_id):
     """Returns restore computer path."""
     return "%s/computer/%s/restore/new" % (request.META['SCRIPT_NAME'], computer_id)
+
 
 # Passo 2
 def restore_procedure_path(request, computer_id, procedure_id):
@@ -109,24 +130,29 @@ def backup_procedure_path(request, computer_id, procedure_id):
     """Returns backup computer path."""
     return "%s/computer/%s/procedure/%s/backup/new" % (request.META['SCRIPT_NAME'], computer_id, procedure_id)
 
+
 # Inicio
 def backup_path(request):
     """Returns backup computer path."""
     return "%s/backup/new" % (request.META['SCRIPT_NAME'])
 
+
 def edit_networkinterface_path(request):
     """Returns edit network config path."""
     return "%s/networkinterface/edit" % (request.META['SCRIPT_NAME'])
     
+    
 def edit_offsite_config_path(request):
     """Returns edit offsite config path."""
     return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
+    
     
 def random_password(size=20):
     """Generates random password of a given size."""
     import string
     from random import choice
     return ''.join([choice(string.letters + string.digits) for i in range(size)])
+    
     
 def dictfetch(cursor):
     """Returns a list with dicts of an unfetched cursor"""
@@ -156,12 +182,14 @@ def create_or_leave(dirpath):
             #TODO: ajeitar
             raise
 
+
 def remove_or_leave(filepath):
     "remove file if exists"
     try:
         os.remove(filepath)
     except os.error:
         pass
+
 
 def prepare_to_write(filename,rel_dir,mod="w",remove_old=False):
     "make sure base_dir exists and open filename"
@@ -171,6 +199,7 @@ def prepare_to_write(filename,rel_dir,mod="w",remove_old=False):
         remove_or_leave(filepath)
     return open(filepath, mod)
 
+
 def mount_path(filename,rel_dir):
     "mount absolute dir path and filepath"
     filename = str(filename).lower()
@@ -178,20 +207,24 @@ def mount_path(filename,rel_dir):
     filepath = absolute_file_path(filename, rel_dir)
     return base_dir, filepath
     
+    
 def absolute_file_path(filename, rel_dir):
     """Return full path to a file from script file location and given directory."""
     root_dir = absolute_dir_path(rel_dir)
     return os.path.join(root_dir, filename)
 
+
 def absolute_dir_path(rel_dir):
     """Return full path to a directory from script file location."""
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_dir)
+
 
 def isdir(path):
     if path.endswith('/'):
         return True
     else:
         return False
+
 
 def parse_filetree(files):
     """
