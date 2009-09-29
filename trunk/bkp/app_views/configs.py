@@ -34,7 +34,7 @@ def edit_config(request, config_type='global'):
                     instance=vars_dict['gconfig'])
             elif config_type == 'password':
                 forms_dict['pwdform'] = PasswordChangeForm(
-                    return_dict['current_user'])
+                    vars_dict['current_user'])
             elif config_type == 'offsite':
                 vars_dict['gconfig'] = vars_dict['gconfig'] or GlobalConfig()
                 vars_dict['offsite_on'] = vars_dict['gconfig'].offsite_on
@@ -82,7 +82,7 @@ def change_password(request):
 
     if request.method == 'POST':
         forms_dict['pwdform'] = PasswordChangeForm(
-            return_dict['current_user'],
+            vars_dict['current_user'],
             request.POST)
         
         if forms_dict['pwdform'].is_valid():
@@ -108,7 +108,7 @@ def edit_offsite(request):
     vars_dict, forms_dict = global_vars(request)
     
     if request.method == 'GET':
-        return HttpResponseRedirect(edit_offsite_path(request))
+        return HttpResponseRedirect(utils.edit_offsite_path(request))
     
     if request.method == 'POST':
         global_config = GlobalConfig.objects.get(pk=1)

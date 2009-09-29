@@ -29,7 +29,7 @@ def tools_ssl(request):
     vars_dict, forms_dict = global_vars(request)
     # TODO: Utilizar NimbusUUID aqui para manter registro das chaves geradas
     if request.method == 'GET':
-        vars_dict, forms_dict, return_dict = global_vars(request)
+        vars_dict, forms_dict = global_vars(request)
         ssl = NimbusSSL.build()
         vars_dict['rsa_key'] = ssl.dump_rsa_key()
         vars_dict['certificate'] = ssl.dump_certificate()

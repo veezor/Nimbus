@@ -19,7 +19,6 @@ from django.shortcuts import get_object_or_404
 
 @authentication_required
 def new_backup(request, comp_id=None, proc_id=None):
-    import pdb; pdb.set_trace()
     vars_dict, forms_dict = global_vars(request)
     temp_dict = {}
     if comp_id is not None:

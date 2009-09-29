@@ -36,7 +36,7 @@ def create_storage(request):
         forms_list = forms_dict.values()
         if all([form.is_valid() for form in forms_list]):
             storage = forms_dict['storform'].save()
-            location = utils.storage_path(request, storage.id)
+            location = utils.path("storage", sto_id, request)
             return HttpResponseRedirect(location)
         else:
             request.user.message_set.create(
@@ -88,7 +88,7 @@ def update_storage(request, sto_id):
             forms_dict['storform'].save()
             request.user.message_set.create(
                 message="Storage foi alterado com sucesso.")
-            location = utils.storage_path(request, sto_id)
+            location = utils.path("storage", sto_id, request)
             return HttpResponseRedirect(location)
         else:
             return_dict = utils.merge_dicts(forms_dict, vars_dict)

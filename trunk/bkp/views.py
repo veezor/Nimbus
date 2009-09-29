@@ -1,14 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Misc
+import os
+
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
-import os
-# Vars
+
+from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_THE_WEEK
 
 
@@ -45,7 +46,7 @@ def global_vars(request):
 
 def require_authentication(request):
     """Redirect user to authentication page."""
-    return HttpResponseRedirect(login_path(request))
+    return HttpResponseRedirect(utils.login_path(request))
 
 
 def authentication_required(view_def):

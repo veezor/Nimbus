@@ -22,7 +22,7 @@ from django.shortcuts import get_object_or_404
 
 ### Sessions ###
 def new_session(request):
-    vars_dict, forms_dict = utils.global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     if not request.user.is_authenticated():
         forms_dict['loginform'] = LoginForm()
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
@@ -35,7 +35,7 @@ def new_session(request):
     
 
 def create_session(request):
-    vars_dict, forms_dict = utils.global_vars(request)
+    vars_dict, forms_dict = global_vars(request)
     if not request.user.is_authenticated():
         if request.method == 'POST':
             forms_dict['loginform'] = LoginForm(request.POST)
@@ -46,7 +46,7 @@ def create_session(request):
                 if user:
                     login(request, user)
                     if GlobalConfig.system_configured():
-                        location = root_path(request)
+                        location = utils.root_path(request)
                         request.user.message_set.create(
                             message="Bem-vindo ao Sistema de Backups Corporativo.")
                     else:
@@ -67,11 +67,11 @@ def create_session(request):
                     return_dict,
                     context_instance=RequestContext(request))
     else:
-        return redirect_back(request)
+        return utils.redirect_back(request)
 
 @authentication_required
 def delete_session(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
             logout(request)
-    return HttpResponseRedirect(login_path(request))
+    return HttpResponseRedirect(utils.login_path(request))
