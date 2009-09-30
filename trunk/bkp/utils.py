@@ -9,11 +9,22 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 
+from backup_corporativo import settings
+
 
 
 ###
 ###   Auxiliar Definitions
 ###
+
+def get_settings_dict():
+    settings_dict = dict()
+    items = ['BACULA_DB_NAME', 'BACULA_DB_PASSWORD', 'BACULA_DB_USER',
+             'DATABASE_ENGINE', 'DATABASE_HOST', 'DATABASE_NAME',
+             'DATABASE_PASSWORD', 'DATABASE_PORT', 'DATABASE_USER']
+    for i in items:
+        settings_dict.update([[i, getattr(settings, i)]])
+    return settings_dict
 
 
 def merge_dicts(main_dict, *dicts_list):

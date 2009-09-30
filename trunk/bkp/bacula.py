@@ -3,10 +3,14 @@
 
 import os
 import datetime
+
+import MySQLdb as Database 
+from django.db.backends import (BaseDatabaseWrapper, BaseDatabaseFeatures,
+                                BaseDatabaseOperations, util)
+
 from backup_corporativo.bkp.models import NimbusLog
 from backup_corporativo.bkp import utils
-from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
-import MySQLdb as Database 
+from backup_corporativo import settings
 
 
 # TODO dividir funções de manipulação da console e de queries com banco de dados em duas classes distintas
@@ -196,6 +200,10 @@ class Bacula:
 # http://djangoapi.quamquam.org/trunk/toc-django.db.backends.mysql-module.html
 class BaculaDatabaseWrapper(BaseDatabaseWrapper):
     """Classe que encapsula operações básicas com banco de dados."""
+    def __init__(self):
+        settings_dict = utils.get_settings_dict()
+        super(BaculaDatabaseWrapper, self).__init__(settings_dict)
+    
     def _valid_connection(self):
         if self.connection is not None:
             try:
@@ -210,7 +218,6 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
         self._commit()
         
     def cursor(self):
-        from django.conf import settings 
         if not self._valid_connection(): 
             kwargs = { 
                 'charset': 'utf8', 
