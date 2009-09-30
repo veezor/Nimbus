@@ -19,9 +19,13 @@ from backup_corporativo import settings
 
 def get_settings_dict():
     settings_dict = dict()
-    items = ['BACULA_DB_NAME', 'BACULA_DB_PASSWORD', 'BACULA_DB_USER',
-             'DATABASE_ENGINE', 'DATABASE_HOST', 'DATABASE_NAME',
-             'DATABASE_PASSWORD', 'DATABASE_PORT', 'DATABASE_USER']
+    items = [
+        'BACULA_DATABASE_USER',
+        'BACULA_DATABASE_PASSWORD',
+        'BACULA_DATABASE_NAME',
+        'BACULA_DATABASE_HOST',
+        'BACULA_DATABASE_PORT']
+
     for i in items:
         settings_dict.update([[i, getattr(settings, i)]])
     return settings_dict

@@ -4,9 +4,9 @@
 import os
 import datetime
 
-import MySQLdb as Database 
-from django.db.backends import (BaseDatabaseWrapper, BaseDatabaseFeatures,
-                                BaseDatabaseOperations, util)
+import MySQLdb as Database
+from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
+from django.utils.safestring import SafeString, SafeUnicode
 
 from backup_corporativo.bkp.models import NimbusLog
 from backup_corporativo.bkp import utils
@@ -105,17 +105,17 @@ class Bacula:
     def tmp_restore(cls, client_from_restore, client_to_restore, date_to_restore, directory_to_restore, fileset_name, file_list):
         from backup_corporativo.bkp import utils
         import re
-    	folder_re = '[a-zA-Z0-9.:@_-]+/$'
+        folder_re = '[a-zA-Z0-9.:@_-]+/$'
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         raw_cmd = '''bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_from)s restoreclient=%(client_to)s select yes where=%(dir)s fileset=%(fileset)s before="%(date)s"\n'''
         for filepath in file_list:
-        	for item in filepath:
-	        	if re.match(folder_re, item):
-	        		raw_cmd += 'cd %s\n' % item
-	        	else:
-	        		raw_cmd += "mark %s\n" % item
-	        		raw_cmd += "cd /\n"
-	        		break
+            for item in filepath:
+                if re.match(folder_re, item):
+                    raw_cmd += 'cd %s\n' % item
+                else:
+                    raw_cmd += "mark %s\n" % item
+                    raw_cmd += "cd /\n"
+                    break
         raw_cmd += "done\n"
         raw_cmd += "\nBACULAEOF"
         cmd = raw_cmd % {'bconsole_conf':BCONSOLE_CONF,
@@ -200,10 +200,10 @@ class Bacula:
 # http://djangoapi.quamquam.org/trunk/toc-django.db.backends.mysql-module.html
 class BaculaDatabaseWrapper(BaseDatabaseWrapper):
     """Classe que encapsula operações básicas com banco de dados."""
-    def __init__(self):
-        settings_dict = utils.get_settings_dict()
-        super(BaculaDatabaseWrapper, self).__init__(settings_dict)
-    
+    def __init__(self, **kwargs):
+        super(BaculaDatabaseWrapper, self).__init__(**kwargs)
+        self.server_version = None
+
     def _valid_connection(self):
         if self.connection is not None:
             try:
@@ -213,32 +213,37 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
                 self.connection.close()
                 self.connection = None
         return False
-
+    
     def commit(self):
         self._commit()
-        
+
     def cursor(self):
-        if not self._valid_connection(): 
-            kwargs = { 
-                'charset': 'utf8', 
-                'use_unicode': True, 
-            } 
-            if settings.BACULA_DB_USER:
-                kwargs['user'] = settings.BACULA_DB_USER
-            if settings.BACULA_DB_NAME: 
-                kwargs['db'] = settings.BACULA_DB_NAME
-            if settings.BACULA_DB_PASSWORD: 
-                kwargs['passwd'] = settings.BACULA_DB_PASSWORD
-            if settings.DATABASE_HOST.startswith('/'): 
-                kwargs['unix_socket'] = settings.DATABASE_HOST 
-            elif settings.DATABASE_HOST: 
-                kwargs['host'] = settings.DATABASE_HOST
-            if settings.DATABASE_PORT: 
-                kwargs['port'] = int(settings.DATABASE_PORT)
-            self.connection = Database.connect(**kwargs) 
-        cursor = self.connection.cursor() 
+        return self._cursor()
+
+    def _cursor(self):
+        if not self._valid_connection():
+            kwargs = {
+                'use_unicode': True,
+            }
+            settings_dict = utils.get_settings_dict() 
+            if settings_dict['BACULA_DATABASE_USER']: 
+                kwargs['user'] = settings_dict['BACULA_DATABASE_USER'] 
+            if settings_dict['BACULA_DATABASE_NAME']: 
+                kwargs['db'] = settings_dict['BACULA_DATABASE_NAME'] 
+            if settings_dict['BACULA_DATABASE_PASSWORD']: 
+                kwargs['passwd'] = settings_dict['BACULA_DATABASE_PASSWORD'] 
+            if settings_dict['BACULA_DATABASE_HOST'].startswith('/'): 
+                kwargs['unix_socket'] = settings_dict['BACULA_DATABASE_HOST'] 
+            elif settings_dict['BACULA_DATABASE_HOST']: 
+                kwargs['host'] = settings_dict['BACULA_DATABASE_HOST'] 
+            if settings_dict['BACULA_DATABASE_PORT']: 
+                kwargs['port'] = int(settings_dict['BACULA_DATABASE_PORT'])
+
+            self.connection = Database.connect(**kwargs)
+            self.connection.encoders[SafeUnicode] = self.connection.encoders[unicode]
+            self.connection.encoders[SafeString] = self.connection.encoders[str]
+        cursor = self.connection.cursor()
         return cursor
-        
 
 class BaculaDatabase:
     """Classe de fachada utilizada para gerenciar todas as conexões com a base de dados do bacula."""
