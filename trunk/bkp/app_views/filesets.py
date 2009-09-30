@@ -25,7 +25,7 @@ def delete_fileset(request, fset_id):
             message="Confirme a remoção do diretório.")
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/fileset/delete_fileset.html',
+            'bkp/fileset/delete_fileset.html',
             return_dict,
             context_instance=RequestContext(request))
     #TODO: separar em dois objetos de view.

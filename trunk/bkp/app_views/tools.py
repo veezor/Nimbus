@@ -20,7 +20,7 @@ def view_tools(request):
     if request.method == 'GET':
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/tools/index_tools.html',
+            'bkp/tools/index_tools.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -36,6 +36,6 @@ def tools_ssl(request):
         vars_dict['pem'] = ssl.dump_pem()
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/tools/tools_ssl.html',
+            'bkp/tools/tools_ssl.html',
             return_dict,
             context_instance=RequestContext(request))

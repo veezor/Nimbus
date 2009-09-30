@@ -19,7 +19,7 @@ def main_management(request):
     if request.method == 'GET':
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/management/main_management.html',
+            'bkp/management/main_management.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -32,7 +32,7 @@ def list_computers(request):
         vars_dict['comp_list'] = vars_dict['comps']
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/management/list_computers.html',
+            'bkp/management/list_computers.html',
             return_dict, context_instance=RequestContext(request))
 
 @authentication_required
@@ -43,6 +43,6 @@ def list_storages(request):
         vars_dict['sto_list'] = Storage.objects.all()
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/management/list_storages.html',
+            'bkp/management/list_storages.html',
             return_dict,
             context_instance=RequestContext(request))

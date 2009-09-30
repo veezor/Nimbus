@@ -24,7 +24,7 @@ def edit_procedure(request, proc_id):
             instance=vars_dict['proc'])
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/procedure/edit_procedure.html',
+            'bkp/procedure/edit_procedure.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -49,7 +49,7 @@ def update_procedure(request, proc_id):
             request.user.message_set.create(
                 message="Existem erros e o procedimento não foi alterado.")
             return render_to_response(
-                'templates/bkp/procedure/edit_procedure.html',
+                'bkp/procedure/edit_procedure.html',
                 return_dict,
                 context_instance=RequestContext(request))
 
@@ -64,7 +64,7 @@ def delete_procedure(request, proc_id):
             message="Confirme a remoção do procedimento.")
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/procedure/delete_procedure.html',
+            'bkp/procedure/delete_procedure.html',
             return_dict,
             context_instance=RequestContext(request))
     #TODO: Separar em dois objetos de view
@@ -95,7 +95,7 @@ def new_procedure_schedule(request, proc_id):
         exec(triggform)
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/procedure/new_procedure_schedule.html',
+            'bkp/procedure/new_procedure_schedule.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -128,7 +128,7 @@ def create_procedure_schedule(request, proc_id):
         else:
             return_dict = utils.merge_dicts(forms_dict, vars_dict)
             return render_to_response(
-                'templates/bkp/procedure/new_procedure_schedule.html',
+                'bkp/procedure/new_procedure_schedule.html',
                 return_dict,
                 context_instance=RequestContext(request))
 

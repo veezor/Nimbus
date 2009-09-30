@@ -23,7 +23,7 @@ def edit_computer(request, comp_id):
         forms_dict['compform'] = ComputerForm(instance=vars_dict['comp'])
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/computer/edit_computer.html',
+            'bkp/computer/edit_computer.html',
             return_dict, context_instance=RequestContext(request))
 # Tratamento de erros para outros métodos de requisição.
 #    elif request.method == 'POST':
@@ -56,7 +56,7 @@ def update_computer(request, comp_id):
             request.user.message_set.create(
                 message="Existem erros e o computador não foi alterado.")
             return render_to_response(
-                'templates/bkp/computer/edit_computer.html',
+                'bkp/computer/edit_computer.html',
                 return_dict, context_instance=RequestContext(request))   
 
 
@@ -74,7 +74,7 @@ def view_computer(request, comp_id):
         # Load forms and vars
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/computer/view_computer.html',
+            'bkp/computer/view_computer.html',
             return_dict, context_instance=RequestContext(request))    
 
 
@@ -88,7 +88,7 @@ def delete_computer(request, comp_id):
             message="Confirme a remoção do computador.")
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/computer/delete_computer.html',
+            'bkp/computer/delete_computer.html',
             return_dict, context_instance=RequestContext(request))    
     elif request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
@@ -118,7 +118,7 @@ def view_computer_config(request, comp_id):
         # Load forms and vars
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/computer/view_computer_config.html',
+            'bkp/computer/view_computer_config.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -146,7 +146,7 @@ def new_computer_backup(request, comp_id):
         forms_dict['fsetform'] = FileSetForm()    
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/computer/new_computer_backup.html',
+            'bkp/computer/new_computer_backup.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -171,6 +171,6 @@ def create_computer_backup(request, comp_id):
         else:
             return_dict = utils.merge_dicts(forms_dict, vars_dict)
             return render_to_response(
-                'templates/bkp/computer/new_computer_backup.html',
+                'bkp/computer/new_computer_backup.html',
                 return_dict,
                 context_instance=RequestContext(request))

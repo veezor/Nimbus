@@ -24,7 +24,7 @@ def edit_networkinterface(request):
         # Load forms and vars 
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/system/config_networkinterface_module.html',
+            'bkp/system/config_networkinterface_module.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -45,6 +45,6 @@ def update_networkinterface(request):
             #TODO: adicionar mensagem de erro para o usuário
             return_dict = utils.merge_dicts(forms_dict, vars_dict)
             return render_to_response(
-                'templates/bkp/system/config_networkinterface_module.html',
+                'bkp/system/config_networkinterface_module.html',
                 return_dict,
                 context_instance=RequestContext(request))

@@ -24,7 +24,7 @@ def edit_offsite_config(request):
             instance=vars_dict['gconfig'])
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/system/config_offsite_feature.html',
+            'bkp/system/config_offsite_feature.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -43,7 +43,7 @@ def enable_offsite(request):
         else:
             return_dict = utils.merge_dicts(forms_dict, vars_dict)
             return render_to_response(
-                'templates/bkp/system/config_offsite_feature.html',
+                'bkp/system/config_offsite_feature.html',
                 return_dict,
                 context_instance=RequestContext(request))
 

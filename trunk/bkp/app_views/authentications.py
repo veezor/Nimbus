@@ -28,7 +28,7 @@ def new_session(request):
         forms_dict['loginform'] = LoginForm()
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/session/new_session.html',
+            'bkp/session/new_session.html',
             return_dict,
             context_instance=RequestContext(request))
     else:
@@ -58,13 +58,13 @@ def create_session(request):
                 else:
                     return_dict = utils.merge_dicts(forms_dict, vars_dict)
                     return render_to_response(
-                        'templates/bkp/session/new_session.html',
+                        'bkp/session/new_session.html',
                         return_dict,
                         context_instance=RequestContext(request))                
             else:
                 return_dict = merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
-                    'templates/bkp/session/new_session.html',
+                    'bkp/session/new_session.html',
                     return_dict,
                     context_instance=RequestContext(request))
     else:

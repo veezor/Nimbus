@@ -57,7 +57,7 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
             forms_dict['restore_form'] = RestoreForm()
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'templates/bkp/wizard/restore/restore_wizard.html',
+            'bkp/wizard/restore/restore_wizard.html',
             return_dict,
             context_instance=RequestContext(request))
     elif request.method == 'POST':
@@ -75,7 +75,7 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
             else:
                 return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
-                    'templates/bkp/wizard/restore/restore_rizard.html',
+                    'bkp/wizard/restore/restore_rizard.html',
                     return_dict,
                     context_instance=RequestContext(request))
         # comp_id is not None and proc_id is None and job_id is None
@@ -90,7 +90,7 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
             else:
                 return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
-                    'templates/bkp/wizard/restore/restore_wizard.html',
+                    'bkp/wizard/restore/restore_wizard.html',
                     return_dict,
                     context_instance=RequestContext(request))
         elif vars_dict['restore_step'] == 3:
@@ -127,7 +127,7 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
                     vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)        
                     return_dict = utils.merge_dicts(forms_dict, vars_dict)
                     return render_to_response(
-                        'templates/bkp/wizard/restore/restore_wizard.html',
+                        'bkp/wizard/restore/restore_wizard.html',
                         return_dict,
                         context_instance=RequestContext(request))
 
