@@ -40,7 +40,7 @@ def new_backup(request, comp_id=None, proc_id=None):
 
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/wizard/computer/computer_wizard.html',
+            'templates/bkp/wizard/computer/computer_wizard.html',
             return_dict,
             context_instance=RequestContext(request))
     elif request.method == 'POST':
@@ -54,7 +54,7 @@ def new_backup(request, comp_id=None, proc_id=None):
             else:
                 return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
-                    'bkp/wizard/computer/computer_wizard.html',
+                    'templates/bkp/wizard/computer/computer_wizard.html',
                     return_dict,
                     context_instance=RequestContext(request))
         elif vars_dict['backup_step'] == 2:
@@ -76,7 +76,7 @@ def new_backup(request, comp_id=None, proc_id=None):
             else:
                 return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
-                    'bkp/wizard/computer/computer_wizard.html',
+                    'templates/bkp/wizard/computer/computer_wizard.html',
                     return_dict,
                     context_instance=RequestContext(request))
         elif vars_dict['backup_step'] == 3:
@@ -96,7 +96,7 @@ def new_backup(request, comp_id=None, proc_id=None):
             else:
                 return_dict = utils.merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
-                    'bkp/wizard/computer/computer_wizard.html',
+                    'templates/bkp/wizard/computer/computer_wizard.html',
                     return_dict,
                     context_instance=RequestContext(request))
 

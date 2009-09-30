@@ -25,7 +25,7 @@ def delete_schedule(request, sched_id):
             message="Confirme a remoção do agendamento.")
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/schedule/delete_schedule.html',
+            'templates/bkp/schedule/delete_schedule.html',
             return_dict,
             context_instance=RequestContext(request))
     elif request.method == 'POST':

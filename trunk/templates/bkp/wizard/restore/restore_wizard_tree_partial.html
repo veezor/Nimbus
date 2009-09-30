@@ -2,7 +2,7 @@
 {% if not file_tree|isinstanceofdict %}<ul>{% endif %}
 {% for item in file_tree %}
     {% if item|isinstanceofdict %}
-        {% with "bkp/tmp/new_tmp_restore_tree.html" as filename %}
+        {% with "templates/bkp/tmp/new_tmp_restore_tree.html" as filename %}
         {% with item as file_tree %}
             {% include filename %}
         {% endwith %}
@@ -10,7 +10,7 @@
     {% else %}
         {% if item|isdir %}
             <li><input type="checkbox" name="dir" rel="tree_select_input" id="tree_select_" value="{{ item }}" /> <span class="folder">{{ item }}</span>
-            {% with "bkp/tmp/new_tmp_restore_tree.html" as filename %}
+            {% with "templates/bkp/tmp/new_tmp_restore_tree.html" as filename %}
             {% with file_tree|get_value:item as file_tree %}
                 {% include filename %}
             {% endwith %}

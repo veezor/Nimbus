@@ -28,7 +28,7 @@ def main_statistics(request):
     vars_dict['tmbytes'] = Bacula.total_mbytes()
     return_dict = utils.merge_dicts(forms_dict, vars_dict)
     return render_to_response(
-        'bkp/stats/main_statistics.html',
+        'templates/bkp/stats/main_statistics.html',
         return_dict,
         context_instance=RequestContext(request))
     
@@ -43,6 +43,6 @@ def history_statistics(request):
     vars_dict['lastjobs'] = Bacula.last_jobs()
     return_dict = utils.merge_dicts(forms_dict, vars_dict)
     return render_to_response(
-        'bkp/stats/history_statistics.html',
+        'templates/bkp/stats/history_statistics.html',
         return_dict,
         context_instance=RequestContext(request))

@@ -47,7 +47,7 @@ def edit_config(request, config_type='global'):
                 instance=vars_dict['gconfig'])
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/system/edit_globalconfig.html',
+            'templates/bkp/system/edit_globalconfig.html',
             return_dict,
             context_instance=RequestContext(request))
     elif request.method == 'POST':
@@ -62,7 +62,7 @@ def edit_config(request, config_type='global'):
                 message="Configurações aplicadas com sucesso.")
             #TODO: criar página estática com resumo das configurações atuais
             return render_to_response(
-                'bkp/system/edit_globalconfig.html',
+                'templates/bkp/system/edit_globalconfig.html',
                 return_dict,
                 context_instance=RequestContext(request))
         else:
@@ -70,7 +70,7 @@ def edit_config(request, config_type='global'):
             request.user.message_set.create(
                 message="Existem erros e a configuração não foi alterada.")
             return render_to_response(
-                'bkp/system/edit_globalconfig.html',
+                'templates/bkp/system/edit_globalconfig.html',
                 return_dict,
                 context_instance=RequestContext(request))
 
@@ -99,7 +99,7 @@ def change_password(request):
             return_dict = utils.merge_dicts(forms_dict, vars_dict)
             # TODO: tirar mudança de senha de globalconfig
             return render_to_response(
-                'bkp/system/edit_globalconfig.html',
+                'templates/bkp/system/edit_globalconfig.html',
                 return_dict,
                 context_instance=RequestContext(request))
 
@@ -129,6 +129,6 @@ def edit_offsite(request):
             #return HttpResponseRedirect(new_offsite_path(request))
             #TODO: remover configuração de offsite de globalconfig
             return render_to_response(
-                'bkp/system/edit_globalconfig.html',
+                'templates/bkp/system/edit_globalconfig.html',
                 return_dict,
                 context_instance=RequestContext(request))

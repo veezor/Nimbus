@@ -3,6 +3,7 @@
 
 # Application
 from backup_corporativo.bkp import utils
+from backup_corporativo.bkp.utils import *
 from backup_corporativo.bkp.forms import LoginForm
 from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.views import global_vars, authentication_required
@@ -27,7 +28,7 @@ def new_session(request):
         forms_dict['loginform'] = LoginForm()
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/session/new_session.html',
+            'templates/bkp/session/new_session.html',
             return_dict,
             context_instance=RequestContext(request))
     else:
@@ -57,13 +58,13 @@ def create_session(request):
                 else:
                     return_dict = utils.merge_dicts(forms_dict, vars_dict)
                     return render_to_response(
-                        'bkp/session/new_session.html',
+                        'templates/bkp/session/new_session.html',
                         return_dict,
                         context_instance=RequestContext(request))                
             else:
                 return_dict = merge_dicts(forms_dict, vars_dict)
                 return render_to_response(
-                    'bkp/session/new_session.html',
+                    'templates/bkp/session/new_session.html',
                     return_dict,
                     context_instance=RequestContext(request))
     else:

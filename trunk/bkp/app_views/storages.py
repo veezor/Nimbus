@@ -21,7 +21,7 @@ def new_storage(request):
         forms_dict['storform'] = StorageForm()
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/storage/new_storage.html',
+            'templates/bkp/storage/new_storage.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -43,7 +43,7 @@ def create_storage(request):
                 message="Existem erros e o storage não foi cadastrado.")
             return_dict = utils.merge_dicts(forms_dict, vars_dict, temp_dict)
             return render_to_response(
-                'bkp/storage/new_storage.html',
+                'templates/bkp/storage/new_storage.html',
                 return_dict,
                 context_instance=RequestContext(request))
 
@@ -58,7 +58,7 @@ def view_storage(request, sto_id):
             storage=vars_dict['storage'])
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/storage/view_storage.html',
+            'templates/bkp/storage/view_storage.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -71,7 +71,7 @@ def edit_storage(request, sto_id):
             instance=vars_dict['storage'])
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/storage/edit_storage.html',
+            'templates/bkp/storage/edit_storage.html',
             return_dict,
             context_instance=RequestContext(request))
 
@@ -95,7 +95,7 @@ def update_storage(request, sto_id):
             request.user.message_set.create(
                 message="Existem erros e o storage não foi alterado.")
             return render_to_response(
-                'bkp/storage/edit_storage.html',
+                'templates/bkp/storage/edit_storage.html',
                 return_dict,
                 context_instance=RequestContext(request))   
 
@@ -109,7 +109,7 @@ def delete_storage(request, sto_id):
             message="Confirme a remoção do storage.")
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/storage/delete_storage.html',
+            'templates/bkp/storage/delete_storage.html',
             return_dict,
             context_instance=RequestContext(request))
     #TODO: separar em dois objetos de view
@@ -143,6 +143,6 @@ def view_storage_config(request, sto_id):
             vars_dict['sto'].dump_storagedaemon_config()
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
-            'bkp/storage/view_storage_config.html',
+            'templates/bkp/storage/view_storage_config.html',
             return_dict,
             context_instance=RequestContext(request))
