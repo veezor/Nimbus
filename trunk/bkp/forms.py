@@ -193,7 +193,7 @@ class MonthlyTriggerForm(ModelForm):
 class FileSetForm(ModelForm):
 	class Meta:
 		model = FileSet
-		fields = ('path')
+		fields = ('path',)
 
 
 class ScheduleAuxForm(forms.Form):
