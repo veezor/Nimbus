@@ -1,4 +1,5 @@
 # Django settings for teste project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -17,18 +18,22 @@ DATABASE_HOST = 'localhost'             # Set to empty string for localhost. Not
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
 # Bacula config
-BACULA_DB_NAME = ''
+BACULA_DATABASE_NAME = ''
+BACULA_DATABASE_USER = ''
+BACULA_DATABASE_PASSWORD = ''
+BACULA_DATABASE_HOST = ''
+BACULA_DATABASE_PORT = ''
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/Fortaleza'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-BR'
 
 SITE_ID = 1
 
@@ -72,7 +77,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "",
+    os.path.join(os.path.dirname(__file__), 'templates'),,
 )
 
 #DMIGRATIONS_DIR = 'C:/Documents and Settings/Luke/Meus documentos/My Dropbox/Django/Linconet/backup_corporativo/migrations'
