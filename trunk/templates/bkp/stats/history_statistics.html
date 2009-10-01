@@ -1,14 +1,14 @@
 {% extends "bkp/base.html" %}
 {% load bkp_extras %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/stats/menu_statistics.html' %}
+{% endblock %}
+
 {% block content %}
 <!-- Begin Stats -->
 
 <h2>Estatísticas</h2>
-<ul>
-    <li><a href="{{script_name}}/statistics/main">Principal</a></li>
-    <li><a href="{{script_name}}/statistics/history">Histórico</a></li>
-</ul>
-
 
 <div class="titulo_botoes">
 <h2>Procedimentos Executando</h2>

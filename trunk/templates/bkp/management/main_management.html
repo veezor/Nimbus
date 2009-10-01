@@ -1,15 +1,11 @@
 {% extends "bkp/base.html" %}
 
-{% block content %}
+{% block horizontal_menu %}
+	{% include 'bkp/management/menu_management.html' %}
+{% endblock %}
 
+{% block content %}
 <h2>Gerenciar</h2>
-<ul>
-<li><a href="{{script_name}}/management/">Principal</a></li>
-<li><a href="{{script_name}}/management/computers/list">Computadores</a></li>
-<li>Backups</li>
-<li><a href="{{script_name}}/management/storages/list">Storages</a></li>
-</ul>
-<br />
 
 <div class="titulo_botoes">
     <h2>Atividades Frequentes</h2>

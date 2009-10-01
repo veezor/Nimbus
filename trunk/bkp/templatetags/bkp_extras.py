@@ -164,6 +164,12 @@ def contains(obj, value):
 
 
 @register.filter
+def isequal(obj, value):
+    """Verify if a value is containned in an obj."""
+    return value == obj
+
+
+@register.filter
 def isdir(obj):
     """Returns True if an obj ends with a '/'."""
     if isinstance(obj, str):
