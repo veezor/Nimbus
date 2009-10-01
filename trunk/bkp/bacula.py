@@ -249,7 +249,7 @@ class BaculaDatabase:
     """Classe de fachada utilizada para gerenciar todas as conexões com a base de dados do bacula."""
     #ClassMethods
     def cursor(cls):
-        b1 = BaculaDatabaseWrapper()
+        b1 = BaculaDatabaseWrapper(settings_dict=utils.get_settings_dict())
         return b1.cursor()
     cursor = classmethod(cursor)
     
