@@ -222,24 +222,22 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
 
     def _cursor(self):
         if not self._valid_connection():
-            kwargs = {
-                'use_unicode': True,
-            }
-            settings_dict = utils.get_settings_dict() 
-            if settings_dict['BACULA_DATABASE_USER']: 
-                kwargs['user'] = settings_dict['BACULA_DATABASE_USER'] 
-            if settings_dict['BACULA_DATABASE_NAME']: 
-                kwargs['db'] = settings_dict['BACULA_DATABASE_NAME'] 
-            if settings_dict['BACULA_DATABASE_PASSWORD']: 
-                kwargs['passwd'] = settings_dict['BACULA_DATABASE_PASSWORD'] 
-            if settings_dict['BACULA_DATABASE_HOST'].startswith('/'): 
-                kwargs['unix_socket'] = settings_dict['BACULA_DATABASE_HOST'] 
-            elif settings_dict['BACULA_DATABASE_HOST']: 
-                kwargs['host'] = settings_dict['BACULA_DATABASE_HOST'] 
-            if settings_dict['BACULA_DATABASE_PORT']: 
-                kwargs['port'] = int(settings_dict['BACULA_DATABASE_PORT'])
-
-            self.connection = Database.connect(**kwargs)
+            bacula_settings_dict = dict()
+            convert_dict = {'user': 'BACULA_DATABASE_USER',
+                            'db': 'BACULA_DATABASE_NAME',
+                            'passwd': 'BACULA_DATABASE_PASSWORD',
+                            'host': 'BACULA_DATABASE_HOST',
+                            'port': 'BACULA_DATABASE_PORT',}
+            for key, value in convert_dict.items():
+                content = self.settings_dict[value]
+                if content:
+                    if key in ('port',):
+                        content = int(content)
+                    bacula_settings_dict[key] = content
+            
+            bacula_settings_dict['use_unicode'] = True
+            
+            self.connection = Database.connect(**bacula_settings_dict)
             self.connection.encoders[SafeUnicode] = self.connection.encoders[unicode]
             self.connection.encoders[SafeString] = self.connection.encoders[str]
         cursor = self.connection.cursor()
