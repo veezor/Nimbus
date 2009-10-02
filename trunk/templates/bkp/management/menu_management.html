@@ -1,0 +1,7 @@
+{% load bkp_extras %}
+<ul class="horizontal_menu">
+	<li {% if request.META.PATH_INFO|isequal:"/management/" %}class="active"{% endif %}><a href="{{script_name}}/management/">Principal</a></li>
+	<li {% if request.META.PATH_INFO|contains:"/management/computers/list" %}class="active"{% endif %}><a href="{{script_name}}/management/computers/list">Computadores</a></li>
+	<li>Backups</li>
+	<li {% if request.META.PATH_INFO|contains:"/management/storages/list" %}class="active"{% endif %}><a href="{{script_name}}/management/storages/list">Storages</a></li>
+</ul>
