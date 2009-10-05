@@ -36,8 +36,22 @@ def make_positional_method(name):
 def make_parameterized_method(name):
 
     def meth(self,**kwargs):
+
+        # TODO: special cases
+        if name == "restore":
+            select = kwargs.pop("select",None)
+
         params = " ".join( [ "%s=%s" % (x,y)  for x,y in kwargs.items()] )
         param = " ".join([name, params])
+
+        # TODO: special cases
+        if name == "run":
+            param += " yes"
+        elif name == "restore" and select:
+            param +=  "select %s" % select
+        else:
+            pass
+
         return bconsole.execute_command(param)
 
     meth.__name__ = "%s" % (name,)
@@ -48,19 +62,8 @@ def make_positional_and_parameterized_method(name):
 
     def meth(self,command,**kwargs):
 
-        # TODO: special cases
-        if name == "restore":
-            select = kwargs.pop("select",None)
-
         params = " ".join( [ "%s=%s" % (x,y)  for x,y in kwargs.items()] )
         param = " ".join([name, command,  params])
-
-        # TODO: special cases
-        if name == "run":
-            param += " yes"
-        elif name == "restore" and select:
-            param +=  "select %s" % select
-
         return bconsole.execute_command(param)
 
     meth.__name__ = "%s" % (name,)
