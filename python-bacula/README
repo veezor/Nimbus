@@ -1,0 +1,4 @@
+Para usar a biblioteca bconsole no python você precisa compilar o módulo.
+O código C do módulo se encontra no HOME do usuário suporte em devel /home/suporte/bacula-3.0.2-pythonconsole.tar.bz2.
+Para compilar é só extrair e digitar /configure --enable-client-only --with-python=/usr/ && make -j 4.
+Pegar o arquivo bconsole.so gerado dentro de src/console e jogar aqui dentro.
