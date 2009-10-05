@@ -35,25 +35,10 @@ class GlobalConfig(models.Model):
     storage_port = models.IntegerField(
         "Porta do Storage",
         default='9103')
-    database_name = models.CharField(
-        "Database Name",
-        max_length=50,
-        default='bacula')
-    database_user = models.CharField(
-        "Database USer",
-        max_length=50,
-        default='root')
-    database_password = models.CharField(
-        "Database Password",
-        max_length=50)
     max_upload_bandwidth = models.CharField(
         "Limite de Upload",
         max_length=15,
         default='100 mbps')
-    admin_mail = models.EmailField(
-        "E-mail do Admin",
-        max_length=50,
-        blank=True)
     offsite_on = models.BooleanField(
         "Offsite ativo?",
         default=False)

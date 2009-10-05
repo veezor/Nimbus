@@ -76,10 +76,6 @@ class GlobalConfigForm(ModelForm):
 			'server_ip',
 			'director_port',
 			'storage_port',
-			'database_name',
-			'database_user',
-			'database_password',
-			'admin_mail',
 			'offsite_on')
 
 
