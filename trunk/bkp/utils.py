@@ -104,6 +104,14 @@ def schedule_inverse(type):
 #
 #
 #
+def edit_system_config_path(request):
+    """Returns edit config path."""
+    return "%s/system/config/edit" % request.META['SCRIPT_NAME']
+
+def edit_system_offsite_path(request):
+    """Returns edit offsite config path."""
+    return "%s/system/offsite/edit" % (request.META['SCRIPT_NAME'])
+
 def root_path(request):
     """Return root path."""
     return "%s/" % (request.META['SCRIPT_NAME'])
@@ -118,10 +126,6 @@ def edit_config_path(request):
     """Returns edit config path."""
     return "%s/config/edit" % (request.META['SCRIPT_NAME'])
 
-
-def edit_offsite_path(request):
-    """Returns edit config path."""
-    return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
 
 # Passo 1
 def restore_computer_path(request, computer_id):
@@ -150,16 +154,6 @@ def backup_procedure_path(request, computer_id, procedure_id):
 def backup_path(request):
     """Returns backup computer path."""
     return "%s/backup/new" % (request.META['SCRIPT_NAME'])
-
-
-def edit_networkinterface_path(request):
-    """Returns edit network config path."""
-    return "%s/networkinterface/edit" % (request.META['SCRIPT_NAME'])
-    
-    
-def edit_offsite_config_path(request):
-    """Returns edit offsite config path."""
-    return "%s/config/offsite/edit" % (request.META['SCRIPT_NAME'])
     
     
 def random_password(size=20):

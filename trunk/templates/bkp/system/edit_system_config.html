@@ -7,12 +7,11 @@
 
 
 {% block content %}
-<h2>Sistema</h2>
-
-{% ifequal config_type 'global' %}
-	    <h2>Configurações Globais</h2>
-
-    <form action="{{script_name}}/config/edit" method="post">
+<br />
+<h2>Configurações</h2>
+<br /><br />
+  
+    <form action="{{script_name}}/system/config/update" method="post">
         {% for field in gconfigform %}
             <div class="fieldWrapper">
                 {{ field.errors }}
@@ -21,22 +20,6 @@
         {% endfor %}
         <p><input type="submit" value="Salvar" /></p>
     </form>
-{% endifequal %}
-
-
-{% ifequal config_type 'password' %}
-<h2>Alterar Senha do Administrador</h2>
-
-<form action="{{script_name}}/password/" method="post">
-    {% for field in pwdform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Salvar" /></p>
-</form>
-{% endifequal %}
 
 
 

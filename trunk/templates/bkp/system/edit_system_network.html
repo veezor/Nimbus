@@ -1,8 +1,14 @@
 {% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/system/menu_system.html' %}
+{% endblock %}
+
 {% block content %}
 
+<br />
 <h2> Alterar Interface de Rede </h2>
-
+<br /><br />
 
 <form action="{{script_name}}/networkinterface/update" method="post">
     {% for field in netform %}

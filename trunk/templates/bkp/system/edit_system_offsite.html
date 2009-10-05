@@ -1,17 +1,22 @@
 {% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/system/menu_system.html' %}
+{% endblock %}
+
 {% block content %}
 
 {% if offsite_on %}
 <h2> Configuraçao do Backup Offsite </h2>
 <p> Deseja realmente desabilitar backup offsite? </p>
-<form action="{{script_name}}/offsite/disable" method="post">
+<form action="{{script_name}}/system/offsite/disable" method="post">
     <p><input type="submit" value="Sim" /></p>
 </form>
 
 {% else %}
 <h2> Configuraçao do Backup Offsite </h2>
 
-<form action="{{script_name}}/offsite/enable" method="post">
+<form action="{{script_name}}/system/offsite/enable" method="post">
         <div class="fieldWrapper">
             {{ offsiteform.offsite_hour.errors }}
             {{ offsiteform.offsite_hour.label_tag }} {{ offsiteform.offsite_hour }}
@@ -26,7 +31,7 @@
 
 {% endif %}
 
-<a href="{{script_name}}/config/offsite/edit">Cancelar</a>
+<a href="{{script_name}}/system/offsite/edit">Cancelar</a>
 <br />
 
 {% endblock %}

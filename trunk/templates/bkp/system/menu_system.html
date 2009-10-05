@@ -1,5 +1,8 @@
-<ul class="horizontal_menu">
-    <li {% ifequal config_type 'global' %} class="active"{% endifequal %}><a href="{{script_name}}/config/global/edit">Configurações globais</a></li>
-    <li {% ifequal config_type 'password' %} class="active"{% endifequal %}><a href="{{script_name}}/config/password/edit">Senha</a></li>
-    <li {% ifequal config_type 'offsite' %} class="active"{% endifequal %}><a href="{{script_name}}/config/offsite/edit">Offsite</a></li>
+{% load bkp_extras %}
+
+<ul class="horizontal_menu">    
+    <li {% if request.META.PATH_INFO|isequal:"/system/config/edit" %}class="active"{% endif %}><a href="{{script_name}}/system/config/edit">Configurações</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/network/edit" %}class="active"{% endif %}><a href="{{script_name}}/system/network/edit">Rede</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/password/edit" %}class="active"{% endif %}><a href="{{script_name}}/system/password/edit">Senha</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/offsite/edit" %}class="active"{% endif %}><a href="{{script_name}}/system/offsite/edit">Offsite</a></li>
 </ul>

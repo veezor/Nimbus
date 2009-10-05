@@ -19,7 +19,7 @@ class Storage(models.Model):
     # Atributos
     nimbus_uuid = models.ForeignKey(NimbusUUID, default=NIMBUS_BLANK)
     storage_name = models.CharField("Nome", max_length=50, unique=True)
-    storage_ip = models.IPAddressField("Endereço IP")
+    storage_ip = models.IPAddressField("Endereço IP", default="127.0.0.1")
     storage_port = models.IntegerField("Porta do Storage", default='9103')
     storage_password = models.CharField(max_length=50, default=NIMBUS_BLANK)
     storage_description = models.CharField(
@@ -149,14 +149,13 @@ class Storage(models.Model):
     # Esse método é chamado toda vez que GlobalConfig é
     # modificado. Assim, a única forma de alterar as configurações
     # do Storage Local é através de GlobalConfig.
-    def update_default_storage(cls, server_ip, storage_port):
+    def update_default_storage(cls, storage_port):
         try:
             sto = cls.default_storage()
         except Storage.DoesNotExist:
             sto = cls()
         sto.storage_name = 'Storage Local'
         sto.storage_description = 'Storage Local do Nimbus'
-        sto.storage_ip = server_ip
         sto.storage_port = storage_port
         sto.save()
     update_default_storage = classmethod(update_default_storage)

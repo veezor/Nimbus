@@ -112,9 +112,9 @@ def update_config_file(gconf):
     sto_list = []
     for sto in Storage.objects.all():
         sto_list.append(config_sto_dict(sto.storage_bacula_name(), sto.storage_ip, sto.storage_port, sto.storage_password))
-    cat_dict = config_cat_dict("MyCatalog",gconf.database_name, gconf.database_user, gconf.database_password)
-    smsg_dict = config_msg_dict("Standard",gconf.admin_mail)
-    dmsg_dict = config_msg_dict("Daemon",gconf.admin_mail)    
+    cat_dict = config_cat_dict("MyCatalog",gconf.bacula_database_name(), gconf.bacula_database_user(), gconf.bacula_database_password())
+    smsg_dict = config_msg_dict("Standard",gconf.admin_mail())
+    dmsg_dict = config_msg_dict("Daemon",gconf.admin_mail())    
     generate_config("bacula-dir.conf", dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
 
 def config_dir_dict(dir_name, dir_port, dir_passwd):
@@ -137,7 +137,7 @@ def config_cat_dict(cat_name, db_name, db_user, db_passwd):
     
 def config_msg_dict(msg_name, admin_mail=None):
     """generate config message attributes dict"""
-    admin_mail = admin_mail or "backup@linconet.com.br"
+    admin_mail = admin_mail or "nimbus@linconet.com.br"
     if msg_name == 'Standard':
         return {'Name':msg_name, 
         'mailcommand':'"/sbin/bsmtp -h localhost -f \\"\(Bacula\) \<%r\>\\" -s \\"Bacula: %t %e of %c %l\\" %r"', 

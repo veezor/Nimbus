@@ -73,7 +73,6 @@ class GlobalConfigForm(ModelForm):
 		model = GlobalConfig
 		fields = (
 			'globalconfig_name',
-			'server_ip',
 			'director_port',
 			'storage_port',
 			'offsite_on')

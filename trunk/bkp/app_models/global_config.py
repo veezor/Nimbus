@@ -14,9 +14,6 @@ from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 
 
 ### GlobalConfig ###
-# TODO: remover campos redundantes com NetworkInterface
-# por exemplo server_ip e alterar todos os lugares no código
-# onde server_ip é mencionado
 class GlobalConfig(models.Model):
     # Constantes
     NIMBUS_BLANK = -1
@@ -25,7 +22,6 @@ class GlobalConfig(models.Model):
     globalconfig_name = models.CharField(
         "Nome da Instância",
         max_length=50)
-    server_ip = models.IPAddressField("Endereço IP")
     director_password = models.CharField(
         max_length=50,
         default=NIMBUS_BLANK)
@@ -73,7 +69,7 @@ class GlobalConfig(models.Model):
         # podem um referenciar ao outro no escopo geral do arquivo ao
         # mesmo tempo.
         from backup_corporativo.bkp.app_models.storage import Storage
-        Storage.update_default_storage(self.server_ip, self.storage_port)
+        Storage.update_default_storage(self.storage_port)
         # Use sempre o mesmo id para armazenar o Storage Local
         self.id = 1
         super(GlobalConfig, self).save()
@@ -88,3 +84,22 @@ class GlobalConfig(models.Model):
         """Returns True if system is configured, False otherwise."""
         return cls.objects.all().count() > 0
     system_configured = classmethod(system_configured)
+    
+    def bacula_database_name(cls):
+        from backup_corporativo.settings import BACULA_DATABASE_NAME
+        return BACULA_DATABASE_NAME
+    bacula_database_name = classmethod(bacula_database_name)
+
+    def bacula_database_user(cls):
+        from backup_corporativo.settings import BACULA_DATABASE_USER
+        return BACULA_DATABASE_USER
+    bacula_database_user = classmethod(bacula_database_user)
+    
+    def bacula_database_password(cls):
+        from backup_corporativo.settings import BACULA_DATABASE_PASSWORD
+        return BACULA_DATABASE_PASSWORD
+    bacula_database_password = classmethod(bacula_database_password)
+
+    def admin_mail(cls):
+        return "nimbus@linconet.com.br"
+    admin_mail = classmethod(admin_mail)

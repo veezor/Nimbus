@@ -24,21 +24,16 @@ urlpatterns += patterns(
     (r'^management/$', 'main_management'),
     (r'^management/computers/list$', 'list_computers'),
     (r'^management/storages/list$', 'list_storages'),
-    # TODO: Reorganizar configurações de networkconfig.
-    # Adequar com menu system.
-    # views_app/networkinterfaces.py
-    (r'^networkinterface/edit$', 'edit_networkinterface'),
-    (r'^networkinterface/update$', 'update_networkinterface'),   
-    # TODO: Reorganizar configurações.
-    # Adequar com menu system.
-    # views_app/configs.py
-    (r'^config/edit$', 'edit_config'),
-    (r'^config/(?P<config_type>.*?)/edit$', 'edit_config'),
-    (r'^password/new$', 'new_password'),
-    (r'^password/$', 'change_password'),
-    (r'^offsite/edit$', 'edit_offsite_config'),
-    (r'^offsite/enable$', 'enable_offsite'),
-    (r'^offsite/disable$', 'disable_offsite'),
+    # system
+    (r'^system/network/edit$', 'edit_system_network'),
+    (r'^system/network/update$', 'update_system_network'),
+    (r'^system/config/edit$', 'edit_system_config'),
+    (r'^system/config/update$', 'update_system_config'),
+    (r'^system/password/edit$', 'edit_system_password'),
+    (r'^system/password/update$', 'update_system_password'),
+    (r'^system/offsite/edit$', 'edit_system_offsite'),
+    (r'^system/offsite/enable$', 'enable_system_offsite'),
+    (r'^system/offsite/disable$', 'disable_system_offsite'),
     # views_app/stats.py
     (r'^statistics/main$', 'main_statistics'),
     (r'^statistics/history$', 'history_statistics'),    
