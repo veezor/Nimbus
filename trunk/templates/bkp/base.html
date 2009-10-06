@@ -24,7 +24,7 @@
                         <li {% if request.META.PATH_INFO|contains:"/management" %}class="active"{% endif %}><a href="{{script_name}}/management/" title="">Gerenciar</a></li>
                         <li {% if request.META.PATH_INFO|contains:"/statistics" %}class="active"{% endif %}><a href="{{script_name}}/statistics/main" title="">Estatísticas</a></li>
                         <li {% if request.META.PATH_INFO|contains:"/tools" %}class="active"{% endif %}><a href="{{script_name}}/tools/" title="">Ferramentas</a></li>
-                        <li {% if request.META.PATH_INFO|contains:"/system" %}class="active"{% endif %}><a href="{{script_name}}/config/edit" title="">Sistema</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/system" %}class="active"{% endif %}><a href="{{script_name}}/system/config/edit" title="">Sistema</a></li>
                     </ul>
                     {% if current_user.username %}
                     <form class="link" action="{{script_name}}/session/delete" method="post">
