@@ -38,7 +38,7 @@ class Command(object):
         self.content = [name]
 
     def raw(self, string):
-        self.content.append(name)
+        self.content.append(string)
         return self
 
     def __getattr__(self, attr):
