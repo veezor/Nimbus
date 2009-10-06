@@ -106,10 +106,9 @@ class BaculaCommandLine(object):
     positional_commands = "use ".split()
     simple_commands = "query reload".split()
     
-    def __init__(self, bconfigfile=None):
+    def __init__(self, bconfigfile="./bconsole.conf"):
 
-        if bconfigfile:
-            bconsole.set_configfile(bconfigfile)
+        bconsole.set_configfile(bconfigfile)
         bconsole.connect()
 
 
@@ -127,6 +126,9 @@ def test():
 
         def execute_command(self, arg):
             print arg
+            pass
+
+        def set_configfile(self):
             pass
 
         def close(self):
