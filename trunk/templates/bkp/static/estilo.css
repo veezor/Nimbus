@@ -147,7 +147,7 @@ padding-top: 55px;
 height: 40px;
 margin: 0;
 overflow: hidden;
-padding: 0 0 0 19px;
+padding: 0 0 0 5px;
 float: left;
 }
 
@@ -190,7 +190,7 @@ font-size: 11px;
 /* HORIZONTAL MENU */
 
 .horizontal_menu {
-margin: 0 0 0 256px;
+margin: -5px 0 17px 233px;
 overflow: hidden;
 padding-top: 4px;
 }
@@ -229,7 +229,7 @@ color: #1e91a6;
 width: 940px;
 overflow: hidden;
 background: #CCC;
-padding: 10px;
+padding: 7px 10px 10px;
 -moz-border-radius-bottomleft: 6px;
 -moz-border-radius-bottomright: 6px;
 }
