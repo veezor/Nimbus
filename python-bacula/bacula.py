@@ -5,115 +5,65 @@ try:
     import bconsole
 except ImportError, e:
     print "Error: load bconsole module failed"
+    test()
 
 
-def make_boolean_method(name,status):
+valid_commands = """autodisplay automount add cancel create delete label mount prune relabel release restore run setdebug status unmount update wait disable enable list llist use query reload"""
 
-    def meth(self):
-        return bconsole.execute_command("%s %s" % (name,status))
-
-    meth.__name__ = "%s_%s" % (name,status)
-    return meth
-
-def make_simple_method(name):
-
-    def meth(self):
-        return bconsole.execute_command(name)
-
-    meth.__name__ = "%s" % (name,)
-    return meth
-
-
-def make_positional_method(name):
-
-    def meth(self,param):
-        return bconsole.execute_command(name + " " + str(param))
-
-    meth.__name__ = "%s" % (name,)
-    return meth
-
-
-def make_parameterized_method(name):
-
-    def meth(self,**kwargs):
-
-        # TODO: special cases
-        if name == "restore":
-            select = kwargs.pop("select",None)
-
-        params = " ".join( [ "%s=%s" % (x,y)  for x,y in kwargs.items()] )
-        param = " ".join([name, params])
-
-        # TODO: special cases
-        if name == "run":
-            param += " yes"
-        elif name == "restore" and select:
-            param +=  "select %s" % select
-        else:
-            pass
-
-        return bconsole.execute_command(param)
-
-    meth.__name__ = "%s" % (name,)
-    return meth
-
-
-def make_positional_and_parameterized_method(name):
-
-    def meth(self,command,**kwargs):
-
-        params = " ".join( [ "%s=%s" % (x,y)  for x,y in kwargs.items()] )
-        param = " ".join([name, command,  params])
-        return bconsole.execute_command(param)
-
-    meth.__name__ = "%s" % (name,)
-    return meth
-
-
-class MetaCommand(type):
-
-    def __new__(cls, name, bases, dict):
-
-        for meth in dict['boolean_commands']:
-            dict["%s_on" % meth]  = make_boolean_method(meth,"on")
-            dict["%s_off" % meth]  = make_boolean_method(meth,"off")
-
-        # FIX: refatorar
-        for meth in dict['simple_commands']:
-            dict["%s" % meth]  = make_simple_method(meth)
-
-        for meth in dict['parameterized_commands']:
-            dict["%s" % meth]  = make_parameterized_method(meth)
-
-        for meth in dict['positional_commands']:
-            dict["%s" % meth]  = make_positional_method(meth)
-
-        for meth in dict['positional_and_parameterized_commands']:
-            dict["%s" % meth]  = make_positional_and_parameterized_method(meth)
-
-        return type.__new__(cls, name, bases, dict)
 
 
 class BaculaCommandLine(object):
 
-    __metaclass__ = MetaCommand
-
-    boolean_commands = "autodisplay automount".split()
-    parameterized_commands = "add cancel create delete label mount prune".split()
-    parameterized_commands.extend("relabel release restore run setdebug".split())
-    parameterized_commands.extend("status unmount update wait".split())
-    positional_and_parameterized_commands = "disable enable list llist".split()
-    positional_commands = "use ".split()
-    simple_commands = "query reload".split()
+    connected = False
     
-    def __init__(self, bconfigfile="./bconsole.conf"):
+    def __init__(self, config="./bconsole.conf"):
+        if not self.connected:
+            bconsole.set_configfile(config)
+            bconsole.connect()
+            BaculaCommandLine.connected = True
 
-        bconsole.set_configfile(bconfigfile)
-        bconsole.connect()
+    def __getattr__(self, name):
+        if name in valid_commands:
+            return Command(name)    
+        else:
+            return None
+
+    def raw(self, string):
+        return bconsole.execute_command(string)
 
 
-    def close(self):
-        bconsole.close()
+class Command(object):
+
+    def __init__(self, name):
+        self.content = [name]
+
+    def raw(self, string):
+        self.content.append(name)
+        return self
+
+    def __getattr__(self, attr):
+
+        content = object.__getattribute__(self, "content")
+        content.append(attr)
+        return self
+
+
+    def get_content(self):
+        return  " ".join(self.content)
+
+    def run(self):
+        print "DEBUG",self.get_content()
+        result = bconsole.execute_command( self.get_content() )
+        self.content = []
+        return result
+
+    def __call__(self,*args):
+        return self.run()
+
+    def __getitem__(self, item):
+        name = self.content[-1]
+        self.content[-1] = ("%s=%s" % (name,item))
+        return self
 
 
 
@@ -128,7 +78,7 @@ def test():
             print arg
             pass
 
-        def set_configfile(self):
+        def set_configfile(self, filename):
             pass
 
         def close(self):
@@ -137,7 +87,7 @@ def test():
     global bconsole
     bconsole = Bconsole()
     cmd = BaculaCommandLine()
-    cmd.status(dir="linconet-dir")
+    cmd.status.dir["linconet-dir"].run()
 
 
 if __name__ == "__main__":
