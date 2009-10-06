@@ -66,321 +66,186 @@
 	    </div>
 	</div>
 
-    <div class="titulo_botoes">
-	    <h3>
-	        <span>Backup</span>
-	    </h3>
-	    <div class="botao_acoes">
-	        <button onclick="location.href='{{script_name}}/computer/{{comp.id}}/procedure/new';"><span class="">Adicionar</span></button>
-	    </div>
+
+	<div id="tabs">
+		<ul>
+			<li><a href="#tabs-1">Backup</a></li>
+			<li><a href="#tabs-2">Procedimentos em execução</a></li>
+			<li><a href="#tabs-3">Últimos Procedimentos Executados</a></li>
+		</ul>
+
+		<div id="tabs-1">
+	    	<div class="titulo_botoes">
+			    <h3>
+			        <span>Backup</span>
+			    </h3>
+			    <div class="botao_acoes">
+			        <button onclick="location.href='{{script_name}}/computer/{{comp.id}}/procedure/new';"><span class="">Adicionar</span></button>
+			    </div>
+			</div>
+	
+			{% if not comp.procedure_set.count %}
+			    <span>Não existem procedimentos cadastrados para este computador.</span>
+			{% endif %}
+	
+			{% for proc in comp.procedure_set.all %}
+			<div class="backup">
+			    <div class="inner-backup">
+			        <div class="nome_detalhes">
+		        	    <h2>
+		        	        <span class="toggle" rel="detalhes_procedimento_{{ proc.id }}">{{ proc.procedure_name }}<br/>
+		        	        <span class="pequeno">+detalhes</span></span>
+		        	    </h2>
+			        </div>
+			        <div class="info_basica">
+			            <span>Storage: <strong>{{ proc.storage.storage_name }}</strong></span>
+			            <span>Agendamentos: <strong>{{ proc.fileset_set.count }}</strong></span>
+			            <span>Offsite: <strong>{% if proc.offsite_on %}ATIVO{% endif %}{% if not proc.offsite_on %}Inativo{% endif %}</strong></span><br/>
+			            <span>Caminhos:
+			            <strong>{% if proc.fileset_set.count %}
+		                    {% for fset in proc.fileset_set.all|slice:":3" %}
+		                        {{ fset.path }}{% if not forloop.last %},{% endif %}
+		                    {% endfor %}
+		                    {{ proc.fileset_set.count|pluralize:"..." }}
+		                {% else %}
+		                    -
+		                {% endif %}</strong></span>
+		            </div>
+		            <div class="acoes">
+		                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
+		                <div id="view_comp_02_{{ forloop.counter }}" class="escondido">
+		                    <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
+		                    <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
+		                    <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
+		                </div>
+		            </div>
+			    </div>
+			    <div id="detalhes_procedimento_{{ proc.id }}" class="detalhes_procedimento escondido">
+		            <div class="storage coluna primeira">
+		                Storage:<br/>
+		                <a href="{{ script_name }}/{{ proc.storage.view_url }}">{{ proc.storage.storage_name }}</a>
+		            </div>
+		            <div class="caminhos coluna">
+		                Caminhos:<br/>
+		                <div class="bloco_bg">
+		                {% for fset in proc.fileset_set.all %}
+		                    {{ fset.path }}<br/>
+		                    <!--<button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="button_delete" title="Remover este item."><span>Remover</span></button>-->
+		                {% endfor %}
+		                </div>
+		            </div>
+		            <div class="agendamentos coluna ultima">
+		                Agendamentos:<br/>
+		                {% for sched in proc.schedule_set.all %}
+		                <div class="bloco_bg">
+		                    {% for wtrigg in sched.weeklytrigger_set.all %}
+		                        {{ wtrigg.level_friendly }}<br/>
+		                        {{ sched.type_friendly }}<br/>
+		                        {% for day, day_br in DAYS_OF_THE_WEEK.items %}
+		                            {% if wtrigg|get_method:day %}
+		                                {{ day_br }}
+		                            {% endif %}
+		                        {% endfor %} as {{ wtrigg.hour }}
+		                    {% endfor %}
+		                    {% for mtrigg in sched.monthlytrigger_set.all %}
+		                        {{ mtrigg.level_friendly }}<br />
+		                        {{ sched.type_friendly }}<br/>
+		                        {{ mtrigg.target_days }} as
+		                        {{ mtrigg.hour }}
+		                    {% endfor %}
+		                </div>
+		                {% endfor %}
+		                <!--<button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
+		                <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false" class="red"><span>Remover</span></button>-->
+		            </div>
+		        </div>
+		    </div>
+			{% endfor %}
+			<br/>
+		</div>
+
+
+		<div id="tabs-2">
+	    	<div class="titulo_botoes">
+			    <h3>
+			        <span>Procedimentos Executando</span>
+			    </h3>
+			    <div class="botao_acoes"></div>
+			</div>
+			<div class="bloco_texto">
+				{% for job in running_jobs %}
+					{% if forloop.first %}
+				        <table>
+				        <thead>
+					        <tr>
+					        <th scope='col'>Nome</th>
+					        <th scope='col'>Tipo</th>
+					        <th scope='col'>Data Início</th>
+					        <th scope='col'>Hora Início</th>
+					        <th scope='col'>Duração</th>
+					        <th scope='col'>Status</th>
+					        </tr>
+				        </thead>
+				        <tbody>
+					{% endif %}
+		        <tr> 
+			        <td> {{ job.Name }} </td>
+			        <td> {{ job.Level|friendly_level }} </td>
+			        <td> {{ job.StartTime|friendly_date }} </td>
+			        <td> {{ job.StartTime|friendly_hour }} </td>
+			        <td> {{ job.Duration|friendly_duration_min }} </td>
+			        <td> {{ job.JobStatus|friendly_status }} </td>
+				</tr>
+					{% if forloop.last %}
+				</tbody>
+				</table>
+					{% endif %}
+		        {% endfor %}
+		    </div>
+		</div>
+
+
+		<div id="tabs-3">
+	    	<div class="titulo_botoes">
+			    <h3>
+			        <span>Últimos Procedimentos Executados</span>
+			    </h3>
+			    <div class="botao_acoes"></div>
+			</div>
+			<div class="bloco_texto">
+				{% for job in last_jobs %}
+					{% if forloop.first %}
+				        <table>
+				        <thead>
+					        <tr>
+					        <th scope='col'>Nome</th>
+					        <th scope='col'>Tipo</th>
+					        <th scope='col'>Arquivos</th>
+					        <th scope='col'>Tamanho</th>
+					        <th scope='col'>Data Início</th>
+					        <th scope='col'>Hora Início</th>
+					        <th scope='col'>Duração</th>
+					        <th scope='col'>Status</th>
+					        </tr>
+				        </thead>
+				        <tbody>
+					{% endif %}
+		        <tr class="{% cycle 'odd' 'even' %}"> 
+			        <td> {{ job.Name }} </td>
+			        <td> {{ job.Level|friendly_level }} </td>
+			        <td> {{ job.JobFiles }} </td>
+			        <td> {{ job.JobBytes|friendly_size_mb }} </td>
+			        <td> {{ job.StartTime|friendly_date }} </td>
+			        <td> {{ job.StartTime|friendly_hour }} </td>
+			        <td> {{ job.Duration|friendly_duration_min }} </td>
+			        <td> {{ job.JobStatus|friendly_status }} </td>
+				</tr>
+					{% if forloop.last %}
+				</tbody>
+				</table>
+					{% endif %}
+		        {% endfor %}
+		    </div>
+		</div>
 	</div>
-	
-	{% if not comp.procedure_set.count %}
-	    <span>Não existem procedimentos cadastrados para este computador.</span>
-	{% endif %}
-	
-	{% for proc in comp.procedure_set.all %}
-	<div class="backup">
-	    <div class="inner-backup">
-	        <div class="nome_detalhes">
-        	    <h2>
-        	        <span class="toggle" rel="detalhes_procedimento_{{ proc.id }}">{{ proc.procedure_name }}<br/>
-        	        <span class="pequeno">+detalhes</span></span>
-        	    </h2>
-	        </div>
-	        <div class="info_basica">
-	            <span>Storage: <strong>{{ proc.storage.storage_name }}</strong></span>
-	            <span>Agendamentos: <strong>{{ proc.fileset_set.count }}</strong></span>
-	            <span>Offsite: <strong>{% if proc.offsite_on %}ATIVO{% endif %}{% if not proc.offsite_on %}Inativo{% endif %}</strong></span><br/>
-	            <span>Caminhos:
-	            <strong>{% if proc.fileset_set.count %}
-                    {% for fset in proc.fileset_set.all|slice:":3" %}
-                        {{ fset.path }}{% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                    {{ proc.fileset_set.count|pluralize:"..." }}
-                {% else %}
-                    -
-                {% endif %}</strong></span>
-            </div>
-            <div class="acoes">
-                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
-                <div id="view_comp_02_{{ forloop.counter }}" class="escondido">
-                    <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
-                    <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
-                    <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
-                </div>
-            </div>
-	    </div>
-	    <div id="detalhes_procedimento_{{ proc.id }}" class="detalhes_procedimento escondido">
-            <div class="storage coluna primeira">
-                Storage:<br/>
-                <a href="{{ script_name }}/{{ proc.storage.view_url }}">{{ proc.storage.storage_name }}</a>
-            </div>
-            <div class="caminhos coluna">
-                Caminhos:<br/>
-                <div class="bloco_bg">
-                {% for fset in proc.fileset_set.all %}
-                    {{ fset.path }}<br/>
-                    <!--<button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="button_delete" title="Remover este item."><span>Remover</span></button>-->
-                {% endfor %}
-                </div>
-            </div>
-            <div class="agendamentos coluna ultima">
-                Agendamentos:<br/>
-                {% for sched in proc.schedule_set.all %}
-                <div class="bloco_bg">
-                    {% for wtrigg in sched.weeklytrigger_set.all %}
-                        {{ wtrigg.level_friendly }}<br/>
-                        {{ sched.type_friendly }}<br/>
-                        {% for day, day_br in DAYS_OF_THE_WEEK.items %}
-                            {% if wtrigg|get_method:day %}
-                                {{ day_br }}
-                            {% endif %}
-                        {% endfor %} as {{ wtrigg.hour }}
-                    {% endfor %}
-                    {% for mtrigg in sched.monthlytrigger_set.all %}
-                        {{ mtrigg.level_friendly }}<br />
-                        {{ sched.type_friendly }}<br/>
-                        {{ mtrigg.target_days }} as
-                        {{ mtrigg.hour }}
-                    {% endfor %}
-                </div>
-                {% endfor %}
-                <!--<button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
-                <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false" class="red"><span>Remover</span></button>-->
-            </div>
-        </div>
-    </div>
-	{% endfor %}
-	<br/>
-	
-	{% if 0 %}
-	<div class="bloco_texto">
-	
-	<table>
-	    <thead>
-	        <tr>
-	            <th>Nome</th>
-	            <th>Storage</th>
-	            <th>Caminhos</th>
-	            <th>#Agendam.</th>
-	            <th>Offsite?</th>
-	            <th></th>
-	        </tr>
-	    </thead>
-	    <tbody>
-	    {% for proc in comp.procedure_set.all %}
-	        <tr>
-	            <td class="col_procedimento">{{ proc.procedure_name }}</td>
-	            <td class="col_storage">{{ proc.storage.storage_name }}</td>
-	            <td class="col_caminhos">
-	                {% if proc.fileset_set.count %}
-	                    {% for fset in proc.fileset_set.all|slice:":3" %}
-	                        {{ fset.path }}{% if not forloop.last %},{% endif %}
-	                    {% endfor %}
-	                    {{ proc.fileset_set.count|pluralize:"..." }}
-	                {% else %}
-	                    -
-	                {% endif %}
-	            </td>
-	            <td class="col_agendamentos">{{ proc.fileset_set.count }}</td>
-	            <td class="col_offsite">{% if proc.offsite_on %}ATIVO{% endif %}{% if not proc.offsite_on %}-{% endif %}</td>
-	            <td class="col_acoes">
-	                <button class="toggle" rel="detalhes_procedimento_{{ proc.id }}"><span>+</span></button>
-	                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
-	                <div id="view_comp_02_{{ forloop.counter }}" class="escondido">
-                        <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
-                        <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
-                        <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
-                    </div>
-                </td>
-	        </tr>
-	        <tr>
-	            <td colspan="5">
-	            
-                    <div class="procedure escondido cookie_toggle" id="detalhes_procedimento_{{ proc.id }}">
-                        <!--<div class="titulo_topo">
-                            <h3><a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/tmp_restore/{{job.JobID}}"> {{ proc.procedure_name }} </a>
-                                <span class="toggle pequeno" rel="detalhes_procedure_{{ proc.id }}">(ver detalhes)</span></h3>
-                            <div class="botao_acoes">
-                                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
-                    	        
-	                        </div>
-	                    </div>-->
-	                    
-	                    <ul class="aux" id="detalhes_procedure_{{ proc.id }}">
-	                        <li>
-	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_storage.gif" />
-	                            <span class="label"><strong>Storage:</strong></span>
-	                            <span class="value">
-	                                <a href="{{ script_name }}/{{ proc.storage.view_url }}">{{ proc.storage.storage_name }}</a>
-	                            </span>
-	                        </li>
-	                        <li>
-	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_gear.gif" />
-	                            <span class="label"><strong>Caminhos do backup:</strong>
-	                                <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/fileset/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
-	                            {% if not proc.fileset_set.count %}
-	                            (vazio)
-	                            {% endif %}
-	                            {% if proc.fileset_set.count %}
-	                            <table>
-	                                <thead>
-	                                    <tr>
-	                                        <th>Caminho</th>
-	                                    </tr>
-	                                </thead>
-	                                <tbody>
-	                                {% for fset in proc.fileset_set.all %}
-	                                    <tr>
-	                                        <td>{{ fset.path }} <button onclick="location.href='{{script_name}}/{{fset.delete_url}}'" class="button_delete" title="Remover este item."><span>Remover</span></button></td>
-			                            </tr>
-	                                {% endfor %}
-	                                </tbody>
-	                            </table>
-	                            {% endif %}
-	                        </li>
-	                        <li>
-	                            <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_clock.gif" />
-	                            <span class="label"><strong>Agendamentos:</strong>
-	                                <a href="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/schedule/new"><img src="/static/imagens/ico_plus.gif" /></a></span>
-	                            {% if not proc.schedule_set.count %}
-	                            <span class="value">(vazio)</span>
-	                            {% endif %}
-	                            {% if proc.schedule_set.count %}
-	                            <table>
-	                                <thead>
-	                                    <tr>
-	                                        <th>Tipo</th>
-	                                        <th>Nível</th>
-	                                        <th>Hora</th>
-	                                        <th>Dias</th>
-	                                        <th>Ações</th>
-	                                    </tr>
-	                                </thead>
-	                                <tbody>
-        	                            {% for sched in proc.schedule_set.all %}
-	                                    <tr>
-	                                        <td>{{ sched.type }}</td>
-	                                        {% for wtrigg in sched.weeklytrigger_set.all %}
-	                                            <td>{{ wtrigg.level }}</td>
-	                                            <td>{{ wtrigg.hour }}</td>
-	                                            <td>
-	                                            {% for day, day_br in DAYS_OF_THE_WEEK.items %}
-                                                    {% if wtrigg|get_method:day %}
-                                                        {{ day_br }}
-                                                    {% endif %}
-                                                {% endfor %}
-                                                </td>
-	                                        {% endfor %}
-	                                        {% for mtrigg in sched.monthlytrigger_set.all %}
-	                                            <td>{{ mtrigg.level }}</td>
-	                                            <td>{{ mtrigg.hour }}</td>
-	                                            <td>{{ mtrigg.target_days }}</td>
-	                                        {% endfor %}
-	                                        <td>
-	                                            <button onclick="location.href='{{script_name}}/{{sched.edit_url}}';return false"><span>Editar</span></button>
-	                                            <button onclick="location.href='{{script_name}}/{{sched.delete_url}}';return false" class="red"><span>Remover</span></button>
-	                                        </td>
-	                                    </tr>
-	                                    {% endfor %}
-	                                </tbody>
-	                            </table>
-                                {% endif %}
-                            </li>
-	                    </ul>
-	                    
-                    </div><div id="view_comp_02_{{ forloop.counter }}" class="escondido">
-	                                <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
-	                                <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
-	                                <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
-	                            </div>
-	            
-	            </td>
-	        </tr>
-	    {% endfor %}
-	    </tbody>
-	</table>
-    </div>
-    {% endif %}
-
-    <div class="titulo_botoes">
-	    <h3>
-	        <span>Procedimentos Executando</span>
-	    </h3>
-	    <div class="botao_acoes"></div>
-	</div>
-	<div class="bloco_texto">
-		{% for job in running_jobs %}
-			{% if forloop.first %}
-		        <table>
-		        <thead>
-			        <tr>
-			        <th scope='col'>Nome</th>
-			        <th scope='col'>Tipo</th>
-			        <th scope='col'>Data Início</th>
-			        <th scope='col'>Hora Início</th>
-			        <th scope='col'>Duração</th>
-			        <th scope='col'>Status</th>
-			        </tr>
-		        </thead>
-		        <tbody>
-			{% endif %}
-        <tr> 
-	        <td> {{ job.Name }} </td>
-	        <td> {{ job.Level|friendly_level }} </td>
-	        <td> {{ job.StartTime|friendly_date }} </td>
-	        <td> {{ job.StartTime|friendly_hour }} </td>
-	        <td> {{ job.Duration|friendly_duration_min }} </td>
-	        <td> {{ job.JobStatus|friendly_status }} </td>
-		</tr>
-			{% if forloop.last %}
-		</tbody>
-		</table>
-			{% endif %}
-        {% endfor %}
-    </div>
-
-
-
-    <div class="titulo_botoes">
-	    <h3>
-	        <span>Últimos Procedimentos Executados</span>
-	    </h3>
-	    <div class="botao_acoes"></div>
-	</div>
-	<div class="bloco_texto">
-		{% for job in last_jobs %}
-			{% if forloop.first %}
-		        <table>
-		        <thead>
-			        <tr>
-			        <th scope='col'>Nome</th>
-			        <th scope='col'>Tipo</th>
-			        <th scope='col'>Arquivos</th>
-			        <th scope='col'>Tamanho</th>
-			        <th scope='col'>Data Início</th>
-			        <th scope='col'>Hora Início</th>
-			        <th scope='col'>Duração</th>
-			        <th scope='col'>Status</th>
-			        </tr>
-		        </thead>
-		        <tbody>
-			{% endif %}
-        <tr class="{% cycle 'odd' 'even' %}"> 
-	        <td> {{ job.Name }} </td>
-	        <td> {{ job.Level|friendly_level }} </td>
-	        <td> {{ job.JobFiles }} </td>
-	        <td> {{ job.JobBytes|friendly_size_mb }} </td>
-	        <td> {{ job.StartTime|friendly_date }} </td>
-	        <td> {{ job.StartTime|friendly_hour }} </td>
-	        <td> {{ job.Duration|friendly_duration_min }} </td>
-	        <td> {{ job.JobStatus|friendly_status }} </td>
-		</tr>
-			{% if forloop.last %}
-		</tbody>
-		</table>
-			{% endif %}
-        {% endfor %}
-    </div>
 {% endblock %}
