@@ -107,7 +107,7 @@ color: #FFF;
 
 
 #site {
-width: 940px;
+width: 960px;
 margin: 0 auto;
 }
 
@@ -116,10 +116,10 @@ margin: 0 auto;
 
 
 #topo {
-background:transparent url(../static/imagens/topo_nimbus.jpg) top left no-repeat;
-height:133px;
-margin-top:35px;
-width: 940px;
+background:transparent url(/static/imagens/topo_nimbus.jpg) top left no-repeat;
+height:95px;
+margin-top:10px;
+width: 960px;
 }
 
 #topo h1 {
@@ -140,7 +140,7 @@ height: 95px;
 
 #topo .menu {
 overflow: hidden;
-padding-top: 61px;
+padding-top: 55px;
 }
 
 #topo .menu ul {
@@ -226,17 +226,16 @@ color: #1e91a6;
 /* CONTEUDO */
 
 #conteudo {
-width: 912px;
+width: 940px;
 overflow: hidden;
-background: #FAFCFB;
-border-left: 4px solid #F4F4F4;
-border-right: 4px solid #F4F4F4;
-border-bottom: 7px solid #F4F4F4;
-padding: 6px 10px;
+background: #CCC;
+padding: 10px;
+-moz-border-radius-bottomleft: 6px;
+-moz-border-radius-bottomright: 6px;
 }
 
 #sidebar {
-width: 200px;
+width: 220px;
 float: left;
 }
 
@@ -253,9 +252,17 @@ margin-bottom: 10px;
 }
 
 #sidebar .list_computers li {
-padding-bottom: 5px;
+padding: 4px 7px;
 width: 100%;
 overflow: hidden;
+}
+
+#sidebar .list_computers li.active {
+background: #FFF;
+padding: 7px;
+-moz-border-radius-topleft: 5px;
+-moz-border-radius-bottomleft: 5px;
+margin: 3px 0;
 }
 
 #sidebar .list_computers li a {
@@ -264,13 +271,11 @@ float: left;
 color: #666;
 }
 
-#sidebar .list_computers li strong a {
-color: #333;
-}
-
 #sidebar .list_computers li span {
-float: right;
 color: #999;
+font-size: 10px;
+padding-left: 15px;
+vertical-align: baseline;
 }
 
 #sidebar p {
@@ -279,7 +284,11 @@ margin-bottom: 40px;
 
 #main_content {
 float: right;
-width: 680px;
+width: 700px;
+min-height: 500px;
+background: #FFF;
+padding: 10px;
+-moz-border-radius: 5px;
 }
 
 hr {
