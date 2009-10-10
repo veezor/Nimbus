@@ -15,6 +15,38 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 
 
+# TODO: enviar informação de wizard pro POST através de formuário auxiliar
+@authentication_required
+def new_computer(request):
+    vars_dict, forms_dict = global_vars(request)
+    if request.method == 'GET':
+        if 'wizard' in request.GET:
+            vars_dict['wizard'] = request.GET['wizard']
+        forms_dict['compform'] = ComputerForm(instance=Computer())
+        return_dict = utils.merge_dicts(forms_dict, vars_dict)
+        return render_to_response(
+            'bkp/computer/new_computer.html',
+            return_dict, context_instance=RequestContext(request))
+
+
+@authentication_required
+def create_computer(request):
+    if request.method == 'POST':
+        vars_dict, forms_dict = global_vars(request)
+        c = Computer()
+        forms_dict['compform'] = ComputerForm(request.POST, instance=c)
+        if forms_dict['compform'].is_valid():
+            comp = forms_dict['compform'].save()
+            location = utils.new_computer_backup(comp.id, request, wizard=True)
+            return HttpResponseRedirect(location)
+        else:
+            return_dict = utils.merge_dicts(forms_dict, vars_dict)
+            return render_to_response(
+                'bkp/computer/new_computer.html',
+                return_dict,
+                context_instance=RequestContext(request))
+
+
 @authentication_required
 def edit_computer(request, comp_id):
     vars_dict, forms_dict = global_vars(request)
@@ -141,6 +173,8 @@ def new_computer_backup(request, comp_id):
     if request.method == 'GET':
         vars_dict, forms_dict = global_vars(request)
         temp_dict = {}
+        if 'wizard' in request.GET:
+            vars_dict['wizard'] = request.GET['wizard']
         vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)            
         forms_dict['procform'] = ProcedureForm()
         forms_dict['fsetform'] = FileSetForm()    
@@ -166,7 +200,10 @@ def create_computer_backup(request, comp_id):
             proc.save()
             fset.procedure_id = proc.id
             fset.save()
-            location = utils.new_procedure_schedule(request, proc.id)
+            location = utils.new_procedure_schedule(
+                proc.id,
+                request,
+                wizard=True)
             return HttpResponseRedirect(location)
         else:
             return_dict = utils.merge_dicts(forms_dict, vars_dict)

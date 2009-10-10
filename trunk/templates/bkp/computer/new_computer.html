@@ -1,0 +1,21 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+
+{% if wizard %}
+{% include "bkp/wizard/backup_wizard_partial.html" %}
+{% endif %}
+
+<div class='bloco_texto'>
+
+    <h2>Adicionar Computador</h2>
+
+<br />
+<br />
+<form action="{{script_name}}/computer/create" method="post">
+{% include "bkp/computer/computer_partial.html" %}
+<button type="submit"><span>Prosseguir</span></button>
+</form>
+</div>
+
+{% endblock %}

@@ -42,6 +42,8 @@ urlpatterns += patterns(
     (r'^session/new$', 'new_session'),
     (r'^session/delete$', 'delete_session'),
     # views_app/computers.py
+    (r'^computer/new$', 'new_computer'),
+    (r'^computer/create$', 'create_computer'),
     (r'^computer/(?P<comp_id>\d+)$', 'view_computer'),
     (r'^computer/(?P<comp_id>\d+)/edit$', 'edit_computer'),
     (r'^computer/(?P<comp_id>\d+)/update$', 'update_computer'),
@@ -79,17 +81,6 @@ urlpatterns += patterns(
     #
     #
     #
-    # TODO: Refazer wizard. Toda a comunicação entre as etapas do
-    # novo wizard será feita através de POST, permitindo ida e volta
-    # nas etapas e os objetos só serão salvos ao final do wizard.
-    # Também separar o wizard em mais de um view object.
-    # Novo Design da Funcionalidade de Cadastro de Backup:
-    # PASSO 1: Onde
-    (r'^backup/new$', 'new_backup'),
-    # PASSO 2: Oque
-    (r'^computer/(?P<comp_id>\d+)/backup/new$', 'new_backup'),
-    # PASSO 3: Quando
-    (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/backup/new$', 'new_backup'),
     # TODO: Refazer wizard. Toda a comunicação entre as etapas do
     # novo wizard será feita através de POST, permitindo ida e volta
     # nas etapas.

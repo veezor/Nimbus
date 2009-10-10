@@ -1,23 +1,23 @@
 {% extends "bkp/base.html" %}
 {% block content %}
 
+{% if wizard %}
+{% include "bkp/wizard/backup_wizard_partial.html" %}
+{% endif %}
+
 <div class="bloco_texto">
 <form action="{{script_name}}/computer/{{comp.id}}/backup/create" method="post">
-{% if proc %}{# Se já existe procedimento, não precisa cadastrar um novo #}
-<p>Nome: {{proc.procedure_name}}</p>
-{% else %}
     <h3>Escolha um Nome para o Backup</h3>
         <div class="fieldWrapper">
             {{ procform.procedure_name.errors }}
             {{ procform.procedure_name.label_tag }} {{ procform.procedure_name }}
         </div>
-{% endif %}
     <br /><br />
 	<h3>Deseja fazer Backup de Quais Pastas?</h3><br />
     {% for field in fsetform %}
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }} {{ field }} <button onclick="location.href='#';return false"><span>x</span></button>
+            {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
 	<br /><br />	
@@ -33,8 +33,7 @@
             <span class="inline-list">{{ procform.offsite_on.label_tag }} {{ procform.offsite_on }}</span>
         </div>
     <br /><br />    
-	<button onclick="location.href='#';return false"><span>Mais Locais</span></button>
-<button onclick="location.href='{{script_name}}/backup/new';return false"><span>Cancelar</span></button>
+<button onclick="location.href='{{script_name}}/computer/{{comp.id}}';return false"><span>Cancelar</span></button>
 
 	
 <button type="submit"><span>Prosseguir</span></button>

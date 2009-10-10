@@ -84,13 +84,18 @@ def new_procedure_schedule(request, proc_id):
     if request.method == 'GET':
         type = request.GET['type']
         __ensure_valid_type(type)
+        if 'wizard' in request.GET:
+            vars_dict['wizard'] = request.GET['wizard']
+        else:
+            vars_dict['wizard'] = False
         vars_dict['sched_type'] = type
         vars_dict['proc'] = get_object_or_404(Procedure, pk=proc_id)
         vars_dict['comp'] = vars_dict['proc'].computer
         vars_dict['new_schedule_url'] = utils.new_procedure_schedule(
-            request,
             vars_dict['proc'].id,
-            type=utils.schedule_inverse(type))
+            request,
+            type=utils.schedule_inverse(type),
+            wizard=vars_dict['wizard'])
         triggform = "forms_dict['triggform'] = %sTriggerForm()" % type
         exec(triggform)
         return_dict = utils.merge_dicts(forms_dict, vars_dict)

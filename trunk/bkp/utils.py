@@ -81,13 +81,21 @@ def path(object_name, object_id, request):
     return "%s/%s/%s" % (script_name, object_name, object_id)
 
 
-# Definição para novo esquema de wizards (temporário)
-def new_procedure_schedule(request, proc_id, type='Weekly'):
+def new_computer_backup(comp_id, request, wizard=False):
     script_name = request.META['SCRIPT_NAME']
-    return "%s/procedure/%s/schedule/new?type=%s" % (
-        script_name,
-        proc_id,
-        type)
+    location = "%s/computer/%s/backup/new" % (script_name, comp_id,)
+    if wizard:
+        location += "?wizard=true"
+    return location
+
+
+def new_procedure_schedule(proc_id, request, type='Weekly', wizard=False):
+    script_name = request.META['SCRIPT_NAME']
+    location = "%s/procedure/%s/schedule/new" % (script_name, proc_id)
+    location += "?type=%s" % type
+    if wizard:
+        location += "&wizard=true"
+    return  location
 
 
 def schedule_inverse(type):
