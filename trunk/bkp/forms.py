@@ -136,6 +136,15 @@ class RunProcedureForm(forms.Form):
 	target_date = forms.DateField(label="Data", input_formats=BR_DATES)
 	target_hour = forms.TimeField(label="Hora")
 
+# WizardAuxForm serve para passar a informação de se o Wizard está ativo
+# via POST para a view de criação dos objetos do wizard. Assim o menu
+# "Onde, Oque, Quando" continua aparecendo.
+class WizardAuxForm(forms.Form):
+	wizard = forms.BooleanField(
+		label="wizard_active",
+		initial="False",
+		widget=forms.HiddenInput)
+
 
 class RunProcedureAuxForm(forms.Form):
 	run_now = forms.BooleanField(label="Executar agora?")

@@ -4,7 +4,7 @@
 # Application
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import Computer, GlobalConfig
-from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm
+from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm, WizardAuxForm
 # TODO move to utils
 from backup_corporativo.bkp.views import global_vars, authentication_required
 # Misc
@@ -22,6 +22,8 @@ def new_computer(request):
     if request.method == 'GET':
         if 'wizard' in request.GET:
             vars_dict['wizard'] = request.GET['wizard']
+        else:
+            vars_dict['wizard'] = False
         forms_dict['compform'] = ComputerForm(instance=Computer())
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
@@ -33,14 +35,22 @@ def new_computer(request):
 def create_computer(request):
     if request.method == 'POST':
         vars_dict, forms_dict = global_vars(request)
+        aux_dict = {}
         c = Computer()
         forms_dict['compform'] = ComputerForm(request.POST, instance=c)
+        aux_dict['wizauxform'] = WizardAuxForm(request.POST)
+        if aux_dict['wizauxform'].is_valid():
+            wiz = aux_dict['wizauxform'].cleaned_data['wizard']
+        # Apenas por segurança
+        else:
+            wiz = False
         if forms_dict['compform'].is_valid():
             comp = forms_dict['compform'].save()
-            location = utils.new_computer_backup(comp.id, request, wizard=True)
+            location = utils.new_computer_backup(comp.id, request, wizard=wiz)
             return HttpResponseRedirect(location)
         else:
-            return_dict = utils.merge_dicts(forms_dict, vars_dict)
+            vars_dict['wizard'] = wiz
+            return_dict = utils.merge_dicts(forms_dict, vars_dict, aux_dict)
             return render_to_response(
                 'bkp/computer/new_computer.html',
                 return_dict,
@@ -175,6 +185,8 @@ def new_computer_backup(request, comp_id):
         temp_dict = {}
         if 'wizard' in request.GET:
             vars_dict['wizard'] = request.GET['wizard']
+        else:
+            vars_dict['wizard'] = False
         vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)            
         forms_dict['procform'] = ProcedureForm()
         forms_dict['fsetform'] = FileSetForm()    
@@ -189,6 +201,13 @@ def new_computer_backup(request, comp_id):
 def create_computer_backup(request, comp_id):
     if request.method == 'POST':
         vars_dict, forms_dict = global_vars(request)
+        aux_dict = {}
+        aux_dict['wizauxform'] = WizardAuxForm(request.POST)
+        if aux_dict['wizauxform'].is_valid():
+            wiz = aux_dict['wizauxform'].cleaned_data['wizard']
+        # Apenas por segurança
+        else:
+            wiz = False
         vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)            
         forms_dict['procform'] = ProcedureForm(request.POST)
         forms_dict['fsetform'] = FileSetForm(request.POST)
@@ -203,10 +222,11 @@ def create_computer_backup(request, comp_id):
             location = utils.new_procedure_schedule(
                 proc.id,
                 request,
-                wizard=True)
+                wizard=wiz)
             return HttpResponseRedirect(location)
         else:
-            return_dict = utils.merge_dicts(forms_dict, vars_dict)
+            vars_dict['wizard'] = wiz
+            return_dict = utils.merge_dicts(forms_dict, vars_dict, aux_dict)
             return render_to_response(
                 'bkp/computer/new_computer_backup.html',
                 return_dict,
