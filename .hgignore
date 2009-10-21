@@ -4,3 +4,4 @@ syntax: glob
 *.pyc
 *~
 *.swp
+django/backup_corporativo/bkp/custom/*
