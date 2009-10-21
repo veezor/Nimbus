@@ -5,7 +5,6 @@ try:
     import bconsole
 except ImportError, e:
     print "Error: load bconsole module failed"
-    test()
 
 
 valid_commands = """autodisplay automount add cancel create delete label mount prune relabel release restore run setdebug status unmount update wait disable enable list llist use query reload"""
