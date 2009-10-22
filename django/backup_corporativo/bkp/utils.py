@@ -132,7 +132,7 @@ def login_path(request):
 
 def edit_config_path(request):
     """Returns edit config path."""
-    return "%s/config/edit" % (request.META['SCRIPT_NAME'])
+    return "%s/system/config/edit" % (request.META['SCRIPT_NAME'])
 
 
 # Passo 1
