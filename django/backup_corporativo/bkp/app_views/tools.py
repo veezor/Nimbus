@@ -4,7 +4,8 @@
 
 # Application
 from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.models import NimbusSSL
+#from backup_corporativo.bkp.models import NimbusSSL
+import keymanager
 from backup_corporativo.bkp.views import global_vars, authentication_required
 # Misc
 from django.http import HttpResponse
@@ -30,10 +31,10 @@ def tools_ssl(request):
     # TODO: Utilizar NimbusUUID aqui para manter registro das chaves geradas
     if request.method == 'GET':
         vars_dict, forms_dict = global_vars(request)
-        ssl = NimbusSSL.build()
-        vars_dict['rsa_key'] = ssl.dump_rsa_key()
-        vars_dict['certificate'] = ssl.dump_certificate()
-        vars_dict['pem'] = ssl.dump_pem()
+        rsa,cert,pem = keymanager.generate_keys_as_text()
+        vars_dict['rsa_key'] = rsa
+        vars_dict['certificate'] = cert
+        vars_dict['pem'] = pem
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
         return render_to_response(
             'bkp/tools/tools_ssl.html',
