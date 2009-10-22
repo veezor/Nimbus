@@ -36,7 +36,6 @@ DAYS_OF_THE_WEEK = {
 
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.nimbus_ssl import NimbusSSL
-from backup_corporativo.bkp.app_models.nimbus_log import NimbusLog
 
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 from backup_corporativo.bkp.app_models.network_interface import NetworkInterface

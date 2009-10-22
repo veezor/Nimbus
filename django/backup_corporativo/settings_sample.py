@@ -1,5 +1,6 @@
 # Django settings for teste project.
 import os
+import bkp.log
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

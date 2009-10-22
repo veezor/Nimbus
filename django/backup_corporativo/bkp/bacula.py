@@ -8,9 +8,11 @@ import MySQLdb as Database
 from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
 from django.utils.safestring import SafeString, SafeUnicode
 
-from backup_corporativo.bkp.models import NimbusLog
+import logging
 from backup_corporativo.bkp import utils
 from backup_corporativo import settings
+
+logger = logging.getLogger(__name__)
 
 
 # TODO dividir funções de manipulação da console e de queries com banco de dados em duas classes distintas
@@ -22,7 +24,8 @@ class Bacula:
         cmd =   """
                 echo 'sta client=%(client_name)s'|bconsole -c %(bacula_conf)s|grep %(client_name)s
                 """ % {'client_name':client_name, 'bacula_conf':BACULA_CONF}
-        NimbusLog.notice(category='bconsole', type='cmd', content=cmd) #TODO criar constantes para os tipos adequados
+        logger.info(cmd)
+        ##NimbusLog.notice(category='bconsole', type='cmd', content=cmd) #TODO criar constantes para os tipos adequados
         output = os.popen(cmd).read()
         return output
     client_status = classmethod(client_status)
@@ -32,7 +35,8 @@ class Bacula:
         cmd =   """
                 echo 'reload'|bconsole -c %(bacula_conf)s
                 """ % {'bacula_conf':cls.BACULA_CONF}
-        NimbusLog.notice(category='bconsole', type='cmd', content=cmd) #TODO criar constantes para os tipos adequados
+        #NimbusLog.notice(category='bconsole', type='cmd', content=cmd) #TODO criar constantes para os tipos adequados
+        logger.info(cmd)
         output = os.popen(cmd).read()
         return output
     reload = classmethod(reload)
@@ -41,7 +45,7 @@ class Bacula:
         cmd =   """
                 echo 'm'|bconsole -c %(bacula_conf)s
                 """ % {'bacula_conf':BACULA_CONF}
-        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        #NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         output = os.popen(cmd).read()
         return output
     messages = classmethod(messages)
@@ -124,7 +128,7 @@ class Bacula:
                         'dir':directory_to_restore,
                         'fileset':fileset_name,
                         'date':date_to_restore,}
-        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        #NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     tmp_restore = classmethod(tmp_restore)
         
@@ -132,7 +136,7 @@ class Bacula:
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         ClientRestore = ClientRestore and ClientRestore or ClientName
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client=%(client_name)s restoreclient=%(client_restore)s select current all done yes where=%(restore_path)s\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where}
-        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        #NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_last = classmethod(run_restore_last)
     
@@ -140,7 +144,7 @@ class Bacula:
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select all done yes where="%(restore_path)s" before="%(tg_date)s" fileset="%(fileset_name)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'tg_date':Date,'fileset_name':fileset_name}
-        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        #NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_date = classmethod(run_restore_date)
   
@@ -149,7 +153,7 @@ class Bacula:
         ClientRestore = ClientRestore and ClientRestore or ClientName
         BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
         cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrestore client="%(client_name)s" restoreclient="%(client_restore)s" select all done yes where="%(restore_path)s" jobid="%(job_id)s"\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'client_name':ClientName, 'client_restore':ClientRestore, 'restore_path':Where, 'job_id':JobId}
-        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        #NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_restore_jobid = classmethod(run_restore_jobid)
 
@@ -180,7 +184,7 @@ class Bacula:
             cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun client="%(client_name)s" job="%(job_name)s" level="%(job_level)s" when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date,'client_name':client_name}
         else:
             cmd = """bconsole -c%(bconsole_conf)s <<BACULAEOF \nrun job="%(job_name)s" level="%(job_level)s" when="%(tg_date)s" yes\nBACULAEOF""" % {'bconsole_conf':BCONSOLE_CONF, 'job_name':JobName, 'job_level':Level, 'tg_date':Date}
-        NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
+        #NimbusLog.notice(category='bconsole', type='cmd',content=cmd) #TODO criar constantes para os tipos adequados
         os.system(cmd)
     run_backup = classmethod(run_backup)
     
@@ -253,7 +257,7 @@ class BaculaDatabase:
     
     def execute(cls, query):
         cursor = cls.cursor()
-        NimbusLog.notice(category='database', type='query',content=query) #TODO criar constantes para os tipos adequados
+        #NimbusLog.notice(category='database', type='query',content=query) #TODO criar constantes para os tipos adequados
         try:
             cursor.execute(query)
             return cursor

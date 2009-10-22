@@ -15,6 +15,8 @@ from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Proced
 from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
+import logging
+logger = logging.getLogger(__name__)
 
 @authentication_required
 def edit_system_config(request):
@@ -112,6 +114,7 @@ def update_system_password(request):
             new_pwd = forms_dict['pwdform'].cleaned_data['new_password1']
             request.user.set_password(new_pwd)
             request.user.save()
+            logger.info('Senha alterada com sucesso')
             return HttpResponseRedirect(
                 utils.edit_system_config_path(request))
         else:
