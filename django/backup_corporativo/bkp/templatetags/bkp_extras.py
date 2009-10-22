@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from django import template
-from backup_corporativo.bkp.network_utils import NetworkInfo
 
 register = template.Library()
 
@@ -198,25 +197,6 @@ def getfileid(obj):
 def slice_unicode(obj, how_much):
     return obj.decode('utf-8')[:how_much].encode('utf-8')
 
-@register.filter
-def network_ip_address(iface):
-	ip_address = NetworkInfo.ip_address(iface)
-	return ip_address
-		
-@register.filter
-def mac_address(iface):
-	mac_address = NetworkInfo.mac_address(iface)
-	return mac_address
-		
-@register.filter
-def broadcast_address(iface):
-	broadcast_address = NetworkInfo.broadcast_address(iface)
-	return broadcast_address
-		
-@register.filter
-def netmask(iface):
-	netmask = NetworkInfo.netmask(iface)
-	return netmask
 
 @register.filter
 def friendly_sched_type(type):

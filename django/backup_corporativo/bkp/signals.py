@@ -8,7 +8,6 @@ from django.db.models.signals import post_save, post_delete
 
 
 from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.network_utils import NetworkInfo
 from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.models import *
 

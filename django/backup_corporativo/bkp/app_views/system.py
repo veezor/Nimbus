@@ -9,7 +9,6 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import PasswordChangeForm
 
-from backup_corporativo.bkp.network_utils import NetworkInfo
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
 from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm
