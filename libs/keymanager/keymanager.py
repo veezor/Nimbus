@@ -16,7 +16,7 @@ def generate_rsa_key():
 
 def make_public_key(rsa_key):
     pkey = EVP.PKey()
-    pkey.assign_rsa(rsa_key)
+    pkey.assign_rsa(rsa_key, capture=False)
     return pkey
 
 
@@ -49,8 +49,8 @@ def generate_pem(rsa, cert):
 
 def generate_keys_as_text():
     rsa, cert = generate_keys()
-    pem = generate_pem(rsa, cert) 
-    return rsa,cert,pem
+    pem = generate_pem(rsa, cert)
+    return rsa.as_pem(cipher=None), cert.as_pem(), pem
 
 
 def generate_and_save_keys(prefix):
