@@ -9,8 +9,8 @@ import re
 
 
 from backup_corporativo.bkp import utils
-from backup_corporativo.settings import BACULA_DB_NAME
-from backup_corporativo.bkp.sql_queries import LAST_JOBS_QUERY, RUNING_JOBS_QUERY, DB_SIZE_RAW_QUERY, NUM_PROC_QUERY, NUM_CLI_QUERY, TOTAL_MBYTES_QUERY
+from backup_corporativo.settings import BACULA_DATABASE_NAME
+from backup_corporativo.bkp.sql_queries import LAST_JOBS_QUERY, RUNNING_JOBS_QUERY, DB_SIZE_RAW_QUERY, NUM_PROC_QUERY, NUM_CLI_QUERY, TOTAL_MBYTES_QUERY
 
 import MySQLdb as Database
 from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 import pybacula
 from pybacula import BaculaCommandLine
-pybacula.test()
 
 
 
@@ -41,7 +40,7 @@ class RestoreCallError(Exception):
 class Bacula(object):
 
     def __init__(self):
-        self.cmd = BaculaCommandLine()
+        self.cmd = BaculaCommandLine(config=BCONSOLE_CONF)
         self.baculadb = BaculaDataBase()
 
 
