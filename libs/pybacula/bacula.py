@@ -85,8 +85,8 @@ def test():
 
     global bconsole
     bconsole = Bconsole()
-    cmd = BaculaCommandLine()
-    cmd.status.dir["linconet-dir"].run()
+    #cmd = BaculaCommandLine()
+    #cmd.status.dir["linconet-dir"].run()
 
 
 if __name__ == "__main__":

@@ -1,1 +1,0 @@
-from bacula import BaculaCommandLine
