@@ -1,8 +1,8 @@
 #! /bin/sh
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/ProjetoBackup/SOAP
-DAEMON=/root/ProjetoBackup/SOAP/bc-devel/NimbusManager/NimbusManagerD.py
-NAME=NimbusManager
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/bin/nimbus-manager
+NAME=nimbusmanager
 DESC="Nimbus Manager Webservice daemon"
 
 test -f $DAEMON || exit 0
