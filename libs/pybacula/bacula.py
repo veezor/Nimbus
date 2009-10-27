@@ -17,10 +17,9 @@ class BaculaCommandLine(object):
     
     def __init__(self, config="./bconsole.conf"):
         if not self.connected:
-            #bconsole.set_configfile(config)
-            #bconsole.connect()
-            #BaculaCommandLine.connected = True
-            pass
+            bconsole.set_configfile(config)
+            bconsole.connect()
+            BaculaCommandLine.connected = True
 
     def __getattr__(self, name):
         if name in valid_commands:
