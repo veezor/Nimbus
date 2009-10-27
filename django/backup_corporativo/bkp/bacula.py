@@ -4,19 +4,14 @@
 import os
 import datetime
 import re
+import MySQLdb as Database
 
-
-
+from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
+from django.utils.safestring import SafeString, SafeUnicode
 
 from backup_corporativo.bkp import utils
 from backup_corporativo.settings import BACULA_DATABASE_NAME
 from backup_corporativo.bkp.sql_queries import LAST_JOBS_QUERY, RUNNING_JOBS_QUERY, DB_SIZE_RAW_QUERY, NUM_PROC_QUERY, NUM_CLI_QUERY, TOTAL_MBYTES_QUERY
-
-import MySQLdb as Database
-from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
-from django.utils.safestring import SafeString, SafeUnicode
-
-
 from backup_corporativo.bkp import utils
 from backup_corporativo import settings
 
@@ -25,8 +20,6 @@ logger = logging.getLogger(__name__)
 
 import pybacula
 from pybacula import BaculaCommandLine
-
-
 
 
 BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
@@ -41,7 +34,7 @@ class Bacula(object):
 
     def __init__(self):
         self.cmd = BaculaCommandLine(config=BCONSOLE_CONF)
-        self.baculadb = BaculaDataBase()
+        self.baculadb = BaculaDatabase()
 
 
     def reload(self):
@@ -169,9 +162,11 @@ class Bacula(object):
             date = now.strftime("%Y-%m-%d %H:%M:%S")
 
         if client_name:
-            return self.cmd.run.client[client_name].job[job_name].level[level].when[date].yes.run()
+            return self.cmd.run.client[client_name].\
+            job[job_name].level[level].when[date].yes.run()
         else:
-            return self.cmd.run.job[job_name].level[level].when[date].yes.run()
+            return self.cmd.run.\
+            job[job_name].level[level].when[date].yes.run()
     
     
   
@@ -179,7 +174,8 @@ class Bacula(object):
 # AVISO:
 # essa classe foi apenas parcialmente implementada e contempla somente
 # a execução de queries SQL puras através de seu método execute.
-# Além do que foi descrito acima, seu funcionamento não é garantido para nenhum outro tipo de operação.
+# Além do que foi descrito acima, seu funcionamento não é garantido
+# para nenhum outro tipo de operação.
 # Para maiores informações, consultar código original em: 
 # http://djangoapi.quamquam.org/trunk/toc-django.db.backends.mysql-module.html
 class BaculaDatabaseWrapper(BaseDatabaseWrapper):
@@ -228,22 +224,19 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
         return cursor
 
 
-
-
-
 class BaculaDatabase(object):
     """Classe de fachada utilizada para gerenciar todas as conexões com a base de dados do bacula."""
 
     def __init__(self):
         self.wrapper = BaculaDatabaseWrapper(settings_dict=utils.get_settings_dict())
 
-
     def cursor(self):
         return self.wrapper.cursor()
     
     def execute(self, query):
         try:
-            self.cursor.execute(query)
+            cursor = self.cursor()
+            cursor.execute(query)
             return cursor
         except Database.Warning:
             pass

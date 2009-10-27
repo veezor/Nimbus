@@ -1,17 +1,25 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import string
+import time
+
 from django.core import serializers
 from django.db import models
 from django import forms
+
+from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY, CLIENT_STATUS_RAW_QUERY, CLIENT_LAST_JOBS_RAW_QUERY, CLIENT_ID_RAW_QUERY
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-import os, string, time
-
+from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 
+import pybacula
+pybacula.test()
+bacula = Bacula()
 
 ### Computer ###
 class Computer(models.Model):
@@ -81,11 +89,9 @@ class Computer(models.Model):
         Atualiza status do computador baseado no 
        status de término do último Job executado
         """
-        from backup_corporativo.bkp.bacula import BaculaDatabase
-        from backup_corporativo.bkp.sql_queries import CLIENT_STATUS_RAW_QUERY
         status_query = CLIENT_STATUS_RAW_QUERY % {
             'client_name':self.computer_bacula_name(),}
-        cursor = BaculaDatabase.execute(status_query)
+        cursor = bacula.baculadb.execute(status_query)
         result = cursor.fetchone()
         status = result and result[0] or ''
 
@@ -186,19 +192,15 @@ class Computer(models.Model):
         wtrigg.save()
 
     def running_jobs(self):
-        from backup_corporativo.bkp.bacula import BaculaDatabase
-        from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY
         running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {
             'client_name':self.computer_bacula_name(),}
-        running_jobs_cursor = BaculaDatabase.execute(running_jobs_query)
+        running_jobs_cursor = bacula.baculadb.execute(running_jobs_query)
         return utils.dictfetch(running_jobs_cursor)
 
     def last_jobs(self):
-        from backup_corporativo.bkp.bacula import BaculaDatabase
-        from backup_corporativo.bkp.sql_queries import CLIENT_LAST_JOBS_RAW_QUERY
         last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {
             'client_name':self.computer_bacula_name(),}
-        last_jobs_cursor = BaculaDatabase.execute(last_jobs_query)
+        last_jobs_cursor = bacula.baculadb.execute(last_jobs_query)
         return utils.dictfetch(last_jobs_cursor)
 
     def run_test_job(self):
@@ -237,12 +239,9 @@ class Computer(models.Model):
 
     def __update_bacula_id(self):
         """Queries bacula database for client id"""
-        from backup_corporativo.bkp.sql_queries import CLIENT_ID_RAW_QUERY
-        from backup_corporativo.bkp.bacula import BaculaDatabase
-        
         cliend_id_query = CLIENT_ID_RAW_QUERY % {
             'client_name':self.computer_bacula_name()}
-        cursor = BaculaDatabase.cursor()
+        cursor = bacula.baculadb.cursor()
         cursor.execute(cliend_id_query)
         client_id = cursor.fetchone()
         self.computer_bacula_id = \
