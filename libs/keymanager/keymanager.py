@@ -75,6 +75,11 @@ class KeyManager(object):
         self.password = password
         self.truecrypt = truecrypt.TrueCrypt()
 
+    def has_drive(self):
+        return os.access(truecrypt.DRIVEFILE, os.R_OK)
+
+    def create_drive(self):
+        return self.truecrypt.create_drive(self.password, self.drive)
 
     def generate_and_save_keys_for_client(self, client):
         self.mount_drive()
