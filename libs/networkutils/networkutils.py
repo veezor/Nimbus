@@ -25,6 +25,12 @@ class Interface(object):
     def __repr__(self):
         return self.__class__.__name__ + "(%s)" % (self.name)
 
+    @staticmethod
+    def from_dict(dic):
+        i = Interface(dic['name'])
+        vars(i).update(dic)
+        return i
+
 
 
 def get_interface(name):
