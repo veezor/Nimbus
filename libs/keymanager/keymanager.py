@@ -61,9 +61,9 @@ def generate_and_save_keys(prefix):
     cert.save( join( prefix , "client.cert"))
     pem = generate_pem(rsa, cert)
 
-    pem = file( join( prefix, "client.pem"), "w")
-    pem.write( pem)
-    pem.close()
+    filepem = file( join( prefix, "client.pem"), "w")
+    filepem.write( pem)
+    filepem.close()
 
     return rsa,cert
 
@@ -82,21 +82,23 @@ class KeyManager(object):
         self.password = password
 
     def has_drive(self):
-        return os.access(truecrypt.DRIVEFILE, os.R_OK)
+        return os.access(self.drive, os.R_OK)
 
     def create_drive(self):
         return self.truecrypt.create_drive(self.password, self.drive)
 
     def generate_and_save_keys_for_client(self, client):
         self.mount_drive()
-        dirpath = os.path.join( drive, client )
-        if not os.access(dirpath):
+        dirpath = os.path.join( self.mountpoint, client )
+        if not os.access(dirpath, os.W_OK):
             os.mkdir(dirpath)
         return generate_and_save_keys(dirpath)
 
 
     def mount_drive(self):
-        self.mounted = self.truecrypt.mount_drive( self.password, drive=self.drive)
+        self.mounted = self.truecrypt.mount_drive( self.password, 
+                                                   drive=self.drive, 
+                                                   target=self.mountpoint)
         return self.mounted
 
 
