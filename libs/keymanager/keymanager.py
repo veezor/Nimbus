@@ -70,10 +70,16 @@ def generate_and_save_keys(prefix):
 
 class KeyManager(object):
 
-    def __init__(self, password, drive=truecrypt.DRIVEFILE):
+    def __init__(self, password=None, drive=truecrypt.DRIVEFILE, 
+                                      mountpoint = truecrypt.DRIVEPOINT):
         self.drive = drive
         self.password = password
+        self.mountpoint = mountpoint
+        self.mounted = False
         self.truecrypt = truecrypt.TrueCrypt()
+
+    def set_password(self, password):
+        self.password = password
 
     def has_drive(self):
         return os.access(truecrypt.DRIVEFILE, os.R_OK)
@@ -90,8 +96,17 @@ class KeyManager(object):
 
 
     def mount_drive(self):
-        return self.truecrypt.mount_drive( self.password, drive=self.drive)
+        self.mounted = self.truecrypt.mount_drive( self.password, drive=self.drive)
+        return self.mounted
 
 
     def umount_drive(self):
-        return self.truecrypt.umount_drive( self.password, drive=self.drive)
+        r = self.truecrypt.umount_drive( target=self.mountpoint )
+        self.mounted = not r
+        return r
+
+    
+    def force_umount_drive(self):
+        r = self.truecrypt.umountf_drive( target=self.mountpoint)
+        self.mounted = not r
+        return r
