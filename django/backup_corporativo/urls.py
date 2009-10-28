@@ -27,7 +27,7 @@ urlpatterns += patterns(
     (r'^management/strongbox/$', 'manage_strongbox'),
     (r'^management/strongbox/new$', 'new_strongbox'),
     (r'^management/strongbox/create$', 'create_strongbox'),    
-    #(r'^management/strongbox/mount$', 'mount_strongbox'),    
+    (r'^management/strongbox/mount$', 'mount_strongbox'),    
     #(r'^management/strongbox/umount$', 'umount_strongbox'),
     #(r'^management/strongbox/changepwd$', 'changepwd_strongbox'),
     # system

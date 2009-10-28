@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import Storage
-from backup_corporativo.bkp.forms import StrongBoxForm
+from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 from keymanager import KeyManager
@@ -64,7 +64,7 @@ def manage_strongbox(request):
         return HttpResponseRedirect(utils.new_strongbox_path(request))
 
     if request.method == 'GET':
-        vars_dict['drive_mounted'] = km.drive_mounted()
+        vars_dict['drive_mounted'] = km.mounted
         if not vars_dict['drive_mounted']:
             forms_dict['mountstrongbox_form'] = MountStrongBoxForm()
         return_dict = utils.merge_dicts(vars_dict, forms_dict)
@@ -73,6 +73,29 @@ def manage_strongbox(request):
             return_dict,
             context_instance=RequestContext(request)
         )
+
+
+@authentication_required
+def mount_strongbox(request):
+    vars_dict, forms_dict = global_vars(request)
+    
+    km = KeyManager()
+    if not km.has_drive():
+        return HttpResponseRedirect(utils.new_strongbox_path(request))
+    if km.mounted:
+        return HttpResponseRedirect(utils.manage_strongbox_path(request))
+
+    if request.method == 'POST':
+        forms_dict['mountstrongbox_form'] = MountStrongBoxForm(request.POST)
+        if forms_dict['mountstrongbox_form'].is_valid():
+            return HttpResponseRedirect(utils.manage_strongbox_path(request))
+        else:
+            return_dict = utils.merge_dicts(vars_dict, forms_dict)
+            return render_to_response(
+                'bkp/management/manage_strongbox.html',
+                return_dict,
+                context_instance=RequestContext(request)
+            )
 
 
 @authentication_required
@@ -106,7 +129,7 @@ def create_strongbox(request):
     if request.method == 'POST':
         forms_dict['newstrongbox_form'] = NewStrongBoxForm(request.POST)
         if forms_dict['newstrongbox_form'].is_valid():
-            return HttpResponseRedirect(utils.manage_strongbox(request))
+            return HttpResponseRedirect(utils.manage_strongbox_path(request))
         else:
             return_dict = utils.merge_dicts(vars_dict, forms_dict)
             return render_to_response(

@@ -104,7 +104,20 @@ def schedule_inverse(type):
     elif type == 'Monthly':
         return 'Weekly'
 
+
+def manage_strongbox_path(request):
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/management/strongbox/" % script_name
     
+
+def new_strongbox_path(request):
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/management/strongbox/new" % script_name
+
+def umount_strongbox_path(request):
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/management/strongbox/umount" % script_name
+
 #
 #
 #

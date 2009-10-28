@@ -110,3 +110,6 @@ class KeyManager(object):
         r = self.truecrypt.umountf_drive( target=self.mountpoint)
         self.mounted = not r
         return r
+    
+    def change_drive_password(self, new_password):
+        return self.truecrypt.change_password(self.password, new_password)

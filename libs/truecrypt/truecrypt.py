@@ -9,7 +9,7 @@ TRUECRYPT_EXEC = "/usr/bin/truecrypt"
 
 
 DRIVEPOINT = "/media/strongbox"
-DRIVEFILE = "/root/strongbox.crypto"
+DRIVEFILE = "/tmp/strongbox.crypto"
 
 
 COMMANDS = {
