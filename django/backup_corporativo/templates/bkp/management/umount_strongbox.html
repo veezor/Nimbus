@@ -1,0 +1,17 @@
+{% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/management/menu_management.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Gerenciar Cofre</h2><br /><br />
+
+<div class='bloco_texto'>
+
+    <h3>Tem certeza que deseja travar o cofre?</h3><br /><br />
+    <form action="{{script_name}}/management/strongbox/umount" method="post">
+    <button type="submit"><span>Sim</span></button>
+    </form>
+    
+</div>

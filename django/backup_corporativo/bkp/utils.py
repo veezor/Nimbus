@@ -134,7 +134,6 @@ def edit_config_path(request):
     """Returns edit config path."""
     return "%s/system/config/edit" % (request.META['SCRIPT_NAME'])
 
-
 # Passo 1
 def restore_computer_path(request, computer_id):
     """Returns restore computer path."""

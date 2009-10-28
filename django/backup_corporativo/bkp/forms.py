@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
-
+from django.utils.translation import ugettext_lazy
 from django.forms import ModelForm
 from django import forms
 
@@ -12,6 +11,119 @@ from backup_corporativo.bkp import customfields as cfields
 
 BOOLEAN_CHOICES = ((True,'Ativo'),(0,'Desativado'),)
 BR_DATES = ['%d/%m/%Y']
+
+class NewStrongBoxForm(forms.Form):
+    sb_password = forms.CharField(
+        label=u'Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    sb_password_2 = forms.CharField(
+        label=u'Confirme a Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    
+    #TODO: adicionar validação de tamanho e complexidade da senha.
+    def clean_sb_password_2(self):
+        """
+        Confere que as duas senhas sao iguais.
+        Caso nao sejam, dispara um erro de validaçao explicando isso.
+        Aciona comando de criar drive.
+        Caso drive não seja criado, dispara erro de validação explicando isso.
+        """
+        cleaned_data = self.cleaned_data
+        sb_password = cleaned_data.get("sb_password")
+        sb_password_2 = cleaned_data.get("sb_password_2")
+        
+        if sb_password == sb_password_2:
+            km = KeyManager(sb_password)
+            drive_created = km.create_drive()
+            if not drive_created:
+                raise forms.ValidationError(
+                    ugettext_lazy("Strongbox could not be created. Please contact support.")
+                )
+        else:
+            raise forms.ValidationError(
+                ugettext_lazy("Password confirmation doesn't match")
+            )
+        return sb_password_2
+
+
+class MountStrongBoxForm(forms.Form):
+    """
+    Aciona comando de montar o cofre.
+    Caso cofre nao seja montado, dispara um erro de validaçao explicando isso.
+    """
+    sb_password = forms.CharField(
+        label=u'Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    
+    def clean_sb_password(self):
+        sb_password = self.cleaned_data.get("sb_password")
+        km = KeyManager(sb_password)
+        drive_mounted = km.mount_drive()
+        if not drive_mounted:
+            raise forms.ValidationError(
+                ugettext_lazy("Unable to mount strongbox. Wrong password or corrupted strongbox.")
+            )
+        else:
+            return sb_password
+
+
+class ChangePasswdStrongBoxForm(forms.Form):
+    """
+    Confere se os dois novos passwords digitados são iguais.
+    Caso não sejam, dispara um erro de validação explicando isso.
+    Aciona o comando de alterar a senha do cofre.
+    Caso a senha do cofre não seja alterada, dispara um erro de validação
+    explicando isso.
+    """
+    sb_new_password = forms.CharField(
+        label=u'Nova Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    sb_new_password_2 = forms.CharField(
+        label=u'Confirme Nova Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    sb_old_password = forms.CharField(
+        label=u'Senha Atual',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    
+    #TODO: adicionar validação de tamanho e complexidade da senha.
+    def clean_sb_new_password_2(self):
+        cleaned_data = self.cleaned_data
+        sb_new_password = cleaned_data.get("sb_new_password")
+        sb_new_password_2 = cleaned_data.get("sb_new_password_2")
+        
+        if sb_new_password != sb_new_password_2:
+            raise forms.ValidationError(
+                ugettext_lazy("New Password confirmation doesn't match")
+            )
+        return sb_new_password_2
+    
+    def clean_sb_old_password(self):
+        cleaned_data = self.cleaned_data
+        sb_old_password = cleaned_data.get("sb_old_password")
+        sb_new_password = cleaned_data.get("sb_new_password")
+        sb_new_password_2 = cleaned_data.get("sb_new_password_2")
+        km = KeyManager()
+        
+        if sb_new_password == sb_new_password_2:
+            password_changed = km.change_password(sv_old_password, sb_new_password)
+            if not password_changed:
+                raise forms.ValidationError(
+                    ugettext_lazy("Wrong password or strongbox header is corrupted.")
+                )
+        return sb_old_password
+
 
 class RestoreCompForm(forms.Form):
 	target_client = forms.ChoiceField(
