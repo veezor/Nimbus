@@ -1,0 +1,34 @@
+{% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/management/menu_management.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Gerenciar Cofre</h2><br /><br />
+
+<div class='bloco_texto'>
+
+{% if drive_mounted %}
+Opções:<br/>
+Desmontar<br />
+Alterar Senha <br />
+
+{% else %}
+
+    <h3>Digite a senha para abrir o cofre.</h3><br /><br />
+    <form action="{{script_name}}/management/strongbox/mount" method="post">
+    {% for field in mountstrongbox_form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <button type="submit"><span>Criar Cofre</span></button>
+    </form>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

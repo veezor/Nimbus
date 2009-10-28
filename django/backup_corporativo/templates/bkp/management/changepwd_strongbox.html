@@ -1,0 +1,22 @@
+{% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/management/menu_management.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Alterar Senha do Cofre</h2><br /><br />
+
+<div class='bloco_texto'>
+
+    <form action="{{script_name}}/management/strongbox/changepwd" method="post">
+        {% for field in changepwdsb_form %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+            </div>
+        {% endfor %}        
+    <button type="submit"><span>Alterar</span></button>
+    </form>
+    
+</div>

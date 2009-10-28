@@ -25,6 +25,11 @@ urlpatterns += patterns(
     (r'^management/computers/list$', 'list_computers'),
     (r'^management/storages/list$', 'list_storages'),    
     (r'^management/strongbox/$', 'manage_strongbox'),
+    (r'^management/strongbox/new$', 'new_strongbox'),
+    (r'^management/strongbox/create$', 'create_strongbox'),    
+    #(r'^management/strongbox/mount$', 'mount_strongbox'),    
+    #(r'^management/strongbox/umount$', 'umount_strongbox'),
+    #(r'^management/strongbox/changepwd$', 'changepwd_strongbox'),
     # system
     (r'^system/network/edit$', 'edit_system_network'),
     (r'^system/network/update$', 'update_system_network'),
