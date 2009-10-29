@@ -75,8 +75,12 @@ class KeyManager(object):
         self.drive = drive
         self.password = password
         self.mountpoint = mountpoint
-        self.mounted = False
         self.truecrypt = truecrypt.TrueCrypt()
+
+
+    @property
+    def mounted(self):
+        return self.truecrypt.is_mounted(self.drive)
 
     def set_password(self, password):
         self.password = password
@@ -96,19 +100,16 @@ class KeyManager(object):
 
 
     def mount_drive(self):
-        self.mounted = self.truecrypt.mount_drive( self.password, 
-                                                   drive=self.drive, 
-                                                   target=self.mountpoint)
-        return self.mounted
+        if not self.mounted:
+            return self.truecrypt.mount_drive( self.password, 
+                                               drive=self.drive, 
+                                               target=self.mountpoint)
+        return False
 
 
     def umount_drive(self):
-        r = self.truecrypt.umount_drive( target=self.mountpoint )
-        self.mounted = not r
-        return r
+        return self.truecrypt.umount_drive( target=self.mountpoint )
 
     
     def force_umount_drive(self):
-        r = self.truecrypt.umountf_drive( target=self.mountpoint)
-        self.mounted = not r
-        return r
+        return self.truecrypt.umountf_drive( target=self.mountpoint)

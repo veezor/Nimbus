@@ -19,7 +19,8 @@ COMMANDS = {
         "umountf" : """sudo truecrypt -t -d -f %s""",
         "changepassword" : """truecrypt -t -C --password=%s --keyfiles= --new-keyfiles= --new-password=%s --random-source=/dev/urandom %s""",
         "backup": """truecrypt  -t --backup-headers --random-source=/dev/urandom  %s""",
-        "restore" : """truecrypt -t --restore-headers  --random-source=/dev/urandom %s """ 
+        "restore" : """truecrypt -t --restore-headers  --random-source=/dev/urandom %s """,
+        "is_mounted" : """truecrypt -t -l""" 
 }
 
 
@@ -69,50 +70,51 @@ class TrueCrypt(object):
                 index += 1
         return cmd
 
-    def call_command(self, cmd, *args ):
-        cmd = self._generate_list( cmd, *args)
+    def call_command(self, cmd, params=None, input=None):
+        cmd = self._generate_list( cmd, *params)
         p = self._get_popen(cmd)
-        p.communicate()
+        stdout, stderr = p.communicate(input)
         if self.debug:
             print " ".join(cmd)
-            print p.stdout.read()
-            print p.stderr.read()
-        return not bool(p.returncode)
+            print stdout
+            print stderr
+        return (not bool(p.returncode)),stdout,stderr
 
     def create_drive(self, password, drive=DRIVEFILE):
-        return self.call_command( "create", password, drive)
+        return self.call_command( "create", params=(password, drive))[0]
 
 
     def mount_drive(self, password, drive=DRIVEFILE, target=DRIVEPOINT):
         #if os.getuid() != 0: SUDO
         #    raise PermissionError("root privileges required")
 
-        return self.call_command( "mount", password, drive, target)
+        return self.call_command( "mount", params=(password, drive, target))[0]
 
     def umount_drive(self, target=DRIVEPOINT):
-        return self.call_command( "umount", target)
+        return self.call_command( "umount", params=(target,))[0]
 
     def umountf_drive(self, target=DRIVEPOINT):
-        return self.call_command( "umountf", target)
+        return self.call_command( "umountf", params=(target,))[0]
 
     def change_password(self, oldpassword, newpassword, drive=DRIVEFILE):
-        return self.call_command( "changepassword", oldpassword, newpassword, drive)
+        return self.call_command( "changepassword", 
+                                  params=(oldpassword, newpassword, drive))[0]
 
     def make_backup(self, password, target, drive=DRIVEFILE):
-        cmd = self._generate_list( "backup", drive)
-        p = self._get_popen(cmd)
-        stdout, stderr = p.communicate(self._MAKE_BACKUP_PARAMS % locals())
-        if self.debug:
-            print stdout
-            print stderr
-        return not bool( p.returncode )
+        ok, stdout, stderr = self.call_command( "backup", params=(drive,),
+                                 input = self._MAKE_BACKUP_PARAMS % locals())
+
+        return ok
 
     def restore_backup(self, password, backup, drive=DRIVEFILE):
-        cmd = self._generate_list( "restore", drive)
-        p = self._get_popen(cmd)
-        stdout, stderr = p.communicate(self._RESTORE_BACKUP_PARAMS % locals())
-        if self.debug:
-            print stdout
-            print stderr
-        return not bool( p.returncode )
+        ok, stdout, stderr = self.call_command( "restore", params=(drive,),
+                                 input = self._RESTORE_BACKUP_PARAMS % locals())
+        return ok
+
+    def is_mounted(self, drive=DRIVEFILE):
+        ok, stdout, stderr = self.call_command( "is_mounted", params=(drive,)) 
+        if ok == True and drive in stdout:
+            return True
+        return False
+
 

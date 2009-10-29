@@ -38,7 +38,7 @@ class TrueCryptTest(unittest.TestCase):
 
 
 
-    def test_2_mount_drive(self):
+    def test_2_1_mount_drive(self):
 
         try:
             os.mkdir(self.mountpoint)
@@ -48,13 +48,17 @@ class TrueCryptTest(unittest.TestCase):
         r = self.truecrypt.mount_drive(self.password, self.filedrive, self.mountpoint)
         self.assertTrue(r)
 
+    def test_2_2_is_mounted(self):
+        r = self.truecrypt.is_mounted(self.filedrive)
+        self.assertTrue(r)
+
 
     def test_3_umount_drive(self):
         r = self.truecrypt.umount_drive( self.filedrive )
         self.assertTrue(r)
 
     def test_umountf_drive(self):
-        self.test_2_mount_drive()
+        self.test_2_1_mount_drive()
         r = self.truecrypt.umountf_drive( self.filedrive )
         self.assertTrue(r)
 
