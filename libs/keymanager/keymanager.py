@@ -77,7 +77,6 @@ class KeyManager(object):
         self.mountpoint = mountpoint
         self.truecrypt = truecrypt.TrueCrypt()
 
-
     @property
     def mounted(self):
         return self.truecrypt.is_mounted(self.drive)
@@ -91,15 +90,25 @@ class KeyManager(object):
     def create_drive(self):
         return self.truecrypt.create_drive(self.password, self.drive)
 
+    def get_client_path(self, client):
+        return os.path.join( self.mountpoint, client )
+
+    def get_client_path_file(self, client, path):
+        return os.path.join( self.mountpoint, client, path)
+
     def generate_and_save_keys_for_client(self, client):
         self.mount_drive()
-        dirpath = os.path.join( self.mountpoint, client )
+        dirpath = self.get_client_path(client)
         if not os.access(dirpath, os.W_OK):
             os.mkdir(dirpath)
         return generate_and_save_keys(dirpath)
 
 
     def mount_drive(self):
+
+        if not os.access(self.mountpoint, os.W_OK):
+            os.mkdir(self.mountpoint)
+
         if not self.mounted:
             return self.truecrypt.mount_drive( self.password, 
                                                drive=self.drive, 
@@ -113,3 +122,22 @@ class KeyManager(object):
     
     def force_umount_drive(self):
         return self.truecrypt.umountf_drive( target=self.mountpoint)
+
+
+    def change_drive_password(self, new_password):
+        r = self.truecrypt.change_password(self.password, 
+                                              new_password, self.drive)
+
+        self.set_password( new_password )
+        return r
+
+    def make_drive_backup(self, backupfilename):
+        return self.truecrypt.make_backup( self.password, 
+                                           backupfilename, self.drive )
+
+    def restore_drive_backup(self, backupfilename):
+        return self.truecrypt.restore_backup( self.password, 
+                                           backupfilename, self.drive )
+
+    def remove_backup_file(self, backupfilename):
+        return os.remove( backupfilename )
