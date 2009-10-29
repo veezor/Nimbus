@@ -78,7 +78,6 @@ def manage_strongbox(request):
 @authentication_required
 def mount_strongbox(request):
     vars_dict, forms_dict = global_vars(request)
-    
     km = KeyManager()
     if not km.has_drive():
         return HttpResponseRedirect(utils.new_strongbox_path(request))
@@ -105,7 +104,7 @@ def new_strongbox(request):
     km = KeyManager()
     if km.has_drive():
         #TODO: adicionar mensagem: drive já existe.
-        return HttpResponseRedirect(utils.manage_strongbox(request))
+        return HttpResponseRedirect(utils.manage_strongbox_path(request))
 
     if request.method == 'GET':
         forms_dict['newstrongbox_form'] = NewStrongBoxForm(request.POST)
