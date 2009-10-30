@@ -17,6 +17,7 @@ class TrueCryptTest(unittest.TestCase):
         self.filedrive = "/tmp/drive.crypto"
         self.mountpoint = "/tmp/drivetest"
         self.password = '1234'
+        self.new_password = "4567"
         self.fileback = '/tmp/drive.crypto.back'
 
     def test_1_create_drive(self):
@@ -38,14 +39,19 @@ class TrueCryptTest(unittest.TestCase):
 
 
 
-    def test_2_mount_drive(self):
+    def test_2_1_mount_drive(self):
 
         try:
             os.mkdir(self.mountpoint)
         except OSError, e:
             pass #silent file exists
+        
 
         r = self.truecrypt.mount_drive(self.password, self.filedrive, self.mountpoint)
+        self.assertTrue(r)
+
+    def test_2_2_is_mounted(self):
+        r = self.truecrypt.is_mounted(self.filedrive)
         self.assertTrue(r)
 
 
@@ -53,8 +59,8 @@ class TrueCryptTest(unittest.TestCase):
         r = self.truecrypt.umount_drive( self.filedrive )
         self.assertTrue(r)
 
-    def test_umountf_drive(self):
-        self.test_2_mount_drive()
+    def test_6_umountf_drive(self):
+        self.test_2_1_mount_drive()
         r = self.truecrypt.umountf_drive( self.filedrive )
         self.assertTrue(r)
 
@@ -65,6 +71,15 @@ class TrueCryptTest(unittest.TestCase):
 
     def test_5_restore_backup(self):
         r = self.truecrypt.restore_backup(self.password, self.fileback, self.filedrive)
+        self.assertTrue(r)
+
+
+    def test_7_change_drive_password(self):
+        r = self.truecrypt.change_password( self.password, 
+                                                  self.new_password,
+                                                  self.filedrive)
+        self.password = self.new_password
+        self.test_2_1_mount_drive()
         self.assertTrue(r)
 
 
