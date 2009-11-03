@@ -1,0 +1,36 @@
+{% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/management/menu_management.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Gerenciar</h2>
+
+<div class="titulo_botoes">
+<h2>Pontos de Restauração</h2>
+</div>
+
+<div class="bloco_texto">
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Data de Criação</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hbkp in hbkp_list %}
+            <tr>
+                <td>{{hbkp.headerbkp_name}}</td>
+                <td>{{hbkp.created_on}}</td>
+                <td><button onclick="location.href='{{script_name}}/{{hbkp.edit_url}}';return false"><span>Editar</span></button>
+	            <button onclick="location.href='{{script_name}}/{{hbkp.delete_url}}';return false" class="red"><span>Remover</span></button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

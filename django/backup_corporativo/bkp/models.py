@@ -50,6 +50,8 @@ from backup_corporativo.bkp.app_models.monthly_trigger import MonthlyTrigger
 from backup_corporativo.bkp.app_models.pool import Pool
 from backup_corporativo.bkp.app_models.file_set import FileSet
 
+from backup_corporativo.bkp.app_models.header_bkp import HeaderBkp
+
 
 ###
 ###   Signals

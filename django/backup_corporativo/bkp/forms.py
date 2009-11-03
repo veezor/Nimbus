@@ -63,7 +63,6 @@ class MountStrongBoxForm(forms.Form):
     )
     
     def clean_sb_password(self):
-        import pdb; pdb.set_trace()
         password = self.cleaned_data.get("sb_password")
         km = KeyManager(password=password)
         drive_mounted = km.mount_drive()
@@ -128,6 +127,12 @@ class ChangePasswdStrongBoxForm(forms.Form):
                     ugettext_lazy("Wrong password or strongbox header is corrupted.")
                 )
         return old_password
+
+
+class HeaderBkpForm(ModelForm):
+	class Meta:
+		model = HeaderBkp
+		fields = ('headerbkp_name',)
 
 
 class RestoreCompForm(forms.Form):

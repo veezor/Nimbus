@@ -47,7 +47,9 @@ class NimbusUUID(models.Model):
     
     def save(self):
         if self.uuid_hex == self.NIMBUS_BLANK:
+            print("importando uuid")
             import uuid
+            print("uuid importado")
             self.uuid_hex = uuid.uuid4().hex
             self.uuid_created_on = time.strftime(
                 "%Y-%m-%d %H:%M:%S",
