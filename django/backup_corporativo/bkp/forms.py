@@ -129,6 +129,12 @@ class ChangePasswdStrongBoxForm(forms.Form):
         return old_password
 
 
+class HeaderBkpForm(ModelForm):
+	class Meta:
+		model = HeaderBkp
+		fields = ('headerbkp_name',)
+
+
 class RestoreCompForm(forms.Form):
 	target_client = forms.ChoiceField(
 		label="Computador",

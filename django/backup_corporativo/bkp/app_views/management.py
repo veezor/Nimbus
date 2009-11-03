@@ -8,8 +8,8 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 
 from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.models import Storage
-from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm
+from backup_corporativo.bkp.models import Storage, HeaderBkp
+from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm, HeaderBkpForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 from keymanager import KeyManager
@@ -119,7 +119,7 @@ def new_strongbox(request):
 @authentication_required
 def create_strongbox(request):
     vars_dict, forms_dict = global_vars(request)
-
+    
     km = KeyManager()
     if km.has_drive():
         #TODO: adicionar mensagem: drive já existe.
@@ -159,6 +159,7 @@ def umount_strongbox(request):
         km.umount_drive()
         return HttpResponseRedirect(utils.manage_strongbox_path(request))
 
+
 @authentication_required
 def changepwd_strongbox(request):
     vars_dict, forms_dict = global_vars(request)
@@ -189,3 +190,102 @@ def changepwd_strongbox(request):
             )
 
 
+@authentication_required
+def new_headerbkp(request):
+    vars_dict, forms_dict = global_vars(request)
+    
+    if request.method == 'GET':
+        forms_dict['headerbkp_form'] = HeaderBkpForm()
+        return_dict = utils.merge_dicts(vars_dict, forms_dict)
+        return render_to_response(
+            'bkp/management/new_headerbkp.html',
+            return_dict,
+            context_instance=RequestContext(request)
+        )
+
+
+@authentication_required
+def create_headerbackup(request):
+    vars_dict, forms_dict = global_vars(request)
+    hbkp = HeaderBkp()
+    
+    if request.method == 'POST':
+        forms_dict['headerbkp_form'] = HeaderBkpForm(request.POST, instance=hbkp)
+        if forms_dict['headerbkp_form'].is_valid():
+            forms_dict['headerbkp_form'].save()
+            return HttpResponseRedirect(utils.list_headerbkp_path(request))
+        else:
+            return_dict = utils.merge_dicts(vars_dict, forms_dict)
+            return render_to_response(
+                'bkp/management/new_headerbkp.html',
+                return_dict,
+                context_instance=RequestContext(request)
+            )
+
+
+@authentication_required
+def list_headerbkp(request):
+    vars_dict, forms_dict = global_vars(request)
+    
+    if request.method == 'GET':
+        vars_dict['hbkp_list'] = HeaderBkp.objects.all()
+        return_dict = utils.merge_dicts(vars_dict, forms_dict)
+        return render_to_response(
+            'bkp/management/list_headerbkp.html',
+            return_dict,
+            context_instance=RequestContext(request)
+        )
+
+
+@authentication_required
+def delete_headerbkp(request, hbkp_id):
+    vars_dict, forms_dict = global_vars(request)
+    
+    if request.method == 'GET':
+        vars_dict['hbkp'] = get_object_or_404(HeaderBkp, pk=hbkp_id)
+        return_dict = utils.merge_dicts(vars_dict, forms_dict)
+        return render_to_response(
+            'bkp/management/delete_headerbkp.html',
+            return_dict,
+            context_instance=RequestContext(request)
+        )
+    elif request.method == 'POST':
+        headerbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
+        headerbkp.delete()
+        return HttpResponseRedirect(utils.list_headerbkp_path(request))
+
+
+@authentication_required
+def edit_headerbkp(request, hbkp_id):
+    vars_dict, forms_dict = global_vars(request)
+    
+    if request.method == 'GET':
+        hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
+        vars_dict['hbkp'] = hbkp
+        forms_dict['headerbkp_form'] = HeaderBkpForm(instance=hbkp)
+        return_dict = utils.merge_dicts(vars_dict, forms_dict)
+        return render_to_response(
+            'bkp/management/edit_headerbkp.html',
+            return_dict,
+            context_instance=RequestContext(request)
+        )
+
+
+@authentication_required
+def update_headerbkp(request, hbkp_id):
+    vars_dict, forms_dict = global_vars(request)
+    
+    if request.method == 'POST':
+        hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
+        headerbkp_form = HeaderBkpForm(request.POST, instance=hbkp)
+        if headerbkp_form.is_valid():
+            headerbkp_form.save()
+            return HttpResponseRedirect(utils.list_headerbkp_path(request))
+        else:
+            forms_dict['headerbkp_form'] = headerbkp_form
+            return_dict = utils.merge_dicts(vars_dict, forms_dict)
+            return render_to_response(
+                'bkp/management/edit_headerbkp.html',
+                return_dict,
+                context_instance=RequestContext(request)
+            )

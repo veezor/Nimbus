@@ -1,0 +1,22 @@
+{% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/management/menu_management.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Novo Ponto de Restauração</h2><br /><br />
+
+<div class='bloco_texto'>
+    <form action="{{script_name}}/strongbox/headerbkp/create" method="post">
+    {% for field in headerbkp_form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <button type="submit"><span>Criar</span></button>
+    </form>
+</div>
+
+{% endblock %}

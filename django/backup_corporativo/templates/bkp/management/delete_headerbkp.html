@@ -1,0 +1,17 @@
+{% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/management/menu_management.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Remover Ponto de Restauração</h2><br /><br />
+
+<div class='bloco_texto'>
+    <form action="{{script_name}}/strongbox/headerbkp/{{hbkp.id}}/delete" method="post">
+    <h3>Você tem certeza que deseja remover '{{headerbkp.headerbkp_name}}'?</h3>
+    <button type="submit"><span>Sim</span></button>
+    </form>
+</div>
+
+{% endblock %}
