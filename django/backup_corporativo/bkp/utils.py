@@ -104,7 +104,25 @@ def schedule_inverse(type):
     elif type == 'Monthly':
         return 'Weekly'
 
+
+def manage_strongbox_path(request):
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/management/strongbox/" % script_name
     
+
+def new_strongbox_path(request):
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/management/strongbox/new" % script_name
+
+def umount_strongbox_path(request):
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/management/strongbox/umount" % script_name
+
+def list_headerbkp_path(request):
+    script_name = request.META['SCRIPT_NAME']
+    return "%s/strongbox/headerbkp/list" % script_name
+
+
 #
 #
 #
@@ -133,7 +151,6 @@ def login_path(request):
 def edit_config_path(request):
     """Returns edit config path."""
     return "%s/system/config/edit" % (request.META['SCRIPT_NAME'])
-
 
 # Passo 1
 def restore_computer_path(request, computer_id):
