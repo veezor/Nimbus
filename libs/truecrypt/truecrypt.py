@@ -4,6 +4,8 @@
 
 import os
 import subprocess
+import logging
+
 
 TRUECRYPT_EXEC = "/usr/bin/truecrypt"
 
@@ -75,9 +77,9 @@ class TrueCrypt(object):
         p = self._get_popen(cmd)
         stdout, stderr = p.communicate(input)
         if self.debug:
-            print " ".join(cmd)
-            print stdout
-            print stderr
+            logger = logging.getLogger(__name__)
+            msg = "Executando o comando: %s\nStdout: %s\nStderr: %s\nReturn code: %s"
+            logger.info( msg % (" ".join(cmd),stdout,stderr,p.returncode ))
         return (not bool(p.returncode)),stdout,stderr
 
     def create_drive(self, password, drive=DRIVEFILE):

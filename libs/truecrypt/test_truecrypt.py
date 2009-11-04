@@ -9,11 +9,12 @@ import os
 
 
 
+
 class TrueCryptTest(unittest.TestCase):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
-        self.truecrypt = truecrypt.TrueCrypt()
+        self.truecrypt = truecrypt.TrueCrypt(debug=True)
         self.filedrive = "/tmp/drive.crypto"
         self.mountpoint = "/tmp/drivetest"
         self.password = '1234'
