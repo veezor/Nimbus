@@ -74,8 +74,13 @@ class TrueCryptTest(unittest.TestCase):
         r = self.truecrypt.restore_backup(self.password, self.fileback, self.filedrive)
         self.assertTrue(r)
 
+    def test_7_password_error(self):
+        self.password = "error"
+        self.assertRaises( truecrypt.PasswordError, self.truecrypt.mount_drive,
+                           self.password, self.filedrive, self.mountpoint )
 
-    def test_7_change_drive_password(self):
+
+    def test_8_change_drive_password(self):
         r = self.truecrypt.change_password( self.password, 
                                                   self.new_password,
                                                   self.filedrive)

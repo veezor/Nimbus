@@ -34,6 +34,9 @@ class TrueCryptNotFound(Exception):
 class PermissionError(Exception):
     pass
 
+class PasswordError(Exception):
+    pass
+
 
 def has_truecrypt():
     return os.access( TRUECRYPT_EXEC, os.X_OK )
@@ -90,7 +93,10 @@ class TrueCrypt(object):
         #if os.getuid() != 0: SUDO
         #    raise PermissionError("root privileges required")
 
-        return self.call_command( "mount", params=(password, drive, target))[0]
+        ok, stdout, stderr = self.call_command( "mount", params=(password, drive, target))
+        if stdout.startswith("Incorrect password"):
+            raise PasswordError("Incorrect password")
+        return ok
 
     def umount_drive(self, target=DRIVEPOINT):
         return self.call_command( "umount", params=(target,))[0]
