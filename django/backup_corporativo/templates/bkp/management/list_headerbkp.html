@@ -25,12 +25,16 @@
             <tr>
                 <td>{{hbkp.headerbkp_name}}</td>
                 <td>{{hbkp.created_on}}</td>
-                <td><button onclick="location.href='{{script_name}}/{{hbkp.edit_url}}';return false"><span>Editar</span></button>
+                <td><button onclick="location.href='{{script_name}}/{{hbkp.restore_url}}';return false"><span>Restaurar</span></button>
+                <button onclick="location.href='{{script_name}}/{{hbkp.edit_url}}';return false"><span>Editar</span></button>
 	            <button onclick="location.href='{{script_name}}/{{hbkp.delete_url}}';return false" class="red"><span>Remover</span></button></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    
 </div>
+
+    <p><a href="{{script_name}}/strongbox/headerbkp/new">Adicionar Ponto de Restauração</a></p>
 
 {% endblock %}

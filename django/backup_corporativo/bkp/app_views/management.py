@@ -6,10 +6,11 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy
 
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import Storage, HeaderBkp
-from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm, HeaderBkpForm
+from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm, HeaderBkpForm, UmountStrongBoxForm, RestoreHeaderBkpForm, ChangePwdStrongBoxForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 from keymanager import KeyManager
@@ -20,8 +21,7 @@ def main_management(request):
 
     if request.method == 'GET':
         return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/management/main_management.html',
+        return render_to_response('bkp/management/main_management.html',
             return_dict,
             context_instance=RequestContext(request)
         )
@@ -143,11 +143,12 @@ def umount_strongbox(request):
     vars_dict, forms_dict = global_vars(request)
     
     km = KeyManager()
-    if not km.drive_mounted():
+    if not km.mounted:
         #TODO: adicionar mensagem: cofre já está travado.
         return HttpResponseRedirect(utils.manage_strongbox_path(request))
 
     if request.method == 'GET':
+        forms_dict['umount_form'] = UmountStrongBoxForm()
         return_dict = utils.merge_dicts(vars_dict, forms_dict)
         return render_to_response(
             'bkp/management/umount_strongbox.html',
@@ -155,9 +156,20 @@ def umount_strongbox(request):
             context_instance=RequestContext(request)
         )
     elif request.method == 'POST':
-        # Está faltando a opção de forçar desmontagem.
-        km.umount_drive()
-        return HttpResponseRedirect(utils.manage_strongbox_path(request))
+        forms_dict['umount_form'] = UmountStrongBoxForm(request.POST)
+        if forms_dict['umount_form'].is_valid():
+            if "sb_forceumount" in forms_dict['umount_form'].cleaned_data:
+                force = forms_dict['umount_form'].cleaned_data["sb_forceumount"]
+            else:
+                force = False
+            drive_umounted = km.umount_drive(force=force)
+            if km.mounted:
+                request.user.message_set.create(
+                    message=ugettext_lazy("Unable to umount strongbox.")
+                )
+                return HttpResponseRedirect(utils.umount_strongbox_path(request))
+            else:
+                return HttpResponseRedirect(utils.manage_strongbox_path(request))
 
 
 @authentication_required
@@ -165,15 +177,12 @@ def changepwd_strongbox(request):
     vars_dict, forms_dict = global_vars(request)
     
     km = KeyManager()
-    if km.drive_mounted():
-        #TODO: adicionar mensagem: é necessário fechar cofre antes de trocar senha.
-        return HttpResponseRedirect(utils.umount_strongbox_path(request))
 
     if request.method == 'GET':
         forms_dict['changepwdsb_form'] = ChangePwdStrongBoxForm()
         return_dict = utils.merge_dicts(vars_dict, forms_dict)
         return render_to_response(
-            'bkp/management/changepass_strongbox.html',
+            'bkp/management/changepwd_strongbox.html',
             return_dict,
             context_instance=RequestContext(request)
         )
@@ -184,7 +193,7 @@ def changepwd_strongbox(request):
         else:
             return_dict = utils.merge_dicts(vars_dict, forms_dict)
             return render_to_response(
-                'bkp/management/changepass_strongbox.html',
+                'bkp/management/changepwd_strongbox.html',
                 return_dict,
                 context_instance=RequestContext(request)
             )
@@ -286,6 +295,33 @@ def update_headerbkp(request, hbkp_id):
             return_dict = utils.merge_dicts(vars_dict, forms_dict)
             return render_to_response(
                 'bkp/management/edit_headerbkp.html',
+                return_dict,
+                context_instance=RequestContext(request)
+            )
+
+
+@authentication_required
+def restore_headerbkp(request, hbkp_id):
+    vars_dict, forms_dict = global_vars(request)
+    hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
+    vars_dict['hbkp'] = hbkp
+    
+    if request.method == 'GET':
+        forms_dict['restorehbkp_form'] = RestoreHeaderBkpForm(instance=hbkp)
+        return_dict = utils.merge_dicts(vars_dict, forms_dict)
+        return render_to_response(
+            'bkp/management/restore_headerbkp.html',
+            return_dict,
+            context_instance=RequestContext(request)
+        )
+    elif request.method == 'POST':
+        forms_dict['restorehbkp_form'] = RestoreHeaderBkpForm(request.POST, instance=hbkp)
+        if forms_dict['restorehbkp_form'].is_valid():
+            return HttpResponseRedirect(utils.list_headerbkp_path(request))
+        else:
+            return_dict = utils.merge_dicts(vars_dict, forms_dict)
+            return render_to_response(
+                'bkp/management/restore_headerbkp.html',
                 return_dict,
                 context_instance=RequestContext(request)
             )
