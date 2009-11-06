@@ -11,6 +11,7 @@ from django.core.paginator import QuerySetPaginator, InvalidPage
 # not the Paginator! (see Django doc)
 from django.core.xheaders import populate_xheaders
 from django import forms
+from django.forms.models import modelform_factory
 from django.http import Http404, HttpResponse
 from django.forms.util import ErrorDict
 from django.shortcuts import render_to_response
@@ -18,6 +19,7 @@ from django.template import loader, RequestContext
 from django.utils import simplejson
 from django.utils.xmlutils import SimplerXMLGenerator
 from django.views.generic.simple import direct_to_template
+
 
 class SerializeResponder(object):
     """
@@ -274,7 +276,7 @@ class TemplateResponder(object):
         """
         Render form for creation of new collection entry.
         """
-        ResourceForm = forms.form_for_model(queryset.model, form=form_class)
+        ResourceForm = modelform_factory(queryset.model, fields=self.expose_fields)
         if request.POST:
             form = ResourceForm(request.POST)
         else:
@@ -289,11 +291,11 @@ class TemplateResponder(object):
         # Remove queryset cache by cloning the queryset
         queryset = queryset._clone()
         elem = queryset.get(**{queryset.model._meta.pk.name : pk})
-        ResourceForm = forms.form_for_instance(elem, form=form_class)
-        if request.PUT:
+        ResourceForm = modelform_factory(queryset.model, fields=self.expose_fields)
+        if hasattr(request, "PUT"):
             form = ResourceForm(request.PUT)
         else:
-            form = ResourceForm()
+            form = ResourceForm(instance=elem)
         template_name = '%s/%s_form.html' % (self.template_dir, elem._meta.module_name)
         return render_to_response(template_name, 
                 {'form':form, 'update':True, self.template_object_name:elem})
