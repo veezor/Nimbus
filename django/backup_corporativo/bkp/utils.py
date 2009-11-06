@@ -4,13 +4,25 @@
 import string
 import re
 import os
+from backup_corporativo.settings import MAIN_APP
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404 
+from django.shortcuts import redirect as _redirect
+from django.core.urlresolvers import reverse as _reverse
 
 from backup_corporativo import settings
 
+
+
+def reverse(viewname, *args, **kwargs):
+    return _reverse( "%s.views.%s" % (MAIN_APP, viewname) , args=args, kwargs=kwargs)
+
+
+def redirect(viewname, *args, **kwargs):
+    path = reverse(viewname, *args, **kwargs)
+    return HttpResponseRedirect(path)
 
 
 ###
