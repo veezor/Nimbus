@@ -84,8 +84,8 @@ urlpatterns += patterns(
     # views_app/filesets.py
     (r'^fileset/(?P<fset_id>\d+)/delete$', 'delete_fileset'),
     # views_app/schedules.py
-    (r'^schedule/(?P<sched_id>\d+)/edit$', 'edit_schedule'),
-    (r'^schedule/(?P<sched_id>\d+)/update$', 'update_schedule'),
+    #(r'^schedule/(?P<sched_id>\d+)/edit$', 'edit_schedule'),
+    #(r'^schedule/(?P<sched_id>\d+)/update$', 'update_schedule'),
     (r'^schedule/(?P<sched_id>\d+)/delete$', 'delete_schedule'),
     #
     #
@@ -108,7 +108,7 @@ urlpatterns += patterns(
     # PASSO 4: Selecione Arquivos e Detalhes do Restore
     (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'new_restore'),
     # PASSO 5: Execute!
-    (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'restore_files'),    
+    #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'restore_files'),    
     # Tools
     (r'^tools/$', 'view_tools'),
     (r'^tools/ssl/$', 'tools_ssl'),
