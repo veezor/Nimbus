@@ -12,13 +12,15 @@ from django.core.paginator import QuerySetPaginator, InvalidPage
 from django.core.xheaders import populate_xheaders
 from django import forms
 from django.forms.models import modelform_factory
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.forms.util import ErrorDict
 from django.shortcuts import render_to_response
 from django.template import loader, RequestContext
 from django.utils import simplejson
 from django.utils.xmlutils import SimplerXMLGenerator
 from django.views.generic.simple import direct_to_template
+from django.contrib.auth.views import redirect_to_login
+from django.utils.http import urlquote
 
 
 class SerializeResponder(object):
@@ -171,7 +173,8 @@ class TemplateResponder(object):
     """
     def __init__(self, template_dir, paginate_by=None, template_loader=loader,
                  extra_context=None, allow_empty=False, context_processors=None,
-                 template_object_name='object', mimetype=None):
+                 template_object_name='object', mimetype=None, 
+                 django_auth_url=None):
         self.template_dir = template_dir
         self.paginate_by = paginate_by
         self.template_loader = template_loader
@@ -186,6 +189,7 @@ class TemplateResponder(object):
         self.template_object_name = template_object_name
         self.mimetype = mimetype
         self.expose_fields = None # Set by Collection.__init__
+        self.django_auth_url = django_auth_url
             
     def _hide_unexposed_fields(self, obj, allowed_fields):
         """
@@ -265,12 +269,17 @@ class TemplateResponder(object):
         """
         if not error_dict:
             error_dict = ErrorDict()
-        response = direct_to_template(request, 
-            template = '%s/%s.html' % (self.template_dir, str(status_code)),
-            extra_context = { 'errors' : error_dict },
-            mimetype = self.mimetype)
-        response.status_code = status_code
-        return response
+
+        if not self.django_auth_url  and status_code != 401:  # not auth error
+            response = direct_to_template(request, 
+                template = '%s/%s.html' % (self.template_dir, str(status_code)),
+                extra_context = { 'errors' : error_dict },
+                mimetype = self.mimetype)
+            response.status_code = status_code
+            return response
+        else:
+            path = urlquote(request.get_full_path())
+            return redirect_to_login(next=path, login_url = self.django_auth_url)
     
     def create_form(self, request, queryset, form_class):
         """

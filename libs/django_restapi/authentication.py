@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 import md5, time, random
+from django.contrib.auth.decorators import login_required
+
 
 def djangouser_auth(username, password):
     """
@@ -63,6 +65,29 @@ class HttpBasicAuthentication(object):
         auth = auth.strip().decode('base64')
         username, password = auth.split(':', 1)
         return self.authfunc(username=username, password=password)
+
+
+class DjangoAuthentication(object):
+    """
+    Django admin authentication.
+    """    
+    
+    def challenge_headers(self):
+        """
+        Returns the http headers that ask for appropriate
+        authorization.
+        """
+        return {}
+    
+    def is_authenticated(self, request):
+        """
+        Checks whether a request comes from an authorized user.
+        """
+        return request.user.is_authenticated()
+
+
+
+
 
 def digest_password(realm, username, password):
     """
