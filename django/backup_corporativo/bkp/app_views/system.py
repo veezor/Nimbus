@@ -8,8 +8,15 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import PasswordChangeForm
+from django.utils.translation import ugettext_lazy as _
+
+
+
+
+from environment import ENV as E
 
 from backup_corporativo.bkp import utils
+from backup_corporativo.bkp.utils import redirect, reverse
 from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
 from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
@@ -19,39 +26,32 @@ logger = logging.getLogger(__name__)
 
 @authentication_required
 def edit_system_config(request):
-    vars_dict, forms_dict = global_vars(request)    
+    E.update(request)
+    E.template = 'bkp/system/edit_system_config.html'
     if request.method == 'GET':
         if GlobalConfig.system_configured():
-            vars_dict['gconfig'] = GlobalConfig.objects.get(pk=1)
+            E.gconfig = GlobalConfig.objects.get(pk=1)
         else:
-            vars_dict['gconfig'] = GlobalConfig()
-        forms_dict['gconfigform'] = GlobalConfigForm(
-            instance=vars_dict['gconfig'])
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/system/edit_system_config.html',
-            return_dict,
-            context_instance=RequestContext(request))
+            E.gconfig= GlobalConfig()
+        E.gconfigform = GlobalConfigForm(instance=E.gconfig)
+        return E.render() 
+
 
 
 @authentication_required
 def update_system_config(request):
-    vars_dict, forms_dict = global_vars(request)    
     if request.method == 'POST':
-        forms_dict['gconfigform'] = GlobalConfigForm(
+        E.update(request)
+        E.gconfigform = GlobalConfigForm(
             request.POST,
             instance=GlobalConfig())
-        if forms_dict['gconfigform'].is_valid():
-            gconf = forms_dict['gconfigform'].save()
-            return HttpResponseRedirect(
-                utils.edit_system_config_path(request))
+        if E.gconfigform.is_valid():
+            gconf = E.gconfigform.save()
+            E.msg = _("Configuration successfully updated")
+            return redirect('edit_system_config')
         else:
-            return_dict = utils.merge_dicts(forms_dict, vars_dict)
-            return render_to_response(
-                'bkp/system/edit_system_config.html',
-                return_dict,
-                context_instance=RequestContext(request))
-
+            E.template = 'bkp/system/edit_system_config.html'
+            return E.render() 
 
 @authentication_required
 def edit_system_network(request):
