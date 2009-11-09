@@ -14,7 +14,7 @@ OPERATION_CHOICES = (
 
 
 class Operation(models.Model):
-    name = models.CharField(max_length=50, choices = OPERATION_CHOICES)
+    name = models.CharField(max_length=50, choices = OPERATION_CHOICES, unique=True)
 
     def __unicode__(self):
         return "Operation(%s)" % self.name
@@ -23,8 +23,8 @@ class OperationLog(models.Model):
     datetime = models.DateTimeField(default=datetime.now())
     user = models.ForeignKey(User)
     operation = models.ForeignKey(Operation)
-    path = models.FilePathField(blank=True)
-    datalen = models.IntegerField(blank=True)
+    path = models.CharField(max_length=500)
+    datalen = models.IntegerField(default=0)
     httpcode = models.IntegerField(default=0)
 
 class UserBucket(models.Model):

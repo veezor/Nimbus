@@ -7,7 +7,7 @@ from django.core.handlers.wsgi import STATUS_CODE_TEXT
 
 import json
 
-from models import UserBucket
+from models import UserBucket, OperationLog, Operation
 import S3
 from util import load_config
 
@@ -82,7 +82,15 @@ class Handler(object):
     def call_method(self, request, key, method="GET", headers={}):
         bucket = self.get_bucketname(request)
         url = self.aws.generate_url(method, bucket, key, headers=headers)
-        return self._get_json_response({'url':url})
+
+        ol = OperationLog(  user=User.objects.get(username=request.user),
+                            operation = Operation.objects.get(name=method),
+                            path = key )
+        ol.save()
+
+
+
+        return self._get_json_response({'url':url, 'id' : ol.id })
 
     def get(self, request, key):
         return self.call_method(request, key)
