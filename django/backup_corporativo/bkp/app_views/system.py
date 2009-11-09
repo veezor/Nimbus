@@ -100,7 +100,7 @@ def update_system_password(request):
             new_pwd = E.pwdform.cleaned_data['new_password1']
             E.current_user.set_password(new_pwd)
             E.current_user.save()
-            E.msg(_('Senha alterada com sucesso.'))
+            E.msg = _('Senha alterada com sucesso.')
             logger.info('Senha de administrador foi alterada.')
             # TODO: Usar reverse
             location = utils.edit_system_config_path(request)

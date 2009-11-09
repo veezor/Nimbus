@@ -38,7 +38,7 @@ def create_storage(request):
             location = utils.path("storage", sto_id, request)
             return HttpResponseRedirect(location)
         else:
-            E.msg(_("Error at storage creation."))
+            E.msg = _("Error at storage creation.")
             E.template = 'bkp/storage/new_storage.html'
             return E.render()
 
@@ -73,12 +73,12 @@ def update_storage(request, sto_id):
         E.storform = StorageForm(request.POST, instance=E.storage)
         if E.storform.is_valid():
             E.storform.save()
-            E.msg(_("Storage successfully updated."))
+            E.msg = _("Storage successfully updated.")
             # TODO: usar reverse
             location = utils.path("storage", sto_id, request)
             return HttpResponseRedirect(location)
         else:
-            E.msg(_("Error at storage edition."))
+            E.msg = _("Error at storage edition.")
             E.template = 'bkp/storage/edit_storage.html'
             E.render()
 
@@ -89,13 +89,13 @@ def delete_storage(request, sto_id):
     
     if request.method == 'GET':
         E.storage = get_object_or_404(Storage, pk=sto_id)
-        E.msg(_("Confirm storage removal."))
+        E.msg = _("Confirm storage removal.")
         E.template = 'bkp/storage/delete_storage.html'
         return E.render()
     elif request.method == 'POST':
         storage = get_object_or_404(Storage, pk=sto_id)
         storage.delete()
-        E.msg(_("Storage removido permanentemente."))
+        E.msg = _("Storage removido permanentemente.")
         return utils.redirect_back(request)
 
 

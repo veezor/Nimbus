@@ -1,92 +1,76 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Application
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template import RequestContext
+from django.shortcuts import get_object_or_404, render_to_response
+from django.utils.translation import ugettext_lazy as _
+
+from Environment import ENV as E
+
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.views import global_vars, authentication_required
 from backup_corporativo.bkp.models import Computer, Procedure, Storage, FileSet, Schedule, MonthlyTrigger, WeeklyTrigger
 from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, ScheduleAuxForm, ScheduleForm, WeeklyTriggerForm, MonthlyTriggerForm, FileSetForm
-# Misc
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.shortcuts import get_object_or_404
 
-###               ###
-#   Código Novo     #
-###               ###
 
 @authentication_required
 def new_backup(request, comp_id=None, proc_id=None):
-    vars_dict, forms_dict = global_vars(request)
-    temp_dict = {}
+    E.update(request)
+    
     if comp_id is not None:
-        vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)
+        E.comp = get_object_or_404(Computer, pk=comp_id)
     if proc_id is not None:
-        vars_dict['proc'] = get_object_or_404(Procedure, pk=proc_id)
+        E.proc = get_object_or_404(Procedure, pk=proc_id)
     if request.method == 'GET':
-        vars_dict['backup_step'] = __backup_step(comp_id, proc_id)
+        E.backup_step = __backup_step(comp_id, proc_id)
         
-        if vars_dict['backup_step'] == 1:
-            forms_dict['compform'] = ComputerForm()
-        elif vars_dict['backup_step'] == 2:
-            forms_dict['procform'] = ProcedureForm()
-            forms_dict['fsetform'] = FileSetForm()
-        elif vars_dict['backup_step'] == 3:
-            forms_dict['schedform'] = ScheduleForm()
-            forms_dict['wtriggform'] = WeeklyTriggerForm()
-            forms_dict['mtriggform'] = MonthlyTriggerForm()
-
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/wizard/computer/computer_wizard.html',
-            return_dict,
-            context_instance=RequestContext(request))
+        if E.backup_step == 1:
+            E.compform = ComputerForm()
+        elif E.backup_step == 2:
+            E.procform = ProcedureForm()
+            E.fsetform = FileSetForm()
+        elif E.backup_step == 3:
+            E.schedform = ScheduleForm()
+            E.wtriggform = WeeklyTriggerForm()
+            E.mtriggform = MonthlyTriggerForm()
+        E.template = 'bkp/wizard/computer/computer_wizard.html'
+        return E.render()
     elif request.method == 'POST':
-        vars_dict['backup_step'] = __backup_step(comp_id, proc_id)
-        if vars_dict['backup_step'] == 1:
-            forms_dict['compform'] = ComputerForm(request.POST)
-            if forms_dict['compform'].is_valid():
-                comp = forms_dict['compform'].save()
+        E.backup_step = __backup_step(comp_id, proc_id)
+        if E.backup_step == 1:
+            E.compform = ComputerForm(request.POST)
+            if E.compform.is_valid():
+                comp = E.compform.save()
                 location = utils.backup_computer_path(request, comp.id)
                 return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(forms_dict, vars_dict)
-                return render_to_response(
-                    'bkp/wizard/computer/computer_wizard.html',
-                    return_dict,
-                    context_instance=RequestContext(request))
-        elif vars_dict['backup_step'] == 2:
-            forms_dict['procform'] = ProcedureForm(request.POST)
-            forms_dict['fsetform'] = FileSetForm(request.POST)
-            forms_list = forms_dict.values()
+                E.template = 'bkp/wizard/computer/computer_wizard.html'
+                return E.render()
+        elif E.backup_step == 2:
+            E.procform = ProcedureForm(request.POST)
+            E.fsetform = FileSetForm(request.POST)
+            forms_list = [E.procform, E.fsetform]
             if all([form.is_valid() for form in forms_list]):
-                proc = forms_dict['procform'].save(commit=False)
-                fset = forms_dict['fsetform'].save(commit=False)
+                proc = E.procform.save(commit=False)
+                fset = E.fsetform.save(commit=False)
                 proc.computer_id = comp_id
                 proc.save()
                 fset.procedure_id = proc.id
                 fset.save()
-                location = utils.backup_procedure_path(
-                    request,
-                    comp_id,
-                    proc.id)
+                location = utils.backup_procedure_path(request, comp_id, proc.id)
                 return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(forms_dict, vars_dict)
-                return render_to_response(
-                    'bkp/wizard/computer/computer_wizard.html',
-                    return_dict,
-                    context_instance=RequestContext(request))
-        elif vars_dict['backup_step'] == 3:
+                E.template = 'bkp/wizard/computer/computer_wizard.html'
+                return E.render()
+        elif E.backup_step == 3:
             # TODO: Tratar formulário semanal
-            forms_dict['schedform'] = ScheduleForm({'type':'Monthly'})
-            forms_dict['mtriggform'] = MonthlyTriggerForm(request.POST)
-            forms_list = forms_dict.values()
+            E.schedform = ScheduleForm({'type':'Monthly'})
+            E.mtriggform = MonthlyTriggerForm(request.POST)
+            forms_list = [E.schedform, E.mtriggform]
             if all([form.is_valid() for form in forms_list]):
-                sched = forms_dict['schedform'].save(commit=False)
-                mtrigg = forms_dict['mtriggform'].save(commit=False)
+                sched = E.schedform.save(commit=False)
+                mtrigg = E.mtriggform.save(commit=False)
                 sched.procedure_id = proc_id
                 sched.save()
                 mtrigg.schedule_id = sched.id
@@ -94,11 +78,8 @@ def new_backup(request, comp_id=None, proc_id=None):
                 location = utils.path("computer", comp_id, request)
                 return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(forms_dict, vars_dict)
-                return render_to_response(
-                    'bkp/wizard/computer/computer_wizard.html',
-                    return_dict,
-                    context_instance=RequestContext(request))
+                E.template = 'bkp/wizard/computer/computer_wizard.html'
+                return E.render()
 
 def __backup_step(comp_id=None ,proc_id=None, job_id=None):
     if all([arg is None for arg in [comp_id,proc_id]]):

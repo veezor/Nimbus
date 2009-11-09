@@ -1,17 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import string
+import time
+
 from django.core import serializers
 from django.db import models
 from django import forms
+
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-import os, string, time
-
 from backup_corporativo.bkp.app_models.procedure import Procedure
 
-### FileSet ###
 class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
     path = cfields.ModelPathField(
