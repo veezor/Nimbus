@@ -9,30 +9,32 @@ import shutil
 import ConfigParser
 import signal
 
-NIMBUSCONF = "/etc/nimbus/nimbus_manager.conf"
+NIMBUS_MANAGER_CONF = "/etc/nimbus/nimbus_manager.conf"
+NIMBUS_LOGGING_CONF = "/etc/nimbus/logging.conf"
+
+class FileNotFound(Exception):
+    pass
 
 
-logger = logging.getLogger(__name__)
+
 
 def has_config():
-    try :
-        ok = os.access(NIMBUSCONF, os.R_OK)
-        return ok
-    except IOError:
-        return False
+    return os.access(NIMBUSCONF, os.R_OK)
 
 
 def load_logging_system():
-    logging.config.fileConfig("/etc/nimbus/logging.conf")
+    logging.config.fileConfig(NIMBUS_LOGGING_CONF)
 
 
 def load_config():
     if has_config():
         config = ConfigParser.ConfigParser()
-        config.read("/etc/nimbus/nimbus_manager.conf")
+        config.read(NIMBUS_MANAGER_CONF)
         return config
     else:
+        logger = logging.getLogger(__name__)
         logger.error("Arquivo de configuração do nimbusmanager ausente!")
+        raise FileNotFound("Arquivo de configuração do nimbusmanager ausente!")
     return None
 
 
