@@ -431,7 +431,7 @@ class ListEntry:
         self.owner = owner
 
 class CommonPrefixEntry:
-    def __init(self, prefix=''):
+    def __init__(self, prefix=''):
         self.prefix = prefix
 
 class Bucket:
