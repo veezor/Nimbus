@@ -44,3 +44,6 @@ class HeaderBkp(models.Model):
     
     def delete_url(self):
         return "strongbox/headerbkp/%s/delete" % self.id
+
+    def restore_url(self):
+        return "strongbox/headerbkp/%s/restore" % self.id

@@ -107,7 +107,8 @@ class KeyManager(object):
     def mount_drive(self):
 
         if not os.access(self.mountpoint, os.W_OK):
-            os.mkdir(self.mountpoint)
+            #os.mkdir(self.mountpoint)
+            pass
 
         if not self.mounted:
             return self.truecrypt.mount_drive( self.password, 
@@ -116,7 +117,9 @@ class KeyManager(object):
         return False
 
 
-    def umount_drive(self):
+    def umount_drive(self, force=False):
+        if force:
+            return self.force_umount_drive()
         return self.truecrypt.umount_drive( target=self.mountpoint )
 
     

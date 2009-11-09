@@ -11,10 +11,11 @@
 <div class='bloco_texto'>
 
 {% if drive_mounted %}
-Opções:<br/>
-Desmontar<br />
-Alterar Senha <br />
-
+<p>Opções:</p>
+<ul>
+<li><p><a href="{{script_name}}/management/strongbox/umount">Desmontar</a></p></li>
+<li><p>Alterar Senha </p></li>
+</ul>
 {% else %}
 
     <h3>Digite a senha para abrir o cofre.</h3><br /><br />
