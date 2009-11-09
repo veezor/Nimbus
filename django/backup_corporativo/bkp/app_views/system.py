@@ -10,9 +10,6 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import PasswordChangeForm
 from django.utils.translation import ugettext_lazy as _
 
-
-
-
 from environment import ENV as E
 
 from backup_corporativo.bkp import utils
@@ -27,21 +24,22 @@ logger = logging.getLogger(__name__)
 @authentication_required
 def edit_system_config(request):
     E.update(request)
-    E.template = 'bkp/system/edit_system_config.html'
-    if request.method == 'GET':
+
+    if request.method == 'GET':        
         if GlobalConfig.system_configured():
             E.gconfig = GlobalConfig.objects.get(pk=1)
         else:
             E.gconfig= GlobalConfig()
         E.gconfigform = GlobalConfigForm(instance=E.gconfig)
+        E.template = 'bkp/system/edit_system_config.html'
         return E.render() 
-
 
 
 @authentication_required
 def update_system_config(request):
+    E.update(request)
+
     if request.method == 'POST':
-        E.update(request)
         E.gconfigform = GlobalConfigForm(
             request.POST,
             instance=GlobalConfig())
@@ -53,114 +51,98 @@ def update_system_config(request):
             E.template = 'bkp/system/edit_system_config.html'
             return E.render() 
 
+
 @authentication_required
 def edit_system_network(request):
-    vars_dict, forms_dict = global_vars(request)
+    E.update(request)
+    
     if request.method == 'GET':
-        vars_dict['iface'] = NetworkInterface.networkconfig()
-        forms_dict['netform'] = NetworkInterfaceEditForm(
-            instance=vars_dict['iface'])
-        # Load forms and vars 
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/system/edit_system_network.html',
-            return_dict,
-            context_instance=RequestContext(request))
+        E.iface = NetworkInterface.networkconfig()
+        E.netform = NetworkInterfaceEditForm(instance=E.iface)
+        E.template = 'bkp/system/edit_system_network.html'
+        return E.render()
 
 
 @authentication_required
 def update_system_network(request):
-    vars_dict, forms_dict = global_vars(request)
+    E.update(request)
+
     if request.method == 'POST':
-        vars_dict['iface'] = NetworkInterface.networkconfig()
-        forms_dict['netform'] = NetworkInterfaceEditForm(
-            request.POST,
-            instance=vars_dict['iface'])
-        if forms_dict['netform'].is_valid():
-            forms_dict['netform'].save()
+        E.iface = NetworkInterface.networkconfig()
+        E.netform = NetworkInterfaceEditForm(request.POST, instance=E.iface)
+        if E.netform.is_valid():
+            E.netform.save()
+            # TODO: usar reverse
             location = utils.edit_networkinterface_path(request)
             return HttpResponseRedirect(location)
         else:
-            #TODO: adicionar mensagem de erro para o usuário
-            return_dict = utils.merge_dicts(forms_dict, vars_dict)
-            return render_to_response(
-                'bkp/system/edit_system_network.html',
-                return_dict,
-                context_instance=RequestContext(request))
+            E.template = 'bkp/system/edit_system_network.html'
+            return E.render()
 
 
 @authentication_required
 def edit_system_password(request):
-    vars_dict, forms_dict = global_vars(request)    
+    E.update(request)
+    
     if request.method == 'GET':
-        forms_dict['pwdform'] = PasswordChangeForm(
-            vars_dict['current_user'])
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/system/edit_system_password.html',
-            return_dict,
-            context_instance=RequestContext(request))
+        E.pwdform = PasswordChangeForm(E.current_user)
+        E.template = 'bkp/system/edit_system_password.html'
+        return E.render()
 
 
 @authentication_required
 def update_system_password(request):
-    vars_dict, forms_dict = global_vars(request)
+    E.update(request)
+    
     if request.method == 'POST':
-        forms_dict['pwdform'] = PasswordChangeForm(
-            vars_dict['current_user'],
-            request.POST)
-        if forms_dict['pwdform'].is_valid():
-            new_pwd = forms_dict['pwdform'].cleaned_data['new_password1']
-            request.user.set_password(new_pwd)
-            request.user.save()
-            logger.info('Senha alterada com sucesso')
-            return HttpResponseRedirect(
-                utils.edit_system_config_path(request))
+        E.pwdform = PasswordChangeForm(E.current_user, request.POST)
+        if E.pwdform.is_valid():
+            new_pwd = E.pwdform.cleaned_data['new_password1']
+            E.current_user.set_password(new_pwd)
+            E.current_user.save()
+            E.msg(_('Senha alterada com sucesso.'))
+            logger.info('Senha de administrador foi alterada.')
+            # TODO: Usar reverse
+            location = utils.edit_system_config_path(request)
+            return HttpResponseRedirect(location)
         else:
-            return_dict = utils.merge_dicts(forms_dict, vars_dict)
-            return render_to_response(
-                'bkp/system/edit_system_password.html',
-                return_dict,
-                context_instance=RequestContext(request))
+            E.template = 'bkp/system/edit_system_password.html'
+            return E.render()
 
 
 @authentication_required
 def edit_system_offsite(request):
+    E.update(request)
+    
     if request.method == 'GET':
-        vars_dict, forms_dict = global_vars(request)
-        vars_dict['gconfig'] = get_object_or_404(GlobalConfig, pk=1)
-        vars_dict['offsite_on'] = vars_dict['gconfig'].offsite_on
-        forms_dict['offsiteform'] = OffsiteConfigForm(
-            instance=vars_dict['gconfig'])
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/system/edit_system_offsite.html',
-            return_dict,
-            context_instance=RequestContext(request))
+        E.gconfig = get_object_or_404(GlobalConfig, pk=1)
+        E.offsite_on = E.gconfig.offsite_on
+        E.offsiteform = OffsiteConfigForm(instance=E.gconfig)
+        E.template = 'bkp/system/edit_system_offsite.html'
+        return E.render()
 
 
 @authentication_required
 def enable_system_offsite(request):
+    E.update(request)
+
     if request.method == 'POST':
-        vars_dict, forms_dict = global_vars(request)
-        vars_dict['gconfig'] = get_object_or_404(GlobalConfig, pk=1)
-        forms_dict['offsiteform'] = OffsiteConfigForm(
-            request.POST,
-            instance=vars_dict['gconfig'])
-        if forms_dict['offsiteform'].is_valid():
-            forms_dict['offsiteform'].save()
-            return HttpResponseRedirect(
-                utils.edit_system_offsite_path(request))
+        E.gconfig = get_object_or_404(GlobalConfig, pk=1)
+        E.offsiteform = OffsiteConfigForm(request.POST, instance=E.gconfig)
+        if E.offsiteform.is_valid():
+            E.offsiteform.save()
+            # TODO: usar reverse
+            location = utils.edit_system_offsite_path(request)
+            return HttpResponseRedirect(location)
         else:
-            return_dict = utils.merge_dicts(forms_dict, vars_dict)
-            return render_to_response(
-                'bkp/system/edit_system_offsite.html',
-                return_dict,
-                context_instance=RequestContext(request))
+            E.template = 'bkp/system/edit_system_offsite.html'
+            return E.render()
 
 
 @authentication_required
 def disable_system_offsite(request):
+    E.update(request)
+    
     if request.method == 'POST':
         gconfig = get_object_or_404(GlobalConfig, pk=1)
         gconfig.offsite_on = False
