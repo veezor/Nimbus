@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext_lazy
 
-from Environment import ENV as E
+from environment import ENV as E
 from keymanager import KeyManager
 
 from backup_corporativo.bkp import utils

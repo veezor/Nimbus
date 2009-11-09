@@ -8,7 +8,7 @@ from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
 
-from Environment import ENV as E
+from environment import ENV as E
 
 from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp import utils
