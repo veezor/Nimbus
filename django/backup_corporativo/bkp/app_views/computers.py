@@ -159,7 +159,6 @@ def new_computer_backup(request, comp_id):
         E.comp = get_object_or_404(Computer, pk=comp_id)            
         E.procform = ProcedureForm()
         E.fsetform = FileSetForm()    
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
         E.template = 'bkp/computer/new_computer_backup.html'
         return E.render()
 

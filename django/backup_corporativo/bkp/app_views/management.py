@@ -11,7 +11,7 @@ from keymanager import KeyManager
 
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import Storage, HeaderBkp
-from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm, HeaderBkpForm, UmountStrongBoxForm, RestoreHeaderBkpForm, ChangePwdStrongBoxForm
+from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm, HeaderBkpForm, EditHeaderBkpForm, UmountStrongBoxForm, RestoreHeaderBkpForm, ChangePwdStrongBoxForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 
@@ -210,7 +210,7 @@ def edit_headerbkp(request, hbkp_id):
     
     if request.method == 'GET':
         E.hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
-        E.headerbkp_form = HeaderBkpForm(instance=E.hbkp)
+        E.headerbkp_form = EditHeaderBkpForm(instance=E.hbkp)
         E.template = 'bkp/management/edit_headerbkp.html'
         return E.render()
 
@@ -221,7 +221,7 @@ def update_headerbkp(request, hbkp_id):
     
     if request.method == 'POST':
         E.hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
-        E.headerbkp_form = HeaderBkpForm(request.POST, instance=E.hbkp)
+        E.headerbkp_form = EditHeaderBkpForm(request.POST, instance=E.hbkp)
         if E.headerbkp_form.is_valid():
             E.headerbkp_form.save()
             return HttpResponseRedirect(utils.list_headerbkp_path(request))
