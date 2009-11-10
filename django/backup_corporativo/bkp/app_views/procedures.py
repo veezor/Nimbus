@@ -5,12 +5,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from environment import ENV as E
 
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import Computer, Procedure, Schedule
-from backup_corporativo.bkp.forms import ProcedureForm, MonthlyTriggerForm, WeeklyTriggerForm, ScheduleAuxForm, WizardAuxForm
+from backup_corporativo.bkp.forms import ProcedureForm, MonthlyTriggerForm, WeeklyTriggerForm, ScheduleAuxForm, WizardAuxForm, FileSetForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 
@@ -63,26 +64,59 @@ def delete_procedure(request, proc_id):
 
 
 @authentication_required
+def new_procedure_fileset(request, proc_id):
+    E.update(request)
+    
+    if request.method == 'GET':
+        E.proc = get_object_or_404(Procedure, pk=proc_id)
+        E.comp = E.proc.computer
+        E.fsetform = FileSetForm()
+        E.template = 'bkp/procedure/new_procedure_fileset.html'
+        return E.render()
+
+
+@authentication_required
+def create_procedure_fileset(request, proc_id):
+    E.update(request)
+    
+    if request.method == 'POST':
+        E.proc = get_object_or_404(Procedure, pk=proc_id)
+        E.comp = E.proc.computer
+        E.fsetform = FileSetForm(request.POST)
+        if E.fsetform.is_valid():
+            fset = E.fsetform.save(commit=False)
+            fset.procedure = E.proc
+            fset.save()
+            return HttpResponseRedirect(reverse('backup_corporativo.bkp.views.new_procedure_schedule',args=[E.proc.id]))
+        else:
+            E.msg = _("Error at fileset creation.")
+            E.template = 'bkp/procedure/new_procedure_fileset.html'
+            return E.render()
+
+
+@authentication_required
 def new_procedure_schedule(request, proc_id):
     E.update(request)
     
     if request.method == 'GET':
-        type = request.GET['type']
-        __ensure_valid_type(type)
+        if 'type' in request.GET:
+            E.sched_type = request.GET['type']
+            __ensure_valid_type(E.sched_type)
+        else:
+            E.sched_type = 'Weekly'
         if 'wizard' in request.GET:
             E.wizard = request.GET['wizard']
         else:
             E.wizard = False
-        E.sched_type = type
         E.proc = get_object_or_404(Procedure, pk=proc_id)
         E.comp = E.proc.computer
         E.new_schedule_url = utils.new_procedure_schedule(
             E.proc.id,
             request,
-            type=utils.schedule_inverse(type),
+            type=utils.schedule_inverse(E.sched_type),
             wizard=E.wizard
         )
-        triggform = "E.triggform = %sTriggerForm()" % type
+        triggform = "E.triggform = %sTriggerForm()" % E.sched_type
         exec(triggform)
         E.template = 'bkp/procedure/new_procedure_schedule.html'
         return E.render()
@@ -104,7 +138,7 @@ def create_procedure_schedule(request, proc_id):
         E.comp = E.proc.computer
         E.sched_aux_form = ScheduleAuxForm(request.POST)
         if not E.sched_aux_form.is_valid():
-            raise Exception("Erro de programaçao: sched_aux_form malformado.")
+            raise Exception("Programming error: mal formed sched_aux_form.")
         type = E.sched_aux_form.cleaned_data['schedule_type']
         triggform = "E.triggform = %sTriggerForm(request.POST)" % type
         exec(triggform)
@@ -137,4 +171,4 @@ def __ensure_valid_type(type):
     if type in ('Weekly','Monthly'):
         pass
     else:
-        raise Exception("Erro de programação: tipo de agendamento inválido")
+        raise Exception("Programming Error: invalid schedule type. Try Weekly or Monthly.")
