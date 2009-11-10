@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from environment import ENV as E
 
@@ -102,14 +101,14 @@ def delete_computer(request, comp_id):
     
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
-        E.msg(_("Confirme a remoção do computador."))
+        E.msg = _("Please confirm computer removal.")
         E.template = 'bkp/computer/delete_computer.html'
         return E.render()
     elif request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.delete()
-        E.msg = _("Computador removido permanentemente.")
-        return HttpResponseRedirect(utils.root_path(request))
+        E.msg = _("Computer has been permanently removed.")
+        return HttpResponseRedirect(reverse("backup_corporativo.bkp.views.list_computers"))
 
 
 @authentication_required
@@ -119,7 +118,7 @@ def test_computer(request, comp_id):
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.run_test_job()
-        E.msg = _("Uma requisição foi enviada para o computador.")
+        E.msg = _("A requisition has been sent to the computer.")
         location = utils.path("computer", comp_id, request)
         return HttpResponseRedirect(location)
 
@@ -193,4 +192,4 @@ def create_computer_backup(request, comp_id):
         else:
             E.wizard = wiz
             E.template = 'bkp/computer/new_computer_backup.html'
-            E.render()
+            return E.render()
