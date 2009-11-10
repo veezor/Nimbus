@@ -450,7 +450,10 @@ def remove_computer_file(comp):
 def update_fileset_file(instance):
     """FileSet update filesets to a procedure instance"""
 
-    proc = instance.procedure
+    if instance.__class__.__name__ == "FileSet":
+        proc = instance.procedure
+    else:
+        proc = instance
     fsets = proc.fileset_set.all()
     fset_name = proc.fileset_bacula_name()
     farray = generate_file_array(fsets)
