@@ -156,6 +156,11 @@ class HeaderBkpForm(ModelForm):
             )
         return drive_password
 
+class EditHeaderBkpForm(ModelForm):
+    class Meta:
+        model = HeaderBkp
+        fields = ('headerbkp_name',)
+
 class RestoreHeaderBkpForm(ModelForm):
     drive_password = forms.CharField(
         label=u'Senha',
