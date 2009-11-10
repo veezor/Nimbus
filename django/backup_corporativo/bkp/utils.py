@@ -16,7 +16,7 @@ from backup_corporativo import settings
 
 
 
-def reverse(viewname, *args, **kwargs):
+def reverse(viewname, args=None, kwargs=None):
     return _reverse( "%s.views.%s" % (MAIN_APP, viewname) , args=args, kwargs=kwargs)
 
 
