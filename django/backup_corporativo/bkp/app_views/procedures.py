@@ -64,7 +64,8 @@ def delete_procedure(request, proc_id):
 
 @authentication_required
 def new_procedure_schedule(request, proc_id):
-    vars_dict, forms_dict = global_vars(request)
+    E.update(request)
+    
     if request.method == 'GET':
         type = request.GET['type']
         __ensure_valid_type(type)
