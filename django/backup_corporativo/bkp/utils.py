@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse as _reverse
 from backup_corporativo import settings
 
 
-
+### Routing ###
 def reverse(viewname, args=None, kwargs=None):
     return _reverse( "%s.views.%s" % (MAIN_APP, viewname) , args=args, kwargs=kwargs)
 
@@ -41,44 +41,6 @@ def get_settings_dict():
     for i in items:
         settings_dict.update([[i, getattr(settings, i)]])
     return settings_dict
-
-
-def merge_dicts(main_dict, *dicts_list):
-    """Merge one dict with a list of dicts."""
-    for dict in dicts_list:
-        main_dict.update(dict)
-    return main_dict        
-
-
-def store_location(request):
-    """Stores current user location"""
-    request.session["location"] = request.build_absolute_uri()
-
-
-# TODO: refatorar
-def redirect_back(request, default=None, except_pattern=None):
-    """Redirects user back or to a given default place
-    unless default place matches an except_pattern
-    """
-    if "location" in request.session:
-        import re
-        if except_pattern:
-            if re.search(except_pattern,request.session["location"]):
-                del(request.session["location"]) # use default location
-        else:   
-            # Try to find redirect error
-            referer_full_path = request.META['HTTP_REFERER']
-            request_path = request.META['PATH_INFO']
-            slice_path_re = 'https?://(www\.)?[\w\d\-_ ]+?(:\d+)?(?P<short_path>/.*)'
-            try: 
-                referer_path = re.search(slice_path_re,referer_full_path).group('short_path')
-                if re.search(referer_path, request_path):
-                    del(request.session["location"]) # use default location
-            except Exception:
-                pass
-    if default is None: default = root_path(request)
-    location = ("location" in request.session) and request.session["location"] or default
-    return HttpResponseRedirect(location)
 
 
 # Novo sistema de caminhos está sendo implementado aos poucos.
