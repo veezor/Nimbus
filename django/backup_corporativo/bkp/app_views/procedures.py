@@ -34,11 +34,11 @@ def update_procedure(request, proc_id):
         E.procform = ProcedureForm(request.POST, instance=E.proc)
         if E.procform.is_valid():
             E.procform.save()
-            E.msg = _("O procedimento foi alterado com sucesso.")
+            E.msg = _("Backup successfully updated.")
             location = utils.edit_path("procedure", proc_id, request)
             return HttpResponseRedirect(location)
         else:
-            E.msg = _("Existem erros e o procedimento não foi alterado.")
+            E.msg = _("Error at backup update.")
             E.template = 'bkp/procedure/edit_procedure.html'
             return E.render()
 
@@ -50,14 +50,14 @@ def delete_procedure(request, proc_id):
     if request.method == 'GET':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
         E.comp = E.proc.computer
-        E.msg = _("Confirme a remoção do procedimento.")
+        E.msg = _("Do you really want to remove the Backup?")
         E.template = 'bkp/procedure/delete_procedure.html'
         return E.render()
     elif request.method == 'POST':
         proc = get_object_or_404(Procedure, pk=proc_id)
         comp = proc.computer
         proc.delete()
-        E.msg = _("Procedimento removido permanentemente.")
+        E.msg = _("Backup successfully removed.")
         location = utils.path("computer", comp.id,request)
         return HttpResponseRedirect(location)
 
