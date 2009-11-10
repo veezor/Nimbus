@@ -1,18 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Application
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template import RequestContext
+from django.shortcuts import render_to_response, get_object_or_404
+from django.utils.translation import ugettext_lazy as _
+
+from environment import ENV as E
+
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.views import global_vars, authentication_required
 from backup_corporativo.bkp.models import Computer, Procedure
 from backup_corporativo.bkp.forms import RestoreForm, HiddenRestoreForm, RestoreCompForm, RestoreProcForm
 from backup_corporativo.bkp.bacula import Bacula
-# Misc
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.shortcuts import get_object_or_404
+
 
 # NOTA:
 # Utilizar argumento padrão na assinatura da view não 
@@ -26,87 +27,69 @@ from django.shortcuts import get_object_or_404
 # TODO: trocar get_object_or_404 por Try classe.objects.get e Except classe.DoesNotExist
 @authentication_required
 def new_restore(request, comp_id=None, proc_id=None, job_id=None):
-    vars_dict, forms_dict = global_vars(request)
-    temp_dict = {}
+    E.update(request)
+    
     if comp_id is not None:
-        vars_dict['comp'] = get_object_or_404(Computer, pk=comp_id)
+        E.comp = get_object_or_404(Computer, pk=comp_id)
     if proc_id is not None:
-        vars_dict['proc'] = get_object_or_404(Procedure, pk=proc_id)
+        E.proc = get_object_or_404(Procedure, pk=proc_id)
     if job_id is not None:
-        vars_dict['job_id'] = job_id
+        E.job_id = job_id
 
     if request.method == 'GET':
-        vars_dict['restore_step'] = __restore_step(
-            comp_id,
-            proc_id,
-            job_id)
-        if vars_dict['restore_step'] == 0:
-            vars_dict['restorecomp_form'] = RestoreCompForm()
-        if vars_dict['restore_step'] == 1:
-            forms_dict['restoreproc_form'] = RestoreProcForm()
-            forms_dict['restoreproc_form'].load_choices(comp_id)
-        if vars_dict['restore_step'] == 2:
-            vars_dict['restore_jobs'] = vars_dict['proc'].restore_jobs()
-        if vars_dict['restore_step'] == 3:
+        E.restore_step = __restore_step(comp_id, proc_id, job_id)
+        if E.restore_step == 0:
+            E.restorecomp_form = RestoreCompForm()
+        if E.restore_step == 1:
+            E.restoreproc_form = RestoreProcForm()
+            E.restoreproc_form.load_choices(comp_id)
+        if E.restore_step == 2:
+            E.restore_jobs = E.proc.restore_jobs()
+        if E.restore_step == 3:
             __check_request(request)
             #TODO: trocar esse parametro por comp.computer_name
-            vars_dict['src_client'] = request.GET['src']
-            vars_dict['target_dt'] = request.GET['dt']
-            vars_dict['fileset_name'] = request.GET['fset']
-            vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)            
-            forms_dict['restore_form'] = RestoreForm()
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/wizard/restore/restore_wizard.html',
-            return_dict,
-            context_instance=RequestContext(request))
+            E.src_client = request.GET['src']
+            E.target_dt = request.GET['dt']
+            E.fileset_name = request.GET['fset']
+            E.file_count, E.file_tree = E.proc.get_file_tree(job_id)            
+            E.restore_form = RestoreForm()
+        E.template = 'bkp/wizard/restore/restore_wizard.html'
+        return E.render()
     elif request.method == 'POST':
-        vars_dict['restore_step'] = __restore_step(
-            comp_id,
-            proc_id,
-            job_id)
-        # comp_id is None and proc_id is None and job_id is None
-        if vars_dict['restore_step'] == 0:
-            forms_dict['restorecomp_form'] = RestoreCompForm(request.POST)
-            if forms_dict['restorecomp_form'].is_valid():
-                comp_id = forms_dict['restorecomp_form'].cleaned_data['target_client']
+        E.restore_step = __restore_step(comp_id, proc_id, job_id)
+        if E.restore_step == 0:
+            E.restorecomp_form = RestoreCompForm(request.POST)
+            if E.restorecomp_form.is_valid():
+                comp_id = E.restorecomp_form.cleaned_data['target_client']
                 location = utils.restore_computer_path(request, comp_id)
                 return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(forms_dict, vars_dict)
-                return render_to_response(
-                    'bkp/wizard/restore/restore_rizard.html',
-                    return_dict,
-                    context_instance=RequestContext(request))
-        # comp_id is not None and proc_id is None and job_id is None
-        elif vars_dict['restore_step'] == 1:
-            forms_dict['restoreproc_form'] = RestoreProcForm(request.POST)
-            forms_dict['restoreproc_form'].load_choices(comp_id)
-            if forms_dict['restoreproc_form'].is_valid():
-                proc_id = forms_dict['restoreproc_form'].cleaned_data['target_procedure']
-                location = utils.restore_procedure_path(
-                    request, comp_id, proc_id)
+                E.template = 'bkp/wizard/restore/restore_rizard.html'
+                return E.render()
+        elif E.restore_step == 1:
+            E.restoreproc_form = RestoreProcForm(request.POST)
+            E.restoreproc_form.load_choices(comp_id)
+            if E.restoreproc_form.is_valid():
+                proc_id = E.restoreproc_form.cleaned_data['target_procedure']
+                location = utils.restore_procedure_path(request, comp_id, proc_id)
                 return HttpResponseRedirect(location)
             else:
-                return_dict = utils.merge_dicts(forms_dict, vars_dict)
-                return render_to_response(
-                    'bkp/wizard/restore/restore_wizard.html',
-                    return_dict,
-                    context_instance=RequestContext(request))
-        elif vars_dict['restore_step'] == 3:
-            forms_dict['restore_form'] = RestoreForm(request.POST)
-            temp_dict['hidden_restore_form'] = HiddenRestoreForm(request.POST)
-            if temp_dict['hidden_restore_form'].is_valid():
-                vars_dict['src_client'] = temp_dict['hidden_restore_form'].cleaned_data['client_source']
-                vars_dict['target_dt'] = temp_dict['hidden_restore_form'].cleaned_data['target_dt']
-                vars_dict['fileset_name'] = temp_dict['hidden_restore_form'].cleaned_data['fileset_name']
+                E.template = 'bkp/wizard/restore/restore_wizard.html'
+                return E.render()
+        elif E.restore_step == 3:
+            E.restore_form = RestoreForm(request.POST)
+            E.hidden_restore_form = HiddenRestoreForm(request.POST)
+            if E.hidden_restore_form.is_valid():
+                E.src_client = E.hidden_restore_form.cleaned_data['client_source']
+                E.target_dt = E.hidden_restore_form.cleaned_data['target_dt']
+                E.fileset_name = E.hidden_restore_form.cleaned_data['fileset_name']
                 
-                if forms_dict['restore_form'].is_valid():
-                    client_from_restore = vars_dict['comp'].computer_name
-                    client_to_restore = forms_dict['restore_form'].cleaned_data['client_restore']
-                    date_to_restore = vars_dict['target_dt']
-                    directory_to_restore = forms_dict['restore_form'].cleaned_data['restore_path']
-                    fileset_name = vars_dict['fileset_name']
+                if E.restore_form.is_valid():
+                    client_from_restore = E.comp.computer_name
+                    client_to_restore = E.restore_form.cleaned_data['client_restore']
+                    date_to_restore = E.target_dt
+                    directory_to_restore = E.restore_form.cleaned_data['restore_path']
+                    fileset_name = E.fileset_name
                     raw_file_list = request.POST.getlist('file')
                     # Generating list of list.
                     file_list = []
@@ -122,14 +105,11 @@ def new_restore(request, comp_id=None, proc_id=None, job_id=None):
                         file_list)
                     location = utils.computer_path(request, comp_id)
                     return HttpResponseRedirect(location)
-#                    return HttpResponse(request.POST.getlist('file'))
                 else:
-                    vars_dict['file_count'],vars_dict['file_tree'] = vars_dict['proc'].get_file_tree(job_id)        
-                    return_dict = utils.merge_dicts(forms_dict, vars_dict)
-                    return render_to_response(
-                        'bkp/wizard/restore/restore_wizard.html',
-                        return_dict,
-                        context_instance=RequestContext(request))
+                    E.file_count, E.file_tree = E.proc.get_file_tree(job_id)        
+                    E.template = 'bkp/wizard/restore/restore_wizard.html'
+                    return E.render()
+
 
 def __restore_step(comp_id=None ,proc_id=None, job_id=None):
     if all([arg is None for arg in [comp_id,proc_id,job_id]]):

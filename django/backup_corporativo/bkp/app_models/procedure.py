@@ -248,6 +248,10 @@ class Procedure(models.Model):
         """Returns delete url."""
         return "procedure/%s/delete" % self.id
 
+    def new_fileseet_url(self):
+        """Returns new fileset url."""
+        return "procedure/%s/fileset/new" % self.id
+
     def __unicode__(self):
         return self.procedure_name
 

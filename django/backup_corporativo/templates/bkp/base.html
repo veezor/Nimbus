@@ -59,10 +59,10 @@
                     <br /><br />
 				    <!-- start computers block -->
 				    {% block computers %}
-				    {% if comps.count %}
+				    {% if computers.count %}
 				    <h3>Computadores</h3>
 					<ul class="aux list_computers">
-						{% for c in comps %}
+						{% for c in computers %}
 						<li {% ifequal c.id comp.id %}class="active"{% endifequal %}><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> <span>{{ c.computer_ip }}</span></li>
 						{% endfor %}
 					</ul>

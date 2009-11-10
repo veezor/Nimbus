@@ -1,124 +1,101 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Application
-from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.models import Storage, Procedure, GlobalConfig
-from backup_corporativo.bkp.forms import StorageForm
-from backup_corporativo.bkp.views import global_vars, authentication_required
-# Misc
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
+
+from environment import ENV as E
+
+from backup_corporativo.bkp import utils
+from backup_corporativo.bkp.models import Storage, Procedure, GlobalConfig
+from backup_corporativo.bkp.forms import StorageForm
+from backup_corporativo.bkp.views import global_vars, authentication_required
 
 
 @authentication_required
 def new_storage(request):
-    vars_dict, forms_dict, return_dict = global_vars(request)
+    E.update(request)
+
     if request.method == 'GET':
-        forms_dict['storform'] = StorageForm()
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/storage/new_storage.html',
-            return_dict,
-            context_instance=RequestContext(request))
+        E.storform = StorageForm()
+        E.template = 'bkp/storage/new_storage.html',
+        return E.render()
 
 
 @authentication_required
 def create_storage(request):
-    vars_dict, forms_dict = global_vars(request)
-    temp_dict = {}
+    E.update(request)
 
     if request.method == 'POST':
-        forms_dict['storform'] = StorageForm(request.POST)
-        forms_list = forms_dict.values()
-        if all([form.is_valid() for form in forms_list]):
-            storage = forms_dict['storform'].save()
+        E.storform = StorageForm(request.POST)
+        if E.storform.is_valid():
+            storage = E.storform.save()
+            #TODO: usar reverse
             location = utils.path("storage", sto_id, request)
             return HttpResponseRedirect(location)
         else:
-            request.user.message_set.create(
-                message="Existem erros e o storage não foi cadastrado.")
-            return_dict = utils.merge_dicts(forms_dict, vars_dict, temp_dict)
-            return render_to_response(
-                'bkp/storage/new_storage.html',
-                return_dict,
-                context_instance=RequestContext(request))
+            E.msg = _("Error at storage creation.")
+            E.template = 'bkp/storage/new_storage.html'
+            return E.render()
 
 
 @authentication_required
 def view_storage(request, sto_id):
-    vars_dict, forms_dict = global_vars(request)
+    E.update(request)
 
     if request.method == 'GET':
-        vars_dict['storage'] = get_object_or_404(Storage, pk=sto_id)
-        vars_dict['procedures'] = Procedure.objects.filter(
-            storage=vars_dict['storage'])
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/storage/view_storage.html',
-            return_dict,
-            context_instance=RequestContext(request))
+        E.storage = get_object_or_404(Storage, pk=sto_id)
+        E.procedures = Procedure.objects.filter(storage=E.storage)
+        E.template = 'bkp/storage/view_storage.html',
+        return E.render()
+
 
 @authentication_required
 def edit_storage(request, sto_id):
-    vars_dict, forms_dict = global_vars(request)
-    vars_dict['storage'] = get_object_or_404(Storage, pk=sto_id)
+    E.update(request)
+    
     if request.method == 'GET':
-        forms_dict['storform'] = StorageForm(
-            instance=vars_dict['storage'])
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/storage/edit_storage.html',
-            return_dict,
-            context_instance=RequestContext(request))
-
+        E.storage = get_object_or_404(Storage, pk=sto_id)
+        E.storform = StorageForm(instance=E.storage)
+        E.template = 'bkp/storage/edit_storage.html'
+        return E.render()
+        
 
 @authentication_required
 def update_storage(request, sto_id):
-    vars_dict, forms_dict = global_vars(request)
-    vars_dict['storage'] = get_object_or_404(Storage, pk=sto_id)
+    E.update(request)
     if request.method == 'POST':
-        forms_dict['storform'] = StorageForm(
-            request.POST,
-            instance=vars_dict['storage'])
-        if forms_dict['storform'].is_valid():
-            forms_dict['storform'].save()
-            request.user.message_set.create(
-                message="Storage foi alterado com sucesso.")
+        E.storage = get_object_or_404(Storage, pk=sto_id)
+        E.storform = StorageForm(request.POST, instance=E.storage)
+        if E.storform.is_valid():
+            E.storform.save()
+            E.msg = _("Storage successfully updated.")
+            # TODO: usar reverse
             location = utils.path("storage", sto_id, request)
             return HttpResponseRedirect(location)
         else:
-            return_dict = utils.merge_dicts(forms_dict, vars_dict)
-            request.user.message_set.create(
-                message="Existem erros e o storage não foi alterado.")
-            return render_to_response(
-                'bkp/storage/edit_storage.html',
-                return_dict,
-                context_instance=RequestContext(request))   
+            E.msg = _("Error at storage edition.")
+            E.template = 'bkp/storage/edit_storage.html'
+            E.render()
 
 
 @authentication_required
 def delete_storage(request, sto_id):
+    E.update(request)
+    
     if request.method == 'GET':
-        vars_dict, forms_dict = global_vars(request)
-        vars_dict['storage'] = get_object_or_404(Storage, pk=sto_id)
-        request.user.message_set.create(
-            message="Confirme a remoção do storage.")
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/storage/delete_storage.html',
-            return_dict,
-            context_instance=RequestContext(request))
-    #TODO: separar em dois objetos de view
+        E.storage = get_object_or_404(Storage, pk=sto_id)
+        E.msg = _("Confirm storage removal.")
+        E.template = 'bkp/storage/delete_storage.html'
+        return E.render()
     elif request.method == 'POST':
         storage = get_object_or_404(Storage, pk=sto_id)
         storage.delete()
-        request.user.message_set.create(
-            message="Storage removido permanentemente.")
-        #TODO: configurar default location
+        E.msg = _("Storage removido permanentemente.")
         return utils.redirect_back(request)
 
 
@@ -136,13 +113,10 @@ def dump_storage_config(request, sto_id):
 
 @authentication_required
 def view_storage_config(request, sto_id):
+    E.update(request)
+    
     if request.method == 'GET':
-        vars_dict, forms_dict = global_vars(request)
-        vars_dict['sto'] = Storage.objects.get(pk=sto_id)
-        vars_dict['storage_config'] = \
-            vars_dict['sto'].dump_storagedaemon_config()
-        return_dict = utils.merge_dicts(forms_dict, vars_dict)
-        return render_to_response(
-            'bkp/storage/view_storage_config.html',
-            return_dict,
-            context_instance=RequestContext(request))
+        E.sto = Storage.objects.get(pk=sto_id)
+        E.storage_config = E.sto.dump_storagedaemon_config()
+        E.template = 'bkp/storage/view_storage_config.html'
+        return E.render()

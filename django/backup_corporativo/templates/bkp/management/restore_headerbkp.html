@@ -5,20 +5,18 @@
 {% endblock %}
 
 {% block content %}
-<h2>Novo Ponto de Restauração</h2><br /><br />
+<h2>Voltar para Ponto de Restauração '{{hbkp.headerbkp_name}}'</h2><br /><br />
 
 <div class='bloco_texto'>
-    <form action="{{script_name}}/strongbox/headerbkp/create" method="post">
-    {% for field in headerbkp_form %}
+    <form action="{{script_name}}/strongbox/headerbkp/{{hbkp.id}}/restore" method="post">
+    {% for field in restorehbkp_form %}
         <div class="fieldWrapper">
             {{ field.errors }}
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
-    <button type="submit"><span>Criar</span></button>
+    <button type="submit"><span>Restaurar</span></button>
     </form>
 </div>
-
-    <p><a href="{{script_name}}/strongbox/headerbkp/list">Cancelar</a></p>
 
 {% endblock %}

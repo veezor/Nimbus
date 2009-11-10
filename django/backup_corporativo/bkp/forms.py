@@ -50,6 +50,9 @@ class NewStrongBoxForm(forms.Form):
             )
         return password_2
 
+class UmountStrongBoxForm(forms.Form):
+    sb_forceumount = forms.BooleanField(label="Forçar?", initial=False, required=False)
+    
 
 class MountStrongBoxForm(forms.Form):
     """
@@ -74,7 +77,7 @@ class MountStrongBoxForm(forms.Form):
             return password
 
 
-class ChangePasswdStrongBoxForm(forms.Form):
+class ChangePwdStrongBoxForm(forms.Form):
     """
     Confere se os dois novos passwords digitados são iguais.
     Caso não sejam, dispara um erro de validação explicando isso.
@@ -119,10 +122,11 @@ class ChangePasswdStrongBoxForm(forms.Form):
         new_password = cleaned_data.get("sb_new_password")
         new_password_2 = cleaned_data.get("sb_new_password_2")
         km = KeyManager()
+        km.set_password("old_password")
         
         if new_password == new_password_2:
-            pwd_changed = km.change_drive_password(old_password, new_password)
-            if not password_changed:
+            pwd_changed = km.change_drive_password(new_password)
+            if not pwd_changed:
                 raise forms.ValidationError(
                     ugettext_lazy("Wrong password or strongbox header is corrupted.")
                 )
@@ -130,9 +134,67 @@ class ChangePasswdStrongBoxForm(forms.Form):
 
 
 class HeaderBkpForm(ModelForm):
-	class Meta:
-		model = HeaderBkp
-		fields = ('headerbkp_name',)
+    drive_password = forms.CharField(
+        label=u'Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    class Meta:
+        model = HeaderBkp
+        fields = ('headerbkp_name',)
+    
+    def clean_drive_password(self):
+        cleaned_data = self.cleaned_data
+        headerbkp_name = cleaned_data.get("headerbkp_name")
+        drive_password = cleaned_data.get("drive_password")
+        km = KeyManager()
+        km.set_password(drive_password)
+        bkp_created = km.make_drive_backup(headerbkp_name)
+        if not bkp_created:
+            raise forms.ValidationError(
+                ugettext_lazy("Wrong password.")
+            )
+        return drive_password
+
+class EditHeaderBkpForm(ModelForm):
+    class Meta:
+        model = HeaderBkp
+        fields = ('headerbkp_name',)
+
+class RestoreHeaderBkpForm(ModelForm):
+    drive_password = forms.CharField(
+        label=u'Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    class Meta:
+        model = HeaderBkp
+        fields = ('headerbkp_name',)
+
+    def clean_drive_password(self):
+        instance = getattr(self, 'instance', None)
+        if instance and instance.id:
+            headerbkp_name = instance.headerbkp_name
+        else:
+            raise forms.ValidationError(
+                ugettext_lazy("Programming Error, please contact support.")
+            )
+        cleaned_data = self.cleaned_data
+        drive_password = cleaned_data.get("drive_password")
+        km = KeyManager()
+        km.set_password(drive_password)
+        bkp_restored = km.restore_drive_backup(headerbkp_name)
+        if not bkp_restored:
+            raise forms.ValidationError(
+                ugettext_lazy("Wrong password.")
+            )
+        return drive_password
+
+    def __init__(self, *args, **kwargs):
+            super(RestoreHeaderBkpForm, self).__init__(*args, **kwargs)
+            instance = getattr(self, 'instance', None)
+            if instance and instance.id:
+                self.fields['headerbkp_name'].widget.attrs['readonly'] = True
 
 
 class RestoreCompForm(forms.Form):
@@ -245,13 +307,13 @@ class ProcedureForm(ModelForm):
 
 
 class ProcedureAuxForm(forms.Form):
-	FileSet = forms.BooleanField(widget=forms.HiddenInput, initial="True")
-	Schedule = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+	FileSet = forms.BooleanField(widget=forms.HiddenInput, initial=True)
+	Schedule = forms.BooleanField(widget=forms.HiddenInput, initial=True)
 	schedule_type = forms.CharField(
 		max_length=10,
 		widget=forms.HiddenInput,
 		initial="Monthly")
-	Trigger = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+	Trigger = forms.BooleanField(widget=forms.HiddenInput, initial=True)
 
 
 class RunProcedureForm(forms.Form):
@@ -264,7 +326,7 @@ class RunProcedureForm(forms.Form):
 class WizardAuxForm(forms.Form):
 	wizard = forms.BooleanField(
 		label="wizard_active",
-		initial="False",
+		initial=False,
 		widget=forms.HiddenInput)
 
 
@@ -273,14 +335,14 @@ class RunProcedureAuxForm(forms.Form):
 
 
 class ComputerAuxForm(forms.Form):
-	Procedure = forms.BooleanField(widget=forms.HiddenInput, initial="True")
-	FileSet = forms.BooleanField(widget=forms.HiddenInput, initial="True")
-	Schedule = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+	Procedure = forms.BooleanField(widget=forms.HiddenInput, initial=True)
+	FileSet = forms.BooleanField(widget=forms.HiddenInput, initial=True)
+	Schedule = forms.BooleanField(widget=forms.HiddenInput, initial=True)
 	schedule_type = forms.CharField(
 		max_length=10,
 		widget=forms.HiddenInput,
 		initial="Monthly")
-	Trigger = forms.BooleanField(widget=forms.HiddenInput, initial="True")
+	Trigger = forms.BooleanField(widget=forms.HiddenInput, initial=True)
 
 
 class ScheduleForm(ModelForm):
