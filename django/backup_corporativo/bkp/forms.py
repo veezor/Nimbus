@@ -1,17 +1,26 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm
+from django.forms.util import ErrorList
 from django import forms
+
+import truecrypt
+from keymanager import KeyManager
 
 from backup_corporativo.bkp.models import *
 from backup_corporativo.bkp import customfields as cfields
 
-from keymanager import KeyManager
-
 BOOLEAN_CHOICES = ((True,'Ativo'),(0,'Desativado'),)
 BR_DATES = ['%d/%m/%Y']
+
+
+class EncryptionForm(ModelForm):
+    class Meta:
+        model = Encryption
+        fields = ('computer',)
+
 
 class NewStrongBoxForm(forms.Form):
     sb_password = forms.CharField(
@@ -33,22 +42,22 @@ class NewStrongBoxForm(forms.Form):
         Aciona comando de criar drive.
         Caso drive não seja criado, dispara erro de validação explicando isso.
         """
-        cleaned_data = self.cleaned_data
-        password = cleaned_data.get("sb_password")
-        password_2 = cleaned_data.get("sb_password_2")
+        password = self.cleaned_data.get("sb_password")
+        password_2 = self.cleaned_data.get("sb_password_2")
+        
+        print(self.cleaned_data)
         
         if password == password_2:
             km = KeyManager(password=password)
             drive_created = km.create_drive()
             if not drive_created:
-                raise forms.ValidationError(
-                    ugettext_lazy("Strongbox could not be created. Please contact support.")
-                )
+                error = _("Strongbox could not be created. Please contact support.")
+                raise forms.ValidationError(error)
         else:
-            raise forms.ValidationError(
-                ugettext_lazy("Password confirmation doesn't match")
-            )
-        return password_2
+            error = _("Password confirmation doesn't match.")
+            raise forms.ValidationError(error)
+        return self.cleaned_data
+
 
 class UmountStrongBoxForm(forms.Form):
     sb_forceumount = forms.BooleanField(label="Forçar?", initial=False, required=False)
@@ -68,13 +77,15 @@ class MountStrongBoxForm(forms.Form):
     def clean_sb_password(self):
         password = self.cleaned_data.get("sb_password")
         km = KeyManager(password=password)
-        drive_mounted = km.mount_drive()
+        try:
+            drive_mounted = km.mount_drive()
+        except truecrypt.PasswordError:
+            error = _("Wrong password or corrupted strongbox.")
+            raise forms.ValidationError(error)    
         if not drive_mounted:
-            raise forms.ValidationError(
-                ugettext_lazy("Unable to mount strongbox. Wrong password or corrupted strongbox.")
-            )
-        else:
-            return password
+            error = _("Unable to mount strongbox. Please contact support.")
+            raise forms.ValidationError(error)
+        return password
 
 
 class ChangePwdStrongBoxForm(forms.Form):
@@ -85,52 +96,44 @@ class ChangePwdStrongBoxForm(forms.Form):
     Caso a senha do cofre não seja alterada, dispara um erro de validação
     explicando isso.
     """
-    sb_new_password = forms.CharField(
-        label=u'Nova Senha',
-        max_length=255,
-        widget=forms.PasswordInput(render_value=False)
-    )
-    sb_new_password_2 = forms.CharField(
-        label=u'Confirme Nova Senha',
-        max_length=255,
-        widget=forms.PasswordInput(render_value=False)
-    )
-    sb_old_password = forms.CharField(
+    old_password = forms.CharField(
         label=u'Senha Atual',
         max_length=255,
         widget=forms.PasswordInput(render_value=False)
     )
-    sb_backup_header = forms.BooleanField(
-        label=u'Habilitar restauração?',
+    new_password = forms.CharField(
+        label=u'Nova Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    new_password_2 = forms.CharField(
+        label=u'Confirme Nova Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
     )
     
     #TODO: adicionar validação de tamanho e complexidade da senha.
-    def clean_sb_new_password_2(self):
-        cleaned_data = self.cleaned_data
-        new_password = cleaned_data.get("sb_new_password")
-        new_password_2 = cleaned_data.get("sb_new_password_2")
+    def clean(self):
+        old_password = self.cleaned_data.get("old_password")
+        new_password = self.cleaned_data.get("new_password")
+        new_password_2 = self.cleaned_data.get("new_password_2")
         
         if new_password != new_password_2:
-            raise forms.ValidationError(
-                ugettext_lazy("New Password confirmation doesn't match")
-            )
-        return new_password_2
-    
-    def clean_sb_old_password(self):
-        cleaned_data = self.cleaned_data
-        old_password = cleaned_data.get("sb_old_password")
-        new_password = cleaned_data.get("sb_new_password")
-        new_password_2 = cleaned_data.get("sb_new_password_2")
+            error = _("New Password confirmation doesn't match.")
+            if not 'new_password_2' in self._errors:
+                self._errors['new_password_2'] = ErrorList()
+            self._errors['new_password_2'].append(error)
+            errors = True
         km = KeyManager()
-        km.set_password("old_password")
-        
-        if new_password == new_password_2:
-            pwd_changed = km.change_drive_password(new_password)
-            if not pwd_changed:
-                raise forms.ValidationError(
-                    ugettext_lazy("Wrong password or strongbox header is corrupted.")
-                )
-        return old_password
+        km.set_password(old_password)
+        pwd_changed = km.change_drive_password(new_password)
+        if not pwd_changed:
+            error = _("Wrong password or strongbox header is corrupted.")
+            if not 'old_password' in self._errors:
+                self._errors['old_password'] = ErrorList()
+            self._errors['old_password'].append(error)
+            errors = True
+        return self.cleaned_data
 
 
 class HeaderBkpForm(ModelForm):
@@ -156,10 +159,12 @@ class HeaderBkpForm(ModelForm):
             )
         return drive_password
 
+
 class EditHeaderBkpForm(ModelForm):
     class Meta:
         model = HeaderBkp
         fields = ('headerbkp_name',)
+
 
 class RestoreHeaderBkpForm(ModelForm):
     drive_password = forms.CharField(
@@ -294,7 +299,6 @@ class StorageForm(ModelForm):
 			'storage_ip',
 			'storage_port',
 			'storage_description')
-		
 
 
 class ProcedureForm(ModelForm):
@@ -319,6 +323,7 @@ class ProcedureAuxForm(forms.Form):
 class RunProcedureForm(forms.Form):
 	target_date = forms.DateField(label="Data", input_formats=BR_DATES)
 	target_hour = forms.TimeField(label="Hora")
+
 
 # WizardAuxForm serve para passar a informação de se o Wizard está ativo
 # via POST para a view de criação dos objetos do wizard. Assim o menu

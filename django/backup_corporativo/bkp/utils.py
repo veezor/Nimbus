@@ -15,8 +15,8 @@ from django.core.urlresolvers import reverse as _reverse
 from backup_corporativo import settings
 
 
-
-def reverse(viewname, *args, **kwargs):
+### Routing ###
+def reverse(viewname, args=None, kwargs=None):
     return _reverse( "%s.views.%s" % (MAIN_APP, viewname) , args=args, kwargs=kwargs)
 
 
@@ -43,56 +43,7 @@ def get_settings_dict():
     return settings_dict
 
 
-def merge_dicts(main_dict, *dicts_list):
-    """Merge one dict with a list of dicts."""
-    for dict in dicts_list:
-        main_dict.update(dict)
-    return main_dict        
-
-
-def store_location(request):
-    """Stores current user location"""
-    request.session["location"] = request.build_absolute_uri()
-
-
-# TODO: refatorar
-def redirect_back(request, default=None, except_pattern=None):
-    """Redirects user back or to a given default place
-    unless default place matches an except_pattern
-    """
-    if "location" in request.session:
-        import re
-        if except_pattern:
-            if re.search(except_pattern,request.session["location"]):
-                del(request.session["location"]) # use default location
-        else:   
-            # Try to find redirect error
-            referer_full_path = request.META['HTTP_REFERER']
-            request_path = request.META['PATH_INFO']
-            slice_path_re = 'https?://(www\.)?[\w\d\-_ ]+?(:\d+)?(?P<short_path>/.*)'
-            try: 
-                referer_path = re.search(slice_path_re,referer_full_path).group('short_path')
-                if re.search(referer_path, request_path):
-                    del(request.session["location"]) # use default location
-            except Exception:
-                pass
-    if default is None: default = root_path(request)
-    location = ("location" in request.session) and request.session["location"] or default
-    return HttpResponseRedirect(location)
-
-
-# Novo sistema de caminhos está sendo implementado aos poucos.
-# TODO: aceitar instâncias no argumento.
-def edit_path(object_name, object_id, request):
-    script_name = request.META['SCRIPT_NAME']
-    return "%s/%s/%s/edit" % (script_name, object_name, object_id)
-
-
-def path(object_name, object_id, request):
-    script_name = request.META['SCRIPT_NAME']
-    return "%s/%s/%s" % (script_name, object_name, object_id)
-
-
+#TODO migrar para usar apenas reverse e url
 def new_computer_backup(comp_id, request, wizard=False):
     script_name = request.META['SCRIPT_NAME']
     location = "%s/computer/%s/backup/new" % (script_name, comp_id,)
@@ -117,53 +68,6 @@ def schedule_inverse(type):
         return 'Weekly'
 
 
-def manage_strongbox_path(request):
-    script_name = request.META['SCRIPT_NAME']
-    return "%s/management/strongbox/" % script_name
-    
-
-def new_strongbox_path(request):
-    script_name = request.META['SCRIPT_NAME']
-    return "%s/management/strongbox/new" % script_name
-
-def umount_strongbox_path(request):
-    script_name = request.META['SCRIPT_NAME']
-    return "%s/management/strongbox/umount" % script_name
-
-def list_headerbkp_path(request):
-    script_name = request.META['SCRIPT_NAME']
-    return "%s/strongbox/headerbkp/list" % script_name
-
-
-#
-#
-#
-# Definições antigas de caminho (precisam ser refatoradas)
-#
-#
-#
-def edit_system_config_path(request):
-    """Returns edit config path."""
-    return "%s/system/config/edit" % request.META['SCRIPT_NAME']
-
-def edit_system_offsite_path(request):
-    """Returns edit offsite config path."""
-    return "%s/system/offsite/edit" % (request.META['SCRIPT_NAME'])
-
-def root_path(request):
-    """Return root path."""
-    return "%s/" % (request.META['SCRIPT_NAME'])
-
-
-def login_path(request):
-    """Returns login path."""
-    return "%s/session/new" % (request.META['SCRIPT_NAME'])
-
-
-def edit_config_path(request):
-    """Returns edit config path."""
-    return "%s/system/config/edit" % (request.META['SCRIPT_NAME'])
-
 # Passo 1
 def restore_computer_path(request, computer_id):
     """Returns restore computer path."""
@@ -175,23 +79,6 @@ def restore_procedure_path(request, computer_id, procedure_id):
     """Returns restore procedure path."""
     return "%s/computer/%s/procedure/%s/restore/new" % (request.META['SCRIPT_NAME'], computer_id,procedure_id)
 
-
-# Passo 2
-def backup_computer_path(request, computer_id):
-    """Returns backup computer path."""
-    return "%s/computer/%s/backup/new" % (request.META['SCRIPT_NAME'], computer_id)
-
-# Passo 3
-def backup_procedure_path(request, computer_id, procedure_id):
-    """Returns backup computer path."""
-    return "%s/computer/%s/procedure/%s/backup/new" % (request.META['SCRIPT_NAME'], computer_id, procedure_id)
-
-
-# Inicio
-def backup_path(request):
-    """Returns backup computer path."""
-    return "%s/backup/new" % (request.META['SCRIPT_NAME'])
-    
     
 def random_password(size=20):
     """Generates random password of a given size."""

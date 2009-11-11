@@ -2,6 +2,7 @@
 
 {% block content %}
 
+<div class="bloco_texto">
 <p>Dejesa realmente remover o computador '{{comp}}' ?</p>
 
 <form name="delete_computer" action="{{script_name}}/computer/{{comp.id}}/delete" method="POST">
@@ -11,5 +12,5 @@
 <br />
 
 <a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
-
+</div>
 {% endblock %}

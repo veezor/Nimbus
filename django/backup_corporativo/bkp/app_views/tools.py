@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from environment import ENV as E
 import keymanager
 
-from backup_corporativo.bkp import utils
+from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 @authentication_required

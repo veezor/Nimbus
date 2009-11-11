@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV as E
 
-from backup_corporativo.bkp import utils
+from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Schedule
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
@@ -30,5 +30,5 @@ def delete_schedule(request, sched_id):
         computer_id = sched.procedure.computer.id
         sched.delete()
         E.msg = _("Agendamento foi removido permanentemente.")
-        location = utils.computer_path(request, computer_id)
-        return redirect_back(request, default=location)
+        location = reverse("view_computer", args=[computer_id])
+        return HttpResponseRedirect(location)

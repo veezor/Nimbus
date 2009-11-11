@@ -11,8 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV as E
 
-from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.utils import *
+from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.forms import LoginForm
 from backup_corporativo.bkp.models import GlobalConfig
 from backup_corporativo.bkp.views import global_vars, authentication_required
@@ -26,7 +25,8 @@ def new_session(request):
         E.template = 'bkp/session/new_session.html'
         return E.render()
     else:
-        return utils.redirect_back(request)    
+        location = reverse("list_computers")
+        return HttpResponseRedirect(location)
 
 
 def create_session(request):
@@ -42,12 +42,12 @@ def create_session(request):
                 if user:
                     login(request, user)
                     if GlobalConfig.system_configured():
-                        location = utils.root_path(request)
-                        E.msg = _("Bem-vindo ao Sistema de Backups Corporativo.")
+                        location = reverse("list_computers")
+                        E.msg = _("Welcome to Nimbus.")
                     else:
-                        location = edit_config_path(request)
-                        E.msg = _("Configure seu sistema.")
-                    return utils.redirect_back(request, default=location)
+                        location = reverse("edit_system_config")
+                        E.msg = _("Please configure your system.")
+                    return HttpResponseRedirect(location)
                 else:
                     E.template = 'bkp/session/new_session.html'
                     return E.render()
@@ -55,7 +55,8 @@ def create_session(request):
                 E.template = 'bkp/session/new_session.html'
                 return E.render()
     else:
-        return utils.redirect_back(request)
+        location = reverse("list_computers")
+        return HttpResponseRedirect(location)
 
 
 @authentication_required
@@ -65,4 +66,5 @@ def delete_session(request):
     if E.current_user.is_authenticated():
         if request.method == 'POST':
             logout(request)
-    return HttpResponseRedirect(utils.login_path(request))
+    location = reverse("new_session")
+    return HttpResponseRedirect(location)

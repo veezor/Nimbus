@@ -1,16 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV as E
 
-from backup_corporativo.bkp import utils
+from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Computer, GlobalConfig
 from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm, WizardAuxForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
@@ -45,7 +43,8 @@ def create_computer(request):
             wiz = False
         if E.compform.is_valid():
             comp = E.compform.save()
-            location = utils.new_computer_backup(comp.id, request, wizard=wiz)
+            location = reverse('new_computer_backup', [comp.id])
+            location += "?wizard=%s" % wiz
             return HttpResponseRedirect(location)
         else:
             E.wizard = wiz
@@ -73,11 +72,11 @@ def update_computer(request, comp_id):
         E.compform = ComputerForm(request.POST,instance=E.comp)
         if E.compform.is_valid():
             E.compform.save()
-            E,msg(_("Computador foi alterado com sucesso."))
-            location = utils.path("computer", comp_id, request)
+            E.msg = _("Computer has been successfully updated.")
+            location = reverse('view_computer', args=[comp_id])
             return HttpResponseRedirect(location)
         else:
-            E.msg = _("Existem erros e o computador não foi alterado.")
+            E.msg = _("Error at computer update.")
             E.template = 'bkp/computer/edit_computer.html'
             return E.render()
 
@@ -102,14 +101,14 @@ def delete_computer(request, comp_id):
     
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
-        E.msg(_("Confirme a remoção do computador."))
+        E.msg = _("Please confirm computer removal.")
         E.template = 'bkp/computer/delete_computer.html'
         return E.render()
     elif request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.delete()
-        E.msg = _("Computador removido permanentemente.")
-        return HttpResponseRedirect(utils.root_path(request))
+        E.msg = _("Computer has been permanently removed.")
+        return HttpResponseRedirect(reverse("list_computers"))
 
 
 @authentication_required
@@ -119,8 +118,8 @@ def test_computer(request, comp_id):
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.run_test_job()
-        E.msg = _("Uma requisição foi enviada para o computador.")
-        location = utils.path("computer", comp_id, request)
+        E.msg = _("A requisition has been sent to the computer.")
+        location = reverse("view_computer", args=[comp_id])
         return HttpResponseRedirect(location)
 
 
@@ -185,12 +184,10 @@ def create_computer_backup(request, comp_id):
             proc.save()
             fset.procedure_id = proc.id
             fset.save()
-            location = utils.new_procedure_schedule(
-                proc.id,
-                request,
-                wizard=wiz)
+            location = reverse("new_procedure_schedule", args=[proc.id])
+            location += "?wizard=%s" % wiz
             return HttpResponseRedirect(location)
         else:
             E.wizard = wiz
             E.template = 'bkp/computer/new_computer_backup.html'
-            E.render()
+            return E.render()

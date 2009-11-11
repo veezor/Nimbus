@@ -13,8 +13,9 @@
 {% if drive_mounted %}
 <p>Opções:</p>
 <ul>
-<li><p><a href="{{script_name}}/management/strongbox/umount">Desmontar</a></p></li>
-<li><p>Alterar Senha </p></li>
+<li><a href="{% url bkp.views.umount_strongbox %}">Desmontar</a></li>
+<li><a href="{% url bkp.views.changepwd_strongbox %}">Alterar Senha</a></li>
+<li><a href="{% url bkp.views.list_headerbkp %}">Restauraçao</a></li>
 </ul>
 {% else %}
 

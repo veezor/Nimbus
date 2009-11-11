@@ -35,6 +35,9 @@
     
 </div>
 
-    <p><a href="{{script_name}}/strongbox/headerbkp/new">Adicionar Ponto de Restauração</a></p>
+    <ul>
+        <li><a href="{% url bkp.views.new_headerbkp %}">Adicionar Ponto de Restauração</a></li>
+        <li><a href="{% url bkp.views.manage_strongbox %}">Cancelar</a></li>
+
 
 {% endblock %}

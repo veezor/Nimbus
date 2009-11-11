@@ -5,11 +5,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
 
 from environment import ENV as E
 
+#TODO: remover import do módulo utils
 from backup_corporativo.bkp import utils
+from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Computer, Procedure, Schedule
 from backup_corporativo.bkp.forms import ProcedureForm, MonthlyTriggerForm, WeeklyTriggerForm, ScheduleAuxForm, WizardAuxForm, FileSetForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
@@ -36,7 +37,7 @@ def update_procedure(request, proc_id):
         if E.procform.is_valid():
             E.procform.save()
             E.msg = _("Backup successfully updated.")
-            location = utils.edit_path("procedure", proc_id, request)
+            location = reverse("edit_procedure", args=[proc_id])
             return HttpResponseRedirect(location)
         else:
             E.msg = _("Error at backup update.")
@@ -59,7 +60,7 @@ def delete_procedure(request, proc_id):
         comp = proc.computer
         proc.delete()
         E.msg = _("Backup successfully removed.")
-        location = utils.path("computer", comp.id,request)
+        location = reverse("view_computer", args=[comp.id])
         return HttpResponseRedirect(location)
 
 
@@ -87,7 +88,8 @@ def create_procedure_fileset(request, proc_id):
             fset = E.fsetform.save(commit=False)
             fset.procedure = E.proc
             fset.save()
-            return HttpResponseRedirect(reverse('backup_corporativo.bkp.views.new_procedure_schedule',args=[E.proc.id]))
+            location = E.reverse('new_procedure_schedule',args=[E.proc.id])
+            return HttpResponseRedirect(location)
         else:
             E.msg = _("Error at fileset creation.")
             E.template = 'bkp/procedure/new_procedure_fileset.html'
@@ -110,6 +112,7 @@ def new_procedure_schedule(request, proc_id):
             E.wizard = False
         E.proc = get_object_or_404(Procedure, pk=proc_id)
         E.comp = E.proc.computer
+        # TODO: usar template tag filter url
         E.new_schedule_url = utils.new_procedure_schedule(
             E.proc.id,
             request,

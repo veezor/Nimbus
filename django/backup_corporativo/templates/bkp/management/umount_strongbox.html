@@ -11,13 +11,9 @@
 
     <h3>Tem certeza que deseja travar o cofre?</h3><br /><br />
     <form action="{{script_name}}/management/strongbox/umount" method="post">
-        {% for field in umount_form %}
-            <div class="fieldWrapper">
-                {{ field.errors }}
-                {{ field.label_tag }} {{ field }}
-            </div>
-        {% endfor %}    
     <button type="submit"><span>Sim</span></button>
+    <button onclick="location.href='{% url backup_corporativo.bkp.views.manage_strongbox %}';return false"><span>Cancelar</span></button>
+
     </form>
     
 </div>
