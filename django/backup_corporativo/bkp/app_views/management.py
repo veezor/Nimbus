@@ -4,7 +4,7 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV as E
 from keymanager import KeyManager
@@ -254,9 +254,9 @@ def restore_headerbkp(request, hbkp_id):
         E.template = 'bkp/management/restore_headerbkp.html'
         return E.render()
     elif request.method == 'POST':
-        E.restorehbkp_form = RestoreHeaderBkpForm(request.POST, instance=hbkp)
+        E.restorehbkp_form = RestoreHeaderBkpForm(request.POST, instance=E.hbkp)
         if E.restorehbkp_form.is_valid():
-            location = "list_headerbkp"
+            location = reverse("list_headerbkp")
             return HttpResponseRedirect(location)
         else:
             E.template = 'bkp/management/restore_headerbkp.html'
