@@ -25,10 +25,11 @@ def main_statistics(request):
         E.dir_status = server.status_director()
         E.sd_status = server.status_storage()
         E.fd_status = server.status_client()
-        E.dbsize = Bacula.db_size()
-        E.numproc = Bacula.num_procedures()
-        E.numcli = Bacula.num_clients()
-        E.tmbytes = Bacula.total_mbytes()
+        #TODO: consertar estatísticas
+        #E.dbsize = Bacula.db_size()
+        #E.numproc = Bacula.num_procedures()
+        #E.numcli = Bacula.num_clients()
+        #E.tmbytes = Bacula.total_mbytes()
         E.template = 'bkp/stats/main_statistics.html'
         return E.render()
     
@@ -39,7 +40,8 @@ def history_statistics(request):
     
     if request.method == 'GET':
         server = SOAPProxy("http://127.0.0.1:8888")
-        E.runningjobs = Bacula.running_jobs()
-        E.lastjobs = Bacula.last_jobs()
+        #TODO: consertar estatísticas
+        #E.runningjobs = Bacula.running_jobs()
+        #E.lastjobs = Bacula.last_jobs()
         E.template = 'bkp/stats/history_statistics.html'
         return E.render()
