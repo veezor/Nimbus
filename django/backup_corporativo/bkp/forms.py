@@ -6,6 +6,8 @@ from django.forms import ModelForm
 from django.forms.util import ErrorList
 from django import forms
 
+import truecrypt
+
 from backup_corporativo.bkp.models import *
 from backup_corporativo.bkp import customfields as cfields
 
@@ -69,13 +71,15 @@ class MountStrongBoxForm(forms.Form):
     def clean_sb_password(self):
         password = self.cleaned_data.get("sb_password")
         km = KeyManager(password=password)
-        drive_mounted = km.mount_drive()
+        try:
+            drive_mounted = km.mount_drive()
+        except truecrypt.PasswordError:
+            error = _("Wrong password or corrupted strongbox.")
+            raise forms.ValidationError(error)    
         if not drive_mounted:
-            raise forms.ValidationError(
-                ugettext_lazy("Unable to mount strongbox. Wrong password or corrupted strongbox.")
-            )
-        else:
-            return password
+            error = _("Unable to mount strongbox. Please contact support.")
+            raise forms.ValidationError(error)
+        return password
 
 
 class ChangePwdStrongBoxForm(forms.Form):
