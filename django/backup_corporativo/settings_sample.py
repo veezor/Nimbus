@@ -25,6 +25,11 @@ BACULA_DATABASE_PASSWORD = ''
 BACULA_DATABASE_HOST = ''
 BACULA_DATABASE_PORT = ''
 
+
+NIMBUS_VAR_PATH = '/var/nimbus/'
+NIMBUS_BACKUP_PATH = '/var/nimbus/backup/'
+NIMBUS_CUSTOM_PATH = '/var/nimbus/custom/'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.

@@ -175,7 +175,7 @@ def _write_section(name, fileobj, dictobj):
 
 def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict):
     """generate config file"""
-    fileobj = utils.prepare_to_write(filename,'custom/config/')
+    fileobj = utils.prepare_to_write(filename,'config/')
 
     _write_section("Director", fileobj, dir_dict)
 
@@ -190,7 +190,7 @@ def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict)
     
     folders = ['computers','filesets','jobs','pools','schedules']
     for folder in folders:
-        import_dir = utils.absolute_dir_path("custom/%s/" % folder)
+        import_dir = utils.absolute_dir_path("%s/" % folder)
         fileobj.write("@|\"sh -c 'for f in %s* ; do echo @${f} ; done'\"\n" % import_dir)
 
     fileobj.close()
@@ -203,16 +203,16 @@ def update_offsite_file(gconf):
     if gconf.offsite_on:
         generate_offsite_file("offsite_job",gconf.offsite_hour)
     else:
-        filepath = utils.absolute_file_path("offsite_job",'custom/jobs')
+        filepath = utils.absolute_file_path("offsite_job",'jobs')
         utils.remove_or_leave(filepath)
-        filepath = utils.absolute_file_path('offsite_sched', 'custom/schedules')
+        filepath = utils.absolute_file_path('offsite_sched', 'schedules')
         utils.remove_or_leave(filepath)
 
 
 
 def generate_offsite_file(filename, offsite_hour):
 
-    f = utils.prepare_to_write(filename, 'custom/jobs')
+    f = utils.prepare_to_write(filename, 'jobs')
     def_sto_name = Storage.default_storage().storage_name
     
     proc_dict = procedure_dict("Upload Offsite", False, "empty_client", 
@@ -229,7 +229,7 @@ def generate_offsite_file(filename, offsite_hour):
     f.write("}\n\n")
     f.close()
     
-    f = utils.prepare_to_write('offsite_sched', 'custom/schedules')
+    f = utils.prepare_to_write('offsite_sched', 'schedules')
     
     f.write("Schedule {\n")
     f.write('''\tName = "%s"\n''' % 'offsite_sched')
@@ -288,7 +288,7 @@ def update_device_file(gconf):
 
 def generate_device(filename,sto_dict, dir_dict, dev_dict, msg_dict):
     """generate config file"""
-    f = utils.prepare_to_write(filename,'custom/config/')
+    f = utils.prepare_to_write(filename,'config/')
 
     _write_section("Storage", f, sto_dict)
     _write_section("Director", f, dir_dict)
@@ -323,7 +323,7 @@ def update_console_file(gconf):
 def generate_console(filename, dir_dict):
     """generate console file"""
 
-    f = utils.prepare_to_write(filename,'custom/config/')
+    f = utils.prepare_to_write(filename,'config/')
     _write_section("Director", f, dir_dict)
     f.close()
 
@@ -369,7 +369,7 @@ def procedure_dict(proc_name, proc_offsite, comp_name, fset_name, sched_name,
 def generate_procedure(proc_name,attr_dict):
     """generate procedure file"""
 
-    f = utils.prepare_to_write(proc_name,'custom/jobs')
+    f = utils.prepare_to_write(proc_name,'jobs')
 
     f.write("Job {\n")
 
@@ -397,7 +397,7 @@ def generate_procedure(proc_name,attr_dict):
 def remove_procedure_file(proc):
     """remove procedure file"""
 
-    base_dir,filepath = utils.mount_path(proc.procedure_bacula_name(),'custom/jobs')
+    base_dir,filepath = utils.mount_path(proc.procedure_bacula_name(),'jobs')
     utils.remove_or_leave(filepath)
    
 
@@ -427,7 +427,7 @@ def computer_dict(name,ip,password):
 def generate_computer_file(name,attr_dict):
     """Computer generate file"""
 
-    f = utils.prepare_to_write(name,'custom/computers')
+    f = utils.prepare_to_write(name,'computers')
     _write_section("Client", f, attr_dict)
     f.close()
 
@@ -438,7 +438,7 @@ def remove_computer_file(comp):
     """Computer remove file"""
 
     base_dir,filepath = utils.mount_path( comp.computer_bacula_name(), 
-                                          'custom/computers')
+                                          'computers')
     utils.remove_or_leave(filepath)
    
 
@@ -474,7 +474,7 @@ def generate_file_array(fsets):
 def generate_fileset_file(name,file_array):
     """FileSet generate file"""
 
-    f = utils.prepare_to_write(name,'custom/filesets')
+    f = utils.prepare_to_write(name,'filesets')
 
     f.write("FileSet {\n")
     f.write('''\tName = "%s"\n''' % (name))
@@ -496,7 +496,7 @@ def remove_fileset_file(proc):
     """remove FileSet file"""
 
     name = proc.fileset_bacula_name()
-    base_dir,filepath = utils.mount_path(name,'custom/filesets')
+    base_dir,filepath = utils.mount_path(name,'filesets')
     utils.remove_or_leave(filepath)    
 
 
@@ -529,7 +529,7 @@ def pool_dict(pool_name):
 def generate_pool(name,attr_dict):        
     """generate pool bacula file"""
 
-    f = utils.prepare_to_write(name,'custom/pools')
+    f = utils.prepare_to_write(name,'pools')
     
     f.write("Pool {\n")
     f.write("\tMaximum Volume Bytes = %s\n" % (attr_dict['Maximum Volume Bytes']))
@@ -551,7 +551,7 @@ def remove_pool_file(instance):
     """pool remove file"""
 
     proc = instance.procedure
-    base_dir,filepath = utils.mount_path( proc.pool_bacula_name(), 'custom/pools')
+    base_dir,filepath = utils.mount_path( proc.pool_bacula_name(), 'pools')
     utils.remove_or_leave(filepath)
 
 
@@ -610,7 +610,7 @@ def update_schedule_file(proc):
 
 def generate_schedule(schedule_name,run_dict):        
 
-    f = utils.prepare_to_write(schedule_name,'custom/schedules')
+    f = utils.prepare_to_write(schedule_name,'schedules')
 
     f.write("Schedule {\n")
     f.write('''\tName = "%s"\n''' % (schedule_name))
@@ -623,7 +623,7 @@ def generate_schedule(schedule_name,run_dict):
 
 @connect_on(model=Procedure, signal=post_delete)
 def remove_schedule_file(proc):
-    base_dir,filepath = utils.mount_path(proc.schedule_bacula_name(),'custom/schedules')
+    base_dir,filepath = utils.mount_path(proc.schedule_bacula_name(),'schedules')
     utils.remove_or_leave(filepath)
     
 
@@ -654,7 +654,7 @@ def storage_dict(name, ip, port, password):
 def generate_storage_file(name, attr_dict):
     """Generate Storage file"""
 
-    f = utils.prepare_to_write(name, 'custom/storages')
+    f = utils.prepare_to_write(name, 'storages')
 
     f.write("Storage {\n")
     for key,value in attr_dict.items():
@@ -668,5 +668,5 @@ def generate_storage_file(name, attr_dict):
 def remove_storage_file(sto):
     """Remove Storage file"""
 
-    base_dir,filepath = utils.mount_path(sto.storage_bacula_name(), 'custom/storages')
+    base_dir,filepath = utils.mount_path(sto.storage_bacula_name(), 'storages')
     utils.remove_or_leave(filepath)
