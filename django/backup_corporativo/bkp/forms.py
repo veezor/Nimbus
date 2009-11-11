@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm
+from django.forms.util import ErrorList
 from django import forms
 
 from backup_corporativo.bkp.models import *
@@ -85,52 +86,44 @@ class ChangePwdStrongBoxForm(forms.Form):
     Caso a senha do cofre não seja alterada, dispara um erro de validação
     explicando isso.
     """
-    sb_new_password = forms.CharField(
-        label=u'Nova Senha',
-        max_length=255,
-        widget=forms.PasswordInput(render_value=False)
-    )
-    sb_new_password_2 = forms.CharField(
-        label=u'Confirme Nova Senha',
-        max_length=255,
-        widget=forms.PasswordInput(render_value=False)
-    )
-    sb_old_password = forms.CharField(
+    old_password = forms.CharField(
         label=u'Senha Atual',
         max_length=255,
         widget=forms.PasswordInput(render_value=False)
     )
-    sb_backup_header = forms.BooleanField(
-        label=u'Habilitar restauração?',
+    new_password = forms.CharField(
+        label=u'Nova Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
+    )
+    new_password_2 = forms.CharField(
+        label=u'Confirme Nova Senha',
+        max_length=255,
+        widget=forms.PasswordInput(render_value=False)
     )
     
     #TODO: adicionar validação de tamanho e complexidade da senha.
-    def clean_sb_new_password_2(self):
-        cleaned_data = self.cleaned_data
-        new_password = cleaned_data.get("sb_new_password")
-        new_password_2 = cleaned_data.get("sb_new_password_2")
+    def clean(self):
+        old_password = self.cleaned_data.get("old_password")
+        new_password = self.cleaned_data.get("new_password")
+        new_password_2 = self.cleaned_data.get("new_password_2")
         
         if new_password != new_password_2:
-            raise forms.ValidationError(
-                ugettext_lazy("New Password confirmation doesn't match")
-            )
-        return new_password_2
-    
-    def clean_sb_old_password(self):
-        cleaned_data = self.cleaned_data
-        old_password = cleaned_data.get("sb_old_password")
-        new_password = cleaned_data.get("sb_new_password")
-        new_password_2 = cleaned_data.get("sb_new_password_2")
+            error = _("New Password confirmation doesn't match.")
+            if not 'new_password_2' in self._errors:
+                self._errors['new_password_2'] = ErrorList()
+            self._errors['new_password_2'].append(error)
+            errors = True
         km = KeyManager()
-        km.set_password("old_password")
-        
-        if new_password == new_password_2:
-            pwd_changed = km.change_drive_password(new_password)
-            if not pwd_changed:
-                raise forms.ValidationError(
-                    ugettext_lazy("Wrong password or strongbox header is corrupted.")
-                )
-        return old_password
+        km.set_password(old_password)
+        pwd_changed = km.change_drive_password(new_password)
+        if not pwd_changed:
+            error = _("Wrong password or strongbox header is corrupted.")
+            if not 'old_password' in self._errors:
+                self._errors['old_password'] = ErrorList()
+            self._errors['old_password'].append(error)
+            errors = True
+        return self.cleaned_data
 
 
 class HeaderBkpForm(ModelForm):
