@@ -17,40 +17,40 @@ BOOLEAN_CHOICES = ((True,'Ativo'),(0,'Desativado'),)
 BR_DATES = ['%d/%m/%Y']
 
 class NewStrongBoxForm(forms.Form):
-    sb_password = forms.CharField(
+    password = forms.CharField(
         label=u'Senha',
         max_length=255,
         widget=forms.PasswordInput(render_value=False)
     )
-    sb_password_2 = forms.CharField(
+    password_2 = forms.CharField(
         label=u'Confirme a Senha',
         max_length=255,
         widget=forms.PasswordInput(render_value=False)
     )
     
     #TODO: adicionar validação de tamanho e complexidade da senha.
-    def clean_sb_password_2(self):
+    def clean(self):
         """
         Confere que as duas senhas sao iguais.
         Caso nao sejam, dispara um erro de validaçao explicando isso.
         Aciona comando de criar drive.
         Caso drive não seja criado, dispara erro de validação explicando isso.
         """
-        cleaned_data = self.cleaned_data
-        password = cleaned_data.get("sb_password")
-        password_2 = cleaned_data.get("sb_password_2")
+        password = self.cleaned_data.get("password")
+        password_2 = self.cleaned_data.get("password_2")
         
         if password == password_2:
             km = KeyManager(password=password)
             drive_created = km.create_drive()
             if not drive_created:
-                raise forms.ValidationError(
-                    ugettext_lazy("Strongbox could not be created. Please contact support.")
-                )
+                error = _("Strongbox could not be created. Please contact support.")
+                raise forms.ValidationError(error)
         else:
-            raise forms.ValidationError(
-                ugettext_lazy("Password confirmation doesn't match")
-            )
+            error = _("Password confirmation doesn't match.")
+            if not 'password_2' in self._errors:
+                self._errors['password_2'] = ErrorList()
+            self._errors['password_2'].append(error)
+            errors = True
         return password_2
 
 class UmountStrongBoxForm(forms.Form):
