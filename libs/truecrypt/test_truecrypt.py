@@ -9,7 +9,6 @@ import os
 
 
 
-
 class TrueCryptTest(unittest.TestCase):
 
     def setUp(self):
@@ -78,6 +77,10 @@ class TrueCryptTest(unittest.TestCase):
         self.password = "error"
         self.assertRaises( truecrypt.PasswordError, self.truecrypt.mount_drive,
                            self.password, self.filedrive, self.mountpoint )
+        self.assertRaises( truecrypt.PasswordError, self.truecrypt.make_backup,
+                           self.password, self.fileback, self.filedrive )
+        self.assertRaises( truecrypt.PasswordError, self.truecrypt.restore_backup,
+                           self.password, self.fileback, self.filedrive )
 
 
     def test_8_change_drive_password(self):

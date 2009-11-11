@@ -112,11 +112,15 @@ class TrueCrypt(object):
         ok, stdout, stderr = self.call_command( "backup", params=(drive,),
                                  input = self._MAKE_BACKUP_PARAMS % locals())
 
+        if "Incorrect password" in stdout:
+            raise PasswordError("Incorrect password")
         return ok
 
     def restore_backup(self, password, backup, drive=DRIVEFILE):
         ok, stdout, stderr = self.call_command( "restore", params=(drive,),
                                  input = self._RESTORE_BACKUP_PARAMS % locals())
+        if "Incorrect password" in stderr:
+            raise PasswordError("Incorrect password")
         return ok
 
     def is_mounted(self, drive=DRIVEFILE):
