@@ -23,27 +23,29 @@ class EncryptionForm(ModelForm):
 
 
 class NewStrongBoxForm(forms.Form):
-    password = forms.CharField(
+    sb_password = forms.CharField(
         label=u'Senha',
         max_length=255,
         widget=forms.PasswordInput(render_value=False)
     )
-    password_2 = forms.CharField(
+    sb_password_2 = forms.CharField(
         label=u'Confirme a Senha',
         max_length=255,
         widget=forms.PasswordInput(render_value=False)
     )
     
     #TODO: adicionar validação de tamanho e complexidade da senha.
-    def clean(self):
+    def clean_sb_password_2(self):
         """
         Confere que as duas senhas sao iguais.
         Caso nao sejam, dispara um erro de validaçao explicando isso.
         Aciona comando de criar drive.
         Caso drive não seja criado, dispara erro de validação explicando isso.
         """
-        password = self.cleaned_data.get("password")
-        password_2 = self.cleaned_data.get("password_2")
+        password = self.cleaned_data.get("sb_password")
+        password_2 = self.cleaned_data.get("sb_password_2")
+        
+        print(self.cleaned_data)
         
         if password == password_2:
             km = KeyManager(password=password)
@@ -53,11 +55,8 @@ class NewStrongBoxForm(forms.Form):
                 raise forms.ValidationError(error)
         else:
             error = _("Password confirmation doesn't match.")
-            if not 'password_2' in self._errors:
-                self._errors['password_2'] = ErrorList()
-            self._errors['password_2'].append(error)
-            errors = True
-        return password_2
+            raise forms.ValidationError(error)
+        return self.cleaned_data
 
 
 class UmountStrongBoxForm(forms.Form):
