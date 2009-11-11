@@ -12,7 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV as E
 
-from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.utils import redirect, reverse
 from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
 from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm
@@ -46,7 +45,8 @@ def update_system_config(request):
         if E.gconfigform.is_valid():
             gconf = E.gconfigform.save()
             E.msg = _("Configuration successfully updated")
-            return redirect('edit_system_config')
+            location = reverse('edit_system_config')
+            return HttpResponseRedirect(location)
         else:
             E.template = 'bkp/system/edit_system_config.html'
             return E.render() 
@@ -73,7 +73,7 @@ def update_system_network(request):
         if E.netform.is_valid():
             E.netform.save()
             # TODO: usar reverse
-            location = utils.edit_networkinterface_path(request)
+            location = reverse('edit_system_network')
             return HttpResponseRedirect(location)
         else:
             E.template = 'bkp/system/edit_system_network.html'
@@ -103,7 +103,7 @@ def update_system_password(request):
             E.msg = _('Senha alterada com sucesso.')
             logger.info('Senha de administrador foi alterada.')
             # TODO: Usar reverse
-            location = utils.edit_system_config_path(request)
+            location = reverse('edit_system_config')
             return HttpResponseRedirect(location)
         else:
             E.template = 'bkp/system/edit_system_password.html'
@@ -131,8 +131,7 @@ def enable_system_offsite(request):
         E.offsiteform = OffsiteConfigForm(request.POST, instance=E.gconfig)
         if E.offsiteform.is_valid():
             E.offsiteform.save()
-            # TODO: usar reverse
-            location = utils.edit_system_offsite_path(request)
+            location = reverse('edit_system_offsite')
             return HttpResponseRedirect(location)
         else:
             E.template = 'bkp/system/edit_system_offsite.html'
@@ -149,5 +148,5 @@ def disable_system_offsite(request):
         gconfig.offsite_hour = '00:00:00'
         gconfig.save()
         Procedure.disable_offsite()
-        location = utils.edit_system_offsite_path(request)
+        location = reverse('edit_system_offsite')
         return HttpResponseRedirect(location)

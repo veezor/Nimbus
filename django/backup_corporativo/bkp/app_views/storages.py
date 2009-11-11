@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV as E
 
-from backup_corporativo.bkp import utils
+from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Storage, Procedure, GlobalConfig
 from backup_corporativo.bkp.forms import StorageForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
@@ -21,7 +21,7 @@ def new_storage(request):
     E.update(request)
 
     if request.method == 'GET':
-        E.storform = StorageForm()
+        E.stoform = StorageForm()
         E.template = 'bkp/storage/new_storage.html',
         return E.render()
 
@@ -31,11 +31,10 @@ def create_storage(request):
     E.update(request)
 
     if request.method == 'POST':
-        E.storform = StorageForm(request.POST)
-        if E.storform.is_valid():
-            storage = E.storform.save()
-            #TODO: usar reverse
-            location = utils.path("storage", sto_id, request)
+        E.stoform = StorageForm(request.POST)
+        if E.stoform.is_valid():
+            sto = E.stoform.save()
+            location = reverse(view_storage, args=[sto.id])
             return HttpResponseRedirect(location)
         else:
             E.msg = _("Error at storage creation.")
@@ -60,7 +59,7 @@ def edit_storage(request, sto_id):
     
     if request.method == 'GET':
         E.storage = get_object_or_404(Storage, pk=sto_id)
-        E.storform = StorageForm(instance=E.storage)
+        E.stoform = StorageForm(instance=E.storage)
         E.template = 'bkp/storage/edit_storage.html'
         return E.render()
         
@@ -70,12 +69,11 @@ def update_storage(request, sto_id):
     E.update(request)
     if request.method == 'POST':
         E.storage = get_object_or_404(Storage, pk=sto_id)
-        E.storform = StorageForm(request.POST, instance=E.storage)
-        if E.storform.is_valid():
-            E.storform.save()
+        E.stoform = StorageForm(request.POST, instance=E.storage)
+        if E.stoform.is_valid():
+            sto = E.stoform.save()
             E.msg = _("Storage successfully updated.")
-            # TODO: usar reverse
-            location = utils.path("storage", sto_id, request)
+            location = reverse('view_storage', args=[sto.id])
             return HttpResponseRedirect(location)
         else:
             E.msg = _("Error at storage edition.")
@@ -95,8 +93,9 @@ def delete_storage(request, sto_id):
     elif request.method == 'POST':
         storage = get_object_or_404(Storage, pk=sto_id)
         storage.delete()
-        E.msg = _("Storage removido permanentemente.")
-        return utils.redirect_back(request)
+        E.msg = _("Storage has been successfully removed.")
+        location = reverse('list_storages')
+        return HttpResponseRedirect(location)
 
 
 @authentication_required

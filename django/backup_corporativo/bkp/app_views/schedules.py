@@ -31,4 +31,4 @@ def delete_schedule(request, sched_id):
         sched.delete()
         E.msg = _("Agendamento foi removido permanentemente.")
         location = reverse("view_computer", args=[computer_id])
-        return redirect_back(location)
+        return HttpResponseRedirect(location)
