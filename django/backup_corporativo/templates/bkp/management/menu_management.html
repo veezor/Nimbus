@@ -4,4 +4,5 @@
 	<li {% if request.META.PATH_INFO|contains:"/management/computers/list" %}class="active"{% endif %}><a href="{{script_name}}/management/computers/list">Computadores</a></li>
 	<li {% if request.META.PATH_INFO|contains:"/management/strongbox" %}class="active"{% endif %}><a href="{% url backup_corporativo.bkp.views.manage_strongbox %}">Cofre</a></li>
 	<li {% if request.META.PATH_INFO|contains:"/management/storages/list" %}class="active"{% endif %}><a href="{{script_name}}/management/storages/list">Storages</a></li>
+    <li {% if request.META.PATH_INFO|contains:"/management/encryption" %}class="active"{% endif %}><a href="{% url bkp.views.list_encryptions %}">Encriptação</a></li>
 </ul>

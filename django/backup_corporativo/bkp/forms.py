@@ -7,14 +7,20 @@ from django.forms.util import ErrorList
 from django import forms
 
 import truecrypt
+from keymanager import KeyManager
 
 from backup_corporativo.bkp.models import *
 from backup_corporativo.bkp import customfields as cfields
 
-from keymanager import KeyManager
-
 BOOLEAN_CHOICES = ((True,'Ativo'),(0,'Desativado'),)
 BR_DATES = ['%d/%m/%Y']
+
+
+class EncryptionForm(ModelForm):
+    class Meta:
+        model = Encryption
+        fields = ('computer',)
+
 
 class NewStrongBoxForm(forms.Form):
     password = forms.CharField(
@@ -52,6 +58,7 @@ class NewStrongBoxForm(forms.Form):
             self._errors['password_2'].append(error)
             errors = True
         return password_2
+
 
 class UmountStrongBoxForm(forms.Form):
     sb_forceumount = forms.BooleanField(label="Forçar?", initial=False, required=False)
@@ -153,10 +160,12 @@ class HeaderBkpForm(ModelForm):
             )
         return drive_password
 
+
 class EditHeaderBkpForm(ModelForm):
     class Meta:
         model = HeaderBkp
         fields = ('headerbkp_name',)
+
 
 class RestoreHeaderBkpForm(ModelForm):
     drive_password = forms.CharField(
@@ -291,7 +300,6 @@ class StorageForm(ModelForm):
 			'storage_ip',
 			'storage_port',
 			'storage_description')
-		
 
 
 class ProcedureForm(ModelForm):
@@ -316,6 +324,7 @@ class ProcedureAuxForm(forms.Form):
 class RunProcedureForm(forms.Form):
 	target_date = forms.DateField(label="Data", input_formats=BR_DATES)
 	target_hour = forms.TimeField(label="Hora")
+
 
 # WizardAuxForm serve para passar a informação de se o Wizard está ativo
 # via POST para a view de criação dos objetos do wizard. Assim o menu

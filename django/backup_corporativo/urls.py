@@ -24,6 +24,11 @@ urlpatterns += patterns(
     (r'^management/$', 'main_management'),
     (r'^management/computers/list$', 'list_computers'),
     (r'^management/storages/list$', 'list_storages'),
+    (r'^management/encryptions/list$', 'list_encryptions'),
+    (r'^management/encryptions/new$', 'new_encryption'),
+    (r'^management/encryptions/create$', 'create_encryption'),
+    #(r'^management/encryptions/remove$', 'remove_encryptions'),
+    #(r'^management/encryptions/delete$', 'delete_encryptions'),    
     # TODO: tirar strongbox de management
     (r'^management/strongbox/$', 'manage_strongbox'),
     (r'^management/strongbox/new$', 'new_strongbox'),

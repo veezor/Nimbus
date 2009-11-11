@@ -1,0 +1,40 @@
+{% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/management/menu_management.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Gerenciar</h2>
+
+<div class="titulo_botoes">
+<h2>Encriptação</h2>
+</div>
+
+<div class="bloco_texto">
+    <table>
+        <thead>
+            <tr>
+                <th>Computer</th>
+                <th>Key</th>
+                <th>Certificate</th>
+                <th>PEM</th>                
+            </tr>
+        </thead>
+        <tbody>
+            {% for enc in enc_list %}
+            <tr>
+                <td>{{enc.computer.computer_name}}</td>
+                <td>Key</td>
+                <td>Cert</td>
+                <td>PEM</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url bkp.views.new_encryption %}">Adicionar Encriptação</a>
+
+    
+{% endblock %}

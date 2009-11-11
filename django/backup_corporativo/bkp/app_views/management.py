@@ -10,10 +10,55 @@ from environment import ENV as E
 from keymanager import KeyManager
 
 from backup_corporativo.bkp.utils import reverse
-from backup_corporativo.bkp.models import Storage, HeaderBkp
-from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm, HeaderBkpForm, EditHeaderBkpForm, UmountStrongBoxForm, RestoreHeaderBkpForm, ChangePwdStrongBoxForm
+from backup_corporativo.bkp.models import Storage, HeaderBkp, Encryption
+from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm, HeaderBkpForm, EditHeaderBkpForm, UmountStrongBoxForm, RestoreHeaderBkpForm, ChangePwdStrongBoxForm, EncryptionForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
+@authentication_required
+def list_encryptions(request):
+    E.update(request)
+
+    if request.method == 'GET':
+        E.enc_list = Encryption.objects.all()
+        E.template = 'bkp/management/list_encryptions.html'
+        return E.render()
+
+
+@authentication_required
+def new_encryption(request):
+    E.update(request)
+
+    if request.method == 'GET':
+        km = KeyManager()
+        E.mounted = km.mounted
+        if not E.mounted:
+            E.mountform = MountStrongBoxForm()
+        E.encform = EncryptionForm()
+        E.template = 'bkp/management/new_encryption.html'
+        return E.render()
+
+
+@authentication_required
+def create_encryption(request):
+    E.update(request)
+
+    if request.method == 'POST':
+        E.encform = EncryptionForm(request.POST)
+        km = KeyManager()
+        if not km.mounted:
+            E.mountform = MountStrongBoxForm(request.POST)
+            if E.mountform.is_valid():
+                pass
+            else:
+                E.template = 'bkp/management/new_encryption.html'
+                return E.render()
+        if E.encform.is_valid():
+            enc = E.encform.save()
+            location = reverse('list_encryptions')
+            return HttpResponseRedirect(location)
+        else:
+            E.template = 'bkp/management/new_encryption.html'
+            return E.render()
 
 
 @authentication_required
