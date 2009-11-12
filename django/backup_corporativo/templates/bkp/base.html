@@ -32,13 +32,13 @@
                 <h1><a href="{{script_name}}/" title="Home">Linconet - Tencnologia Estratégica</a></h1>
                 <div id="main_menu" class="menu">
                     <ul class="links">
-                        <li {% if request.META.PATH_INFO|contains:"/management" %}class="active"{% endif %}><a href="{{script_name}}/management/" title="">Gerenciar</a></li>
-                        <li {% if request.META.PATH_INFO|contains:"/statistics" %}class="active"{% endif %}><a href="{{script_name}}/statistics/main" title="">Estatísticas</a></li>
-                        <li {% if request.META.PATH_INFO|contains:"/tools" %}class="active"{% endif %}><a href="{{script_name}}/tools/" title="">Ferramentas</a></li>
-                        <li {% if request.META.PATH_INFO|contains:"/system" %}class="active"{% endif %}><a href="{{script_name}}/system/config/edit" title="">Sistema</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/management" %}class="active"{% endif %}><a href="{% url bkp.views.main_management %}" title="">Gerenciar</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/statistics" %}class="active"{% endif %}><a href="{% url bkp.views.main_statistics %}" title="">Estatísticas</a></li>
+                        {#<li {% if request.META.PATH_INFO|contains:"/tools" %}class="active"{% endif %}><a href="{% url bkp.views.main_tools %}" title="">Ferramentas</a></li>#}
+                        <li {% if request.META.PATH_INFO|contains:"/system" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_config %}" title="">Sistema</a></li>
                     </ul>
                     {% if current_user.username %}
-                    <form class="link" action="{{script_name}}/session/delete" method="post">
+                    <form class="link" action="{% url bkp.views.delete_session %}" method="post">
                         <p>Bem-vindo, {{current_user.username}} | <button type="submit">Sair</button></p>
                     </form>
                     {% endif %}
@@ -52,8 +52,8 @@
 				<div id="sidebar">
                     <h3>Atalhos</h3>
                     <ul class="aux">
-					<li><a href="{{script_name}}/computer/new?wizard=true">Adicionar Computador</a></li>
-                    <li><a href="{{script_name}}/backup/new" title="">Adicionar Backup</a></li>
+					<li><a href="{% url bkp.views.new_computer %}?wizard=true">Adicionar Computador</a></li>
+                    {# TODO: migrar restore para usar url #}
                     <li><a href="{{script_name}}/restore/new" title="">Restaurar Arquivos</a></li>
                     </ul>
                     <br /><br />
@@ -63,7 +63,7 @@
 				    <h3>Computadores</h3>
 					<ul class="aux list_computers">
 						{% for c in computers %}
-						<li {% ifequal c.id comp.id %}class="active"{% endifequal %}><a href="{{script_name}}/computer/{{c.id}}">{{ c.computer_name }}</a> <span>{{ c.computer_ip }}</span></li>
+						<li {% ifequal c.id comp.id %}class="active"{% endifequal %}><a href="{% url bkp.views.view_computer c.id %}">{{ c.computer_name }}</a> <span>{{ c.computer_ip }}</span></li>
 						{% endfor %}
 					</ul>
 					{% endif %}
