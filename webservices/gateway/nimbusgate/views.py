@@ -85,15 +85,12 @@ class Handler(object):
                             operation = Operation.objects.get(name=method),
                             path = key )
         ol.save()
-
-
-
         return self._get_json_response({'url':url, 'id' : ol.id })
 
     def get(self, request, key):
         return self.call_method(request, key)
 
-    def put(self, request, key, base64_of_md5 = None):
+    def put(self, request, base64_of_md5, key):
         return self.call_method(request, key, method="PUT", 
                                 headers = { 'Content-MD5': base64_of_md5  })
 
@@ -104,7 +101,11 @@ class Handler(object):
     def list(self, request):
         bucket = self.get_bucketname(request)
         url = self.aws.list_bucket(bucket)
-        return self._get_json_response({'url':url})
+        ol = OperationLog(  user=User.objects.get(username=request.user),
+                            operation = Operation.objects.get(name="LIST"))
+        ol.save()
+        return self._get_json_response({'url':url, 'id' : ol.id })
+
 
 
 

@@ -4,13 +4,13 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    # Example:
-    (r'^gateway/', include('gateway.nimbusgate.urls')),
+from gateway.nimbusgate.views import handler
 
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+urlpatterns = patterns('gateway.nimbusgate.views',
+    url(r'json/get/key/(?P<key>.*)$', handler.get),
+    url(r'json/put/base64/(?P<base64_of_md5>\w+)/key/(?P<key>.*)$', handler.put),
+    url(r'json/delete/key/(?P<key>.*)$', handler.delete),
+    url(r'json/list$', handler.list),
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
