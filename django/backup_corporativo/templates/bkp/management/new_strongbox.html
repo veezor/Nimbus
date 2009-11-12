@@ -10,7 +10,7 @@
 <div class='bloco_texto'>
     {{newstrongbox_form.non_field_errors}}
     <h3>Você ainda não possui um cofre. Digite a senha para criá-lo</h3><br /><br />
-    <form action="{{script_name}}/management/strongbox/create" method="post">
+    <form action="{% url bkp.views.create_strongbox %}" method="POST">
     {% for field in newstrongbox_form %}
         <div class="fieldWrapper">
             {# alterar ordem dos campos #}

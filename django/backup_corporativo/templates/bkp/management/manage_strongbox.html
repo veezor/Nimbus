@@ -20,7 +20,7 @@
 {% else %}
 
     <h3>Digite a senha para abrir o cofre.</h3><br /><br />
-    <form action="{{script_name}}/management/strongbox/mount" method="post">
+    <form action="{% url bkp.views.mount_strongbox %}" method="POST">
     {% for field in mountstrongbox_form %}
         <div class="fieldWrapper">
             {{ field.errors }}

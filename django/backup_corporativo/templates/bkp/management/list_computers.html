@@ -29,9 +29,8 @@
                 <td>{{comp.computer_ip}}</td>
                 <td>{{comp.computer_so_friendly }}</td>
                 <td>{{comp.computer_encryption_friendly}}</td>
-                <td><button onclick="location.href='{{script_name}}/{{comp.edit_url}}';return false"><span>Editar</span></button>
-	            <button onclick="location.href='{{script_name}}/{{comp.delete_url}}';return false" class="red"><span>Remover</span></button></td>
-
+                <td><button onclick="location.href='{% url bkp.views.edit_computer comp.id %}';return false"><span>Editar</span></button>
+	            <button onclick="location.href='{% url bkp.views.delete_computer comp.id %}';return false" class="red"><span>Remover</span></button></td>
             </tr>
             {% endfor %}
         </tbody>

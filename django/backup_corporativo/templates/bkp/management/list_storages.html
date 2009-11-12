@@ -27,9 +27,8 @@
                 <td>{{sto.storage_name}}</td>
                 <td>{{sto.storage_ip}}</td>
                 <td>{{sto.storage_description}}</td>
-                <td><button onclick="location.href='{{script_name}}/{{sto.edit_url}}';return false"><span>Editar</span></button>
-	            <button onclick="location.href='{{script_name}}/{{sto.delete_url}}';return false" class="red"><span>Remover</span></button></td>
-
+                <td><button onclick="location.href='{% url bkp.views.edit_storage sto.id %}';return false"><span>Editar</span></button>
+	            <button onclick="location.href='{% url bkp.views.delete_storage sto.id %}';return false" class="red"><span>Remover</span></button></td>
             </tr>
             {% endfor %}
         </tbody>

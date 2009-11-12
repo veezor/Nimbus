@@ -8,7 +8,7 @@
 <h2>Novo Ponto de Restauração</h2><br /><br />
 
 <div class='bloco_texto'>
-    <form action="{{script_name}}/strongbox/headerbkp/create" method="post">
+    <form action="{% url bkp.views.create_headerbkp %}" method="POST">
     {% for field in headerbkp_form %}
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -19,6 +19,6 @@
     </form>
 </div>
 
-    <p><a href="{{script_name}}/strongbox/headerbkp/list">Cancelar</a></p>
+    <p><a href="{% url bkp.views.list_headerbkp %}">Cancelar</a></p>
 
 {% endblock %}

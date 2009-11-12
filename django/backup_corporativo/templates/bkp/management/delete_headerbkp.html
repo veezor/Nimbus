@@ -8,7 +8,7 @@
 <h2>Remover Ponto de Restauração</h2><br /><br />
 
 <div class='bloco_texto'>
-    <form action="{{script_name}}/strongbox/headerbkp/{{hbkp.id}}/delete" method="post">
+    <form action="{% url bkp.views.delete_headerbkp hbkp.id %}" method="POST">
     <h3>Você tem certeza que deseja remover '{{hbkp.headerbkp_name}}'?</h3>
     <br />
     <br />
@@ -16,4 +16,5 @@
     </form>
 </div>
 
+<a href="{% url bkp.views.list_headerbkp %}">Cancelar</a>
 {% endblock %}

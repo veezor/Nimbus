@@ -8,7 +8,7 @@
 <h2>Alterar Ponto de Restauração</h2><br /><br />
 
 <div class='bloco_texto'>
-    <form action="{{script_name}}/strongbox/headerbkp/{{hbkp.id}}/update" method="post">
+    <form action="{% url bkp.views.update_headerbkp hbkp.id %}" method="POST">
     {% for field in headerbkp_form %}
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -20,3 +20,4 @@
 </div>
 
 {% endblock %}
+<a href="{% url bkp.views.list_headerbkp %}">Cancelar</a>

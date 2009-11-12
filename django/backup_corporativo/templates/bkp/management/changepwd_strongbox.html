@@ -9,7 +9,7 @@
 
 <div class='bloco_texto'>
 
-    <form action="{{script_name}}/management/strongbox/changepwd" method="post">
+    <form action="{% url bkp.views.changepwd_strongbox %}" method="POST">
         {% for field in changepwdsb_form %}
             <div class="fieldWrapper">
                 {{ field.errors }}
