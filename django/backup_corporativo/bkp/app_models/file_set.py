@@ -16,6 +16,7 @@ from backup_corporativo.bkp.app_models.procedure import Procedure
 
 class FileSet(models.Model):
     procedure = models.ForeignKey(Procedure)
+    #TODO: Evitar duplicata de fset por Procedure (via form? ou pre-save?)
     path = cfields.ModelPathField(
         "Caminho Completo",
         max_length="255")

@@ -13,22 +13,29 @@ from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Computer, Procedure, Schedule
 from backup_corporativo.bkp.forms import ProcedureForm, MonthlyTriggerForm, WeeklyTriggerForm, ScheduleAuxForm, WizardAuxForm, FileSetForm
-from backup_corporativo.bkp.views import global_vars, authentication_required
+from backup_corporativo.bkp.views import global_vars, authentication_required, DAYS_OF_THE_WEEK
+
+
+
 
 
 @authentication_required
-def edit_procedure(request, proc_id):
+def edit_backup(request, proc_id):
     E.update(request)
-    E.proc = get_object_or_404(Procedure, pk=proc_id)
-    E.comp = E.proc.computer
+    
     if request.method == 'GET':
+        E.proc = get_object_or_404(Procedure, pk=proc_id)
+        E.comp = E.proc.computer
+        E.fsets = E.proc.fileset_set.all()
+        E.scheds = E.proc.schedule_set.all()
+        E.DAYS_OF_THE_WEEK = DAYS_OF_THE_WEEK
         E.procform = ProcedureForm(instance=E.proc)
-        E.template = 'bkp/procedure/edit_procedure.html'
+        E.template = 'bkp/procedure/edit_backup.html'
         return E.render()
 
 
 @authentication_required
-def update_procedure(request, proc_id):
+def update_backup(request, proc_id):
     E.update(request)
     E.proc = get_object_or_404(Procedure, pk=proc_id)
     E.comp = E.proc.computer
@@ -37,11 +44,11 @@ def update_procedure(request, proc_id):
         if E.procform.is_valid():
             E.procform.save()
             E.msg = _("Backup successfully updated.")
-            location = reverse("edit_procedure", args=[proc_id])
+            location = reverse("edit_backup", args=[proc_id])
             return HttpResponseRedirect(location)
         else:
             E.msg = _("Error at backup update.")
-            E.template = 'bkp/procedure/edit_procedure.html'
+            E.template = 'bkp/procedure/edit_backup.html'
             return E.render()
 
 
@@ -88,7 +95,7 @@ def create_procedure_fileset(request, proc_id):
             fset = E.fsetform.save(commit=False)
             fset.procedure = E.proc
             fset.save()
-            location = E.reverse('new_procedure_schedule',args=[E.proc.id])
+            location = reverse('edit_backup',args=[E.proc.id])
             return HttpResponseRedirect(location)
         else:
             E.msg = _("Error at fileset creation.")
@@ -152,7 +159,7 @@ def create_procedure_schedule(request, proc_id):
             trigg = E.triggform.save(commit=False)
             trigg.schedule = sched
             trigg.save()
-            location = utils.path("computer", E.comp.id, request)
+            location = reverse("edit_backup", args=[proc_id])
             return HttpResponseRedirect(location)
         else:
             E.new_schedule_url = utils.new_procedure_schedule(

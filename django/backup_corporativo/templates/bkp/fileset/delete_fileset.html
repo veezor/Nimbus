@@ -5,11 +5,11 @@
 <p>Deseja realmente remover o local '{{fset}}' ?</p>
 
 <form name="delete_fileset" action="{% url bkp.views.delete_fileset fset.id %}" method="POST">
-	<input type="submit" value="Sim">
+	<p><input type="submit" value="Sim" /> <a href="{% url bkp.views.edit_backup proc.id %}">Cancelar</a></p>
 </form>
 
 <br />
 
-<a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a>
+
 
 {% endblock %}

@@ -19,13 +19,14 @@ def delete_fileset(request, fset_id):
     E.update(request)
     if request.method == 'GET':
         E.fset = get_object_or_404(FileSet, pk=fset_id)
+        E.proc = E.fset.procedure
         E.msg = _("Please confirm fileset removal.")
         E.template = 'bkp/fileset/delete_fileset.html'
         return E.render()
     elif request.method == 'POST':
-        fset = get_object_or_404(FileSet, pk=fileset_id)
-        comp_id = fset.procedure.computer.id
+        fset = get_object_or_404(FileSet, pk=fset_id)
+        proc_id = fset.procedure.id
         fset.delete()
         E.msg = _("Fileset has been successfully removed.")
-        location = reverse("view_computer", args=[comp_id])
+        location = reverse("edit_backup", args=[proc_id])
         return HttpResponseRedirect(location)

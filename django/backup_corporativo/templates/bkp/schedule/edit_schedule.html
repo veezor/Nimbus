@@ -5,11 +5,8 @@
 <h2> Alterar Agendamento </h2>
 
 <div class="bloco_texto">
-    <ul class="aux">
-        <li><strong class="label">Tipo:</strong> <span class="value">{{ sched.type }}</span></li>
-    </ul>
-</div>
-
+    <p><strong class="label">Tipo:</strong> <span class="value">{{ sched.type }}</span></p>
+    <br />
 
 <form action="{% url bkp.views.update_schedule sched.id %}" method="POST">
 	
@@ -20,11 +17,12 @@
         </div>
     {% endfor %}
 
-    <p><input type="submit" value="Salvar" /></p>
+    <p><input type="submit" value="Salvar" /> <a href="{% url bkp.views.edit_backup proc.id %}">Cancelar</a></p>
 </form>
 
 
-<a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a>
-<br />
+
+
+</div>
 
 {% endblock %}

@@ -114,7 +114,7 @@
 		            <div class="acoes">
 		                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
 		                <div id="view_comp_02_{{ forloop.counter }}" class="escondido">
-		                    <button onclick="location.href='{% url bkp.views.edit_procedure proc.id %}'"><span>Alterar</span></button>
+		                    <button onclick="location.href='{% url bkp.views.edit_backup proc.id %}'"><span>Alterar</span></button>
 		                    <button onclick="location.href='{% url bkp.views.delete_procedure proc.id %}'" class="red"><span>Remover</span></button>
                             <button onclick="location.href='{% url bkp.views.new_procedure_fileset proc.id %}'"><span>Novo Local</span></button>
                             <button onclick="location.href='{% url bkp.views.new_procedure_schedule proc.id %}'"><span>Novo Agendamento</span></button>                            

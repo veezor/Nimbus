@@ -13,10 +13,9 @@
         </div>
     {% endfor %}
 
-<button onclick="location.href='{% url backup_corporativo.bkp.views.view_computer comp.id %}';return false"><span>Cancelar</span></button>
+<p><input type="submit" value="Prosseguir" /> <a href='{% url bkp.views.edit_backup proc.id %}'>Cancelar</a>
+</p>
 
-
-<button type="submit"><span>Prosseguir</span></button>
 </form>
 </div>
 

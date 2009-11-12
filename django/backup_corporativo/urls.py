@@ -74,7 +74,7 @@ urlpatterns += patterns(
     (r'^computer/(?P<comp_id>\d+)/backup/create$', 'create_computer_backup'),        
     # views_app/storages.py
     (r'^storage/create$', 'create_storage'),
-    (r'^storage/new$', 'new_storage'),
+    (r'^storage/new$', 'new_storage'),    
     (r'^storage/(?P<sto_id>\d+)$', 'view_storage'),
     (r'^storage/(?P<sto_id>\d+)/edit$', 'edit_storage'),
     (r'^storage/(?P<sto_id>\d+)/update$', 'update_storage'),
@@ -82,8 +82,8 @@ urlpatterns += patterns(
     (r'^storage/(?P<sto_id>\d+)/config/$', 'view_storage_config'),
     (r'^storage/(?P<sto_id>\d+)/config/dump$', 'dump_storage_config'),
     # views_app/procedures.py
-    (r'^procedure/(?P<proc_id>\d+)/edit$', 'edit_procedure'),
-    (r'^procedure/(?P<proc_id>\d+)/update$', 'update_procedure'),
+    (r'^procedure/(?P<proc_id>\d+)/backup/edit$', 'edit_backup'),
+    (r'^procedure/(?P<proc_id>\d+)/backup/update$', 'update_backup'),
     (r'^procedure/(?P<proc_id>\d+)/delete$', 'delete_procedure'),
     (r'^procedure/(?P<proc_id>\d+)/fileset/new$', 'new_procedure_fileset'),
     (r'^procedure/(?P<proc_id>\d+)/fileset/create$', 'create_procedure_fileset'),
@@ -92,8 +92,8 @@ urlpatterns += patterns(
     # views_app/filesets.py
     (r'^fileset/(?P<fset_id>\d+)/delete$', 'delete_fileset'),
     # views_app/schedules.py
-    #(r'^schedule/(?P<sched_id>\d+)/edit$', 'edit_schedule'),
-    #(r'^schedule/(?P<sched_id>\d+)/update$', 'update_schedule'),
+    (r'^schedule/(?P<sched_id>\d+)/update$', 'update_schedule'),
+    (r'^schedule/(?P<sched_id>\d+)/edit$', 'edit_schedule'),
     (r'^schedule/(?P<sched_id>\d+)/delete$', 'delete_schedule'),
     #
     #

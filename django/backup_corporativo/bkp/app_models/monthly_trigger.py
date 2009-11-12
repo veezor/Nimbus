@@ -47,9 +47,9 @@ class MonthlyTrigger(models.Model):
 
     def level_friendly(self):
         if self.level == 'Full':
-            return "Backup completo"
+            return "Completo"
         elif self.level == 'Incremental':
-            return "Backup incremental"
+            return "Incremental"
 
     def __sanitize_target_days(self):
         """Removes duplicated day entries"""
