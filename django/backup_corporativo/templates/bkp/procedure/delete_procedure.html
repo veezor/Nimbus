@@ -4,12 +4,12 @@
 
 <p>Dejesa realmente remover o procedimento '{{proc}}' ?</p>
 
-<form name="delete_procedure" action="{{script_name}}/{{proc.delete_url}}" method="POST">
+<form name="delete_procedure" action="{% url bkp.views.delete_procedure proc.id %}" method="POST">
 	<input type="submit" value="Sim">
 </form>
 
 <br />
 
-<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a>
 
 {% endblock %}

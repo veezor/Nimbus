@@ -5,7 +5,7 @@
 <h2> Alterar Procedimento </h2>
 
 
-<form action="{{script_name}}/{{proc.update_url}}" method="post">
+<form action="{% url bkp.views.update_procedure proc.id %}" method="post">
     {% for field in procform %}
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -15,7 +15,7 @@
     <p><input type="submit" value="Salvar" /></p>
 </form>
 
-<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a>
 <br />
 
 {% endblock %}

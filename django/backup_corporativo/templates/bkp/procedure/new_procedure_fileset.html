@@ -3,7 +3,7 @@
 
 <h2>Procedimento: {{proc.procedure_name}}</h2>
 <div class='bloco_texto'>
-    <form action="{{script_name}}/procedure/{{proc.id}}/fileset/create" method="post"> 
+    <form action="{% url bkp.views.create_procedure_fileset proc.id %}" method="post"> 
 	<h3>Adicionar Local</h3><br />
 
     {% for field in fsetform %}

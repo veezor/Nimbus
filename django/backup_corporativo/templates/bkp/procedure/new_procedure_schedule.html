@@ -8,7 +8,7 @@
 {% endif %}
 
 <div class='bloco_texto'>
-    <form action="{{script_name}}/procedure/{{proc.id}}/schedule/create" method="post"> 
+    <form action="{% url bkp.views.create_procedure_schedule proc.id %}" method="post"> 
     {% include "bkp/wizard/wizard_auxiliar_partial.html" %}
 	<h3>Agendamento</h3><br />
 	<p>Tipo: {{sched_type|friendly_sched_type}} ( <a href="{{new_schedule_url}}">trocar</a> )</p>
