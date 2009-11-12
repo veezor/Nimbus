@@ -5,12 +5,12 @@
 <div class="bloco_texto">
 <p>Dejesa realmente remover o computador '{{comp}}' ?</p>
 
-<form name="delete_computer" action="{{script_name}}/computer/{{comp.id}}/delete" method="POST">
+<form name="delete_computer" action="{% url bkp.views.delete_computer comp.id %}" method="POST">
 	<input type="submit" value="Sim">
 </form>
 
 <br />
 
-<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a>
 </div>
 {% endblock %}

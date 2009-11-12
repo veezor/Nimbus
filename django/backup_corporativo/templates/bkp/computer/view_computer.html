@@ -40,15 +40,15 @@
 	    <div class="botao_acoes">
 	        <button class="popup" rel="view_comp_02"><span>avançado</span></button>
 	        <div id="view_comp_02" class="escondido">
-				<button onclick="location.href='{{script_name}}/{{comp.computer_config_url}}'"><span>Configuração</span></button>
-				<form action="{{script_name}}/{{comp.run_test_url}}" method="post">
+				<button onclick="location.href='{% url bkp.views.view_computer_config comp.id %}'"><span>Configuração</span></button>
+				<form action="{% url bkp.views.test_computer comp.id %}" method="post">
 					<button type="submit"><span>Testar Conexão</span></button>
 				</form>
 	    	</div>
 	        <button class="popup" rel="view_comp_01"><span>ações</span></button>
 	        <div id="view_comp_01" class="escondido">
-    	        <button onclick="location.href='{{script_name}}/{{comp.edit_url}}'"><span>Alterar</span></button>
-	    	    <button onclick="location.href='{{script_name}}/{{comp.delete_url}}';" class="red"><span>Remover</span></button>
+    	        <button onclick="location.href='{% url bkp.views.edit_computer comp.id %}'"><span>Alterar</span></button>
+	    	    <button onclick="location.href='{% url bkp.views.delete_computer comp.id %}';" class="red"><span>Remover</span></button>
 	    	</div>
 	    </div>
 	</div>
@@ -80,7 +80,7 @@
 			        <span>Backup</span>
 			    </h3>
 			    <div class="botao_acoes">
-			        <button onclick="location.href='{{script_name}}/computer/{{comp.id}}/backup/new';"><span class="">Adicionar</span></button>
+			        <button onclick="location.href='{% url bkp.views.new_computer_backup comp.id %}';"><span class="">Adicionar</span></button>
 			    </div>
 			</div>
 	
@@ -114,17 +114,17 @@
 		            <div class="acoes">
 		                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
 		                <div id="view_comp_02_{{ forloop.counter }}" class="escondido">
-		                    <button onclick="location.href='{{script_name}}/{{proc.new_run_url}}'"><span>Executar</span></button>
-		                    <button onclick="location.href='{{script_name}}/{{proc.edit_url}}'"><span>Alterar</span></button>
-		                    <button onclick="location.href='{{script_name}}/{{proc.delete_url}}'" class="red"><span>Remover</span></button>
-                            <button onclick="location.href='{{script_name}}/{{proc.new_fileseet_url}}'"><span>Novo Local</span></button>
+		                    <button onclick="location.href='{% url bkp.views.edit_procedure proc.id %}'"><span>Alterar</span></button>
+		                    <button onclick="location.href='{% url bkp.views.delete_procedure proc.id %}'" class="red"><span>Remover</span></button>
+                            <button onclick="location.href='{% url bkp.views.new_procedure_fileset proc.id %}'"><span>Novo Local</span></button>
+                            <button onclick="location.href='{% url bkp.views.new_procedure_schedule proc.id %}'"><span>Novo Agendamento</span></button>                            
 		                </div>
 		            </div>
 			    </div>
 			    <div id="detalhes_procedimento_{{ proc.id }}" class="detalhes_procedimento escondido">
 		            <div class="storage coluna primeira">
 		                Storage:<br/>
-		                <a href="{{ script_name }}/{{ proc.storage.view_url }}">{{ proc.storage.storage_name }}</a>
+		                <a href="{% url bkp.views.view_storage proc.storage.id %}">{{ proc.storage.storage_name }}</a>
 		            </div>
 		            <div class="caminhos coluna">
 		                Caminhos:<br/>

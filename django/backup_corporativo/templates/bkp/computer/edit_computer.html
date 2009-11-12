@@ -4,12 +4,12 @@
 <h2> Alterar Computador </h2>
 
 
-<form action="{{script_name}}/computer/{{comp.id}}/update" method="post">
+<form action="{% url bkp.views.update_computer comp.id %}" method="post">
     {% include "bkp/computer/computer_partial.html"%}
     <p><input type="submit" value="Salvar" /></p>
 </form>
 
-<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a>
 <br />
 
 {% endblock %}

@@ -12,7 +12,7 @@
 
 <br />
 <br />
-<form action="{{script_name}}/computer/create" method="post">
+<form action="{% url bkp.views.create_computer %}" method="post">
 {% include "bkp/wizard/wizard_auxiliar_partial.html" %}
 {% include "bkp/computer/computer_partial.html" %}
 <button type="submit"><span>Prosseguir</span></button>

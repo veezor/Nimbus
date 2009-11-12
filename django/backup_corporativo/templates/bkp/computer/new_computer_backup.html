@@ -6,7 +6,7 @@
 {% endif %}
 
 <div class="bloco_texto">
-<form action="{{script_name}}/computer/{{comp.id}}/backup/create" method="post">
+<form action="{% url bkp.views.create_computer_backup comp.id %}" method="post">
     {% include "bkp/wizard/wizard_auxiliar_partial.html" %}
     <h3>Escolha um Nome para o Backup</h3>
         <div class="fieldWrapper">
@@ -34,7 +34,7 @@
             <span class="inline-list">{{ procform.offsite_on.label_tag }} {{ procform.offsite_on }}</span>
         </div>
     <br /><br />    
-<button onclick="location.href='{{script_name}}/computer/{{comp.id}}';return false"><span>Cancelar</span></button>
+<button onclick="location.href='{% url bkp.views.view_computer comp.id %}';return false"><span>Cancelar</span></button>
 
 	
 <button type="submit"><span>Prosseguir</span></button>
