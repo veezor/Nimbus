@@ -1,5 +1,5 @@
 {% load bkp_extras %}
 <ul class="horizontal_menu">
-    <li {% if request.META.PATH_INFO|contains:"/statistics/main" %}class="active"{% endif %}><a href="{{script_name}}/statistics/main">Principal</a></li>
-    <li {% if request.META.PATH_INFO|contains:"/statistics/history" %}class="active"{% endif %}><a href="{{script_name}}/statistics/history">Histórico</a></li>
+    <li {% if request.META.PATH_INFO|contains:"/statistics/main" %}class="active"{% endif %}><a href="{% url bkp.views.main_statistics %}">Principal</a></li>
+    <li {% if request.META.PATH_INFO|contains:"/statistics/history" %}class="active"{% endif %}><a href="{% url bkp.views.history_statistics %}">Histórico</a></li>
 </ul>

@@ -10,7 +10,7 @@
 <h2> Alterar Interface de Rede </h2>
 <br /><br />
 
-<form action="{{script_name}}/system/network/update" method="post">
+<form action="{% url bkp.views.update_system_network %}" method="POST">
     {% for field in netform %}
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -20,7 +20,6 @@
     <p><input type="submit" value="Salvar" /></p>
 </form>
 
-<a href="{{script_name}}/networkinterface/new">Cancelar</a>
 <br />
 
 {% endblock %}

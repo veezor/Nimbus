@@ -1,8 +1,8 @@
 {% load bkp_extras %}
 
 <ul class="horizontal_menu">    
-    <li {% if request.META.PATH_INFO|isequal:"/system/config/edit" %}class="active"{% endif %}><a href="{{script_name}}/system/config/edit">Configurações</a></li>
-    <li {% if request.META.PATH_INFO|isequal:"/system/network/edit" %}class="active"{% endif %}><a href="{{script_name}}/system/network/edit">Rede</a></li>
-    <li {% if request.META.PATH_INFO|isequal:"/system/password/edit" %}class="active"{% endif %}><a href="{{script_name}}/system/password/edit">Senha</a></li>
-    <li {% if request.META.PATH_INFO|isequal:"/system/offsite/edit" %}class="active"{% endif %}><a href="{{script_name}}/system/offsite/edit">Offsite</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/config/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_config %}">Configurações</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/network/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_network %}">Rede</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/password/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_password %}">Senha</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/offsite/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_offsite %}">Offsite</a></li>
 </ul>

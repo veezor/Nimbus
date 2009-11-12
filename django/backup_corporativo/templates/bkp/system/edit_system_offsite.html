@@ -9,14 +9,14 @@
 {% if offsite_on %}
 <h2> Configuraçao do Backup Offsite </h2>
 <p> Deseja realmente desabilitar backup offsite? </p>
-<form action="{{script_name}}/system/offsite/disable" method="post">
+<form action="{% url bkp.views.disable_system_offsite %}" method="POST">
     <p><input type="submit" value="Sim" /></p>
 </form>
 
 {% else %}
 <h2> Configuraçao do Backup Offsite </h2>
 
-<form action="{{script_name}}/system/offsite/enable" method="post">
+<form action="{% url bkp.views.enable_system_offsite %}" method="POST">
         <div class="fieldWrapper">
             {{ offsiteform.offsite_hour.errors }}
             {{ offsiteform.offsite_hour.label_tag }} {{ offsiteform.offsite_hour }}
@@ -31,7 +31,6 @@
 
 {% endif %}
 
-<a href="{{script_name}}/system/offsite/edit">Cancelar</a>
 <br />
 
 {% endblock %}

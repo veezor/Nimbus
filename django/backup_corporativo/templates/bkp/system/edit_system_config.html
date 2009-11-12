@@ -11,7 +11,7 @@
 <h2>Configurações</h2>
 <br /><br />
   
-    <form action="{{script_name}}/system/config/update" method="post">
+    <form action="{% url bkp.views.update_system_config %}" method="POST">
         {% for field in gconfigform %}
             <div class="fieldWrapper">
                 {{ field.errors }}
@@ -20,38 +20,5 @@
         {% endfor %}
         <p><input type="submit" value="Salvar" /></p>
     </form>
-
-
-
-
-{% ifequal config_type 'offsite' %}
-<h2>Backup Offsite</h2>
-
-{% if offsite_on %}
-
-<form action="{{script_name}}/offsite/edit" >
-<p>O backup offsite está Habilitado. Deseja desabilitar?</p>
-<button type="submit"><span>Deshabilitar</span></button>
-</form>
-
-
-<h3>Procedimentos que executarão bakup offsite:</h3>
-<ul>
-    {% for proc in procedures %}
-        <li><a href="{{ script_name }}/{{ proc.computer.view_url }}">{{ proc.computer.computer_name }} - {{ proc.procedure_name }}</a></li>
-    {% endfor %}
-
-
-{% else %}
-
-<form action="{{script_name}}/offsite/edit" >
-<p>O backup offsite está Desabilitado. Deseja habilitar?</p>
-<button type="submit"><span>Habilitar</span></button>
-</form>
-</ul>
-{% endif %}
-
-{% endifequal %}
-
 
 {% endblock %}
