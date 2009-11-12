@@ -51,18 +51,6 @@ class Schedule(models.Model):
         elif self.type == "Monthly":
             return "Mensal"
 
-    def edit_url(self):
-        """Returns edit url."""
-        return "schedule/%s/edit" % self.id
-
-    def update_url(self):
-        """Returns edit url."""
-        return "schedule/%s/update" % self.id
-
-    def delete_url(self):
-        """Returns delete url."""
-        return "schedule/%s/delete" % self.id
-
     # TODO: Otimizar codigo, remover if do schedule type (programaçao dinamica)
     def get_trigger(self):
         # Objetos precisam ser importados aqui, já que existe uma
