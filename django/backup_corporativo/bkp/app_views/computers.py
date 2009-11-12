@@ -11,7 +11,7 @@ from environment import ENV as E
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Computer, GlobalConfig
 from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm, WizardAuxForm
-from backup_corporativo.bkp.views import global_vars, authentication_required
+from backup_corporativo.bkp.views import global_vars, authentication_required, DAYS_OF_THE_WEEK
 
 
 # TODO: enviar informação de wizard pro POST através de formuário auxiliar
@@ -91,6 +91,7 @@ def view_computer(request, comp_id):
         E.running_jobs = E.comp.running_jobs()
         E.last_jobs = E.comp.last_jobs()
         E.compstatus = E.comp.get_status()
+        E.DAYS_OF_THE_WEEK = DAYS_OF_THE_WEEK
         E.template = 'bkp/computer/view_computer.html'
         return E.render()
 
