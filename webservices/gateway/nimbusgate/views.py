@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from django.contrib.auth import authenticate, login, logout
 
-import json
+try:
+    import json
+except ImportError, e:
+    import simplejson as json # python < 2.6
 
 from models import UserBucket, OperationLog, Operation
 import S3
