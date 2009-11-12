@@ -4,12 +4,12 @@
 
 <p>Dejesa realmente remover o storage '{{storage}}' ?</p>
 
-<form name="delete_storage" action="{{script_name}}/storage/{{storage.id}}/delete" method="POST">
+<form name="delete_storage" action="{% url bkp.views.delete_storage storage.id %}" method="POST">
 	<input type="submit" value="Sim">
 </form>
 
 <br />
 
-<a href="{{script_name}}/storage/{{storage.id}}">Cancelar</a>
+<a href="{% url bkp.views.view_storage storage.id %}">Cancelar</a>
 
 {% endblock %}

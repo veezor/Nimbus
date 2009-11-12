@@ -3,7 +3,7 @@
 {% block content %}
 <h2>Adicionar Storage</h2>
 
-<form action="{{script_name}}/storage/" method="post">
+<form action="{% url bkp.views.create_storage %}" method="post">
     {% for field in storform %}
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -13,4 +13,6 @@
 
     <p><input type="submit" value="Cadastrar" /></p>
 </form>
+
+<a href="{% url bkp.views.list_storages %}">Cancelar</a>
 {% endblock %}

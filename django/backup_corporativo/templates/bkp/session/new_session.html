@@ -24,7 +24,7 @@
         <div id="box_login">
             <h1>Login</h1>
 
-            <form action="{{script_name}}/session/" method="post">
+            <form action="{% url bkp.views.create_session %}" method="post">
                 {% for field in loginform %}
                     <div class="fieldWrapper">
                         {{ field.errors }}

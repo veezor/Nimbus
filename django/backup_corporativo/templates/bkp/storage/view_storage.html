@@ -9,9 +9,9 @@
 	        {{ storage.storage_name }} <span class="toggle pequeno" rel="detalhes_computador">(ver detalhes)</span>
 	    </h2>
 	    <div class="botao_acoes">
-	        <button onclick="location.href='{{script_name}}/{{storage.storage_config_url}}'"><span>Configuraçao</span></button>
-	        <button onclick="location.href='{{script_name}}/{{storage.edit_url}}'"><span>Alterar</span></button>
-		    <button onclick="location.href='{{script_name}}/{{storage.delete_url}}';" class="red"><span>Remover</span></button>
+	        <button onclick="location.href='{% url bkp.views.view_storage_config storage.id %}'"><span>Configuraçao</span></button>
+	        <button onclick="location.href='{% url bkp.views.edit_storage storage.id %}'"><span>Alterar</span></button>
+		    <button onclick="location.href='{% url bkp.views.delete_storage storage.id %}';" class="red"><span>Remover</span></button>
 	    </div>
 	</div>
 	
@@ -24,7 +24,7 @@
 	        <li><strong class="label">Procedimento{{procedures.count|pluralize}}:</strong>
 	            <span class="value">
 	                {% for proc in procedures %}
-	                    <a href="{{script_name}}/{{proc.computer.view_url}}">{{proc}} - {{proc.computer}} </a><br/>
+	                    <a href="{% url bkp.views.view_computer proc.computer.id %}">{{proc}} - {{proc.computer}} </a><br/>
 	                {% endfor %}
 	            </span>
 	        </li>

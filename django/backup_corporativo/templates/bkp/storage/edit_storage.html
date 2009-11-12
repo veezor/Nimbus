@@ -3,7 +3,7 @@
 
 <h2>Alterar Storage</h2>
 
-<form action="{{script_name}}/storage/{{ storage.id }}/update" method="post">
+<form action="{% url bkp.views.update_storage storage.id %}" method="post">
     {% for field in storform %}
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -14,7 +14,7 @@
     <p><input type="submit" value="Salvar" /></p>
 </form>
 
-<a href="{{script_name}}/storage/{{storage.id}}">Cancelar</a>
+<a href="{% url bkp.views.view_storage storage.id %}">Cancelar</a>
 <br />
 
 {% endblock %}

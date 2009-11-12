@@ -11,7 +11,7 @@
 </div>
 
 
-<form action="{{script_name}}/{{sched.update_url}}" method="post">
+<form action="{% url bkp.views.update_schedule sched.id %}" method="POST">
 	
     {% for field in triggform %}
         <div class="fieldWrapper">
@@ -24,7 +24,7 @@
 </form>
 
 
-<a href="{{script_name}}/computer/{{comp.id}}">Cancelar</a>
+<a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a>
 <br />
 
 {% endblock %}
