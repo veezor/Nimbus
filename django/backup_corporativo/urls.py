@@ -38,7 +38,7 @@ urlpatterns += patterns(
     (r'^management/strongbox/changepwd$', 'changepwd_strongbox'),
     (r'^strongbox/headerbkp/list$', 'list_headerbkp'),
     (r'^strongbox/headerbkp/new$', 'new_headerbkp'),
-    (r'^strongbox/headerbkp/create$', 'create_headerbackup'),
+    (r'^strongbox/headerbkp/create$', 'create_headerbkp'),
     (r'^strongbox/headerbkp/(?P<hbkp_id>\d+)/delete$', 'delete_headerbkp'),
     (r'^strongbox/headerbkp/(?P<hbkp_id>\d+)/edit$', 'edit_headerbkp'),
     (r'^strongbox/headerbkp/(?P<hbkp_id>\d+)/update$', 'update_headerbkp'),
