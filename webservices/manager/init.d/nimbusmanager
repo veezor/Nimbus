@@ -1,25 +1,34 @@
-#! /bin/sh
+#!/bin/sh
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/local/bin/nimbus-manager
 NAME=nimbusmanager
 DESC="Nimbus Manager Webservice daemon"
 
-test -f $DAEMON || exit 0
+# Identify the system.
+if [ $(uname) = "Darwin" ] ; then
+    SYSTEM_OS=mac
+    DAEMON=/etc/nimbus/com.nimbus.nimbusd.plist
+    STOPDAEMON="sudo launchctl unload -w $DAEMON"
+    STARTDAEMON="sudo launchctl load -w $DAEMON"
+else
+    SYSTEM_OS=linux
+    DAEMON=/usr/local/bin/nimbus-manager
+    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid"
+    STARTDAEMON="$STOPLINUX --exec $DAEMON"
+fi
 
+test -f $DAEMON || echo 'ERR: The daemon file is no present.'; exit 0
 set -e
 
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
-	start-stop-daemon --start --quiet --pidfile /var/run/$NAME.pid \
-		--exec $DAEMON
+	$STARTDAEMON
 	echo "$NAME."
 	;;
   stop)
 	echo -n "Stopping $DESC: "
-	start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid
-	# \	--exec $DAEMON
+	$STOPDAEMON
 	echo "$NAME."
 	;;
   #reload)
@@ -41,12 +50,9 @@ case "$1" in
 	#	just the same as "restart".
 	#
 	echo -n "Restarting $DESC: "
-	start-stop-daemon --stop --quiet --pidfile \
-		/var/run/$NAME.pid
-		# --exec $DAEMON
+	$STOPDAEMON
 	sleep 1
-	start-stop-daemon --start --quiet --pidfile \
-		/var/run/$NAME.pid --exec $DAEMON
+	$STARTDAEMON
 	echo "$NAME."
 	;;
   *)
