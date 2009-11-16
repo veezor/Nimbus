@@ -79,4 +79,5 @@ class NimbusUUID(models.Model):
             object.nimbus_uuid
         except cls.DoesNotExist:
             object.nimbus_uuid = cls.build()
+            return object.nimbus_uuid 
     generate_uuid_or_leave = classmethod(generate_uuid_or_leave)

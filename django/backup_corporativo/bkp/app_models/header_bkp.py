@@ -1,11 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+
 from django.db import models
 from django import forms
+
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
-
+from backup_corporativo.settings import NIMBUS_CUSTOM_PATH
 
 class HeaderBkp(models.Model):
     headerbkp_name = models.CharField("Nome", max_length=50, unique=True)
@@ -30,11 +33,16 @@ class HeaderBkp(models.Model):
         app_label = 'bkp'    
 
     def save(self):
-        NimbusUUID.generate_uuid_or_leave(self)
+        # Geração de NimbusUUID é gerenciada pelo formulário
+        #NimbusUUID.generate_uuid_or_leave(self)
         super(HeaderBkp, self).save()
 
     def filename(self):
         return "%s_headerbkp" % self.nimbus_uuid.uuid_hex
+    
+    def filepath(self):
+        base_path = os.path.join(NIMBUS_CUSTOM_PATH, 'header_bkp')
+        return os.path.join(base_path, self.filename())
 
     def created_on(self):
         return self.nimbus_uuid.uuid_created_on
