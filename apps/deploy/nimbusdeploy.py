@@ -127,7 +127,7 @@ def chown_nimbus_files():
 def update_nimbus_version():
     ui = mercurial.ui.ui()
     ui.readconfig(os.path.join(NIMBUS_HG_PATH, ".hg/hgrc"))
-    repo = mercurial.hj.repository(ui, path=NIMBUS_HG_PATH)
+    repo = mercurial.hg.repository(ui, path=NIMBUS_HG_PATH)
     mercurial.commands.pull(ui, repo)
     mercurial.commands.update(ui, repo)
 
