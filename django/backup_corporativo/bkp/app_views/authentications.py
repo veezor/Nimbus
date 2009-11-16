@@ -43,10 +43,8 @@ def create_session(request):
                     login(request, user)
                     if GlobalConfig.system_configured():
                         location = reverse("list_computers")
-                        E.msg = _("Welcome to Nimbus.")
                     else:
                         location = reverse("edit_system_config")
-                        E.msg = _("Please configure your system.")
                     return HttpResponseRedirect(location)
                 else:
                     E.template = 'bkp/session/new_session.html'
