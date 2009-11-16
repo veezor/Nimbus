@@ -47,7 +47,7 @@ def global_vars(request):
 
 def require_authentication(request):
     """Redirect user to authentication page."""
-    return HttpResponseRedirect(utils.login_path(request))
+    return HttpResponseRedirect(utils.reverse('new_session'))
 
 
 def authentication_required(view_def):

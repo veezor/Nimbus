@@ -25,7 +25,7 @@
             <tr>
                 <td>{{hbkp.headerbkp_name}}</td>
                 <td>{{hbkp.created_on}}</td>
-                <td><button onclick="location.href='{% url bkp.views.bkp.restore_headerbkp hbkp.id %}';return false"><span>Restaurar</span></button>
+                <td><button onclick="location.href='{% url bkp.views.restore_headerbkp hbkp.id %}';return false"><span>Restaurar</span></button>
                 <button onclick="location.href='{% url bkp.views.edit_headerbkp hbkp.id %}';return false"><span>Editar</span></button>
 	            <button onclick="location.href='{% url bkp.views.delete_headerbkp hbkp.id %}';return false" class="red"><span>Remover</span></button></td>
             </tr>
@@ -35,9 +35,8 @@
     
 </div>
 
-    <ul>
-        <li><a href="{% url bkp.views.new_headerbkp %}">Adicionar Ponto de Restauração</a></li>
-        <li><a href="{% url bkp.views.manage_strongbox %}">Cancelar</a></li>
+    <p>
+        <a href="{% url bkp.views.new_headerbkp %}">Adicionar Ponto de Restauração</a> | <a href="{% url bkp.views.manage_strongbox %}">Cancelar</a></p>
 
 
 {% endblock %}

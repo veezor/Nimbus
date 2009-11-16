@@ -42,8 +42,8 @@ class NewStrongBoxForm(forms.Form):
         Aciona comando de criar drive.
         Caso drive não seja criado, dispara erro de validação explicando isso.
         """
-        password = self.cleaned_data.get("sb_password")
-        password_2 = self.cleaned_data.get("sb_password_2")
+        password = self.cleaned_data.get(u"sb_password")
+        password_2 = self.cleaned_data.get(u"sb_password_2")
         
         print(self.cleaned_data)
         
@@ -75,7 +75,7 @@ class MountStrongBoxForm(forms.Form):
     )
     
     def clean_sb_password(self):
-        password = self.cleaned_data.get("sb_password")
+        password = self.cleaned_data.get(u"sb_password")
         km = KeyManager(password=password)
         try:
             drive_mounted = km.mount_drive()
@@ -114,9 +114,9 @@ class ChangePwdStrongBoxForm(forms.Form):
     
     #TODO: adicionar validação de tamanho e complexidade da senha.
     def clean(self):
-        old_password = self.cleaned_data.get("old_password")
-        new_password = self.cleaned_data.get("new_password")
-        new_password_2 = self.cleaned_data.get("new_password_2")
+        old_password = self.cleaned_data.get(u"old_password")
+        new_password = self.cleaned_data.get(u"new_password")
+        new_password_2 = self.cleaned_data.get(u"new_password_2")
         
         if new_password != new_password_2:
             error = _("New Password confirmation doesn't match.")
@@ -148,15 +148,21 @@ class HeaderBkpForm(ModelForm):
     
     def clean_drive_password(self):
         cleaned_data = self.cleaned_data
-        headerbkp_name = cleaned_data.get("headerbkp_name")
-        drive_password = cleaned_data.get("drive_password")
+        headerbkp_name = cleaned_data.get(u"headerbkp_name")
+        drive_password = cleaned_data.get(u"drive_password")
         km = KeyManager()
         km.set_password(drive_password)
-        bkp_created = km.make_drive_backup(headerbkp_name)
+        uuid = NimbusUUID.generate_uuid_or_leave(self.instance)
+        try:
+            bkp_created = km.make_drive_backup(self.instance.filepath())
+        except truecrypt.PasswordError:
+            uuid.delete()
+            error = _("Wrong password.")
+            raise forms.ValidationError(error)
         if not bkp_created:
-            raise forms.ValidationError(
-                ugettext_lazy("Wrong password.")
-            )
+            uuid.delete()
+            error = _("Cannot create header backup. Please contact support.")
+            raise forms.ValidationError(error)
         return drive_password
 
 
@@ -185,7 +191,7 @@ class RestoreHeaderBkpForm(ModelForm):
                 ugettext_lazy("Programming Error, please contact support.")
             )
         cleaned_data = self.cleaned_data
-        drive_password = cleaned_data.get("drive_password")
+        drive_password = cleaned_data.get(u"drive_password")
         km = KeyManager()
         km.set_password(drive_password)
         bkp_restored = km.restore_drive_backup(headerbkp_name)

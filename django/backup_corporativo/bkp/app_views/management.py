@@ -223,7 +223,7 @@ def new_headerbkp(request):
 
 
 @authentication_required
-def create_headerbackup(request):
+def create_headerbkp(request):
     E.update(request)
     
     if request.method == 'POST':
