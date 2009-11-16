@@ -486,8 +486,7 @@ margin-bottom: 5px;
 
 .fieldWrapper {
 padding: 5px;
-border-bottom: 1px solid #eee;
-width: 710px;
+width: 660px;
 overflow: hidden
 }
 
@@ -506,10 +505,12 @@ float: right;
 }
 
 .errorlist {
-padding: 7px 10px;
-background: #A22;
+padding: 7px 10px 0;
+background: #CF3237;
 list-style: none;
 margin-bottom: 10px;
+margin-left: 150px;
+opacity: 0.7;
 }
 
 .errorlist li {
@@ -517,10 +518,10 @@ color: #FFF;
 }
 
 .passos {
-width: 684px;
+width: 700px;
 height: 48px;
 overflow: hidden;
-background: url(/static/imagens/bg_passos.gif) top left no-repeat;
+background: url(/static/imagens/bg_passos.gif) top left repeat-x;
 }
 
 .passos .passo {
