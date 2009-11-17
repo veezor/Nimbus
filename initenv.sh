@@ -16,3 +16,4 @@ fi
 
 # sobrescrevendo PYTHONPATH
 export PYTHONPATH=$(pwd)/libs
+export PYTHONPATH=$PYTHONPATH:$(pwd)/apps/deploy
