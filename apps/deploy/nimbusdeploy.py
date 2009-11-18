@@ -118,6 +118,7 @@ def check_python_dep(name):
         return True
     except ImportError, e:
         logger.error('%s not found.' % name)
+        raise ImportError(e)
 
 
 @rule
