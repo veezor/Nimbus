@@ -23,6 +23,8 @@ NIMBUS_HG_URL = "http://hg.linconet.com.br/bc-devel"
 NIMBUS_ETC_PATH = "/etc/nimbus"
 NIMBUS_LOG_PATH = "/var/log/nimbus"
 
+TRUECRYPT_BIN_PATH = "/usr/bin/truecrypt"
+
 
 logger = logging.getLogger(__name__)
 
@@ -54,11 +56,13 @@ def get_new_nimbus_version():
 @rule(depends=get_new_nimbus_version)
 def install_config_files():
     os.rename( join(NIMBUS_HG_PATH, "custom"), NIMBUS_CUSTOM_PATH)
-    shutil.copy( join(NIMBUS_HG_PATH, "webservices/gateway/nimbus_gateway.conf"),
+    shutil.copy( join( NIMBUS_HG_PATH, 
+                       "webservices/gateway/nimbus_gateway.conf"),
                  NIMBUS_ETC_PATH )
     shutil.copy( join(NIMBUS_HG_PATH, "django/backup_corporativo/logging.conf"),
                  NIMBUS_ETC_PATH )
-    shutil.copy( join(NIMBUS_HG_PATH, "django/backup_corporativo/settings_sample.py"),
+    shutil.copy( join( NIMBUS_HG_PATH, 
+                       "django/backup_corporativo/settings_sample.py"),
                  join(NIMBUS_HG_PATH, "django/backup_corporativo/settings.py"))
     return True
 
@@ -99,14 +103,42 @@ def chown_nimbus_files():
     return True
 
 
-@rule(depends=chown_nimbus_files) #depends use reverse order
+
+
+@rule(on_failure='install_nimbus')
+def has_nimbus():
+    return not os.access(NIMBUS_VAR_PATH, os.R_OK)
+
+
+def check_python_dep(name):
+    logger.info('Checking dependency %s' % name)
+    try:
+        module = __import__(name)
+        logger.info('%s is found.' % name)
+        return True
+    except ImportError, e:
+        logger.error('%s not found.' % name)
+
+
+@rule
+def check_python_packages():
+    check_python_dep('django')
+    check_python_dep('netifaces')
+    check_python_dep('M2Crypto')
+    return True
+
+@rule
+def has_truecrypt():
+    return os.access( TRUECRYPT_BIN_PATH , os.R_OK)
+
+
+
+@rule( depends=( has_truecrypt, 
+                 check_python_packages, 
+                 chown_nimbus_files ) ) #depends use reverse order
 def install_nimbus(): # for semantic way, bypass to chown_nimbus_files
     return True
 
-
-@rule(on_failure=install_nimbus)
-def has_nimbus():
-    return not os.access(NIMBUS_VAR_PATH)
 
 
 @rule(depends=has_nimbus)
@@ -120,8 +152,7 @@ def update_nimbus_version():
 
 
 
-#@rule(depends=update_nimbus_version)
-@rule
+@rule(depends=update_nimbus_version)
 def deploy():
     logger.info("Nimbus deploy finalized")
     return True

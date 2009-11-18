@@ -5,6 +5,11 @@ import logging
 import logging.handlers
 import sys
 
+# Global
+
+DEBUG = False
+
+
 # Exceptions
 
 
@@ -53,7 +58,9 @@ def setup_logging():
 
 
 @log_exception
-def start(rule):
+def start(rule, debug=False):
+    global DEBUG
+    DEBUG = debug
     r = rule.run()
     if not r:
         raise DeployFailed("Start rule not returned True")
@@ -79,8 +86,6 @@ class Rule(object):
         self.dependencies = []
         self.executed = False
         self.call_on_failure = None
-        self.callback_args = ()
-        self.callback_kwargs = {}
 
 
     @classmethod
@@ -104,14 +109,18 @@ class Rule(object):
     def run(self):
 
         self._run_deps()
-        
-        result = self.function()
+
+        if DEBUG:
+            logger.info('Debug mode: bypass rule.run for rule %s' % self.name)
+            result = True
+        else:
+            result = self.function()
 
         self.executed = True
 
         if not result and self.call_on_failure:
             logger.info('Calling error_callback for rule %s' % self.name)
-            result = self.call_on_failure(*self.callback_args, **self.callback_kwargs)
+            result = self.call_on_failure.run()
         logger.info('Rule %s successfully performed' % self.name)
         return result
 
