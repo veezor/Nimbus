@@ -27,7 +27,7 @@
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
-    <button type="submit"><span>Criar Cofre</span></button>
+    <p><button type="submit"><span>Criar Cofre</span></button> <a href="{% url bkp.views.list_headerbkp %}">Restaurar</a></p>
     </form>
 
 {% endif %}

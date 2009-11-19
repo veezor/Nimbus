@@ -185,20 +185,18 @@ class RestoreHeaderBkpForm(ModelForm):
     def clean_drive_password(self):
         instance = getattr(self, 'instance', None)
         if instance and instance.id:
-            headerbkp_name = instance.headerbkp_name
+            headerbkp_path = instance.filepath()
         else:
-            raise forms.ValidationError(
-                ugettext_lazy("Programming Error, please contact support.")
-            )
+            error = _("Programming Error, please contact support.")
+            raise forms.ValidationError(error)
         cleaned_data = self.cleaned_data
         drive_password = cleaned_data.get(u"drive_password")
         km = KeyManager()
         km.set_password(drive_password)
-        bkp_restored = km.restore_drive_backup(headerbkp_name)
+        bkp_restored = km.restore_drive_backup(headerbkp_path)
         if not bkp_restored:
-            raise forms.ValidationError(
-                ugettext_lazy("Wrong password.")
-            )
+            error = _("Wrong password.")
+            raise forms.ValidationError(error)
         return drive_password
 
     def __init__(self, *args, **kwargs):
