@@ -44,8 +44,12 @@ urlpatterns += patterns(
     (r'^strongbox/headerbkp/(?P<hbkp_id>\d+)/update$', 'update_headerbkp'),
     (r'^strongbox/headerbkp/(?P<hbkp_id>\d+)/restore$', 'restore_headerbkp'),
     # system
-    (r'^system/network/edit$', 'edit_system_network'),
+    (r'^system/network/$', 'manage_system_network'),
     (r'^system/network/update$', 'update_system_network'),
+    (r'^system/network/ping/create$', 'create_ping'),
+    (r'^system/network/traceroute/create$', 'create_traceroute'),
+    (r'^system/network/telnet/create$', 'create_telnet'),
+    (r'^system/network/nslookup/create$', 'create_nslookup'),
     (r'^system/config/edit$', 'edit_system_config'),
     (r'^system/config/update$', 'update_system_config'),
     (r'^system/password/edit$', 'edit_system_password'),

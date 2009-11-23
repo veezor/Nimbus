@@ -14,7 +14,7 @@ from environment import ENV as E
 
 from backup_corporativo.bkp.utils import redirect, reverse
 from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
-from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm
+from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TelnetForm, TraceRouteForm, NsLookupForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 import logging
@@ -53,14 +53,90 @@ def update_system_config(request):
 
 
 @authentication_required
-def edit_system_network(request):
+def manage_system_network(request):
     E.update(request)
     
     if request.method == 'GET':
         E.iface = NetworkInterface.networkconfig()
         E.netform = NetworkInterfaceEditForm(instance=E.iface)
-        E.template = 'bkp/system/edit_system_network.html'
+        E.pingform = PingForm()
+        E.telnetform = TelnetForm()
+        E.tracerouteform = TraceRouteForm()
+        E.nslookupform = NsLookupForm()
+        E.template = 'bkp/system/manage_system_network.html'
         return E.render()
+
+
+@authentication_required
+def create_ping(request):
+    E.update(request)
+    
+    if request.method == 'POST':
+        E.pingform = PingForm(request.POST)
+        if E.pingform.is_valid():
+            pass
+        else:
+            E.iface = NetworkInterface.networkconfig()
+            E.netform = NetworkInterfaceEditForm(instance=E.iface)
+            E.telnetform = TelnetForm()
+            E.tracerouteform = TraceRouteForm()
+            E.nslookupform = NsLookupForm()
+            E.template = 'bkp/system/manage_system_network.html'
+            return E.render()
+
+
+@authentication_required
+def create_telnet(request):
+    E.update(request)
+    
+    if request.method == 'POST':
+        E.telnetform = TelnetForm(request.POST)
+        if E.telnetform.is_valid():
+            pass
+        else:
+            E.iface = NetworkInterface.networkconfig()
+            E.netform = NetworkInterfaceEditForm(instance=E.iface)
+            E.pingform = PingForm()
+            E.tracerouteform = TraceRouteForm()
+            E.nslookupform = NsLookupForm()
+            E.template = 'bkp/system/manage_system_network.html'
+            return E.render()
+
+
+@authentication_required
+def create_traceroute(request):
+    E.update(request)
+    
+    if request.method == 'POST':
+        E.tracerouteform = TraceRouteForm(request.POST)
+        if E.tracerouteform.is_valid():
+            pass
+        else:
+            E.iface = NetworkInterface.networkconfig()
+            E.netform = NetworkInterfaceEditForm(instance=E.iface)
+            E.pingform = PingForm()
+            E.telnetform = TelnetForm()
+            E.nslookupform = NsLookupForm()
+            E.template = 'bkp/system/manage_system_network.html'
+            return E.render()
+
+
+@authentication_required
+def create_nslookup(request):
+    E.update(request)
+    
+    if request.method == 'POST':
+        E.nslookupform = NsLookupForm(request.POST)
+        if E.nslookupform.is_valid():
+            pass
+        else:
+            E.iface = NetworkInterface.networkconfig()
+            E.netform = NetworkInterfaceEditForm(instance=E.iface)
+            E.pingform = PingForm()
+            E.telnetform = TelnetForm()
+            E.tracerouteform = TraceRouteForm()
+            E.template = 'bkp/system/manage_system_network.html'
+            return E.render()
 
 
 @authentication_required
