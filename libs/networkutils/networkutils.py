@@ -3,6 +3,19 @@
 
 import netifaces
 from netifaces import AF_INET, AF_LINK, AF_INET6
+import subprocess
+import socket
+
+
+
+class NotImplemented(Exception):
+    pass
+
+class HostAddrNotFound(Exception):
+    pass
+
+class HostNameNotFound(Exception):
+    pass
 
 class InterfaceNotFound(Exception):
     pass
@@ -50,3 +63,32 @@ def get_interfaces():
         except InterfaceNotFound:
             pass
     return interfaces
+
+
+def resolve_name(name):
+    try:
+        return socket.gethostbyname(name)
+    except socket.gaierror, e:
+        raise HostNameNotFound('Host name not found')
+ 
+ 
+def resolve_addr(addr):
+    try:
+        return socket.gethostbyaddr(addr)[0]
+    except socket.herror, e:
+        raise HostAddrNotFound('Host address not found')
+
+
+
+def traceroute(host):
+    cmd = subprocess.Popen( [ "/usr/bin/traceroute", 
+                             str(host) ], stdout = subprocess.PIPE)
+    cmd.wait()
+    return cmd.returncode, cmd.stdout.read()
+
+def ping(host, packets=10):
+    cmd = subprocess.Popen( [ "/bin/ping", 
+                             "-c",str(packets),
+                             str(host) ], stdout = subprocess.PIPE)
+    cmd.wait()
+    return cmd.returncode, cmd.stdout.read()
