@@ -48,7 +48,6 @@ urlpatterns += patterns(
     (r'^system/network/update$', 'update_system_network'),
     (r'^system/network/ping/create$', 'create_ping'),
     (r'^system/network/traceroute/create$', 'create_traceroute'),
-    (r'^system/network/telnet/create$', 'create_telnet'),
     (r'^system/network/nslookup/create$', 'create_nslookup'),
     (r'^system/config/edit$', 'edit_system_config'),
     (r'^system/config/update$', 'update_system_config'),
