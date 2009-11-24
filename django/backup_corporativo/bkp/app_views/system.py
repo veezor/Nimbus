@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
+import re
+
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -11,6 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV as E
+from networkutils import ping, traceroute, resolve_name, resolve_addr, HostAddrNotFound, HostNameNotFound
 
 from backup_corporativo.bkp.utils import redirect, reverse
 from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
@@ -19,6 +22,10 @@ from backup_corporativo.bkp.views import global_vars, authentication_required
 
 import logging
 logger = logging.getLogger(__name__)
+
+fqn_re = re.compile('^[\w\d.-_]{4,}$')
+ipv4_re = re.compile(r'^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}$') 
+
 
 @authentication_required
 def edit_system_config(request):
@@ -72,15 +79,15 @@ def create_ping(request):
     
     if request.method == 'POST':
         E.pingform = PingForm(request.POST)
+        E.iface = NetworkInterface.networkconfig()
+        E.netform = NetworkInterfaceEditForm(instance=E.iface)
+        E.tracerouteform = TraceRouteForm()
+        E.nslookupform = NsLookupForm()
         if E.pingform.is_valid():
-            pass
-        else:
-            E.iface = NetworkInterface.networkconfig()
-            E.netform = NetworkInterfaceEditForm(instance=E.iface)
-            E.tracerouteform = TraceRouteForm()
-            E.nslookupform = NsLookupForm()
-            E.template = 'bkp/system/manage_system_network.html'
-            return E.render()
+            host = E.pingform.cleaned_data['ping_address']
+            E.result = ping(host)
+        E.template = 'bkp/system/manage_system_network.html'
+        return E.render()
 
 
 @authentication_required
@@ -89,15 +96,15 @@ def create_traceroute(request):
     
     if request.method == 'POST':
         E.tracerouteform = TraceRouteForm(request.POST)
+        E.iface = NetworkInterface.networkconfig()
+        E.netform = NetworkInterfaceEditForm(instance=E.iface)
+        E.pingform = PingForm()
+        E.nslookupform = NsLookupForm()
         if E.tracerouteform.is_valid():
-            pass
-        else:
-            E.iface = NetworkInterface.networkconfig()
-            E.netform = NetworkInterfaceEditForm(instance=E.iface)
-            E.pingform = PingForm()
-            E.nslookupform = NsLookupForm()
-            E.template = 'bkp/system/manage_system_network.html'
-            return E.render()
+            host = E.tracerouteform.cleaned_data['traceroute_address']
+            E.result = traceroute(host)
+        E.template = 'bkp/system/manage_system_network.html'
+        return E.render()
 
 
 @authentication_required
@@ -106,15 +113,25 @@ def create_nslookup(request):
     
     if request.method == 'POST':
         E.nslookupform = NsLookupForm(request.POST)
+        E.iface = NetworkInterface.networkconfig()
+        E.netform = NetworkInterfaceEditForm(instance=E.iface)
+        E.pingform = PingForm()
+        E.tracerouteform = TraceRouteForm()
         if E.nslookupform.is_valid():
-            pass
-        else:
-            E.iface = NetworkInterface.networkconfig()
-            E.netform = NetworkInterfaceEditForm(instance=E.iface)
-            E.pingform = PingForm()
-            E.tracerouteform = TraceRouteForm()
-            E.template = 'bkp/system/manage_system_network.html'
-            return E.render()
+            host = E.nslookupform.cleaned_data['nslookup_address']
+            try:
+                if re.match(ipv4_re, host):
+                    E.result = [resolve_addr(host)]
+                elif re.match(fqn_re, host):
+                    E.result = [resolve_name(host)]
+                else:
+                    error = _("Programming Error: invalid host.")
+                    raise Exception(error)
+            except (HostAddrNotFound, HostNameNotFound):
+                error = _("Could not find Host: %s" % host)
+                E.result = [error]
+        E.template = 'bkp/system/manage_system_network.html'
+        return E.render()
 
 
 @authentication_required

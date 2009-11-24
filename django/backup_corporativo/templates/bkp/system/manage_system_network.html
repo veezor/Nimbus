@@ -6,6 +6,16 @@
 
 {% block content %}
 
+{% if result %}
+<h2> Resultado: </h2>
+<div class="bloco_texto">
+    {% for r in result %}
+ <p>{{ r }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+
 <br />
 <h2> Alterar Interface de Rede </h2>
 <br /><br />
