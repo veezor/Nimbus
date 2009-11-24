@@ -486,8 +486,7 @@ margin-bottom: 5px;
 
 .fieldWrapper {
 padding: 5px;
-border-bottom: 1px solid #eee;
-width: 710px;
+width: 660px;
 overflow: hidden
 }
 
@@ -506,10 +505,12 @@ float: right;
 }
 
 .errorlist {
-padding: 7px 10px;
-background: #A22;
+padding: 7px 10px 0;
+background: #CF3237;
 list-style: none;
 margin-bottom: 10px;
+margin-left: 150px;
+opacity: 0.7;
 }
 
 .errorlist li {
@@ -517,10 +518,10 @@ color: #FFF;
 }
 
 .passos {
-width: 684px;
+width: 700px;
 height: 48px;
 overflow: hidden;
-background: url(/static/imagens/bg_passos.gif) top left no-repeat;
+background: url(/static/imagens/bg_passos.gif) top left repeat-x;
 }
 
 .passos .passo {
@@ -617,3 +618,18 @@ color: #FFF;
 	margin: 0;
 	padding: 0;
 }
+
+
+
+
+
+/* jQuery UI */
+.ui-tabs { margin-top: 45px !important; border: 1px solid #CCC !important; }
+.ui-tabs .ui-tabs-nav { margin-top: -37px !important; }
+.ui-widget-header { background: none !important; border: none !important; }
+
+.ui-state-default, .ui-widget-content .ui-state-default { border: 1px solid #E5E5E5 !important; }
+.ui-state-default a, .ui-widget-content .ui-state-default a { color: #AAA !important; }
+
+.ui-state-active, .ui-widget-content .ui-state-active { background: #F8F8F8 !important; border: 1px solid #CCC !important; }
+.ui-state-active a, .ui-widget-content .ui-state-active a { color: #333 !important; }

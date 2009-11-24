@@ -3,108 +3,110 @@
 {% block content %}
 
 
-<div class="titulo_botoes">
-<h2> Alterar Procedimento </h2></div>
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-1">Alterar procedimento</a></li>
+		<li><a href="#tabs-2">Alterar locais</a></li>
+		<li><a href="#tabs-3">Alterar agendamentos</a></li>
+	</ul>
+	
+	<div id="tabs-1">
+		<!-- Alterar procedimento -->
+		<div class="titulo_botoes">
+			<h3><span>Alterar procedimento</span></h3>
+		</div>
+		<form action="{% url bkp.views.update_backup proc.id %}" method="POST">
+		    {% for field in procform %}
+		        <div class="fieldWrapper">
+		            {{ field.errors }}
+		            {{ field.label_tag }} {{ field }}
+		        </div>
+		    {% endfor %}
+		    <p><input type="submit" value="Salvar" />
+		    <a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a></p>
+		</form>
+	</div>
+	
+	<div id="tabs-2">
+		<!-- Alterar locais -->
+		<div class="titulo_botoes">
+			<h3><span>Alterar locais</span></h3>
+		</div>
+	    {% if not fsets %}
+	    <p>Atualmente não existem locais para este backup.</p>
+	    {% else %}
+	    <table>
+	        <thead>
+	            <tr>
+	                <th>Local</th>
+	                <th>Ações</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            {% for fset in fsets %}
+	            <tr>
+	                <td>{{fset.path}}</td>
+	                <td><button onclick="location.href='{% url bkp.views.delete_fileset fset.id %}';return false" class="red"><span>Remover</span></button></td>
+	            </tr>
+	            {% endfor %}
+	        </tbody>
+	    </table>
+	    {% endif %}
+		<p><a href="{% url bkp.views.new_procedure_fileset proc.id %}">Adicionar Local</a> | <a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a></p>
+	</div>
+	
+	<div id="tabs-3">
+		<!-- Alterar agendamentos -->
+		<div class="titulo_botoes">
+			<h3><span>Alterar agendamentos</span></h3>
+		</div>
+	    {% if not scheds %}
 
-<div class="bloco_texto">
+	    <p>Atualmente não existem agendamentos para este backup.</p>
 
-<form action="{% url bkp.views.update_backup proc.id %}" method="POST">
-    {% for field in procform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Salvar" />
-    <a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a></p>
-</form>
+	    {% else %}
+	    <table>
+	        <thead>
+	            <tr>
+	                <th>Periodicidade</th>
+	                <th>Tipo</th>
+	                <th>Hora</th>
+	                <th>Dias</th>
+	                <th>Ações</th>
+	            </tr>            
+	        </thead>
+	        <tbody>
+	            {% for sched in scheds %}
+	            <tr>
+	            <td> {{sched}} </td>
+	            {% for wtrigg in sched.weeklytrigger_set.all %}
+	                <td> {{ wtrigg.level_friendly }} </td>
+	                <td> {{ wtrigg.hour }} </td>
+	                <td>
+	                    {% for day, day_br in DAYS_OF_THE_WEEK.items %}
+	                        {% if wtrigg|get_method:day %}
+	                         {{ day_br }}
+	                        {% endif %}
+	                    {% endfor %}
+	                </td>
+	            {% endfor %}
+           
+	            {% for mtrigg in sched.monthlytrigger_set.all %}
+	                <td>{{ mtrigg.level_friendly }}</td>
+	                <td>{{ mtrigg.hour }}</td>
+	                <td>{{ mtrigg.target_days }}</td>
+	            {% endfor %}
+	            <td><button onclick="location.href='{% url bkp.views.edit_schedule sched.id %}';return false"><span>Alterar</span></button>
+	            <button onclick="location.href='{% url bkp.views.delete_schedule sched.id %}';return false" class="red"><span>Remover</span></button></td>
+	            </tr>
+	            {% endfor %}
+	        <tbody>
+	    </table>
+
+		<p><a href="{% url bkp.views.new_procedure_schedule proc.id %}">Adicionar Agendamento</a> | <a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a></p>
+		{% endif %}
+	</div>
 </div>
-
-<br />
-<br />
-
-<div class="titulo_botoes">
-<h2>Alterar Locais</h2>
-</div>
-
-<div class="bloco_texto">
-    {% if not fsets %}
-    <p>Atualmente não existem locais para este backup.</p>
-    {% else %}
-    <table>
-        <thead>
-            <tr>
-                <th>Local</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for fset in fsets %}
-            <tr>
-                <td>{{fset.path}}</td>
-                <td><button onclick="location.href='{% url bkp.views.delete_fileset fset.id %}';return false" class="red"><span>Remover</span></button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
-<p><a href="{% url bkp.views.new_procedure_fileset proc.id %}">Adicionar Local</a> | <a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a></p>
-</div>
-
-
-<div class="titulo_botoes">
-<h2>Alterar Agendamentos</h2>
-</div>
-
-<div class="bloco_texto">
-    {% if not scheds %}
-
-    <p>Atualmente não existem agendamentos para este backup.</p>
-
-    {% else %}
-    <table>
-        <thead>
-            <tr>
-                <th>Periodicidade</th>
-                <th>Tipo</th>
-                <th>Hora</th>
-                <th>Dias</th>
-                <th>Ações</th>
-            </tr>            
-        </thead>
-        <tbody>
-            {% for sched in scheds %}
-            <tr>
-            <td> {{sched}} </td>
-            {% for wtrigg in sched.weeklytrigger_set.all %}
-                <td> {{ wtrigg.level_friendly }} </td>
-                <td> {{ wtrigg.hour }} </td>
-                <td>
-                    {% for day, day_br in DAYS_OF_THE_WEEK.items %}
-                        {% if wtrigg|get_method:day %}
-                         {{ day_br }}
-                        {% endif %}
-                    {% endfor %}
-                </td>
-            {% endfor %}
-            
-            {% for mtrigg in sched.monthlytrigger_set.all %}
-                <td>{{ mtrigg.level_friendly }}</td>
-                <td>{{ mtrigg.hour }}</td>
-                <td>{{ mtrigg.target_days }}</td>
-            {% endfor %}
-            <td><button onclick="location.href='{% url bkp.views.edit_schedule sched.id %}';return false"><span>Alterar</span></button>
-            <button onclick="location.href='{% url bkp.views.delete_schedule sched.id %}';return false" class="red"><span>Remover</span></button></td>
-            </tr>
-            {% endfor %}
-        <tbody>
-    </table>
-
-<p><a href="{% url bkp.views.new_procedure_schedule proc.id %}">Adicionar Agendamento</a> | <a href="{% url bkp.views.view_computer comp.id %}">Cancelar</a></p>
-</div>
-
-    {% endif %}
-
 
 
 {% endblock %}
