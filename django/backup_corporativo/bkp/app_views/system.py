@@ -14,7 +14,7 @@ from environment import ENV as E
 
 from backup_corporativo.bkp.utils import redirect, reverse
 from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
-from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TelnetForm, TraceRouteForm, NsLookupForm
+from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TraceRouteForm, NsLookupForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 import logging
@@ -60,7 +60,6 @@ def manage_system_network(request):
         E.iface = NetworkInterface.networkconfig()
         E.netform = NetworkInterfaceEditForm(instance=E.iface)
         E.pingform = PingForm()
-        E.telnetform = TelnetForm()
         E.tracerouteform = TraceRouteForm()
         E.nslookupform = NsLookupForm()
         E.template = 'bkp/system/manage_system_network.html'
@@ -78,25 +77,6 @@ def create_ping(request):
         else:
             E.iface = NetworkInterface.networkconfig()
             E.netform = NetworkInterfaceEditForm(instance=E.iface)
-            E.telnetform = TelnetForm()
-            E.tracerouteform = TraceRouteForm()
-            E.nslookupform = NsLookupForm()
-            E.template = 'bkp/system/manage_system_network.html'
-            return E.render()
-
-
-@authentication_required
-def create_telnet(request):
-    E.update(request)
-    
-    if request.method == 'POST':
-        E.telnetform = TelnetForm(request.POST)
-        if E.telnetform.is_valid():
-            pass
-        else:
-            E.iface = NetworkInterface.networkconfig()
-            E.netform = NetworkInterfaceEditForm(instance=E.iface)
-            E.pingform = PingForm()
             E.tracerouteform = TraceRouteForm()
             E.nslookupform = NsLookupForm()
             E.template = 'bkp/system/manage_system_network.html'
@@ -115,7 +95,6 @@ def create_traceroute(request):
             E.iface = NetworkInterface.networkconfig()
             E.netform = NetworkInterfaceEditForm(instance=E.iface)
             E.pingform = PingForm()
-            E.telnetform = TelnetForm()
             E.nslookupform = NsLookupForm()
             E.template = 'bkp/system/manage_system_network.html'
             return E.render()
@@ -133,7 +112,6 @@ def create_nslookup(request):
             E.iface = NetworkInterface.networkconfig()
             E.netform = NetworkInterfaceEditForm(instance=E.iface)
             E.pingform = PingForm()
-            E.telnetform = TelnetForm()
             E.tracerouteform = TraceRouteForm()
             E.template = 'bkp/system/manage_system_network.html'
             return E.render()

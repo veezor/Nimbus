@@ -393,12 +393,6 @@ class NsLookupForm(forms.Form):
 	nslookup_address = forms.CharField(label="Host")
 
 
-class TelnetForm(forms.Form):
-	telnet_address = forms.IPAddressField(label="Endereço IP")
-	telnet_port = forms.IntegerField(label="Porta")
-
-
-
 class MonthlyTriggerForm(ModelForm):
 	class Meta:
 		model = MonthlyTrigger

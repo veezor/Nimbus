@@ -55,22 +55,6 @@
 <br />
 
 <br />
-<h2> Telnet </h2>
-<br /><br />
-
-<form action="{% url bkp.views.create_telnet %}" method="POST">
-    {% for field in telnetform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Enviar" /></p>
-</form>
-
-<br />
-
-<br />
 <h2> NsLookup </h2>
 <br /><br />
 
