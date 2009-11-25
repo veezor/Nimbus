@@ -110,7 +110,7 @@ def chown_nimbus_files():
 
 @rule(on_failure='install_nimbus')
 def has_nimbus():
-    return not os.access(NIMBUS_VAR_PATH, os.R_OK)
+    return os.access(NIMBUS_VAR_PATH, os.R_OK)
 
 
 def check_python_dep(name):

@@ -142,12 +142,8 @@ class Rule(object):
             self.add_dep(dep)
 
 
-    def set_error_callback(self, callback, args=None, kwargs=None):
-        if args:
-            self.callback_args = args
-        if kwargs:
-            self.callback_kwargs = kwargs
-        self.call_on_failure = callback
+    def set_error_callback(self, callback):
+        self.call_on_failure = self.rules_cache[str(callback)]
 
 
 
