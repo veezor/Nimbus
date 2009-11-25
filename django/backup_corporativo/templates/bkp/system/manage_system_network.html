@@ -1,0 +1,90 @@
+{% extends "bkp/base.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/system/menu_system.html' %}
+{% endblock %}
+
+{% block content %}
+
+<br />
+<h2> Alterar Interface de Rede </h2>
+<br /><br />
+
+<form action="{% url bkp.views.update_system_network %}" method="POST">
+    {% for field in netform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+
+<br />
+
+<br />
+<h2> Ping </h2>
+<br /><br />
+
+<form action="{% url bkp.views.create_ping %}" method="POST">
+    {% for field in pingform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Enviar" /></p>
+</form>
+
+<br />
+
+<br />
+<h2> Trace Route </h2>
+<br /><br />
+
+<form action="{% url bkp.views.create_traceroute %}" method="POST">
+    {% for field in tracerouteform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Enviar" /></p>
+</form>
+
+<br />
+
+<br />
+<h2> Telnet </h2>
+<br /><br />
+
+<form action="{% url bkp.views.create_telnet %}" method="POST">
+    {% for field in telnetform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Enviar" /></p>
+</form>
+
+<br />
+
+<br />
+<h2> NsLookup </h2>
+<br /><br />
+
+<form action="{% url bkp.views.create_nslookup %}" method="POST">
+    {% for field in nslookupform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Enviar" /></p>
+</form>
+
+<br />
+
+
+{% endblock %}
