@@ -30,6 +30,9 @@ logger = logging.getLogger(__name__)
 
 
 
+class RootRequired(Exception):
+    pass
+
 
 def make_dir(dirname):
     logger.info('creating directory %s' % dirname)
@@ -153,7 +156,15 @@ def update_nimbus_version():
 
 
 
-@rule(depends=update_nimbus_version)
+@rule
+def check_user():
+    if os.getpid() != 0:
+        raise RootRequired('You must be root')
+    return True
+
+
+
+@rule(depends=(check_user, update_nimbus_version))
 def deploy():
     logger.info("Nimbus deploy finalized")
     return True
