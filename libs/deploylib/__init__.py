@@ -75,7 +75,6 @@ class Rule(object):
     rules_cache = {}
 
     def __init__(self, name, function):
-
         if not name in self.rules_cache:
             self.rules_cache[name] = self
         else:
@@ -89,15 +88,17 @@ class Rule(object):
 
 
     @classmethod
-    def get_rule_by_name(cls, name):
+    def get_rule_reference(cls, rule):
         try:
-            return cls.rules_cache[name]
+            return cls.rules_cache[str(rule)]
         except KeyError, e:
-            raise RuleNotFound('Rule %s not found' % name)
+            raise RuleNotFound('Rule %s not found' % str(rule))
+
 
 
     def _run_deps(self):
         for dep in self.dependencies:
+            dep = self.get_rule_reference(dep)
             if not dep.executed:
                 r = dep.run()
                 if not r:
@@ -120,7 +121,8 @@ class Rule(object):
 
         if not result and self.call_on_failure:
             logger.info('Calling error_callback for rule %s' % self.name)
-            result = self.call_on_failure.run()
+            callback = self.get_rule_reference(self.call_on_failure)
+            result = callback.run()
         logger.info('Rule %s successfully performed' % self.name)
         return result
 
@@ -133,8 +135,7 @@ class Rule(object):
 
 
     def add_dep(self, dependency):
-        dep = self.get_rule_by_name(str(dependency))
-        self.dependencies.append(dep)
+        self.dependencies.append(dependency)
 
 
     def add_deps(self, list_dep):
@@ -143,7 +144,7 @@ class Rule(object):
 
 
     def set_error_callback(self, callback):
-        self.call_on_failure = self.rules_cache[str(callback)]
+        self.call_on_failure = callback
 
 
 

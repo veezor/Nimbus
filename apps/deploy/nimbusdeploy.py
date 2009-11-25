@@ -157,14 +157,14 @@ def update_nimbus_version():
 
 
 @rule
-def check_user():
+def check_root_user():
     if os.getpid() != 0:
         raise RootRequired('You must be root')
     return True
 
 
 
-@rule(depends=(check_user, update_nimbus_version))
+@rule(depends=(check_root_user, update_nimbus_version))
 def deploy():
     logger.info("Nimbus deploy finalized")
     return True
