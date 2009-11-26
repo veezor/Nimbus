@@ -169,12 +169,6 @@ def isequal(obj, value):
 
 
 @register.filter
-def isurlcomputer(obj, value):
-    """Verify if a value is containned in an obj."""
-    return obj == '%s%s' % ('/computer/', value)
-
-
-@register.filter
 def isdir(obj):
     """Returns True if an obj ends with a '/'."""
     if isinstance(obj, str):
