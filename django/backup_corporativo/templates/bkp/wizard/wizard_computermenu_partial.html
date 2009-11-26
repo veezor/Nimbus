@@ -1,5 +1,6 @@
 {% load bkp_extras %}
 
+{% ifequal wizard "True" %}
 <div class="nb_passos passos">
     <div class="passo passo1 {% if request.META.PATH_INFO|contains:"/computer/new" %}on{% endif %} {% if request.META.PATH_INFO|contains:"/computer/create" %}on{% endif %}">
         1. Onde?
@@ -11,3 +12,4 @@
         3. Quando?
     </div>
 </div>
+{% endifequal %}
