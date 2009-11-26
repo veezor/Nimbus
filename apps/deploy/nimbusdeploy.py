@@ -4,6 +4,7 @@
 
 import os, shutil
 from os.path import join
+import pwd
 
 from deploylib import rule, start # deploylib has logging configure
 
@@ -19,7 +20,7 @@ import subprocess
 NIMBUS_VAR_PATH = "/var/nimbus/"
 NIMBUS_HG_PATH = NIMBUS_VAR_PATH + "hg/"
 NIMBUS_CUSTOM_PATH = NIMBUS_VAR_PATH + "custom/"
-NIMBUS_HG_URL = "http://hg.linconet.com.br/bc-devel"
+NIMBUS_HG_URL = "http://hg.devel.linconet.com.br/bc-devel"
 NIMBUS_ETC_PATH = "/etc/nimbus"
 NIMBUS_LOG_PATH = "/var/log/nimbus"
 
@@ -82,24 +83,24 @@ def create_user():
 
 @rule(on_failure=create_user)
 def check_user():
-    f = file("/etc/passwd")
-    for line in f:
-        user = line.split(':')[0]
-        if user == "nimbus":
-            f.close()
-            return True
-    f.close()
-    return False
-
+    try:
+        pwd.getpwnam('nimbus')
+        return True
+    except KeyError, e:
+        return False
+    
 
 
 
 @rule( depends=(install_config_files, check_user) )
 def chown_nimbus_files():
+    pwinfo = pwd.getpwnam('nimbus')
+    uid = pwinfo.pw_uid
+    gid = pwinfo.pw_gid
     
     def callback(arg, dirname, fnames):
         for filename in fnames:
-            os.chown(os.path.join(dirname, filename), 'nimbus', 'nimbus')
+            os.chown(os.path.join(dirname, filename), uid, gid)
 
     os.path.walk(NIMBUS_VAR_PATH, callback, None)
     os.path.walk(NIMBUS_ETC_PATH, callback, None)
@@ -144,8 +145,14 @@ def install_nimbus(): # for semantic way, bypass to chown_nimbus_files
     return True
 
 
+@rule
+def generate_hgrc_for_root_user():
+    f = file("/root/.hgrc","w")
+    f.write("[trusted]\nusers = nimbus\ngroups = nimbus")
+    f.close()
+    return True
 
-@rule(depends=has_nimbus)
+@rule(depends=(has_nimbus,generate_hgrc_for_root_user))
 def update_nimbus_version():
     ui = mercurial.ui.ui()
     ui.readconfig(os.path.join(NIMBUS_HG_PATH, ".hg/hgrc"))
@@ -158,7 +165,7 @@ def update_nimbus_version():
 
 @rule
 def check_root_user():
-    if os.getpid() != 0:
+    if os.getuid() != 0:
         raise RootRequired('You must be root')
     return True
 
