@@ -24,6 +24,10 @@ def new_computer(request):
             E.wizard = request.GET['wizard']
         else:
             E.wizard = False
+        if Computer.objects.count() > 14:
+            E.msg = _("Cannot add computer: computers limit reached.")
+            location = reverse('list_computers')
+            return HttpResponseRedirect(location)
         E.compform = ComputerForm(instance=Computer())
         E.template = 'bkp/computer/new_computer.html'
         return E.render()
@@ -37,17 +41,20 @@ def create_computer(request):
         E.compform = ComputerForm(request.POST, instance=Computer())
         E.wizauxform = WizardAuxForm(request.POST)
         if E.wizauxform.is_valid():
-            wiz = E.wizauxform.cleaned_data['wizard']
+            E.wizard = E.wizauxform.cleaned_data['wizard']
         # Apenas por segurança
         else:
-            wiz = False
+            E.wizard = False
+        if Computer.objects.count() > 14:
+            E.msg = _("Cannot add computer: computers limit reached.")
+            location = reverse('list_computers')
+            return HttpResponseRedirect(location)
         if E.compform.is_valid():
             comp = E.compform.save()
             location = reverse('new_computer_backup', [comp.id])
-            location += "?wizard=%s" % wiz
+            location += "?wizard=%s" % E.wizard
             return HttpResponseRedirect(location)
         else:
-            E.wizard = wiz
             E.template = 'bkp/computer/new_computer.html'
             return E.render()
 
