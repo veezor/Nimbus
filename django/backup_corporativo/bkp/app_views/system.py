@@ -48,7 +48,8 @@ def update_system_config(request):
     if request.method == 'POST':
         E.gconfigform = GlobalConfigForm(
             request.POST,
-            instance=GlobalConfig())
+            instance=GlobalConfig()
+        )
         if E.gconfigform.is_valid():
             gconf = E.gconfigform.save()
             E.msg = _("Configuration successfully updated")
@@ -143,11 +144,10 @@ def update_system_network(request):
         E.netform = NetworkInterfaceEditForm(request.POST, instance=E.iface)
         if E.netform.is_valid():
             E.netform.save()
-            # TODO: usar reverse
-            location = reverse('edit_system_network')
+            location = reverse('manage_system_network')
             return HttpResponseRedirect(location)
         else:
-            E.template = 'bkp/system/edit_system_network.html'
+            E.template = 'bkp/system/manage_system_network.html'
             return E.render()
 
 
@@ -173,7 +173,6 @@ def update_system_password(request):
             E.current_user.save()
             E.msg = _('Senha alterada com sucesso.')
             logger.info('Senha de administrador foi alterada.')
-            # TODO: Usar reverse
             location = reverse('edit_system_config')
             return HttpResponseRedirect(location)
         else:
