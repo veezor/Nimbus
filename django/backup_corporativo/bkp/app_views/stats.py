@@ -8,7 +8,7 @@ from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp import utils
@@ -18,7 +18,7 @@ from backup_corporativo.bkp.views import global_vars, authentication_required
 ### Stats ###
 @authentication_required
 def main_statistics(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         server = SOAPProxy("http://127.0.0.1:8888")
@@ -36,7 +36,7 @@ def main_statistics(request):
 
 @authentication_required
 def history_statistics(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         server = SOAPProxy("http://127.0.0.1:8888")

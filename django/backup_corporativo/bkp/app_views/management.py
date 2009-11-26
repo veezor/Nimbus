@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 from keymanager import KeyManager
 
 from backup_corporativo.bkp.utils import reverse
@@ -16,7 +16,7 @@ from backup_corporativo.bkp.views import global_vars, authentication_required
 
 @authentication_required
 def list_encryptions(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.enc_list = Encryption.objects.all()
@@ -26,7 +26,7 @@ def list_encryptions(request):
 
 @authentication_required
 def new_encryption(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         km = KeyManager()
@@ -40,7 +40,7 @@ def new_encryption(request):
 
 @authentication_required
 def create_encryption(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'POST':
         E.encform = EncryptionForm(request.POST)
@@ -63,7 +63,7 @@ def create_encryption(request):
 
 @authentication_required
 def main_management(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.template = 'bkp/management/main_management.html'
@@ -72,7 +72,7 @@ def main_management(request):
 
 @authentication_required
 def list_computers(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.comp_list = E.computers
@@ -82,7 +82,7 @@ def list_computers(request):
 
 @authentication_required
 def list_storages(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.sto_list = Storage.objects.all()
@@ -92,7 +92,7 @@ def list_storages(request):
 
 @authentication_required
 def manage_strongbox(request):
-    E.update(request)
+    E = ENV(request)
     km = KeyManager()
     
     if not km.has_drive():
@@ -109,7 +109,7 @@ def manage_strongbox(request):
 
 @authentication_required
 def mount_strongbox(request):
-    E.update(request)
+    E = ENV(request)
     km = KeyManager()
     
     if not km.has_drive():
@@ -131,7 +131,7 @@ def mount_strongbox(request):
 
 @authentication_required
 def new_strongbox(request):
-    E.update(request)
+    E = ENV(request)
     km = KeyManager()
     
     if km.has_drive():
@@ -146,7 +146,7 @@ def new_strongbox(request):
 
 @authentication_required
 def create_strongbox(request):
-    E.update(request)
+    E = ENV(request)
     km = KeyManager()
     
     if km.has_drive():
@@ -165,7 +165,7 @@ def create_strongbox(request):
 
 @authentication_required
 def umount_strongbox(request):
-    E.update(request)    
+    E = ENV(request)    
     km = KeyManager()
     
     if not km.mounted:
@@ -195,7 +195,7 @@ def umount_strongbox(request):
 
 @authentication_required
 def changepwd_strongbox(request):
-    E.update(request)
+    E = ENV(request)
     km = KeyManager()
 
     if request.method == 'GET':
@@ -214,7 +214,7 @@ def changepwd_strongbox(request):
 
 @authentication_required
 def new_headerbkp(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.headerbkp_form = HeaderBkpForm()
@@ -224,7 +224,7 @@ def new_headerbkp(request):
 
 @authentication_required
 def create_headerbkp(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.headerbkp_form = HeaderBkpForm(request.POST, instance=HeaderBkp())
@@ -239,7 +239,7 @@ def create_headerbkp(request):
 
 @authentication_required
 def list_headerbkp(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.hbkp_list = HeaderBkp.objects.all()
@@ -249,7 +249,7 @@ def list_headerbkp(request):
 
 @authentication_required
 def delete_headerbkp(request, hbkp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
@@ -264,7 +264,7 @@ def delete_headerbkp(request, hbkp_id):
 
 @authentication_required
 def edit_headerbkp(request, hbkp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
@@ -275,7 +275,7 @@ def edit_headerbkp(request, hbkp_id):
 
 @authentication_required
 def update_headerbkp(request, hbkp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
@@ -291,7 +291,7 @@ def update_headerbkp(request, hbkp_id):
 
 @authentication_required
 def restore_headerbkp(request, hbkp_id):
-    E.update(request)
+    E = ENV(request)
     E.hbkp = get_object_or_404(HeaderBkp, pk=hbkp_id)
     
     if request.method == 'GET':

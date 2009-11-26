@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Schedule
@@ -17,7 +17,7 @@ from backup_corporativo.bkp.forms import MonthlyTriggerForm, WeeklyTriggerForm
 
 @authentication_required
 def delete_schedule(request, sched_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.sched = get_object_or_404(Schedule, pk=sched_id)
@@ -37,7 +37,7 @@ def delete_schedule(request, sched_id):
 
 @authentication_required
 def edit_schedule(request, sched_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.sched = get_object_or_404(Schedule, pk=sched_id)
@@ -52,7 +52,7 @@ def edit_schedule(request, sched_id):
 
 @authentication_required
 def update_schedule(request, sched_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.sched = get_object_or_404(Schedule, pk=sched_id)

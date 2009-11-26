@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Storage, Procedure, GlobalConfig
@@ -18,7 +18,7 @@ from backup_corporativo.bkp.views import global_vars, authentication_required
 
 @authentication_required
 def new_storage(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.stoform = StorageForm()
@@ -28,7 +28,7 @@ def new_storage(request):
 
 @authentication_required
 def create_storage(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'POST':
         E.stoform = StorageForm(request.POST)
@@ -44,7 +44,7 @@ def create_storage(request):
 
 @authentication_required
 def view_storage(request, sto_id):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.storage = get_object_or_404(Storage, pk=sto_id)
@@ -55,7 +55,7 @@ def view_storage(request, sto_id):
 
 @authentication_required
 def edit_storage(request, sto_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.storage = get_object_or_404(Storage, pk=sto_id)
@@ -66,7 +66,7 @@ def edit_storage(request, sto_id):
 
 @authentication_required
 def update_storage(request, sto_id):
-    E.update(request)
+    E = ENV(request)
     if request.method == 'POST':
         E.storage = get_object_or_404(Storage, pk=sto_id)
         E.stoform = StorageForm(request.POST, instance=E.storage)
@@ -83,7 +83,7 @@ def update_storage(request, sto_id):
 
 @authentication_required
 def delete_storage(request, sto_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.storage = get_object_or_404(Storage, pk=sto_id)
@@ -112,7 +112,7 @@ def dump_storage_config(request, sto_id):
 
 @authentication_required
 def view_storage_config(request, sto_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.sto = Storage.objects.get(pk=sto_id)

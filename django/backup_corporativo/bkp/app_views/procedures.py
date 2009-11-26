@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 #TODO: remover import do módulo utils
 from backup_corporativo.bkp import utils
@@ -21,7 +21,7 @@ from backup_corporativo.bkp.views import global_vars, authentication_required, D
 
 @authentication_required
 def edit_backup(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
@@ -36,7 +36,7 @@ def edit_backup(request, proc_id):
 
 @authentication_required
 def update_backup(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     E.proc = get_object_or_404(Procedure, pk=proc_id)
     E.comp = E.proc.computer
     if request.method == 'POST':
@@ -54,7 +54,7 @@ def update_backup(request, proc_id):
 
 @authentication_required
 def delete_procedure(request, proc_id):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
@@ -73,7 +73,7 @@ def delete_procedure(request, proc_id):
 
 @authentication_required
 def new_procedure_fileset(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
@@ -85,7 +85,7 @@ def new_procedure_fileset(request, proc_id):
 
 @authentication_required
 def create_procedure_fileset(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
@@ -105,7 +105,7 @@ def create_procedure_fileset(request, proc_id):
 
 @authentication_required
 def new_procedure_schedule(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         if 'type' in request.GET:
@@ -134,7 +134,7 @@ def new_procedure_schedule(request, proc_id):
 
 @authentication_required
 def create_procedure_schedule(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         

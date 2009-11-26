@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import PasswordChangeForm
 from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 from networkutils import ping, traceroute, resolve_name, resolve_addr, HostAddrNotFound, HostNameNotFound
 
 from backup_corporativo.bkp.utils import redirect, reverse
@@ -29,7 +29,7 @@ ipv4_re = re.compile(r'^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]
 
 @authentication_required
 def edit_system_config(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':        
         if GlobalConfig.system_configured():
@@ -43,7 +43,7 @@ def edit_system_config(request):
 
 @authentication_required
 def update_system_config(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'POST':
         E.gconfigform = GlobalConfigForm(
@@ -62,7 +62,7 @@ def update_system_config(request):
 
 @authentication_required
 def manage_system_network(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.iface = NetworkInterface.networkconfig()
@@ -76,7 +76,7 @@ def manage_system_network(request):
 
 @authentication_required
 def create_ping(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.pingform = PingForm(request.POST)
@@ -93,7 +93,7 @@ def create_ping(request):
 
 @authentication_required
 def create_traceroute(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.tracerouteform = TraceRouteForm(request.POST)
@@ -110,7 +110,7 @@ def create_traceroute(request):
 
 @authentication_required
 def create_nslookup(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.nslookupform = NsLookupForm(request.POST)
@@ -137,7 +137,7 @@ def create_nslookup(request):
 
 @authentication_required
 def update_system_network(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'POST':
         E.iface = NetworkInterface.networkconfig()
@@ -153,7 +153,7 @@ def update_system_network(request):
 
 @authentication_required
 def edit_system_password(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.pwdform = PasswordChangeForm(E.current_user)
@@ -163,7 +163,7 @@ def edit_system_password(request):
 
 @authentication_required
 def update_system_password(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.pwdform = PasswordChangeForm(E.current_user, request.POST)
@@ -182,7 +182,7 @@ def update_system_password(request):
 
 @authentication_required
 def edit_system_offsite(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.gconfig = get_object_or_404(GlobalConfig, pk=1)
@@ -194,7 +194,7 @@ def edit_system_offsite(request):
 
 @authentication_required
 def enable_system_offsite(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'POST':
         E.gconfig = get_object_or_404(GlobalConfig, pk=1)
@@ -210,7 +210,7 @@ def enable_system_offsite(request):
 
 @authentication_required
 def disable_system_offsite(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         gconfig = get_object_or_404(GlobalConfig, pk=1)

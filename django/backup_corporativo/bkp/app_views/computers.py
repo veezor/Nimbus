@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Computer, GlobalConfig
@@ -17,7 +17,7 @@ from backup_corporativo.bkp.views import global_vars, authentication_required, D
 # TODO: enviar informação de wizard pro POST através de formuário auxiliar
 @authentication_required
 def new_computer(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         if 'wizard' in request.GET:
@@ -35,7 +35,7 @@ def new_computer(request):
 
 @authentication_required
 def create_computer(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.compform = ComputerForm(request.POST, instance=Computer())
@@ -61,7 +61,7 @@ def create_computer(request):
 
 @authentication_required
 def edit_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer, pk=comp_id)
@@ -72,7 +72,7 @@ def edit_computer(request, comp_id):
 
 @authentication_required
 def update_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.comp = get_object_or_404(Computer, pk=comp_id)
@@ -90,7 +90,7 @@ def update_computer(request, comp_id):
 
 @authentication_required
 def view_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
@@ -105,7 +105,7 @@ def view_computer(request, comp_id):
 
 @authentication_required
 def delete_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
@@ -121,7 +121,7 @@ def delete_computer(request, comp_id):
 
 @authentication_required
 def test_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
@@ -133,7 +133,7 @@ def test_computer(request, comp_id):
 
 @authentication_required
 def view_computer_config(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.comp = Computer.objects.get(pk=comp_id)
@@ -156,7 +156,7 @@ def dump_computer_config(request, comp_id):
     
 @authentication_required
 def new_computer_backup(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         if 'wizard' in request.GET:
@@ -172,7 +172,7 @@ def new_computer_backup(request, comp_id):
 
 @authentication_required
 def create_computer_backup(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.wizauxform = WizardAuxForm(request.POST)
