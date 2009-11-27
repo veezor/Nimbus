@@ -19,7 +19,7 @@ class FileNotFound(Exception):
 
 
 def has_config():
-    return os.access(NIMBUSCONF, os.R_OK)
+    return os.access(NIMBUS_MANAGER_CONF, os.R_OK)
 
 
 def load_logging_system():

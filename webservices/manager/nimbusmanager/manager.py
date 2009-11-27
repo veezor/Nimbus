@@ -9,7 +9,7 @@ from SocketServer import ThreadingMixIn
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 import logging
-import commands
+import subprocess
 import tempfile
 import os
 from os.path import join,basename
@@ -31,9 +31,36 @@ class DaemonOperationError(Exception):
 
 
 
+def _get_secure_method(instance, attr_name):
+    clsname = instance.__class__.__name__
+    try:
+        operation, daemon = attr_name.split('_')
+        if operation in instance.DAEMON_OPERATIONS and \
+                daemon in instance.ALLOWED_DAEMON:
+            
+            def method():
+                return instance._control_daemon(daemon, operation)
+
+            method.__name__ = operation + "_" + daemon
+            return method
+
+        else:
+            raise AttributeError("'%s' object has no attribute '%s'" % ( 
+                                  clsname, attr_name))
+
+    except ValueError, e:
+        raise AttributeError("'%s' object has no attribute '%s'" % ( 
+                              clsname, attr_name))
+
+
+
 class Manager(object):
 
     DAEMON_OPERATIONS = ("start", "stop", "restart", "status")
+
+    ALLOWED_DAEMON = (  "bacula-ctl-dir", "bacula-ctl-fd", 
+                        "bacula-ctl-sd", "networking"  )
+
 
     def __init__(self, debug=False):
 
@@ -57,7 +84,7 @@ class Manager(object):
 
     def _change_paths(self):
         tempdir = tempfile.mkdtemp(prefix='nimbusmanager-')
-        self.logger.info("Arquivos de configuracao serao salvos em %s" % tempdir)
+        self.logger.info("Configuration file save in  %s" % tempdir)
         shutil.rmtree(tempdir)
         os.mkdir(tempdir)
         self.iftabpath = join(tempdir, basename(self.iftabpath))
@@ -99,7 +126,6 @@ class Manager(object):
 
     
     def get_interfaces(self):
-        print networkutils.get_interfaces()
     	return networkutils.get_interfaces()
 
     def _control_daemon(self, daemonname, operation):
@@ -108,34 +134,26 @@ class Manager(object):
             if self.debug:
                 return "debug"
             else:
-                output = commands.getoutput("/etc/init.d/%s %s" % (daemonname,operation))
+                popen = subprocess.Popen( ["/etc/init.d/%s" %daemonname, 
+                                          operation], 
+                                          stdout=subprocess.PIPE)
+                popen.wait()
+
+                if popen.returncode != 0:
+                    raise DaemonOperationError("Process returns %d", popen.returncode)
+
+                output = popen.stdout.read()
                 return output
         else:
-            raise DaemonOperationError("Operação Desconhecida: %s" % operation)
+            raise DaemonOperationError("Unknown operation: %s" % operation)
 
-    def status_daemon(self, daemonname):
-        return self._control_daemon(daemonname, "status")
 
-    def control_director(self, operation):
-        return self._control_daemon("bacula-ctl-dir", operation)
-        
-    def control_storage(self, operation):
-        return self._control_daemon("bacula-ctl-sd", operation)
+   
+    def __getattr__(self, attr):
+        print "vou procurar"
+        return _get_secure_method(self, attr)
 
-    def control_client(self, operation):
-        return self._control_daemon("bacula-ctl-fd", operation)
 
-    def control_network(self, operation):
-        return self._control_daemon("networking", operation)
-
-    def status_director(self):
-        return self.status_daemon("bacula-ctl-dir")
-
-    def status_storage(self):
-        return self.status_daemon("bacula-ctl-sd")
-
-    def status_client(self):
-        return self.status_daemon("bacula-ctl-fd")
 
     def run(self):
         try:
@@ -150,4 +168,5 @@ class Manager(object):
 
 
 if __name__ == "__main__":
-    Manager().run()
+    manager = Manager()
+    manager.run()
