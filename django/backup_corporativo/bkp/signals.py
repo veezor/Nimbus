@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 
-from SOAPpy import SOAPProxy
+from xmlrpclib import ServerProxy
 
 from django.db.models.signals import post_save, post_delete 
 
@@ -44,16 +44,6 @@ def connect_on(model, signal):
 
 
 
-def with_soap(function):
-
-    def function_wrapper(instance):
-    	soap = SOAPProxy("http://127.0.0.1:8888")
-        function(instance, server=soap)
-        del soap
-
-    function_wrapper.__name__ = function.__name__
-
-    return function_wrapper
 
 
 ###
@@ -74,8 +64,8 @@ def create_pools(sender, instance, signal, *args, **kwargs):
 
 ### NetworkInterface ###
 @connect_on(model=NetworkInterface, signal=post_save)
-@with_soap
-def update_networks_file(instance, server=None):
+def update_networks_file(instance):
+    server = ServerProxy("http://localhost:8888")
 
     server.generate_iftab( "nimbus0", "00:00:00:00" )
     server.generate_interfaces( "nimbus0", 

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from SOAPpy import SOAPProxy
+from xmlrpclib import ServerProxy
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
@@ -21,7 +21,7 @@ def main_statistics(request):
     E.update(request)
     
     if request.method == 'GET':
-        server = SOAPProxy("http://127.0.0.1:8888")
+        server = ServerProxy("http://127.0.0.1:8888")
         E.dir_status = server.status_director()
         E.sd_status = server.status_storage()
         E.fd_status = server.status_client()
@@ -39,7 +39,7 @@ def history_statistics(request):
     E.update(request)
     
     if request.method == 'GET':
-        server = SOAPProxy("http://127.0.0.1:8888")
+        server = ServerProxy("http://127.0.0.1:8888")
         #TODO: consertar estatísticas
         #E.runningjobs = Bacula.running_jobs()
         #E.lastjobs = Bacula.last_jobs()
