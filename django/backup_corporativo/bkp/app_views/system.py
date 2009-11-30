@@ -10,7 +10,6 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import PasswordChangeForm
-from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV
 from networkutils import ping, traceroute, resolve_name, resolve_addr, HostAddrNotFound, HostNameNotFound
@@ -52,7 +51,7 @@ def update_system_config(request):
         )
         if E.gconfigform.is_valid():
             gconf = E.gconfigform.save()
-            E.msg = _("Configuration successfully updated")
+            E.msg = u"Configuração foi alterada com sucesso."
             location = reverse('edit_system_config')
             return HttpResponseRedirect(location)
         else:
@@ -126,10 +125,10 @@ def create_nslookup(request):
                 elif re.match(fqn_re, host):
                     E.result = [resolve_name(host)]
                 else:
-                    error = _("Programming Error: invalid host.")
+                    error = u"Erro de programação: formato inválido de host."
                     raise Exception(error)
             except (HostAddrNotFound, HostNameNotFound):
-                error = _("Could not find Host: %s" % host)
+                error = u"Não foi possível encontrar host: %s" % host
                 E.result = [error]
         E.template = 'bkp/system/manage_system_network.html'
         return E.render()
@@ -171,8 +170,8 @@ def update_system_password(request):
             new_pwd = E.pwdform.cleaned_data['new_password1']
             E.current_user.set_password(new_pwd)
             E.current_user.save()
-            E.msg = _('Senha alterada com sucesso.')
-            logger.info('Senha de administrador foi alterada.')
+            E.msg = u'Senha alterada com sucesso.'
+            logger.info(u'Senha de administrador foi alterada.')
             location = reverse('edit_system_config')
             return HttpResponseRedirect(location)
         else:

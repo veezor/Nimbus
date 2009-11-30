@@ -4,7 +4,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV
 
@@ -124,8 +123,11 @@ def __restore_step(comp_id=None ,proc_id=None, job_id=None):
         
 def __check_request(request):
     if not 'fset' in request.GET:
-        raise Exception('JobID parameter is missing.')
+        emsg = u'Erro de programação: parâmetro "JobID" está faltando.'
+        raise Exception(emsg)
     if not 'dt' in request.GET:
-        raise Exception('Date parameter is missing.')
+        emsg = u'Erro de programação: parâmetro "Date" está faltando.'
+        raise Exception(emsg)
     if not 'src' in request.GET:
-        raise Exception('ClientName parameter is missing.')    
+        emsg = u'Erro de programação: parâmetro "ClientName" está faltando.'
+        raise Exception(emsg)    

@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm
 from django.forms.util import ErrorList
 from django import forms
@@ -51,10 +50,10 @@ class NewStrongBoxForm(forms.Form):
             km = KeyManager(password=password)
             drive_created = km.create_drive()
             if not drive_created:
-                error = _("Strongbox could not be created. Please contact support.")
+                error = u"Nao foi possível criar o cofre. Favor, contacte o suporte."
                 raise forms.ValidationError(error)
         else:
-            error = _("Password confirmation doesn't match.")
+            error = u"Confirmação da senha não confere."
             raise forms.ValidationError(error)
         return self.cleaned_data
 
@@ -80,10 +79,10 @@ class MountStrongBoxForm(forms.Form):
         try:
             drive_mounted = km.mount_drive()
         except truecrypt.PasswordError:
-            error = _("Wrong password or corrupted strongbox.")
+            error = u"Senha incorreta ou o cofre está corrompido."
             raise forms.ValidationError(error)    
         if not drive_mounted:
-            error = _("Unable to mount strongbox. Please contact support.")
+            error = u"Não é possível abrir o cofre. Favor, contactar suporte."
             raise forms.ValidationError(error)
         return password
 
@@ -119,7 +118,7 @@ class ChangePwdStrongBoxForm(forms.Form):
         new_password_2 = self.cleaned_data.get(u"new_password_2")
         
         if new_password != new_password_2:
-            error = _("New Password confirmation doesn't match.")
+            error = u"Confirmação de senha não confere."
             if not 'new_password_2' in self._errors:
                 self._errors['new_password_2'] = ErrorList()
             self._errors['new_password_2'].append(error)
@@ -128,7 +127,7 @@ class ChangePwdStrongBoxForm(forms.Form):
         km.set_password(old_password)
         pwd_changed = km.change_drive_password(new_password)
         if not pwd_changed:
-            error = _("Wrong password or strongbox header is corrupted.")
+            error = u"Senha incorreta ou cofre está corrompido."
             if not 'old_password' in self._errors:
                 self._errors['old_password'] = ErrorList()
             self._errors['old_password'].append(error)
@@ -157,11 +156,11 @@ class HeaderBkpForm(ModelForm):
             bkp_created = km.make_drive_backup(self.instance.filepath())
         except truecrypt.PasswordError:
             uuid.delete()
-            error = _("Wrong password.")
+            error = u"Senha incorreta ou cofre está corrompido."
             raise forms.ValidationError(error)
         if not bkp_created:
             uuid.delete()
-            error = _("Cannot create header backup. Please contact support.")
+            error = u"Não foi possível criar ponto de restauração. Favor contactar suporte."
             raise forms.ValidationError(error)
         return drive_password
 
@@ -187,7 +186,7 @@ class RestoreHeaderBkpForm(ModelForm):
         if instance and instance.id:
             headerbkp_path = instance.filepath()
         else:
-            error = _("Programming Error, please contact support.")
+            error = u"Erro de programação. Favor contactar suporte"
             raise forms.ValidationError(error)
         cleaned_data = self.cleaned_data
         drive_password = cleaned_data.get(u"drive_password")
@@ -195,7 +194,7 @@ class RestoreHeaderBkpForm(ModelForm):
         km.set_password(drive_password)
         bkp_restored = km.restore_drive_backup(headerbkp_path)
         if not bkp_restored:
-            error = _("Wrong password.")
+            error = u"Senha incorreta ou cofre está corrompido."
             raise forms.ValidationError(error)
         return drive_password
 

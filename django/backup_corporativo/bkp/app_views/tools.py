@@ -6,7 +6,6 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
-from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV
 import keymanager

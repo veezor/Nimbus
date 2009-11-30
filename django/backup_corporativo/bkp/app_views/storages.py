@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV
 
@@ -37,7 +36,7 @@ def create_storage(request):
             location = reverse(view_storage, args=[sto.id])
             return HttpResponseRedirect(location)
         else:
-            E.msg = _("Error at storage creation.")
+            E.msg = u"Erro ao adicionar storage."
             E.template = 'bkp/storage/new_storage.html'
             return E.render()
 
@@ -72,11 +71,11 @@ def update_storage(request, sto_id):
         E.stoform = StorageForm(request.POST, instance=E.storage)
         if E.stoform.is_valid():
             sto = E.stoform.save()
-            E.msg = _("Storage successfully updated.")
+            E.msg = u"Storage alterado com sucesso."
             location = reverse('view_storage', args=[sto.id])
             return HttpResponseRedirect(location)
         else:
-            E.msg = _("Error at storage edition.")
+            E.msg = u"Erro ao alterar storage."
             E.template = 'bkp/storage/edit_storage.html'
             E.render()
 
@@ -87,13 +86,12 @@ def delete_storage(request, sto_id):
     
     if request.method == 'GET':
         E.storage = get_object_or_404(Storage, pk=sto_id)
-        E.msg = _("Confirm storage removal.")
         E.template = 'bkp/storage/delete_storage.html'
         return E.render()
     elif request.method == 'POST':
         storage = get_object_or_404(Storage, pk=sto_id)
         storage.delete()
-        E.msg = _("Storage has been successfully removed.")
+        E.msg = "Storage foi removido permanentemente."
         location = reverse('list_storages')
         return HttpResponseRedirect(location)
 

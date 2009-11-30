@@ -4,7 +4,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV
 
@@ -14,7 +13,6 @@ from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetFor
 from backup_corporativo.bkp.views import global_vars, authentication_required, DAYS_OF_THE_WEEK
 
 
-# TODO: enviar informação de wizard pro POST através de formuário auxiliar
 @authentication_required
 def new_computer(request):
     E = ENV(request)
@@ -25,7 +23,7 @@ def new_computer(request):
         else:
             E.wizard = False
         if Computer.objects.count() > 14:
-            E.msg = _("Cannot add computer: computers limit reached.")
+            E.msg = u"Erro ao adicionar computador: limite de computadores foi atingido."
             location = reverse('list_computers')
             return HttpResponseRedirect(location)
         E.compform = ComputerForm(instance=Computer())
@@ -46,7 +44,7 @@ def create_computer(request):
         else:
             E.wizard = False
         if Computer.objects.count() > 14:
-            E.msg = _("Cannot add computer: computers limit reached.")
+            E.msg = u"Erro ao adicionar computador: limite de computadores foi atingido."
             location = reverse('list_computers')
             return HttpResponseRedirect(location)
         if E.compform.is_valid():
@@ -79,11 +77,11 @@ def update_computer(request, comp_id):
         E.compform = ComputerForm(request.POST,instance=E.comp)
         if E.compform.is_valid():
             E.compform.save()
-            E.msg = _("Computer has been successfully updated.")
+            E.msg = u"Computador foi alterado com sucesso."
             location = reverse('view_computer', args=[comp_id])
             return HttpResponseRedirect(location)
         else:
-            E.msg = _("Error at computer update.")
+            E.msg = u"Erro ao alterar computador."
             E.template = 'bkp/computer/edit_computer.html'
             return E.render()
 
@@ -109,13 +107,12 @@ def delete_computer(request, comp_id):
     
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
-        E.msg = _("Please confirm computer removal.")
         E.template = 'bkp/computer/delete_computer.html'
         return E.render()
     elif request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.delete()
-        E.msg = _("Computer has been permanently removed.")
+        E.msg = u"Computador foi removido permanentemente."
         return HttpResponseRedirect(reverse("list_computers"))
 
 
@@ -126,7 +123,7 @@ def test_computer(request, comp_id):
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.run_test_job()
-        E.msg = _("A requisition has been sent to the computer.")
+        E.msg = u"Uma requisiçao foi enviada ao computador."
         location = reverse("view_computer", args=[comp_id])
         return HttpResponseRedirect(location)
 

@@ -4,7 +4,6 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
 from environment import ENV
 from keymanager import KeyManager
@@ -185,10 +184,10 @@ def umount_strongbox(request):
                 force = False
             drive_umounted = km.umount_drive(force=force)
             if km.mounted:
-                E.msg = _("Unable to lock strongbox.")
+                E.msg = u"Nao foi possivel trancar o cofre."
                 location = reverse("umount_strongbox")
             else:
-                E.msg = _("Strongbox successfully locked.")
+                E.msg = u"O cofre foi trancado com sucesso."
                 location = reverse("manage_strongbox")
             return HttpResponseRedirect(location)
 
