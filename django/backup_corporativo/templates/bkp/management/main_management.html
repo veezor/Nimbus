@@ -5,17 +5,40 @@
 {% endblock %}
 
 {% block content %}
-<h2>Gerenciar</h2>
+<h2>Resumo</h2>
 
 <div class="titulo_botoes">
-    <h2>Atividades Frequentes</h2>
+    <h3>Computadores</h3>
 </div>
 
 <div class="bloco_texto">
-<ul>
-    <li><a href="{% url bkp.views.new_computer %}?wizard=True">Adicionar Computador</a></li>
-    {# TODO: migrar restore para usar url filter #}
-    <li><a href="{{script_name}}/restore/new" title="">Restaurar Arquivos</a></li>
-</ul>
+<p>Número de computadores: {{ computers.count }}/15</p>
 </div>
+
+<div class="titulo_botoes">
+    <h3>Cofre</h3>
+</div>
+
+<div class="bloco_texto">
+{% if km.has_drive %}
+<p>Estado Atual: {% if km.mounted %}Aberto{% else %}Fechado{% endif %}</p>
+{% else %}
+<p>Cofre ainda nao foi criado.</p>
+{% endif %}
+</div>
+
+<div class="titulo_botoes">
+    <h3>Encriptação</h3>
+</div>
+
+<div class="bloco_texto">
+{% if km.mounted %}
+<p>Computadores com Encriptação: {{encryption_count}}/{{computers.count}}</p>
+{% else %}
+<p>Não é possível coletar informações.</p>
+{% endif %}
+</div>
+
+
 {% endblock %}
+

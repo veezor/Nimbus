@@ -18,7 +18,6 @@
                 <th>Nome</th>
                 <th>Ip</th>
                 <th>Descrição</th>
-                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -27,8 +26,6 @@
                 <td>{{sto.storage_name}}</td>
                 <td>{{sto.storage_ip}}</td>
                 <td>{{sto.storage_description}}</td>
-                <td><button onclick="location.href='{% url bkp.views.edit_storage sto.id %}';return false"><span>Editar</span></button>
-	            <button onclick="location.href='{% url bkp.views.delete_storage sto.id %}';return false" class="red"><span>Remover</span></button></td>
             </tr>
             {% endfor %}
         </tbody>

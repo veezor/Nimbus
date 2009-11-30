@@ -1,6 +1,6 @@
 {% load bkp_extras %}
 <ul class="horizontal_menu">
-	<li {% if request.META.PATH_INFO|isequal:"/management/" %}class="active"{% endif %}><a href="{% url bkp.views.main_management %}">Principal</a></li>
+	<li {% if request.META.PATH_INFO|isequal:"/management/" %}class="active"{% endif %}><a href="{% url bkp.views.main_management %}">Início</a></li>
 	<li {% if request.META.PATH_INFO|contains:"/management/computers/list" %}class="active"{% endif %}><a href="{% url bkp.views.list_computers %}">Computadores</a></li>
 	<li {% if request.META.PATH_INFO|contains:"/management/strongbox" %}class="active"{% endif %}><a href="{% url bkp.views.manage_strongbox %}">Cofre</a></li>
 	<li {% if request.META.PATH_INFO|contains:"/management/storages/list" %}class="active"{% endif %}><a href="{% url bkp.views.list_storages %}">Storages</a></li>
