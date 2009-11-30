@@ -8,11 +8,10 @@ import pwd
 
 from deploylib import rule, start # deploylib has logging configure
 
+
+import sys
 import logging
 import logging.handlers
-import mercurial.commands
-import mercurial.ui
-import mercurial.hg
 import subprocess
 
 
@@ -20,9 +19,13 @@ import subprocess
 NIMBUS_VAR_PATH = "/var/nimbus/"
 NIMBUS_HG_PATH = NIMBUS_VAR_PATH + "hg/"
 NIMBUS_CUSTOM_PATH = NIMBUS_VAR_PATH + "custom/"
+NIMBUS_DEPS_PATH = NIMBUS_VAR_PATH + "deps/"
 NIMBUS_HG_URL = "http://hg.devel.linconet.com.br/bc-devel"
 NIMBUS_ETC_PATH = "/etc/nimbus"
 NIMBUS_LOG_PATH = "/var/log/nimbus"
+
+
+NIMBUSDEP_ZIP = "nimbusdep.zip"
 
 TRUECRYPT_BIN_PATH = "/usr/bin/truecrypt"
 
@@ -32,6 +35,9 @@ logger = logging.getLogger(__name__)
 
 
 class RootRequired(Exception):
+    pass
+
+class PackageNotFound(Exception):
     pass
 
 
@@ -46,11 +52,13 @@ def make_dirs():
     make_dir(NIMBUS_LOG_PATH)
     make_dir(NIMBUS_ETC_PATH)
     make_dir(NIMBUS_VAR_PATH)
+    make_dir(NIMBUS_DEPS_PATH)
     return True
 
 
-@rule(depends=make_dirs)
+@rule
 def get_new_nimbus_version():
+    import mercurial.ui , mercurial.hg, mercurial.commands
     ui = mercurial.ui.ui()
     mercurial.commands.clone(ui, NIMBUS_HG_URL, dest=NIMBUS_HG_PATH)
     return True
@@ -99,11 +107,15 @@ def chown_nimbus_files():
     gid = pwinfo.pw_gid
     
     def callback(arg, dirname, fnames):
+        os.chown(dirname, uid, gid)
         for filename in fnames:
-            os.chown(os.path.join(dirname, filename), uid, gid)
+            filepath = os.path.join(dirname, filename)
+            os.chown(filepath, uid, gid)
 
     os.path.walk(NIMBUS_VAR_PATH, callback, None)
     os.path.walk(NIMBUS_ETC_PATH, callback, None)
+    os.path.walk(NIMBUS_DEPS_PATH, callback, None)
+    os.path.walk(NIMBUS_LOG_PATH, callback, None)
     return True
 
 
@@ -117,15 +129,21 @@ def has_nimbus():
 def check_python_dep(name):
     logger.info('Checking dependency %s' % name)
     try:
-        module = __import__(name)
+        __import__(name)
         logger.info('%s is found.' % name)
         return True
     except ImportError, e:
         logger.error('%s not found.' % name)
         raise ImportError(e)
 
-
 @rule
+def unzip_pythonlibs():
+    cmd = subprocess.Popen(["unzip",NIMBUSDEP_ZIP,"-d",NIMBUS_DEPS_PATH])
+    cmd.wait()
+    return not bool(cmd.returncode)
+
+
+@rule(depends=unzip_pythonlibs)
 def check_python_packages():
     check_python_dep('django')
     check_python_dep('netifaces')
@@ -137,10 +155,19 @@ def has_truecrypt():
     return os.access( TRUECRYPT_BIN_PATH , os.R_OK)
 
 
+@rule
+def sync_db():
+    from django.core.management import call_command
+    sys.path.insert(0, "/var/nimbus/hg/django")
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'backup_corporativo.settings'
+    call_command('syncdb')
 
-@rule( depends=( has_truecrypt, 
-                 check_python_packages, 
-                 chown_nimbus_files ) ) #depends use reverse order
+
+@rule( depends=( has_truecrypt,
+                 make_dirs,
+                 check_python_packages,
+                 chown_nimbus_files, 
+                  )) #depends use reverse order
 def install_nimbus(): # for semantic way, bypass to chown_nimbus_files
     return True
 
@@ -152,8 +179,35 @@ def generate_hgrc_for_root_user():
     f.close()
     return True
 
-@rule(depends=(has_nimbus,generate_hgrc_for_root_user))
+
+def is_installed(package):
+    if not package.isInstalled:
+        raise PackageNotFound("Package %s not found" % package.name)
+
+
+@rule
+def check_system_dependencies():
+    import apt
+    cache = apt.cache.Cache()
+    is_installed(cache['apache2'])
+    is_installed(cache['libapache2-mod-wsgi'])
+    is_installed(cache['libapache2-mod-python'])
+    is_installed(cache['mysql-server-5.0'])
+    return True
+    
+@rule
+def set_python_path():
+    sys.path.insert(0, NIMBUS_DEPS_PATH)
+    return True
+
+
+@rule(depends=(has_nimbus, 
+               check_system_dependencies,
+               generate_hgrc_for_root_user))
 def update_nimbus_version():
+
+    import mercurial.ui , mercurial.hg, mercurial.commands
+
     ui = mercurial.ui.ui()
     ui.readconfig(os.path.join(NIMBUS_HG_PATH, ".hg/hgrc"))
     repo = mercurial.hg.repository(ui, path=NIMBUS_HG_PATH)
@@ -171,7 +225,7 @@ def check_root_user():
 
 
 
-@rule(depends=(check_root_user, update_nimbus_version))
+@rule(depends=(check_root_user, set_python_path, update_nimbus_version))
 def deploy():
     logger.info("Nimbus deploy finalized")
     return True
