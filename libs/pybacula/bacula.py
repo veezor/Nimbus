@@ -4,7 +4,7 @@
 try:
     import bconsole
 except ImportError, e:
-    print "Error: load bconsole module failed"
+    pass
 
 
 valid_commands = """autodisplay automount add cancel create delete label mount prune relabel release restore run setdebug status unmount update wait disable enable list llist use query reload"""
@@ -51,7 +51,6 @@ class Command(object):
         return  " ".join(self.content)
 
     def run(self):
-        print "DEBUG",self.get_content()
         result = bconsole.execute_command( self.get_content() )
         self.content = []
         return result
@@ -67,7 +66,6 @@ class Command(object):
 
 
 def test():
-    print "Using bconsole mock"
     class Bconsole(object): #Mock
 
         def connect(self):
