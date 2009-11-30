@@ -48,7 +48,6 @@ urlpatterns += patterns(
     (r'^system/network/update$', 'update_system_network'),
     (r'^system/network/ping/create$', 'create_ping'),
     (r'^system/network/traceroute/create$', 'create_traceroute'),
-    (r'^system/network/telnet/create$', 'create_telnet'),
     (r'^system/network/nslookup/create$', 'create_nslookup'),
     (r'^system/config/edit$', 'edit_system_config'),
     (r'^system/config/update$', 'update_system_config'),
@@ -76,15 +75,6 @@ urlpatterns += patterns(
     (r'^computer/(?P<comp_id>\d+)/config/dump$', 'dump_computer_config'),
     (r'^computer/(?P<comp_id>\d+)/backup/new$', 'new_computer_backup'),        
     (r'^computer/(?P<comp_id>\d+)/backup/create$', 'create_computer_backup'),        
-    # views_app/storages.py
-    (r'^storage/create$', 'create_storage'),
-    (r'^storage/new$', 'new_storage'),    
-    (r'^storage/(?P<sto_id>\d+)$', 'view_storage'),
-    (r'^storage/(?P<sto_id>\d+)/edit$', 'edit_storage'),
-    (r'^storage/(?P<sto_id>\d+)/update$', 'update_storage'),
-    (r'^storage/(?P<sto_id>\d+)/delete$', 'delete_storage'),
-    (r'^storage/(?P<sto_id>\d+)/config/$', 'view_storage_config'),
-    (r'^storage/(?P<sto_id>\d+)/config/dump$', 'dump_storage_config'),
     # views_app/procedures.py
     (r'^procedure/(?P<proc_id>\d+)/backup/edit$', 'edit_backup'),
     (r'^procedure/(?P<proc_id>\d+)/backup/update$', 'update_backup'),

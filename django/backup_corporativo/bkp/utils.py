@@ -48,7 +48,7 @@ def new_computer_backup(comp_id, request, wizard=False):
     script_name = request.META['SCRIPT_NAME']
     location = "%s/computer/%s/backup/new" % (script_name, comp_id,)
     if wizard:
-        location += "?wizard=true"
+        location += "?wizard=%s" % wizard
     return location
 
 
@@ -57,7 +57,7 @@ def new_procedure_schedule(proc_id, request, type='Weekly', wizard=False):
     location = "%s/procedure/%s/schedule/new" % (script_name, proc_id)
     location += "?type=%s" % type
     if wizard:
-        location += "&wizard=true"
+        location += "&wizard=%s" % wizard
     return  location
 
 

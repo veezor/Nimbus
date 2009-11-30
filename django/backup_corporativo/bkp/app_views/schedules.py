@@ -4,9 +4,8 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
-from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Schedule
@@ -17,27 +16,26 @@ from backup_corporativo.bkp.forms import MonthlyTriggerForm, WeeklyTriggerForm
 
 @authentication_required
 def delete_schedule(request, sched_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.sched = get_object_or_404(Schedule, pk=sched_id)
         E.proc = E.sched.procedure
         E.comp = E.proc.computer
-        E.msg = _("Are you sure?")
         E.template = 'bkp/schedule/delete_schedule.html'
         return E.render()
     elif request.method == 'POST':
         sched = get_object_or_404(Schedule, pk=sched_id)
         proc = sched.procedure
         sched.delete()
-        E.msg = _("Schedule was successfully removed.")
+        E.msg = u"Agendamento foi removido permanentemente."
         location = reverse("edit_backup", args=[proc.id])
         return HttpResponseRedirect(location)
 
 
 @authentication_required
 def edit_schedule(request, sched_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.sched = get_object_or_404(Schedule, pk=sched_id)
@@ -52,7 +50,7 @@ def edit_schedule(request, sched_id):
 
 @authentication_required
 def update_schedule(request, sched_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.sched = get_object_or_404(Schedule, pk=sched_id)
@@ -64,7 +62,7 @@ def update_schedule(request, sched_id):
         exec(cmd)
         if E.triggform.is_valid():
             E.triggform.save()
-            E.msg = _("Schedule was successfully updated.")
+            E.msg = u"Agendamento foi alterado com sucesso."
             location = reverse("edit_backup", args=[E.proc.id])
             return HttpResponseRedirect(location)
         else:

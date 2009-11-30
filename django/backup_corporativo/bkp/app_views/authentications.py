@@ -7,9 +7,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.forms import LoginForm
@@ -18,7 +17,7 @@ from backup_corporativo.bkp.views import global_vars, authentication_required
 
 
 def new_session(request):
-    E.update(request)
+    E = ENV(request)
     
     if not E.current_user.is_authenticated():
         E.loginform = LoginForm()
@@ -30,7 +29,7 @@ def new_session(request):
 
 
 def create_session(request):
-    E.update(request)
+    E = ENV(request)
     
     if not E.current_user.is_authenticated():
         if request.method == 'POST':
@@ -59,7 +58,7 @@ def create_session(request):
 
 @authentication_required
 def delete_session(request):
-    E.update(request)
+    E = ENV(request)
     
     if E.current_user.is_authenticated():
         if request.method == 'POST':

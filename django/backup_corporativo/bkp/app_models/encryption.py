@@ -46,11 +46,11 @@ class Encryption(models.Model):
         km = KeyManager()
         
         if not km.mounted:
-            error = _("Programming Error: Strongbox must be mounted in order to build encryption files.")
+            error = u"Cofre precisa estar aberto para criaçao de encriptaçao."
             raise Exception(error)
         rsa,cert = km.generate_and_save_keys_for_client(client_name)
         if not (rsa and cert):
-            error = _("Unable to generate encryption. Please contact support.")
+            error = u"Nao foi possivel criar encriptaçao. Favor contactar suporte."
             raise Exception(error)
         return True
 

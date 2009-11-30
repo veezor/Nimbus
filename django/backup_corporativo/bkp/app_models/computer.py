@@ -21,6 +21,10 @@ import pybacula
 pybacula.test()
 bacula = Bacula()
 
+
+class ComputerLimitExceeded(Exception):
+    pass
+
 ### Computer ###
 class Computer(models.Model):
     # Constants
@@ -73,6 +77,8 @@ class Computer(models.Model):
         app_label = 'bkp'
  
     def save(self):
+        if Computer.objects.count() > 14:
+            raise ComputerLimitExceeded
         if self.computer_password == self.NIMBUS_BLANK:
             self.computer_password = utils.random_password()
         uuid = NimbusUUID()
