@@ -18,7 +18,9 @@ def list_encryptions(request):
     E = ENV(request)
 
     if request.method == 'GET':
-        E.enc_list = Encryption.objects.all()
+        E.km = KeyManager()
+        if E.km.mounted:
+            E.enc_list = Encryption.objects.all()
         E.template = 'bkp/management/list_encryptions.html'
         return E.render()
 
@@ -65,6 +67,8 @@ def main_management(request):
     E = ENV(request)
 
     if request.method == 'GET':
+        E.km = KeyManager()
+        E.encryption_count = Encryption.objects.count()
         E.template = 'bkp/management/main_management.html'
         return E.render()
 
