@@ -5,13 +5,14 @@
 {% endblock %}
 
 {% block content %}
+<div class='titulo_botoes'>
 <h2>Gerenciar Cofre</h2><br /><br />
+</div>
 
-{{drive_mounted}}
 <div class='bloco_texto'>
 
 {% if drive_mounted %}
-<p>Opções:</p>
+<p>Ações:</p>
 <ul>
 <li><a href="{% url bkp.views.umount_strongbox %}">Desmontar</a></li>
 <li><a href="{% url bkp.views.changepwd_strongbox %}">Alterar Senha</a></li>
@@ -27,7 +28,7 @@
             {{ field.label_tag }} {{ field }}
         </div>
     {% endfor %}
-    <p><button type="submit"><span>Criar Cofre</span></button> <a href="{% url bkp.views.list_headerbkp %}">Restaurar</a></p>
+    <p><button type="submit"><span>Abrir Cofre</span></button> <a href="{% url bkp.views.list_headerbkp %}">Restaurar</a></p>
     </form>
 
 {% endif %}
