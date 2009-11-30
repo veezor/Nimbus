@@ -4,9 +4,8 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.models import Computer, GlobalConfig
@@ -14,16 +13,19 @@ from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetFor
 from backup_corporativo.bkp.views import global_vars, authentication_required, DAYS_OF_THE_WEEK
 
 
-# TODO: enviar informação de wizard pro POST através de formuário auxiliar
 @authentication_required
 def new_computer(request):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         if 'wizard' in request.GET:
             E.wizard = request.GET['wizard']
         else:
             E.wizard = False
+        if Computer.objects.count() > 14:
+            E.msg = u"Erro ao adicionar computador: limite de computadores foi atingido."
+            location = reverse('list_computers')
+            return HttpResponseRedirect(location)
         E.compform = ComputerForm(instance=Computer())
         E.template = 'bkp/computer/new_computer.html'
         return E.render()
@@ -31,30 +33,33 @@ def new_computer(request):
 
 @authentication_required
 def create_computer(request):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.compform = ComputerForm(request.POST, instance=Computer())
         E.wizauxform = WizardAuxForm(request.POST)
         if E.wizauxform.is_valid():
-            wiz = E.wizauxform.cleaned_data['wizard']
+            E.wizard = E.wizauxform.cleaned_data['wizard']
         # Apenas por segurança
         else:
-            wiz = False
+            E.wizard = False
+        if Computer.objects.count() > 14:
+            E.msg = u"Erro ao adicionar computador: limite de computadores foi atingido."
+            location = reverse('list_computers')
+            return HttpResponseRedirect(location)
         if E.compform.is_valid():
             comp = E.compform.save()
             location = reverse('new_computer_backup', [comp.id])
-            location += "?wizard=%s" % wiz
+            location += "?wizard=%s" % E.wizard
             return HttpResponseRedirect(location)
         else:
-            E.wizard = wiz
             E.template = 'bkp/computer/new_computer.html'
             return E.render()
 
 
 @authentication_required
 def edit_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer, pk=comp_id)
@@ -65,25 +70,25 @@ def edit_computer(request, comp_id):
 
 @authentication_required
 def update_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.comp = get_object_or_404(Computer, pk=comp_id)
         E.compform = ComputerForm(request.POST,instance=E.comp)
         if E.compform.is_valid():
             E.compform.save()
-            E.msg = _("Computer has been successfully updated.")
+            E.msg = u"Computador foi alterado com sucesso."
             location = reverse('view_computer', args=[comp_id])
             return HttpResponseRedirect(location)
         else:
-            E.msg = _("Error at computer update.")
+            E.msg = u"Erro ao alterar computador."
             E.template = 'bkp/computer/edit_computer.html'
             return E.render()
 
 
 @authentication_required
 def view_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
@@ -98,35 +103,34 @@ def view_computer(request, comp_id):
 
 @authentication_required
 def delete_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
-        E.msg = _("Please confirm computer removal.")
         E.template = 'bkp/computer/delete_computer.html'
         return E.render()
     elif request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.delete()
-        E.msg = _("Computer has been permanently removed.")
+        E.msg = u"Computador foi removido permanentemente."
         return HttpResponseRedirect(reverse("list_computers"))
 
 
 @authentication_required
 def test_computer(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.run_test_job()
-        E.msg = _("A requisition has been sent to the computer.")
+        E.msg = u"Uma requisiçao foi enviada ao computador."
         location = reverse("view_computer", args=[comp_id])
         return HttpResponseRedirect(location)
 
 
 @authentication_required
 def view_computer_config(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.comp = Computer.objects.get(pk=comp_id)
@@ -149,7 +153,7 @@ def dump_computer_config(request, comp_id):
     
 @authentication_required
 def new_computer_backup(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         if 'wizard' in request.GET:
@@ -165,7 +169,7 @@ def new_computer_backup(request, comp_id):
 
 @authentication_required
 def create_computer_backup(request, comp_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.wizauxform = WizardAuxForm(request.POST)

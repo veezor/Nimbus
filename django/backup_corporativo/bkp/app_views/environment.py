@@ -4,11 +4,11 @@ from django.shortcuts import render_to_response
 
 class Environment(object):
 
-    def update(self, request):
+    def __init__(self, request):
         self.request = request
         self.script_name = request.META['SCRIPT_NAME']
         self.current_user = request.user
-        self.computers = Computer.objects.all() 
+        self.computers = Computer.objects.all()
         self.context = RequestContext(request)
 
     def _set_user_msg(self, msg):
@@ -28,4 +28,4 @@ class Environment(object):
 
 
 
-ENV = Environment()
+ENV = Environment

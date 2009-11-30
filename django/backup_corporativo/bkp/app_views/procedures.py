@@ -4,9 +4,8 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
-from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 #TODO: remover import do módulo utils
 from backup_corporativo.bkp import utils
@@ -16,12 +15,9 @@ from backup_corporativo.bkp.forms import ProcedureForm, MonthlyTriggerForm, Week
 from backup_corporativo.bkp.views import global_vars, authentication_required, DAYS_OF_THE_WEEK
 
 
-
-
-
 @authentication_required
 def edit_backup(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
@@ -36,44 +32,43 @@ def edit_backup(request, proc_id):
 
 @authentication_required
 def update_backup(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     E.proc = get_object_or_404(Procedure, pk=proc_id)
     E.comp = E.proc.computer
     if request.method == 'POST':
         E.procform = ProcedureForm(request.POST, instance=E.proc)
         if E.procform.is_valid():
             E.procform.save()
-            E.msg = _("Backup successfully updated.")
+            E.msg = u"Backup foi alterado com sucesso."
             location = reverse("edit_backup", args=[proc_id])
             return HttpResponseRedirect(location)
         else:
-            E.msg = _("Error at backup update.")
+            E.msg = u"Erro ao alterar backup."
             E.template = 'bkp/procedure/edit_backup.html'
             return E.render()
 
 
 @authentication_required
 def delete_procedure(request, proc_id):
-    E.update(request)
+    E = ENV(request)
 
     if request.method == 'GET':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
         E.comp = E.proc.computer
-        E.msg = _("Do you really want to remove the Backup?")
         E.template = 'bkp/procedure/delete_procedure.html'
         return E.render()
     elif request.method == 'POST':
         proc = get_object_or_404(Procedure, pk=proc_id)
         comp = proc.computer
         proc.delete()
-        E.msg = _("Backup successfully removed.")
+        E.msg = u"Backup foi removido permanentemente."
         location = reverse("view_computer", args=[comp.id])
         return HttpResponseRedirect(location)
 
 
 @authentication_required
 def new_procedure_fileset(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
@@ -85,7 +80,7 @@ def new_procedure_fileset(request, proc_id):
 
 @authentication_required
 def create_procedure_fileset(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
@@ -98,14 +93,14 @@ def create_procedure_fileset(request, proc_id):
             location = reverse('edit_backup',args=[E.proc.id])
             return HttpResponseRedirect(location)
         else:
-            E.msg = _("Error at fileset creation.")
+            E.msg = u"Erro ao adicionar local."
             E.template = 'bkp/procedure/new_procedure_fileset.html'
             return E.render()
 
 
 @authentication_required
 def new_procedure_schedule(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'GET':
         if 'type' in request.GET:
@@ -134,7 +129,7 @@ def new_procedure_schedule(request, proc_id):
 
 @authentication_required
 def create_procedure_schedule(request, proc_id):
-    E.update(request)
+    E = ENV(request)
     
     if request.method == 'POST':
         
@@ -148,7 +143,8 @@ def create_procedure_schedule(request, proc_id):
         E.comp = E.proc.computer
         E.sched_aux_form = ScheduleAuxForm(request.POST)
         if not E.sched_aux_form.is_valid():
-            raise Exception("Programming error: mal formed sched_aux_form.")
+            emsg = u"""Erro de programaçao. "sched_aux_form" malformado."""
+            raise Exception(emsg)
         type = E.sched_aux_form.cleaned_data['schedule_type']
         triggform = "E.triggform = %sTriggerForm(request.POST)" % type
         exec(triggform)
@@ -181,4 +177,5 @@ def __ensure_valid_type(type):
     if type in ('Weekly','Monthly'):
         pass
     else:
-        raise Exception("Programming Error: invalid schedule type. Try Weekly or Monthly.")
+        emsg = u"""Erro de programação: "schedule type" inválido. Tente "Weekly" ou "Monthly"."""
+        raise Exception(emsg)

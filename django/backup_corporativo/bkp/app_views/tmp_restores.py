@@ -4,9 +4,8 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
-from environment import ENV as E
+from environment import ENV
 
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.views import global_vars, authentication_required
@@ -27,7 +26,7 @@ from backup_corporativo.bkp.bacula import Bacula
 # TODO: trocar get_object_or_404 por Try classe.objects.get e Except classe.DoesNotExist
 @authentication_required
 def new_restore(request, comp_id=None, proc_id=None, job_id=None):
-    E.update(request)
+    E = ENV(request)
     
     if comp_id is not None:
         E.comp = get_object_or_404(Computer, pk=comp_id)
@@ -124,8 +123,11 @@ def __restore_step(comp_id=None ,proc_id=None, job_id=None):
         
 def __check_request(request):
     if not 'fset' in request.GET:
-        raise Exception('JobID parameter is missing.')
+        emsg = u'Erro de programação: parâmetro "JobID" está faltando.'
+        raise Exception(emsg)
     if not 'dt' in request.GET:
-        raise Exception('Date parameter is missing.')
+        emsg = u'Erro de programação: parâmetro "Date" está faltando.'
+        raise Exception(emsg)
     if not 'src' in request.GET:
-        raise Exception('ClientName parameter is missing.')    
+        emsg = u'Erro de programação: parâmetro "ClientName" está faltando.'
+        raise Exception(emsg)    

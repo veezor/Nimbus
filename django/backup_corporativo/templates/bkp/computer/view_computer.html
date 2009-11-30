@@ -99,7 +99,7 @@
 			        </div>
 			        <div class="info_basica">
 			            <span>Storage: <strong>{{ proc.storage.storage_name }}</strong></span>
-			            <span>Agendamentos: <strong>{{ proc.fileset_set.count }}</strong></span>
+			            <span>Agendamentos: <strong>{{ proc.schedule_set.count }}</strong></span>
 			            <span>Offsite: <strong>{% if proc.offsite_on %}ATIVO{% endif %}{% if not proc.offsite_on %}Inativo{% endif %}</strong></span><br/>
 			            <span>Caminhos:
 			            <strong>{% if proc.fileset_set.count %}
@@ -117,7 +117,7 @@
 		                    <button onclick="location.href='{% url bkp.views.edit_backup proc.id %}'"><span>Alterar</span></button>
 		                    <button onclick="location.href='{% url bkp.views.delete_procedure proc.id %}'" class="red"><span>Remover</span></button>
                             <button onclick="location.href='{% url bkp.views.new_procedure_fileset proc.id %}'"><span>Novo Local</span></button>
-                            <button onclick="location.href='{% url bkp.views.new_procedure_schedule proc.id %}'"><span>Novo Agendamento</span></button>                            
+                            <button onclick="location.href='{% url bkp.views.new_procedure_schedule proc.id %}?wizard=True'"><span>Novo Agendamento</span></button>                            
 		                </div>
 		            </div>
 			    </div>
