@@ -27,17 +27,33 @@ ipv4_re = re.compile(r'^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]
 
 
 @authentication_required
+def main_system(request):
+    E = ENV(request)
+
+    if request.method == 'GET':
+        if GlobalConfig.system_configured():
+            E.gconfig = GlobalConfig.objects.get(pk=1)
+        else:
+            E.msg = u"Configure seu sistema."
+            location = reverse('edit_system_config')
+            return HttpResponseRedirect(location)
+        E.iface = NetworkInterface.networkconfig()
+        E.template = 'bkp/system/main_system.html'
+        return E.render()
+
+
+@authentication_required
 def edit_system_config(request):
     E = ENV(request)
 
-    if request.method == 'GET':        
+    if request.method == 'GET':
         if GlobalConfig.system_configured():
             E.gconfig = GlobalConfig.objects.get(pk=1)
         else:
             E.gconfig= GlobalConfig()
         E.gconfigform = GlobalConfigForm(instance=E.gconfig)
         E.template = 'bkp/system/edit_system_config.html'
-        return E.render() 
+        return E.render()
 
 
 @authentication_required
