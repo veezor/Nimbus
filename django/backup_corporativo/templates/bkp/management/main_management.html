@@ -5,14 +5,14 @@
 {% endblock %}
 
 {% block content %}
-<h2>Resumo</h2>
 
 <div class="titulo_botoes">
     <h3>Computadores</h3>
 </div>
 
 <div class="bloco_texto">
-<p>Número de computadores: {{ computers.count }}/15</p>
+<p>Número de computadores: <strong>{{computers.count}}/15</strong></p>
+<p><a href="{% url bkp.views.list_computers %}">Gerenciar Computadores</a></p>
 </div>
 
 <div class="titulo_botoes">
@@ -20,8 +20,15 @@
 </div>
 
 <div class="bloco_texto">
+    
 {% if km.has_drive %}
-<p>Estado Atual: {% if km.mounted %}Aberto{% else %}Fechado{% endif %}</p>
+    {% if km.mounted %}
+        <p>Estado Atual: <strong>Aberto</strong></p>
+        <p><a href="{% url bkp.views.manage_strongbox %}">Gerenciar Cofre</a> | <a href="{% url bkp.views.umount_strongbox %}">Fechar Cofre</a></p>
+    {% else %}
+        <p>Estado Atual: <strong>Trancado</strong></p>
+        <p><a href="{% url bkp.views.manage_strongbox %}">Gerenciar Cofre</a> | <a href="{% url bkp.views.manage_strongbox %}">Abrir Cofre</a></p>
+    {% endif %}
 {% else %}
 <p>Cofre ainda nao foi criado.</p>
 {% endif %}
@@ -33,10 +40,11 @@
 
 <div class="bloco_texto">
 {% if km.mounted %}
-<p>Computadores com Encriptação: {{encryption_count}}/{{computers.count}}</p>
+<p>Computadores com Encriptação: <strong>{{encryption_count}}/{{computers.count}}</strong></p>
 {% else %}
 <p>Não é possível coletar informações.</p>
 {% endif %}
+<p><a href="{% url bkp.views.list_encryptions %}">Gerenciar Encriptações</a></p>
 </div>
 
 
