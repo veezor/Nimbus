@@ -156,6 +156,21 @@ def has_truecrypt():
 
 
 @rule
+def config_settings_dbfile():
+    filepath = join(NIMBUS_HG_PATH, "django/backup_corporativo/settings.py")
+    content = file(filepath).read()
+    print "Por favor, insira a configuracao do BD"
+    raw_input("pressione qualquer tecla para continuar....")
+    cmd = subprocess.Popen(["vim",filepath])
+    cmd.wait()
+    if cmd.returncode != 0:
+        return False
+    return True
+
+
+
+
+@rule(depends=config_settings_dbfile)
 def sync_db():
     from django.core.management import call_command
     sys.path.insert(0, "/var/nimbus/hg/django")
