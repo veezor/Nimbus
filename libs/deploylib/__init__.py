@@ -103,7 +103,7 @@ class Rule(object):
             if not dep.executed:
                 r = dep.run()
                 if not r:
-                    raise RunDependencyFailed('Dependency must be return True, False is returned')
+                    raise RunDependencyFailed('Dependency %s must be return True, False is returned' % dep)
 
 
 

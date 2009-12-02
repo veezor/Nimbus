@@ -20,7 +20,7 @@ NIMBUS_VAR_PATH = "/var/nimbus/"
 NIMBUS_HG_PATH = NIMBUS_VAR_PATH + "hg/"
 NIMBUS_CUSTOM_PATH = NIMBUS_VAR_PATH + "custom/"
 NIMBUS_DEPS_PATH = NIMBUS_VAR_PATH + "deps/"
-NIMBUS_HG_URL = "http://hg.devel.linconet.com.br/bc-devel"
+NIMBUS_HG_URL = "http://hg.devel.linconet.com.br/bc-devel-fenrrir"
 NIMBUS_ETC_PATH = "/etc/nimbus"
 NIMBUS_LOG_PATH = "/var/log/nimbus"
 
@@ -76,6 +76,14 @@ def install_config_files():
     shutil.copy( join( NIMBUS_HG_PATH, 
                        "django/backup_corporativo/settings_sample.py"),
                  join(NIMBUS_HG_PATH, "django/backup_corporativo/settings.py"))
+
+    shutil.copy( join( NIMBUS_HG_PATH,
+                       "django/backup_corporativo/apacheconf/default"), 
+                  "/etc/apache2/sites-enabled/000-default" )
+    shutil.copy( join( NIMBUS_HG_PATH,
+                       "django/backup_corporativo/apacheconf/nimbus.wsgi"), 
+                  "/usr/lib/cgi-bin/nimbus.wsgi" )
+                        
     return True
 
 
@@ -99,6 +107,35 @@ def check_user():
     
 
 
+@rule
+def database_alert():
+    logger.warning( "Não foi possível criar o bando de dados,"\
+                     "o mesmo já existe")
+    return True
+
+
+@rule(on_failure=database_alert)
+def generate_database():
+    import MySQLdb, getpass
+
+    print "Informe a senha de root do mysql: "
+    password = getpass.getpass()
+    connection = MySQLdb.connect('localhost', "root", password)
+    cursor = connection.cursor()
+    try:
+        cursor.execute("create database nimbus;")
+        cursor.execute("GRANT ALL PRIVILEGES ON nimbus.* TO 'nimbus'@'localhost'"\
+                       "IDENTIFIED BY 'nimbus'")
+
+    except MySQLdb.ProgrammingError, e:
+        return False
+
+    finally:
+        cursor.close()
+        connection.close()
+    return True
+    
+
 
 @rule
 def config_settings_dbfile():
@@ -114,12 +151,13 @@ def config_settings_dbfile():
 
 
 
-@rule(depends=config_settings_dbfile)
+@rule(depends=(generate_database, config_settings_dbfile))
 def sync_db():
     from django.core.management import call_command
     sys.path.insert(0, "/var/nimbus/hg/django")
     os.environ['DJANGO_SETTINGS_MODULE'] = 'backup_corporativo.settings'
     call_command('syncdb')
+    return True
 
 
 
@@ -181,7 +219,18 @@ def has_truecrypt():
 
 
 
+@rule
+def generate_hgrc_for_root_user():
+    f = file("/root/.hgrc","w")
+    f.write("[trusted]\nusers = nimbus\ngroups = nimbus\n\n"\
+            "[auth]\nnimbus.prefix=%s\nnimbus.username=deploy\n"\
+            "nimbus.password=deploy" % NIMBUS_HG_URL)
+    f.close()
+    return True
+
+
 @rule( depends=( has_truecrypt,
+                 generate_hgrc_for_root_user,
                  make_dirs,
                  check_python_packages,
                  chown_nimbus_files, 
@@ -190,12 +239,6 @@ def install_nimbus(): # for semantic way, bypass to chown_nimbus_files
     return True
 
 
-@rule
-def generate_hgrc_for_root_user():
-    f = file("/root/.hgrc","w")
-    f.write("[trusted]\nusers = nimbus\ngroups = nimbus")
-    f.close()
-    return True
 
 
 def is_installed(package):
@@ -220,8 +263,7 @@ def set_python_path():
 
 
 @rule(depends=(has_nimbus, 
-               check_system_dependencies,
-               generate_hgrc_for_root_user))
+               check_system_dependencies))
 def update_nimbus_version():
 
     import mercurial.ui , mercurial.hg, mercurial.commands
