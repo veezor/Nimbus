@@ -31,10 +31,6 @@ class GlobalConfig(models.Model):
     storage_port = models.IntegerField(
         "Porta do Storage",
         default='9103')
-    max_upload_bandwidth = models.CharField(
-        "Limite de Upload",
-        max_length=15,
-        default='100 mbps')
     offsite_on = models.BooleanField(
         "Offsite ativo?",
         default=False)
