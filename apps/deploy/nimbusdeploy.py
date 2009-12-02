@@ -100,7 +100,30 @@ def check_user():
 
 
 
-@rule( depends=(install_config_files, check_user) )
+@rule
+def config_settings_dbfile():
+    filepath = join(NIMBUS_HG_PATH, "django/backup_corporativo/settings.py")
+    content = file(filepath).read()
+    print "Por favor, insira a configuracao do BD"
+    raw_input("pressione qualquer tecla para continuar....")
+    cmd = subprocess.Popen(["vim",filepath])
+    cmd.wait()
+    if cmd.returncode != 0:
+        return False
+    return True
+
+
+
+@rule(depends=config_settings_dbfile)
+def sync_db():
+    from django.core.management import call_command
+    sys.path.insert(0, "/var/nimbus/hg/django")
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'backup_corporativo.settings'
+    call_command('syncdb')
+
+
+
+@rule( depends=(install_config_files, check_user, sync_db) )
 def chown_nimbus_files():
     pwinfo = pwd.getpwnam('nimbus')
     uid = pwinfo.pw_uid
@@ -136,6 +159,7 @@ def check_python_dep(name):
         logger.error('%s not found.' % name)
         raise ImportError(e)
 
+
 @rule
 def unzip_pythonlibs():
     cmd = subprocess.Popen(["unzip",NIMBUSDEP_ZIP,"-d",NIMBUS_DEPS_PATH])
@@ -155,27 +179,6 @@ def has_truecrypt():
     return os.access( TRUECRYPT_BIN_PATH , os.R_OK)
 
 
-@rule
-def config_settings_dbfile():
-    filepath = join(NIMBUS_HG_PATH, "django/backup_corporativo/settings.py")
-    content = file(filepath).read()
-    print "Por favor, insira a configuracao do BD"
-    raw_input("pressione qualquer tecla para continuar....")
-    cmd = subprocess.Popen(["vim",filepath])
-    cmd.wait()
-    if cmd.returncode != 0:
-        return False
-    return True
-
-
-
-
-@rule(depends=config_settings_dbfile)
-def sync_db():
-    from django.core.management import call_command
-    sys.path.insert(0, "/var/nimbus/hg/django")
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'backup_corporativo.settings'
-    call_command('syncdb')
 
 
 @rule( depends=( has_truecrypt,
