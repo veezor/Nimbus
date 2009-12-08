@@ -8,8 +8,8 @@ port = 8888
 dns = /etc/resolv.conf
 interfaces = /etc/network/interfaces
 iftab = /etc/iftab
-log = /var/log/NimbusManager.log
-pid = /var/run/NimbusManager.pid
+log = /var/log/nimbus/manager.log
+pid = /var/log/nimbus/manager.pid
 
 [SYSTEM]
 uid = 0

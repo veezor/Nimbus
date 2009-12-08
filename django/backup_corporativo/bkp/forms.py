@@ -377,7 +377,10 @@ class WeeklyTriggerForm(ModelForm):
 class NetworkInterfaceEditForm(ModelForm):
 	class Meta:
 		model = NetworkInterface
-		fields = ('interface_address','interface_gateway',)
+		fields = ('interface_name','interface_address',
+                  'interface_network', 'interface_gateway',
+                  'interface_netmask', 'interface_broadcast',
+                  'interface_dns1', 'interface_dns2')
 
 
 class PingForm(forms.Form):

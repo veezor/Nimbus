@@ -67,14 +67,14 @@ def create_pools(sender, instance, signal, *args, **kwargs):
 def update_networks_file(instance):
     server = ServerProxy("http://localhost:8888")
 
-    server.generate_iftab( "nimbus0", "00:00:00:00" )
-    server.generate_interfaces( "nimbus0", 
+    server.generate_interfaces( instance.interface_name, 
             instance.interface_address, 
-            "255.255.255.0", 
-            "0.0.0.0", 
-            "0.0.0.0", 
+            instance.interface_netmask, 
+            "static",
+            instance.interface_broadcast, 
+            instance.interface_network, 
             instance.interface_gateway)
-    server.generate_dns("0.0.0.0", "0.0.0.0")
+    server.generate_dns( instance.interface_dns1, instance.interface_dns2)
 
 
 
