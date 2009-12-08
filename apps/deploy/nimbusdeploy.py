@@ -71,6 +71,20 @@ def install_config_files():
     shutil.copy( join( NIMBUS_HG_PATH, 
                        "webservices/gateway/nimbus_gateway.conf"),
                  NIMBUS_ETC_PATH )
+
+    shutil.copy( join( NIMBUS_HG_PATH, 
+                       "webservices/manager/nimbus_manager.conf"),
+                 NIMBUS_ETC_PATH )
+
+
+    shutil.copy( join( NIMBUS_HG_PATH, 
+                       "webservices/manager/bin/nimbus-manager"),
+                 "/usr/local/bin/" )
+
+    shutil.copy( join( NIMBUS_HG_PATH, 
+                       "webservices/init.d/nimbusmanager"),
+                 "/etc/init.d/" )
+
     shutil.copy( join(NIMBUS_HG_PATH, "django/backup_corporativo/logging.conf"),
                  NIMBUS_ETC_PATH )
     shutil.copy( join( NIMBUS_HG_PATH, 
@@ -143,7 +157,7 @@ def config_settings_dbfile():
     content = file(filepath).read()
     print "Por favor, insira a configuracao do BD"
     raw_input("pressione qualquer tecla para continuar....")
-    cmd = subprocess.Popen(["vim",filepath])
+    cmd = subprocess.Popen(["vim", filepath])
     cmd.wait()
     if cmd.returncode != 0:
         return False
@@ -200,7 +214,7 @@ def check_python_dep(name):
 
 @rule
 def unzip_pythonlibs():
-    cmd = subprocess.Popen(["unzip",NIMBUSDEP_ZIP,"-d",NIMBUS_DEPS_PATH])
+    cmd = subprocess.Popen(["unzip", NIMBUSDEP_ZIP, "-d", NIMBUS_DEPS_PATH])
     cmd.wait()
     return not bool(cmd.returncode)
 

@@ -13,7 +13,7 @@ if [ $(uname) = "Darwin" ] ; then
 else
     SYSTEM_OS=linux
     DAEMON=/usr/local/bin/nimbus-manager
-    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid"
+    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/log/nimbus/$NAME.pid"
     STARTDAEMON="$STOPLINUX --exec $DAEMON"
 fi
 
