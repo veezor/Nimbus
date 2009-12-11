@@ -120,7 +120,7 @@ def delete_computer(request, comp_id):
 def test_computer(request, comp_id):
     E = ENV(request)
     
-    if request.method == 'POST':
+    if request.method == 'GET':
         comp = get_object_or_404(Computer,pk=comp_id)
         comp.run_test_job()
         E.msg = u"Uma requisiçao foi enviada ao computador."
