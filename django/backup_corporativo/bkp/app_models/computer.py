@@ -128,7 +128,7 @@ class Computer(models.Model):
         import time
         
         fd_dict =   {
-                    'Name': self.computer_name,
+                    'Name': self.computer_bacula_name(),
                     #TODO: tratar porta do cliente
                     'FDport':'9102',
                     'Maximum Concurrent Jobs':'5',}
