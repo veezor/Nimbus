@@ -43,9 +43,7 @@ class NewStrongBoxForm(forms.Form):
         """
         password = self.cleaned_data.get(u"sb_password")
         password_2 = self.cleaned_data.get(u"sb_password_2")
-        
-        print(self.cleaned_data)
-        
+
         if password == password_2:
             km = KeyManager(password=password)
             drive_created = km.create_drive()

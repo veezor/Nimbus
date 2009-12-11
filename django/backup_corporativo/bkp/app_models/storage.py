@@ -50,12 +50,12 @@ class Storage(models.Model):
         super(Storage, self).save()
 
     def storage_bacula_name(self):
-        return "%s_storage" % self.nimbus_uuid.uuid_hex
+        return "StorageLocal"
 
 
     def delete(self):
         # TODO: criar exceção do tipo Nimbus
-        if self.storage_name == 'Storage Local': 
+        if self.storage_name == 'StorageLocal': 
             raise Exception(
                 'Erro de Programação: Storage Local não pode ser removido.') 
         else:
