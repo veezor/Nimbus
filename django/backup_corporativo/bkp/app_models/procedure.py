@@ -50,8 +50,10 @@ class Procedure(models.Model):
         app_label = 'bkp'    
 
     def save(self):
+        from backup_corporativo.bkp.app_models.pool import Pool
         NimbusUUID.generate_uuid_or_leave(self)
         super(Procedure, self).save()
+        Pool.generate_pool_or_leave(self)
 
     def procedure_bacula_name(self):
         return "%s_job" % self.nimbus_uuid.uuid_hex
