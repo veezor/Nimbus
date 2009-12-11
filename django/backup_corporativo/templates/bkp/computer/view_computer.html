@@ -123,8 +123,8 @@
 			    </div>
 			    <div id="detalhes_procedimento_{{ proc.id }}" class="detalhes_procedimento escondido">
 		            <div class="storage coluna primeira">
-		                Storage:<br/>
-		                <a href="{% url bkp.views.view_storage proc.storage.id %}">{{ proc.storage.storage_name }}</a>
+		                <p>Storage:</p>
+		                <p><strong>{{ proc.storage.storage_name }}</strong></p>
 		            </div>
 		            <div class="caminhos coluna">
 		                Caminhos:<br/>
