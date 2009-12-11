@@ -33,6 +33,7 @@ def log_exception(func):
         try:
             return func(*args, **kwargs)
         except Exception, e:
+            logger.disabled=False
             logger.exception(e)
             sys.exit(1)
 
@@ -102,7 +103,7 @@ class Rule(object):
             if not dep.executed:
                 r = dep.run()
                 if not r:
-                    raise RunDependencyFailed('Dependency must be return True, False is returned')
+                    raise RunDependencyFailed('Dependency %s must be return True, False is returned' % dep)
 
 
 
@@ -116,6 +117,7 @@ class Rule(object):
             result = True
         else:
             result = self.function()
+            logger.disabled=False
 
         self.executed = True
 
@@ -123,6 +125,7 @@ class Rule(object):
             logger.info('Calling error_callback for rule %s' % self.name)
             callback = self.get_rule_reference(self.call_on_failure)
             result = callback.run()
+            logger.disabled=False
         logger.info('Rule %s successfully performed' % self.name)
         return result
 
