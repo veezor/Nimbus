@@ -1,5 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+
+from backup_corporativo.bkp import models
+
 import pdb
 
 
@@ -51,6 +54,7 @@ class NimbusViewTest(NimbusTest):
                          "/management/computers/list",
                          "/management/storages/list",
                          "/management/encryptions/list",
+                         "/management/encryptions/new",
                          "/management/strongbox/",
                          "/management/strongbox/umount",
                          "/management/strongbox/changepwd",
@@ -88,6 +92,46 @@ class NimbusViewTest(NimbusTest):
                                              interface_dns2 = "192.168.1.2"))
 
 
+    def test_computer(self):
+        response  = self.get("/computer/new")
+
+    def test_computer_create(self):
+        response = self.post( "/computer/create",
+                               dict( computer_name="computer_test",
+                                     computer_ip = "192.168.1.102",
+                                     computer_so = "UNIX",
+                                     computer_description = "test"))
+
+        self.assertEquals( len(models.Computer.objects.all()), 1)
+
+
+    def test_computer_view(self):
+        self.test_computer_create()
+        self.test_system_config_update()
+        self.assertEquals( len(models.Computer.objects.all()), 1)
+        response = self.get( "/computer/1" )
+        response = self.get( "/computer/1/edit" )
+        response = self.get( "/computer/1/config/" )
+        response = self.get( "/computer/1/backup/new" )
+        
+        response = self.post( "/computer/1/config/dump", {})
+
+        response = self.post( "/computer/1/" )
+
+
+
+
+    def test_ping(self):
+        response = self.post( "/system/network/ping/create",
+                              dict(ping_address="127.0.0.1") )
+
+    def test_traceroute(self):
+        response = self.post( "/system/network/traceroute/create",
+                              dict(traceroute_address="127.0.0.1") )
+
+    def test_nslookup(self):
+        response = self.post( "/system/network/nslookup/create",
+                              dict(nslookup_address="127.0.0.1") )
 
 
 
