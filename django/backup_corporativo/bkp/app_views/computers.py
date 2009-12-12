@@ -34,6 +34,7 @@ def new_computer(request):
 @authentication_required
 def create_computer(request):
     E = ENV(request)
+
     
     if request.method == 'POST':
         E.compform = ComputerForm(request.POST, instance=Computer())

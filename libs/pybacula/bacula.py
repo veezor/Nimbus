@@ -60,7 +60,7 @@ class Command(object):
 
     def __getitem__(self, item):
         name = self.content[-1]
-        self.content[-1] = ("%s=%s" % (name,item))
+        self.content[-1] = ('%s="%s"' % (name,item))
         return self
 
 

@@ -82,9 +82,7 @@ class Computer(models.Model):
         if self.computer_password == self.NIMBUS_BLANK:
             self.computer_password = utils.random_password()
         uuid = NimbusUUID()
-        print("salvando uuid...")
         uuid.save()
-        print("uuid salvo.")
         self.nimbus_uuid = uuid
         #NimbusUUID.generate_uuid_or_leave(self)
         super(Computer, self).save()
