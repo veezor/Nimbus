@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 
 from backup_corporativo.bkp import models
 
-import pdb
+import truecrypt
+
+import pdb, os
 
 
 class NimbusTest(TestCase):
@@ -14,6 +16,10 @@ class NimbusTest(TestCase):
         test.set_password("test")
         test.save()
         self.client.login(username='test', password='test')
+        try:
+            os.remove(truecrypt.DRIVEFILE) # remove drive file
+        except OSError, e:
+            pass
 
     def get(self, url):
         response = self.client.get(url, follow=True)
@@ -56,15 +62,61 @@ class NimbusViewTest(NimbusTest):
                          "/management/encryptions/list",
                          "/management/encryptions/new",
                          "/management/strongbox/",
+                         "/management/strongbox/new",
                          "/management/strongbox/umount",
                          "/management/strongbox/changepwd",
                          ])
 
 
     def test_strongbox(self):
-        self.gets( ["/strongbox/headerbkp/list",
-                         "/strongbox/headerbkp/new" 
-                        ])
+        self.gets( [ "/strongbox/headerbkp/list",
+                     "/strongbox/headerbkp/new"  ])
+
+        self.post( "/management/strongbox/create", 
+                   dict( sb_password="test", 
+                         sb_password_2="test"))
+
+        r = os.access(truecrypt.DRIVEFILE, os.R_OK)
+        self.assertTrue(r)
+
+        self.post( "/management/strongbox/mount",
+                   { "sb_password" : "test" } )
+
+
+        # FIX:  ENCRYPTIONS
+        self.test_computer_create()
+        self.post( "/management/encryptions/create",
+                   {"computer" : 1})
+
+
+
+
+        self.post( "/strongbox/headerbkp/create",
+                   dict( drive_password="test",
+                         headerbkp_name="testing" ) )
+
+        self.assertEqual( len(models.HeaderBkp.objects.all()), 1 )
+
+
+        self.post( "/strongbox/headerbkp/1/update",
+                   {"headerbkp_name":"testing"})
+
+        self.gets( ["/strongbox/headerbkp/1/edit", 
+                    "/strongbox/headerbkp/1/restore",
+                    "/strongbox/headerbkp/1/delete"] )
+
+
+
+        self.post( "/management/strongbox/umount",
+                   { "sb_forceumount" : True } )
+
+#        self.post( "/management/strongbox/changepwd",
+#                   dict( old_password="test",
+#                         new_password="test2",
+#                         new_password_2="test2"))
+#
+    
+
 
 
     def test_system(self):
@@ -115,10 +167,39 @@ class NimbusViewTest(NimbusTest):
         response = self.get( "/computer/1/backup/new" )
         
         response = self.post( "/computer/1/config/dump", {})
+        response = self.get( "/computer/1/config/")
 
-        response = self.post( "/computer/1/" )
 
 
+    def test_system_password_edit(self):
+        self.get( "/system/password/edit")
+        self.post( "/system/password/update", 
+                   dict(old_password="test",
+                        new_password1="testing",
+                        new_password2="testing") )
+        user = User.objects.get(pk=1)
+        self.assertTrue(user.check_password("testing"))
+
+
+
+    def test_offsite(self):
+        self.test_system_config_update()
+        self.get("/system/offsite/edit")
+        self.post("/system/offsite/enable",
+                  dict(offsite_on=True,
+                       offsite_hour="00:00:00"))
+        self.post("/system/offsite/disable", {})
+
+
+    def test_session(self):
+        self.gets( [ "/session/",
+                     "/session/new",
+                     "/session/delete"] )
+        self.post("/session/delete", {})
+
+        self.post("/session/", 
+                  dict(auth_login="test",
+                       auth_password="test"))
 
 
     def test_ping(self):
