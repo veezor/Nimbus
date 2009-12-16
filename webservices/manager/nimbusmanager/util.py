@@ -48,6 +48,7 @@ get_config.memo = None
 
 
 def make_backup(filename):
+    logger = logging.getLogger(__name__)
     logger.info("Arquivo de backup criado para %s." % filename)
     try:
         shutil.copy(filename, filename + ".nimbus-bkp")

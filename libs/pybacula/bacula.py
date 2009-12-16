@@ -6,6 +6,10 @@ try:
 except ImportError, e:
     pass
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 
 valid_commands = """autodisplay automount add cancel create delete label mount prune relabel release restore run setdebug status unmount update wait disable enable list llist use query reload"""
 
@@ -28,6 +32,7 @@ class BaculaCommandLine(object):
             return None
 
     def raw(self, string):
+        string = string.encode("utf-8")
         return bconsole.execute_command(string)
 
 
@@ -51,7 +56,10 @@ class Command(object):
         return  " ".join(self.content)
 
     def run(self):
-        result = bconsole.execute_command( self.get_content() )
+    	logger.info(self.get_content())
+        txt = self.get_content()
+        txt = txt.encode("utf-8")
+        result = bconsole.execute_command( txt )
         self.content = []
         return result
 
@@ -60,7 +68,7 @@ class Command(object):
 
     def __getitem__(self, item):
         name = self.content[-1]
-        self.content[-1] = ("%s=%s" % (name,item))
+	self.content[-1] = ('%s="%s"' % (name,item))
         return self
 
 
@@ -72,7 +80,6 @@ def test():
             pass
 
         def execute_command(self, arg):
-            print arg
             pass
 
         def set_configfile(self, filename):

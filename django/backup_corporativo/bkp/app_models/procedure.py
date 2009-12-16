@@ -9,6 +9,7 @@ from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
 import os, string, time
 
+from backup_corporativo.bkp.bacula import BaculaDatabase
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.computer import Computer
 from backup_corporativo.bkp.app_models.storage import Storage
@@ -79,34 +80,34 @@ class Procedure(models.Model):
         trigg.save()
 
     def restore_jobs(self):
-        from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import CLIENT_RESTORE_JOBS_RAW_QUERY
         restore_jobs_query = CLIENT_RESTORE_JOBS_RAW_QUERY % {
             'client_name':self.computer.computer_bacula_name(), 
             'file_set':self.fileset_bacula_name(),}
-        cursor = BaculaDatabase.execute(restore_jobs_query)
+	baculadb = BaculaDatabase()
+        cursor = baculadb.execute(restore_jobs_query)
         return utils.dictfetch(cursor)
 
     def get_bkp_dict(self, bkp_jid):
         """Returns a dict with job information of a given job id"""
-        from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import JOB_INFO_RAW_QUERY
         starttime_query = JOB_INFO_RAW_QUERY % {'job_id':bkp_jid,}
-        cursor = BaculaDatabase.execute(starttime_query)
+	baculadb = BaculaDatabase()
+        cursor = baculadb.execute(starttime_query)
         result = utils.dictfetch(cursor)
         return result and result[0] or {}
 
   
     def clean_temp(self):
         """Drop temp and temp1 tables"""
-        from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import DROP_TABLE_RAW_QUERY, CREATE_TEMP_QUERY, CREATE_TEMP1_QUERY
         drop_temp_query = DROP_TABLE_RAW_QUERY % {'table_name':'temp'}
         drop_temp1_query = DROP_TABLE_RAW_QUERY % {'table_name':'temp1'}
-        BaculaDatabase.execute(drop_temp_query)
-        BaculaDatabase.execute(drop_temp1_query)
-        BaculaDatabase.execute(CREATE_TEMP_QUERY)
-        BaculaDatabase.execute(CREATE_TEMP1_QUERY)
+	baculadb = BaculaDatabase()
+        baculadb.execute(drop_temp_query)
+        baculadb.execute(drop_temp1_query)
+        baculadb.execute(CREATE_TEMP_QUERY)
+        baculadb.execute(CREATE_TEMP1_QUERY)
         
     
     def load_full_bkp(self, initial_bkp):
@@ -114,7 +115,6 @@ class Procedure(models.Model):
         Loads last full job id and startime at table called temp1.
         for more information, see CLIENT_LAST_FULL_RAW_QUERY at sql_queries.py
         """
-        from backup_corporativo.bkp.bacula import BaculaDatabaseWrapper
         from backup_corporativo.bkp.sql_queries import LOAD_LAST_FULL_RAW_QUERY
         from backup_corporativo.bkp.sql_queries import LOAD_FULL_RAW_QUERY
         self.clean_temp()
@@ -130,18 +130,17 @@ class Procedure(models.Model):
               and initial_bkp['Level'] == 'F'):
             load_full_query = LOAD_FULL_RAW_QUERY % {
                 'jid':initial_bkp['JobId']}
-        b2 = BaculaDatabaseWrapper()
-        cursor = b2.cursor()
-        cursor.execute(load_full_query)
+        b2 = BaculaDatabase()
+        cursor = b2.execute(load_full_query)
         b2.commit()
 
     def get_tdate(self):
         """Gets tdate from a 1-row-table called temp1 which
         holds last full backup when properly loaded.
         """
-        from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import TEMP1_TDATE_QUERY
-        cursor = BaculaDatabase.execute(TEMP1_TDATE_QUERY)
+	b2 = BaculaDatabase()
+        cursor = b2.execute(TEMP1_TDATE_QUERY)
         result = cursor.fetchone()
         return result and result[0] or ''
 
@@ -152,11 +151,9 @@ class Procedure(models.Model):
         called temp. For more information, see
         LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
         """
-        from backup_corporativo.bkp.bacula import BaculaDatabaseWrapper
         from backup_corporativo.bkp.sql_queries import LOAD_FULL_MEDIA_INFO_QUERY
-        b2 = BaculaDatabaseWrapper()
-        cursor = b2.cursor()
-        cursor.execute(LOAD_FULL_MEDIA_INFO_QUERY)
+        b2 = BaculaDatabase()
+        cursor = b2.execute(LOAD_FULL_MEDIA_INFO_QUERY)
         b2.commit()
         
     def load_inc_media(self,initial_bkp):
@@ -165,7 +162,6 @@ class Procedure(models.Model):
         table called temp. For more information, see
         LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
         """
-        from backup_corporativo.bkp.bacula import BaculaDatabaseWrapper
         from backup_corporativo.bkp.sql_queries import LOAD_INC_MEDIA_INFO_RAW_QUERY
         tdate = self.get_tdate()
         
@@ -175,9 +171,8 @@ class Procedure(models.Model):
                 'start_time':initial_bkp['StartTime'],
                 'client_id':self.computer.bacula_id,
                 'fileset':self.get_fileset_name(),}
-            b2 = BaculaDatabaseWrapper()
-            cursor = b2.cursor()
-            cursor.execute(incmedia_query)
+            b2 = BaculaDatabase()
+            cursor = b2.execute(incmedia_query)
             b2.commit()
 
     def load_backups_information(self,initial_bkp):
@@ -198,13 +193,13 @@ class Procedure(models.Model):
         JOBS_FOR_RESTORE_QUERY at sql_queries.py
         """
         from backup_corporativo.bkp.sql_queries import JOBS_FOR_RESTORE_QUERY
-        from backup_corporativo.bkp.bacula import BaculaDatabase
         initial_bkp = self.get_bkp_dict(bkp_jid)
         jid_list = []
         if initial_bkp:
             # loads full bkp info and inc bkps information if exists
             self.load_backups_information(initial_bkp)
-            cursor = BaculaDatabase.execute(JOBS_FOR_RESTORE_QUERY)
+            b2 = BaculaDatabase()
+            cursor = b2.execute(JOBS_FOR_RESTORE_QUERY)
             job_list = utils.dictfetch(cursor)
 
             for job in job_list:
@@ -213,14 +208,14 @@ class Procedure(models.Model):
 
     def get_file_tree(self, bkp_jid):
         """Retrieves tree with files from a job id list"""
-        from backup_corporativo.bkp.bacula import BaculaDatabase
         from backup_corporativo.bkp.sql_queries import FILE_TREE_RAW_QUERY
         # build list with all job ids
         jid_list = self.build_jid_list(bkp_jid)    
         if jid_list:
             filetree_query = FILE_TREE_RAW_QUERY % {
                 'jid_string_list':','.join(jid_list),}
-            cursor = BaculaDatabase.execute(filetree_query)
+            b2 = BaculaDatabase()
+            cursor = b2.execute(filetree_query)
             count = cursor.rowcount
             file_list = utils.dictfetch(cursor)
             return count,self.build_file_tree(file_list)

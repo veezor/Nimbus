@@ -190,7 +190,7 @@
 				        <tbody>
 					{% endif %}
 		        <tr> 
-			        <td> {{ job.Name }} </td>
+			        <td> {{ comp.computer_name }} </td>
 			        <td> {{ job.Level|friendly_level }} </td>
 			        <td> {{ job.StartTime|friendly_date }} </td>
 			        <td> {{ job.StartTime|friendly_hour }} </td>
@@ -232,7 +232,7 @@
 				        <tbody>
 					{% endif %}
 		        <tr class="{% cycle 'odd' 'even' %}"> 
-			        <td> {{ job.Name }} </td>
+			        <td> {{ comp.computer_name }} </td>
 			        <td> {{ job.Level|friendly_level }} </td>
 			        <td> {{ job.JobFiles }} </td>
 			        <td> {{ job.JobBytes|friendly_size_mb }} </td>

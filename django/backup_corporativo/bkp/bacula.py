@@ -22,7 +22,7 @@ import pybacula
 from pybacula import BaculaCommandLine
 
 
-BCONSOLE_CONF = "/var/django/backup_corporativo/bkp/custom/config/bconsole.conf"
+BCONSOLE_CONF = "/var/nimbus/custom/config/bconsole.conf"
 WHERE_DEFAULT = "/tmp/bacula-restore"
 
 
@@ -91,24 +91,35 @@ class Bacula(object):
         
         folder_re = '[a-zA-Z0-9.:@_-]+/$'
 
-        self.cmd.restore.client[client_from_restore].\
+        restore = self.cmd.restore
+        restore.client[client_from_restore].\
                 restoreclient[client_to_restore].\
                 select.yes.where[directory_to_restore].\
                 fileset[fileset_name].\
-                before[date_to_store].run()
-        paths = ""
+                before[date_to_restore].run()
+        cmd_list = []
+        previous_folder = None
         for filepath in file_list:
             for item in filepath:
                 if re.match(folder_re, item):
-                    paths += 'cd %s\n' % item
-                else:
-                    paths += "mark %s\n" % item
-                    paths += "cd /\n"
+                    cmd_list.append('cd %s' % item)
+                    previous_folder = item
+                elif item == '':
+                    cmd_list.append("cd ..")
+                    cmd_list.append("mark %s" % previous_folder)
+                    cmd_list.append("cd /")
+                    previous_folder = None
                     break
-        cmd.raw(paths)
-        cmd.raw("done")
-        
-   
+                else:
+                    cmd_list.append("mark %s" % item)
+                    cmd_list.append("cd /\n")
+                    previous_folder = None
+                    break
+        cmd_list.append("done")
+
+        for cmd in cmd_list:
+            r = restore.raw(cmd).run()
+#   
     def run_restore_last(self, client_name, client_restore=None, where=WHERE_DEFAULT):
         logger.info("Executando run_restore_last ")
         client_restore = client_restore if client_restore else client_name
@@ -240,3 +251,7 @@ class BaculaDatabase(object):
             return cursor
         except Database.Warning:
             pass
+
+    def commit(self):
+        self.wrapper.commit()
+

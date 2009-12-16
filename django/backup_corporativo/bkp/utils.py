@@ -17,7 +17,8 @@ from backup_corporativo import settings
 
 ### Routing ###
 def reverse(viewname, args=None, kwargs=None):
-    return _reverse( "%s.views.%s" % (MAIN_APP, viewname) , args=args, kwargs=kwargs)
+    path = "%s.views.%s" % (MAIN_APP, viewname)
+    return _reverse( path , args=args, kwargs=kwargs)
 
 
 def redirect(viewname, *args, **kwargs):
