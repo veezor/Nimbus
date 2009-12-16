@@ -46,7 +46,7 @@
 {% ifequal restore_step 0 %}
 <p>Escolha Computador para prosseguir.</p>
 
-<form action="{{script_name}}/restore/new" method="POST" id="restorecomp_form">
+<form action="{% url bkp.views.create_restore %}" method="POST" id="restorecomp_form">
 {% for field in restorecomp_form %}
     <div class="fieldWrapper">
 	{{field.errors}}
@@ -63,7 +63,7 @@
 {% ifequal restore_step 1 %}
 <p>Escolha Procedimento para prosseguir.</p>
 
-<form action="{{script_name}}/computer/{{comp.id}}/restore/new" method="POST" id="restoreproc_form">
+<form action="{% url bkp.views.create_computer_restore comp.id %}" method="POST" id="restoreproc_form">
 {% for field in restoreproc_form %}
     <div class="fieldWrapper">
 	{{field.errors}}
@@ -131,7 +131,7 @@
 
 {# Passo 3 #}
 {% ifequal restore_step 3 %}
-<form action="{{script_name}}/computer/{{comp.id}}/procedure/{{proc.id}}/job/{{job_id}}/restore/new" method="POST" id="restoreproc_form">
+<form action="{% url bkp.views.create_job_restore comp.id, proc.id, job_id %}" method="POST" id="restoreproc_form">
 {% if hidden_restore_form %}
 {# we have an valid object, so render it #}
 	{% for field in hidden_restore_form %}
