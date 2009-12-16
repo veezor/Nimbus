@@ -90,6 +90,15 @@ urlpatterns += patterns(
     (r'^schedule/(?P<sched_id>\d+)/update$', 'update_schedule'),
     (r'^schedule/(?P<sched_id>\d+)/edit$', 'edit_schedule'),
     (r'^schedule/(?P<sched_id>\d+)/delete$', 'delete_schedule'),
+    # wizard de restore
+    (r'^restore/new$', 'new_restore'),
+    (r'^restore/create$', 'create_restore'),
+    (r'^computer/(?P<comp_id>\d+)/restore/new$', 'new_computer_restore'),
+    (r'^computer/(?P<comp_id>\d+)/restore/create$', 'create_computer_restore'),
+    (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/restore/new$', 'new_procedure_restore'),
+    #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/restore/create$', 'create_procedure_restore'),
+    (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'new_job_restore'),
+    (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/create$', 'create_job_restore'),
     #
     #
     #
@@ -103,17 +112,13 @@ urlpatterns += patterns(
     # Também separar o wizard em mais de um view object.
     # Novo Design da Funcionalidade do Restore:
     # PASSO 1: Selecione Computador
-    (r'^restore/new$', 'new_restore'),
+    #(r'^restore/new$', 'new_restore'),
     # PASSO 2: Selecione Procedimento
-    (r'^computer/(?P<comp_id>\d+)/restore/new$', 'new_restore'),
+    #(r'^computer/(?P<comp_id>\d+)/restore/new$', 'new_restore'),
     # PASSO 3: Selecione Data
-    (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/restore/new$', 'new_restore'),
+    #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/restore/new$', 'new_restore'),
     # PASSO 4: Selecione Arquivos e Detalhes do Restore
-    (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'new_restore'),
+    #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'new_restore'),
     # PASSO 5: Execute!
     #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'restore_files'),    
-    # Tools
-    (r'^tools/$', 'view_tools'),
-    (r'^tools/ssl/$', 'tools_ssl'),
-#    (r'^admin/(.*)', admin.site.root),
 )
