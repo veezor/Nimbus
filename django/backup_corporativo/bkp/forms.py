@@ -301,9 +301,9 @@ class StorageForm(ModelForm):
 
 
 class ProcedureForm(ModelForm):
-	offsite_on = forms.ChoiceField(
-		choices=BOOLEAN_CHOICES,
-		widget=forms.RadioSelect)
+#	offsite_on = forms.ChoiceField(
+#		choices=BOOLEAN_CHOICES,
+#		widget=forms.RadioSelect)
 	class Meta:
 		model = Procedure
 		fields = ('procedure_name', 'storage', 'offsite_on')
