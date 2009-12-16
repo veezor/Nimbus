@@ -13,6 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 
 from environment import ENV
 from networkutils import ping, traceroute, resolve_name, resolve_addr, HostAddrNotFound, HostNameNotFound
+import networkutils
 
 from backup_corporativo.bkp.utils import redirect, reverse
 from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
@@ -80,8 +81,15 @@ def manage_system_network(request):
     E = ENV(request)
     
     if request.method == 'GET':
-        E.iface = NetworkInterface.networkconfig()
+        E.iface = NetworkInterface.get_instance()
         E.netform = NetworkInterfaceEditForm(instance=E.iface)
+
+        iface = networkutils.get_interfaces()[0]
+        E.netform.interface_name = iface.name
+        E.netform.interface_address = iface.addr
+        E.netform.interface_netmask = iface.netmask
+        E.netform.interface_broadcast = iface.broadcast
+
         E.pingform = PingForm()
         E.tracerouteform = TraceRouteForm()
         E.nslookupform = NsLookupForm()
@@ -95,7 +103,7 @@ def create_ping(request):
     
     if request.method == 'POST':
         E.pingform = PingForm(request.POST)
-        E.iface = NetworkInterface.networkconfig()
+        E.iface = NetworkInterface.get_instance()
         E.netform = NetworkInterfaceEditForm(instance=E.iface)
         E.tracerouteform = TraceRouteForm()
         E.nslookupform = NsLookupForm()
@@ -112,7 +120,7 @@ def create_traceroute(request):
     
     if request.method == 'POST':
         E.tracerouteform = TraceRouteForm(request.POST)
-        E.iface = NetworkInterface.networkconfig()
+        E.iface = NetworkInterface.get_instance()
         E.netform = NetworkInterfaceEditForm(instance=E.iface)
         E.pingform = PingForm()
         E.nslookupform = NsLookupForm()
@@ -129,7 +137,7 @@ def create_nslookup(request):
     
     if request.method == 'POST':
         E.nslookupform = NsLookupForm(request.POST)
-        E.iface = NetworkInterface.networkconfig()
+        E.iface = NetworkInterface.get_instance()
         E.netform = NetworkInterfaceEditForm(instance=E.iface)
         E.pingform = PingForm()
         E.tracerouteform = TraceRouteForm()
@@ -155,7 +163,7 @@ def update_system_network(request):
     E = ENV(request)
 
     if request.method == 'POST':
-        E.iface = NetworkInterface.networkconfig()
+        E.iface = NetworkInterface.get_instance()
         E.netform = NetworkInterfaceEditForm(request.POST, instance=E.iface)
         if E.netform.is_valid():
             E.netform.save()

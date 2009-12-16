@@ -17,21 +17,21 @@ import os, string, time
 # Já que centraliza toda a configuração de rede do sistema em um único objeto
 # TODO: Gerenciamento completo de rede
 class NetworkInterface(models.Model):
-#    interface_mac = cfields.MACAddressField(
-#        "Endereço MAC",
-#        unique=True,
-#        blank=True)
+    #interface_mac = cfields.MACAddressField(
+    #    "Endereço MAC",
+    #    unique=True,
+    #    blank=True)
         #,choices=())
-    #interface_name = cfields.ModelSlugField(
-    #    "Nome da Interface",
-    #    max_length=30)
+    interface_name = cfields.ModelSlugField(
+        "Nome da Interface",
+        max_length=30)
     interface_address = models.IPAddressField("Endereço IP")
-   # interface_netmask = models.IPAddressField("Máscara")
-   # interface_network = models.IPAddressField("Network")
-   # interface_broadcast = models.IPAddressField("Broadcast")
+    interface_netmask = models.IPAddressField("Máscara")
+    interface_network = models.IPAddressField("Network")
+    interface_broadcast = models.IPAddressField("Broadcast")
     interface_gateway = models.IPAddressField("Gateway Padrão")
-   # interface_dns1 = models.IPAddressField("Servidor DNS 1")
-   # interface_dns2 = models.IPAddressField("Servidor DNS 2")
+    interface_dns1 = models.IPAddressField("Servidor DNS 1")
+    interface_dns2 = models.IPAddressField("Servidor DNS 2")
 
     # Classe Meta é necessária para resolver um problema gerado quando se
     # declara um model fora do arquivo models.py. Foi utilizada uma solução
@@ -51,22 +51,14 @@ class NetworkInterface(models.Model):
     class Meta:
         app_label = 'bkp'    
 
-    def save(self):
-#        if self.interface_mac == 'MAC':
-#            from backup_corporativo.bkp.network_utils import NetworkInfo
-#            self.interface_mac = NetworkInfo.main_mac_address()
-        # always use the same row id at database to store the config
-        self.id = 1 
-        super(NetworkInterface, self).save()
     
     def __unicode__(self):
         return "%s (%s)" % (self.interface_name, self.interface_address)
         
-    #ClassMethods
-    def networkconfig(cls):
+    @classmethod
+    def get_instance(cls):
         try:
             netconfig = cls.objects.get(pk=1)
             return netconfig
         except cls.DoesNotExist:
             return cls()
-    networkconfig = classmethod(networkconfig)

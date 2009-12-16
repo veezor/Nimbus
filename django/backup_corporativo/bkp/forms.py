@@ -239,11 +239,9 @@ class RestoreForm(forms.Form):
 
 	def __init__(self, *args, **kwargs):
 		super(RestoreForm, self).__init__(*args, **kwargs)
-		comp_name = comp.computer_name
-		comp_ip = comp.computer_ip
 		self.fields['client_restore'].choices = \
 			[('', '----------')] + \
-			[(comp_name, '%s (%s)' %  (comp_name, comp_ip)) \
+			[(comp.computer_bacula_name(), '%s (%s)' %  (comp.computer_name, comp.computer_ip)) \
 			for comp in Computer.objects.all()]
 
 
@@ -375,7 +373,10 @@ class WeeklyTriggerForm(ModelForm):
 class NetworkInterfaceEditForm(ModelForm):
 	class Meta:
 		model = NetworkInterface
-		fields = ('interface_address','interface_gateway',)
+		fields = ('interface_name','interface_address',
+                  'interface_network', 'interface_gateway',
+                  'interface_netmask', 'interface_broadcast',
+                  'interface_dns1', 'interface_dns2')
 
 
 class PingForm(forms.Form):
