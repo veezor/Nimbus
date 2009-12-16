@@ -97,8 +97,8 @@ def update_config_file(gconf):
     cat_dict = config_cat_dict("MyCatalog", gconf.bacula_database_name(), 
                                 gconf.bacula_database_user(), gconf.bacula_database_password())
 
-    smsg_dict = config_msg_dict("Standard",gconf.admin_mail)
-    dmsg_dict = config_msg_dict("Daemon",gconf.admin_mail)    
+    smsg_dict = config_msg_dict("Standard",gconf.admin_mail())
+    dmsg_dict = config_msg_dict("Daemon",gconf.admin_mail())    
     
     generate_config("bacula-dir.conf", dir_dict, sto_list, 
                     cat_dict, smsg_dict, dmsg_dict)
@@ -109,9 +109,9 @@ def config_dir_dict(dir_name, dir_port, dir_passwd):
     """generate config director attributes dict"""
     
     return {'Name':dir_name, 'DIRport':dir_port, 
-            'QueryFile':'"/etc/bacula/query.sql"', 
-            'WorkingDirectory':'"/var/bacula/working"', 
-            'PidDirectory':'"/var/run"', 
+            'QueryFile':'"/opt/bacula/etc/bacula/query.sql"', 
+            'WorkingDirectory':'"/opt/bacula/var/bacula/working"', 
+            'PidDirectory':'"/opt/bacula/var/run"', 
             'Maximum Concurrent Jobs':'1',
             'Password':'"%s"' % dir_passwd, 
             'Messages':'Daemon' }
@@ -150,7 +150,7 @@ def config_msg_dict(msg_name, admin_mail="backup@linconet.com.br"):
         return {'Name':msg_name, 
         'mailcommand':'"/sbin/bsmtp -h localhost -f \\"\(Bacula\) \<%r\>\\" -s \\"Bacula daemon message\\" %r"',
         'mail':'%s = all, !skipped' % admin_mail, 'console':'all, !skipped, !saved', 
-        'append':'"/var/bacula/working/log" = all, !skipped'}
+        'append':'"/opt/bacula/var/bacula/working/log" = all, !skipped'}
 
 
 
@@ -166,7 +166,7 @@ def _write_section(name, fileobj, dictobj):
 def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict):
     """generate config file"""
     fileobj = utils.prepare_to_write(filename,'config/')
-
+    
     _write_section("Director", fileobj, dir_dict)
 
     # sto_dict is now sto_list.
@@ -235,8 +235,8 @@ def device_sto_dict(sto_name, sto_port):
     """generate device storage attributes dict"""
     
     return { 'Name':sto_name, 'SDPort':sto_port, 
-             'WorkingDirectory':'"/var/bacula/working"',
-             'Pid Directory':'"/var/run"','Maximum Concurrent Jobs':'20'}
+             'WorkingDirectory':'"/opt/bacula//var/bacula/working"',
+             'Pid Directory':'"/opt/bacula//var/run"','Maximum Concurrent Jobs':'20'}
 
 
 
@@ -251,7 +251,7 @@ def device_dev_dict(dev_name):
     """generate device device attributes dict"""
     
     return { 'Name':dev_name, 'Media Type':'File', 
-            'Archive Device':'/var/backup', 'LabelMedia':'yes', 
+            'Archive Device':'/opt//bacula/var/backup', 'LabelMedia':'yes', 
             'Random Access':'yes', 'AutomaticMount':'yes', 
             'RemovableMedia':'no', 'AlwaysOpen':'no'}
 
@@ -346,7 +346,7 @@ def procedure_dict(proc_name, proc_offsite, comp_name, fset_name, sched_name,
                    pool_name, sto_name, type='Backup', where=None):
     """generate procedure attributes dict"""
     
-    bootstrap = '/var/lib/bacula/%s.bsr' % (proc_name)
+    bootstrap = '/opt/bacula/var/lib/bacula/%s.bsr' % (proc_name)
     run_after_job = proc_offsite and "/var/django/NimbusClient/NimbusClient.py -m %v" or None
 
     return  {'Name':proc_name, 'Client':comp_name, 'Level':'Incremental','FileSet':fset_name,
@@ -635,8 +635,8 @@ def storage_dict(name, ip, port, password):
     """Generate Storage attributes dict."""
 
     return {'Name': name, 'SDPort': port,
-            'WorkingDirectory': '/var/lib/bacula',
-            'Pid Directory': '/var/run',
+            'WorkingDirectory': '/opt/bacula/var/lib/bacula',
+            'Pid Directory': '/opt/bacula/var/run',
             'Maximum Concurrent Jobs': 20}
 
 

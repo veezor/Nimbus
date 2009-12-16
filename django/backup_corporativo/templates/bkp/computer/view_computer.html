@@ -123,8 +123,8 @@
 			    </div>
 			    <div id="detalhes_procedimento_{{ proc.id }}" class="detalhes_procedimento escondido">
 		            <div class="storage coluna primeira">
-		                Storage:<br/>
-		                <a href="{% url bkp.views.view_storage proc.storage.id %}">{{ proc.storage.storage_name }}</a>
+		                <p>Storage:</p>
+		                <p><strong>{{ proc.storage.storage_name }}</strong></p>
 		            </div>
 		            <div class="caminhos coluna">
 		                Caminhos:<br/>
@@ -190,7 +190,7 @@
 				        <tbody>
 					{% endif %}
 		        <tr> 
-			        <td> {{ job.Name }} </td>
+			        <td> {{ comp.computer_name }} </td>
 			        <td> {{ job.Level|friendly_level }} </td>
 			        <td> {{ job.StartTime|friendly_date }} </td>
 			        <td> {{ job.StartTime|friendly_hour }} </td>
@@ -232,7 +232,7 @@
 				        <tbody>
 					{% endif %}
 		        <tr class="{% cycle 'odd' 'even' %}"> 
-			        <td> {{ job.Name }} </td>
+			        <td> {{ comp.computer_name }} </td>
 			        <td> {{ job.Level|friendly_level }} </td>
 			        <td> {{ job.JobFiles }} </td>
 			        <td> {{ job.JobBytes|friendly_size_mb }} </td>

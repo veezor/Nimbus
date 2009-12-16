@@ -34,3 +34,16 @@ class Pool(models.Model):
     class Meta:
         app_label = 'bkp'    
     
+    # ClassMethods
+
+    # Esse método é chamado sempre que um procedimento é alterado.
+    # Pool e gerado apenas nos casos em que o procedimento ainda
+    # não possui um Pool
+    def generate_pool_or_leave(cls, procedure):
+        try:
+            pool = procedure.pool_set.get()
+        except Pool.DoesNotExist:
+            pool = Pool()
+            pool.procedure = procedure
+            pool.save()
+    generate_pool_or_leave = classmethod(generate_pool_or_leave)

@@ -18,7 +18,6 @@ from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 
 import pybacula
-pybacula.test()
 bacula = Bacula()
 
 
@@ -128,7 +127,7 @@ class Computer(models.Model):
         import time
         
         fd_dict =   {
-                    'Name': self.computer_name,
+                    'Name': self.computer_bacula_name(),
                     #TODO: tratar porta do cliente
                     'FDport':'9102',
                     'Maximum Concurrent Jobs':'5',}
@@ -215,7 +214,8 @@ class Computer(models.Model):
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
         from backup_corporativo.bkp.bacula import Bacula;
-        Bacula.run_backup(
+        bacula = Bacula()
+        bacula.run_backup(
             JobName='Teste Conectividade',
             client_name=self.computer_bacula_name())
 

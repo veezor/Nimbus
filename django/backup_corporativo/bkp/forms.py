@@ -43,9 +43,7 @@ class NewStrongBoxForm(forms.Form):
         """
         password = self.cleaned_data.get(u"sb_password")
         password_2 = self.cleaned_data.get(u"sb_password_2")
-        
-        print(self.cleaned_data)
-        
+
         if password == password_2:
             km = KeyManager(password=password)
             drive_created = km.create_drive()
@@ -241,11 +239,9 @@ class RestoreForm(forms.Form):
 
 	def __init__(self, *args, **kwargs):
 		super(RestoreForm, self).__init__(*args, **kwargs)
-		comp_name = comp.computer_name
-		comp_ip = comp.computer_ip
 		self.fields['client_restore'].choices = \
 			[('', '----------')] + \
-			[(comp_name, '%s (%s)' %  (comp_name, comp_ip)) \
+			[(comp.computer_bacula_name(), '%s (%s)' %  (comp.computer_name, comp.computer_ip)) \
 			for comp in Computer.objects.all()]
 
 

@@ -35,7 +35,7 @@
                         <li {% if request.META.PATH_INFO|contains:"/management" %}class="active"{% endif %}><a href="{% url bkp.views.main_management %}" title="">Gerenciar</a></li>
                         <li {% if request.META.PATH_INFO|contains:"/statistics" %}class="active"{% endif %}><a href="{% url bkp.views.main_statistics %}" title="">Estatísticas</a></li>
                         {#<li {% if request.META.PATH_INFO|contains:"/tools" %}class="active"{% endif %}><a href="{% url bkp.views.main_tools %}" title="">Ferramentas</a></li>#}
-                        <li {% if request.META.PATH_INFO|contains:"/system" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_config %}" title="">Sistema</a></li>
+                        <li {% if request.META.PATH_INFO|contains:"/system" %}class="active"{% endif %}><a href="{% url bkp.views.main_system %}" title="">Sistema</a></li>
                     </ul>
                     {% if current_user.username %}
                     <form class="link" action="{% url bkp.views.delete_session %}" method="post">

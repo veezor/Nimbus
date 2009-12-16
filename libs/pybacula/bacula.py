@@ -28,6 +28,7 @@ class BaculaCommandLine(object):
             return None
 
     def raw(self, string):
+        string = string.encode("utf-8")
         return bconsole.execute_command(string)
 
 
@@ -51,7 +52,9 @@ class Command(object):
         return  " ".join(self.content)
 
     def run(self):
-        result = bconsole.execute_command( self.get_content() )
+        txt = self.get_content()
+        txt = txt.encode("utf-8")
+        result = bconsole.execute_command( txt )
         self.content = []
         return result
 
@@ -72,7 +75,6 @@ def test():
             pass
 
         def execute_command(self, arg):
-            print arg
             pass
 
         def set_configfile(self, filename):

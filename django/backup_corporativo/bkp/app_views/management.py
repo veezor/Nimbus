@@ -119,7 +119,7 @@ def mount_strongbox(request):
         location = reverse("new_strongbox")
         return HttpResponseRedirect(location)
     if km.mounted:
-        location = reverse("manage_strongbox")
+        location = reverse("main_management")
         return HttpResponseRedirect(location)
 
     if request.method == 'POST':
@@ -138,7 +138,7 @@ def new_strongbox(request):
     km = KeyManager()
     
     if km.has_drive():
-        location = reverse("manage_strongbox")
+        location = reverse("main_management")
         return HttpResponseRedirect(location)
 
     if request.method == 'GET':
@@ -153,13 +153,13 @@ def create_strongbox(request):
     km = KeyManager()
     
     if km.has_drive():
-        location = reverse("manage_strongbox")
+        location = reverse("main_management")
         return HttpResponseRedirect(location)
 
     if request.method == 'POST':
         E.newstrongbox_form = NewStrongBoxForm(request.POST)
         if E.newstrongbox_form.is_valid():
-            location = reverse("manage_strongbox")
+            location = reverse("main_management")
             return HttpResponseRedirect(location)
         else:
             E.template = 'bkp/management/new_strongbox.html'
@@ -172,7 +172,7 @@ def umount_strongbox(request):
     km = KeyManager()
     
     if not km.mounted:
-        location = reverse("manage_strongbox")
+        location = reverse("main_management")
         return HttpResponseRedirect(location)
 
     if request.method == 'GET':
@@ -192,7 +192,7 @@ def umount_strongbox(request):
                 location = reverse("umount_strongbox")
             else:
                 E.msg = u"O cofre foi trancado com sucesso."
-                location = reverse("manage_strongbox")
+                location = reverse("main_management")
             return HttpResponseRedirect(location)
 
 
@@ -208,7 +208,7 @@ def changepwd_strongbox(request):
     elif request.method == 'POST':
         E.changepwdsb_form = ChangePwdStrongBoxForm(request.POST)
         if E.changepwdsb_form.is_valid():
-            location = reverse("manage_strongbox")
+            location = reverse("main_management")
             return HttpResponseRedirect(location)
         else:
             E.template = 'bkp/management/changepwd_strongbox.html'

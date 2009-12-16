@@ -93,6 +93,7 @@ def friendly_status(obj):
     if obj:
         if obj == 'T': return "Sucesso"
         elif obj == 'E': return "Erro"
+	elif obj == 'R': return "Executando"
         else: return "Desconhecido"
     else:
         return ''

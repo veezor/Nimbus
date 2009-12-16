@@ -17,7 +17,8 @@ from backup_corporativo import settings
 
 ### Routing ###
 def reverse(viewname, args=None, kwargs=None):
-    return _reverse( "%s.views.%s" % (MAIN_APP, viewname) , args=args, kwargs=kwargs)
+    path = "%s.views.%s" % (MAIN_APP, viewname)
+    return _reverse( path , args=args, kwargs=kwargs)
 
 
 def redirect(viewname, *args, **kwargs):
@@ -149,7 +150,7 @@ def absolute_file_path(filename, rel_dir):
 
 def absolute_dir_path(rel_dir):
     """Return full path to a directory from script file location."""
-    return os.path.join(os.path.dirname(os.path.abspath(settings.NIMBUS_CUSTOM_PATH)), rel_dir)
+    return os.path.join(settings.NIMBUS_CUSTOM_PATH, rel_dir)
 
 
 def isdir(path):
@@ -182,9 +183,7 @@ def parse_filetree(files):
         else:
             file_name = '%s:%s' % (file_path.pop(), fid)
         file_path = ['%s/' % x for x in file_path]
-        
-        #print file_path, file_name
-        
+                
         local_tree = file_tree
         for n, fp in enumerate(file_path):
             if fp in local_tree:

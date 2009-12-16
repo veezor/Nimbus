@@ -8,6 +8,7 @@ CLIENT_LAST_JOBS_RAW_QUERY =\
     INNER JOIN FileSet
     ON Job.FileSetID = FileSet.FileSetID 
     WHERE Client.Name = '%(client_name)s'
+    AND Job.JobStatus != 'R'
     ORDER BY EndTime DESC LIMIT 15
     '''
 
