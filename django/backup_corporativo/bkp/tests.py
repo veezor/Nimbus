@@ -290,6 +290,19 @@ class NimbusViewTest(NimbusTest):
 
         response = self.post("/restore/create", 
                              dict(target_client=1))
+       
+
+
+    def test_restore_computer(self):
+        self.test_restore_new()
+        self.test_procedure_create()
+
+        self.get("/computer/1/restore/new")
+
+        response = self.post( "/computer/1/restore/create", 
+                              dict(target_procedure=1))
+
+
 
 
 
