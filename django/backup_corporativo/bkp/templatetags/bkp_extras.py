@@ -91,10 +91,20 @@ def friendly_status(obj):
 
     """
     if obj:
-        if obj == 'T': return "Sucesso"
-        elif obj == 'E': return "Erro"
-	elif obj == 'R': return "Executando"
-        else: return "Desconhecido"
+        if obj == 'T':
+            return "Sucesso"
+        elif obj == 'E':
+            return "Erro"
+        elif obj == 'R':
+            return "Executando"
+        elif obj == 'e':
+            return 'Erro não fatal'
+        elif obj == 'f':
+            return 'Erro fatal'
+        elif obj == 'I':
+            return 'Incompleto'
+        else:
+            return "Desconhecido"
     else:
         return ''
 

@@ -9,7 +9,7 @@ from django.core import serializers
 from django.db import models
 from django import forms
 
-from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY, CLIENT_STATUS_RAW_QUERY, CLIENT_LAST_JOBS_RAW_QUERY, CLIENT_ID_RAW_QUERY
+from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY, CLIENT_STATUS_RAW_QUERY, CLIENT_ID_RAW_QUERY, CLIENT_SUCCESSFUL_JOBS_RAW_QUERY, CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
@@ -18,6 +18,7 @@ from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 
 import pybacula
+pybacula.test()
 bacula = Bacula()
 
 
@@ -196,9 +197,24 @@ class Computer(models.Model):
         wtrigg.schedule = sched
         wtrigg.save()
 
+    def successful_jobs(self):
+        successful_jobs_query = CLIENT_SUCCESSFUL_JOBS_RAW_QUERY % {
+            'client_name':self.computer_bacula_name(),    
+        }
+        successful_jobs_cursor = bacula.baculadb.execute(successful_jobs_query)
+        return utils.dictfetch(successful_jobs_cursor)
+
+    def unsuccessful_jobs(self):
+        unsuccessful_jobs_query = CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY % {
+            'client_name':self.computer_bacula_name(),    
+        }
+        unsuccessful_jobs_cursor = bacula.baculadb.execute(unsuccessful_jobs_query)
+        return utils.dictfetch(unsuccessful_jobs_cursor)
+
     def running_jobs(self):
         running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {
-            'client_name':self.computer_bacula_name(),}
+            'client_name':self.computer_bacula_name(),
+        }
         running_jobs_cursor = bacula.baculadb.execute(running_jobs_query)
         return utils.dictfetch(running_jobs_cursor)
 

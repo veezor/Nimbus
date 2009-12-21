@@ -200,8 +200,11 @@
 					{% if forloop.last %}
 				</tbody>
 				</table>
-					{% endif %}
+                    {% endif %}
 		        {% endfor %}
+                {% if not running_jobs %}
+                <p>No momento, não existem procedimentos em execução.</p>
+                {% endif %}
 		    </div>
 		</div>
 
@@ -209,12 +212,51 @@
 		<div id="tabs-3">
 	    	<div class="titulo_botoes">
 			    <h3>
-			        <span>Últimos Procedimentos Executados</span>
+			        <span>Procedimentos bem sucedidos</span>
 			    </h3>
-			    <div class="botao_acoes"></div>
 			</div>
 			<div class="bloco_texto">
-				{% for job in last_jobs %}
+				{% for job in successful_jobs %}
+					{% if forloop.first %}
+				        <table>
+				        <thead>
+					        <tr>
+					        <th scope='col'>Nome</th>
+					        <th scope='col'>Tipo</th>
+					        <th scope='col'>Arquivos</th>
+					        <th scope='col'>Tamanho</th>
+					        <th scope='col'>Data Início</th>
+					        <th scope='col'>Hora Início</th>
+					        <th scope='col'>Duração</th>
+					        <th scope='col'>Status</th>
+					        </tr>
+				        </thead>
+				        <tbody>
+					{% endif %}
+		        <tr class="{% cycle 'odd' 'even' %}"> 
+			        <td> {{ comp.computer_name }} </td>
+			        <td> {{ job.Level|friendly_level }} </td>
+			        <td> {{ job.JobFiles }} </td>
+			        <td> {{ job.JobBytes|friendly_size_mb }} </td>
+			        <td> {{ job.StartTime|friendly_date }} </td>
+			        <td> {{ job.StartTime|friendly_hour }} </td>
+			        <td> {{ job.Duration|friendly_duration_min }} </td>
+			        <td> {{ job.JobStatus|friendly_status }} </td>
+				</tr>
+					{% if forloop.last %}
+				</tbody>
+				</table>
+					{% endif %}
+		        {% endfor %}
+		    </div>
+            
+	    	<div class="titulo_botoes">
+			    <h3>
+			        <span>Procedimentos com erro</span>
+			    </h3>
+			</div>
+			<div class="bloco_texto">
+				{% for job in unsuccessful_jobs %}
 					{% if forloop.first %}
 				        <table>
 				        <thead>

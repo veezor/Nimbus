@@ -94,7 +94,8 @@ def view_computer(request, comp_id):
         E.comp = get_object_or_404(Computer,pk=comp_id)
         E.procs = E.comp.procedure_set.all()
         E.running_jobs = E.comp.running_jobs()
-        E.last_jobs = E.comp.last_jobs()
+        E.successful_jobs = E.comp.successful_jobs()
+        E.unsuccessful_jobs = E.comp.unsuccessful_jobs()
         E.compstatus = E.comp.get_status()
         E.DAYS_OF_THE_WEEK = DAYS_OF_THE_WEEK
         E.template = 'bkp/computer/view_computer.html'

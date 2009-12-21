@@ -31,6 +31,9 @@ def new_encryption(request):
 
     if request.method == 'GET':
         km = KeyManager()
+        if not km.has_drive():
+            location = reverse("new_strongbox")
+            return HttpResponseRedirect(location)
         E.mounted = km.mounted
         if not E.mounted:
             E.mountform = MountStrongBoxForm()
@@ -46,6 +49,9 @@ def create_encryption(request):
     if request.method == 'POST':
         E.encform = EncryptionForm(request.POST)
         km = KeyManager()
+        if not km.has_drive():
+            location = reverse("new_strongbox")
+            return HttpResponseRedirect(location)
         if not km.mounted:
             E.mountform = MountStrongBoxForm(request.POST)
             if E.mountform.is_valid():

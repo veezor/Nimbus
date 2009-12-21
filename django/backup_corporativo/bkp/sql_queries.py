@@ -1,14 +1,28 @@
-CLIENT_LAST_JOBS_RAW_QUERY =\
+CLIENT_SUCCESSFUL_JOBS_RAW_QUERY =\
     '''
-    SELECT DISTINCT JobID, Client.Name as cName, Job.Name, 
-    Level, JobStatus, StartTime, (EndTime-StartTime) as Duration, 
-    JobFiles, JobBytes, JobErrors, FileSet.FileSet 
-    FROM Job INNER JOIN Client 
-    ON Job.ClientId = Client.ClientId 
+    SELECT DISTINCT JobID, Client.Name as cName, Job.Name,
+    Level, JobStatus, StartTime, (EndTime-StartTime) as Duration,
+    JobFiles, JobBytes, JobErrors, FileSet.FileSet
+    FROM Job INNER JOIN Client
+    ON Job.ClientId = Client.ClientId
     INNER JOIN FileSet
-    ON Job.FileSetID = FileSet.FileSetID 
+    ON Job.FileSetID = FileSet.FileSetID
     WHERE Client.Name = '%(client_name)s'
-    AND Job.JobStatus != 'R'
+    AND Job.JobStatus in ('T','W')
+    ORDER BY EndTime DESC LIMIT 15
+    '''
+
+CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY =\
+    '''
+    SELECT DISTINCT JobID, Client.Name as cName, Job.Name,
+    Level, JobStatus, StartTime, (EndTime-StartTime) as Duration,
+    JobFiles, JobBytes, JobErrors, FileSet.FileSet
+    FROM Job INNER JOIN Client
+    ON Job.ClientId = Client.ClientId
+    INNER JOIN FileSet
+    ON Job.FileSetID = FileSet.FileSetID
+    WHERE Client.Name = '%(client_name)s'
+    AND Job.JobStatus in ('E','e','f','I')
     ORDER BY EndTime DESC LIMIT 15
     '''
 
