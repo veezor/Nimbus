@@ -144,4 +144,8 @@ class Storage(models.Model):
 
     @classmethod
     def get_instance(cls):
-        return cls.objects.get(pk=1)
+        try:
+            sto = cls.objects.get(pk=1)
+        except cls.DoesNotExist:
+            sto = cls()
+        return sto
