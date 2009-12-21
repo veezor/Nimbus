@@ -38,7 +38,7 @@ def main_system(request):
             E.msg = u"Configure seu sistema."
             location = reverse('edit_system_config')
             return HttpResponseRedirect(location)
-        E.iface = NetworkInterface.networkconfig()
+        E.iface = NetworkInterface.get_instance()
         E.template = 'bkp/system/main_system.html'
         return E.render()
 
@@ -62,9 +62,10 @@ def update_system_config(request):
     E = ENV(request)
 
     if request.method == 'POST':
+        gconf = GlobalConfig.get_instance()
         E.gconfigform = GlobalConfigForm(
             request.POST,
-            instance=GlobalConfig()
+            instance=gconf
         )
         if E.gconfigform.is_valid():
             gconf = E.gconfigform.save()
