@@ -11,6 +11,7 @@ from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.models import *
 
+bacula = Bacula()
 
 ### Constants ###
 DAYS_OF_THE_WEEK = (
@@ -27,6 +28,7 @@ def connect_on(model, signal):
     def generic_connect(function):
 
         def function_wrapper(sender, instance, signal, *args, **kwargs):
+            bacula.reload()
             return function(instance)
 
         function_wrapper.__name__ = function.__name__ + "_wrapper"
@@ -203,11 +205,12 @@ def update_offsite_file(gconf):
 def generate_offsite_file(filename, offsite_hour):
 
     f = utils.prepare_to_write(filename, 'jobs')
-    def_sto_name = Storage.default_storage().storage_name
+    sto = Storage.get_instance()
+    sto.storage_name
     
     proc_dict = procedure_dict("Upload Offsite", False, "empty_client", 
                                "empty_fileset", "offsite_schedule", 
-                               'empty_pool', def_sto_name, 'Admin', None)
+                               'empty_pool', sto.storage_bacula_name(), 'Admin', None)
     
 
     del(proc_dict['Run After Job'])
@@ -235,8 +238,8 @@ def device_sto_dict(sto_name, sto_port):
     """generate device storage attributes dict"""
     
     return { 'Name':sto_name, 'SDPort':sto_port, 
-             'WorkingDirectory':'"/opt/bacula//var/bacula/working"',
-             'Pid Directory':'"/opt/bacula//var/run"','Maximum Concurrent Jobs':'20'}
+             'WorkingDirectory':'"/opt/bacula/var/bacula/working"',
+             'Pid Directory':'"/opt/bacula/var/run"','Maximum Concurrent Jobs':'20'}
 
 
 
@@ -251,7 +254,7 @@ def device_dev_dict(dev_name):
     """generate device device attributes dict"""
     
     return { 'Name':dev_name, 'Media Type':'File', 
-            'Archive Device':'/opt//bacula/var/backup', 'LabelMedia':'yes', 
+            'Archive Device':'/opt/bacula/var/backup', 'LabelMedia':'yes', 
             'Random Access':'yes', 'AutomaticMount':'yes', 
             'RemovableMedia':'no', 'AlwaysOpen':'no'}
 
@@ -267,7 +270,7 @@ def device_msg_dict(msg_name, dir_name):
 @connect_on(model=GlobalConfig, signal=post_save)
 def update_device_file(gconf):
     """Update Device File"""
-    def_sto = Storage.default_storage()
+    def_sto = Storage.get_instance()
     sto_dict = device_sto_dict(def_sto.storage_name, def_sto.storage_port)
     dir_dict = device_dir_dict(gconf.director_bacula_name(),def_sto.storage_password)
     dev_dict = device_dev_dict("FileStorage")
@@ -293,8 +296,9 @@ def generate_device(filename,sto_dict, dir_dict, dev_dict, msg_dict):
 def console_dir_dict(dir_name, dir_port, dir_passwd):
     """generate device message attributes dict"""
     
+    iface = NetworkInterface.get_instance()
     return { 'Name':dir_name, 'DIRPort':dir_port, 
-             'Address':'127.0.0.1', 'Password':'"%s"' % dir_passwd }
+             'Address':iface.interface_address, 'Password':'"%s"' % dir_passwd }
 
 
 

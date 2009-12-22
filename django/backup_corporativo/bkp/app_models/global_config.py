@@ -65,8 +65,9 @@ class GlobalConfig(models.Model):
         # podem um referenciar ao outro no escopo geral do arquivo ao
         # mesmo tempo.
         from backup_corporativo.bkp.app_models.storage import Storage
-        Storage.update_default_storage(self.storage_port)
-        # Use sempre o mesmo id para armazenar o Storage Local
+        sto = Storage.get_instance()
+        sto.storage_port=self.storage_port
+        sto.save()
         self.id = 1
         super(GlobalConfig, self).save()
 
@@ -76,26 +77,34 @@ class GlobalConfig(models.Model):
     def storage_bacula_name(self):
         return "%s_storage" % self.nimbus_uuid.uuid_hex
 
+    @classmethod
+    def get_instance(cls):
+        try:
+            gconf = cls.objects.get(pk=1)
+        except cls.DoesNotExist:
+            gconf = cls()
+        return gconf
+
+    @classmethod
+    def admin_mail(cls):
+        return "nimbus@linconet.com.br"
+
+    @classmethod
     def system_configured(cls):
         """Returns True if system is configured, False otherwise."""
         return cls.objects.all().count() > 0
-    system_configured = classmethod(system_configured)
     
+    @classmethod
     def bacula_database_name(cls):
         from backup_corporativo.settings import BACULA_DATABASE_NAME
         return BACULA_DATABASE_NAME
-    bacula_database_name = classmethod(bacula_database_name)
 
+    @classmethod
     def bacula_database_user(cls):
         from backup_corporativo.settings import BACULA_DATABASE_USER
         return BACULA_DATABASE_USER
-    bacula_database_user = classmethod(bacula_database_user)
-    
+   
+    @classmethod
     def bacula_database_password(cls):
         from backup_corporativo.settings import BACULA_DATABASE_PASSWORD
         return BACULA_DATABASE_PASSWORD
-    bacula_database_password = classmethod(bacula_database_password)
-
-    def admin_mail(cls):
-        return "nimbus@linconet.com.br"
-    admin_mail = classmethod(admin_mail)

@@ -47,6 +47,7 @@ class Storage(models.Model):
         if self.storage_password == self.NIMBUS_BLANK:
             self.storage_password = utils.random_password()
         NimbusUUID.generate_uuid_or_leave(self)
+        self.id = 1
         super(Storage, self).save()
 
     def storage_bacula_name(self):
@@ -141,21 +142,10 @@ class Storage(models.Model):
             self.storage_ip,
             self.storage_port)
 
-    # ClassMethods
-    def default_storage(cls):
-        return cls.objects.get(storage_name='Storage Local')
-    default_storage = classmethod(default_storage)
-
-    # Esse método é chamado toda vez que GlobalConfig é
-    # modificado. Assim, a única forma de alterar as configurações
-    # do Storage Local é através de GlobalConfig.
-    def update_default_storage(cls, storage_port):
+    @classmethod
+    def get_instance(cls):
         try:
-            sto = cls.default_storage()
-        except Storage.DoesNotExist:
+            sto = cls.objects.get(pk=1)
+        except cls.DoesNotExist:
             sto = cls()
-        sto.storage_name = 'Storage Local'
-        sto.storage_description = 'Storage Local do Nimbus'
-        sto.storage_port = storage_port
-        sto.save()
-    update_default_storage = classmethod(update_default_storage)
+        return sto

@@ -52,6 +52,14 @@ class NetworkInterface(models.Model):
         app_label = 'bkp'    
 
     
+    def save(self):
+        from backup_corporativo.bkp.app_models.storage import Storage
+        sto = Storage.get_instance()
+        sto.storage_ip = self.interface_address
+        sto.save()
+        super(NetworkInterface, self).save()
+
+
     def __unicode__(self):
         return "%s (%s)" % (self.interface_name, self.interface_address)
         

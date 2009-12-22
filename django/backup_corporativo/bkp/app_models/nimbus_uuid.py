@@ -62,20 +62,16 @@ class NimbusUUID(models.Model):
     def __unicode__(self):
         return "uuid_hex = %s" % self.uuid_hex
     
-    #ClassMethods
-    def build(cls):
-        nuuid = cls()
-        nuuid.save()
-        return nuuid
-    build = classmethod(build)
-
     # Esse método é chamado sempre que um objeto que possua
     # um NimbusUUID é alterado. UUID é gerado Apenas nos casos
     # em que o objeto ainda não possui um NimbusUUID
+    @classmethod
     def generate_uuid_or_leave(cls,object):
         try:
             object.nimbus_uuid
         except cls.DoesNotExist:
-            object.nimbus_uuid = cls.build()
+            u = cls()
+            u.save()
+            object.nimbus_uuid = u
+            object.save()
             return object.nimbus_uuid 
-    generate_uuid_or_leave = classmethod(generate_uuid_or_leave)
