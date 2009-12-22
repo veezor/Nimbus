@@ -80,10 +80,7 @@ class Computer(models.Model):
             raise ComputerLimitExceeded
         if self.computer_password == self.NIMBUS_BLANK:
             self.computer_password = utils.random_password()
-        uuid = NimbusUUID()
-        uuid.save()
-        self.nimbus_uuid = uuid
-        #NimbusUUID.generate_uuid_or_leave(self)
+        NimbusUUID.generate_uuid_or_leave(self)
         super(Computer, self).save()
         if self.computer_bacula_id == self.NIMBUS_BLANK:
             self.__update_bacula_id()
