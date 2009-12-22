@@ -30,8 +30,10 @@ def connect_on(model, signal):
     def generic_connect(function):
 
         def function_wrapper(sender, instance, signal, *args, **kwargs):
+            value = function(instance)
             bacula.reload()
-            return function(instance)
+            return value
+
 
         function_wrapper.__name__ = function.__name__ + "_wrapper"
 
