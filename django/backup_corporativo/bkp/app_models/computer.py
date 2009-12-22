@@ -17,8 +17,6 @@ from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 
-import pybacula
-pybacula.test()
 bacula = Bacula()
 
 

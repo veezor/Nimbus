@@ -19,6 +19,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 import pybacula
+
+try:
+    if settings.PYBACULA_TEST:
+        pybacula.test()
+except AttributeError, e:
+    pass
+
+
+
 from pybacula import BaculaCommandLine
 
 

@@ -1,10 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+
+from mock import Bconsole
+
+
 try:
     import bconsole
 except ImportError, e:
-    pass
+    bconsole = Bconsole()
+
+
+def test():
+    global bconsole
+    bconsole = Bconsole()
 
 
 valid_commands = """autodisplay automount add cancel create delete label mount prune relabel release restore run setdebug status unmount update wait disable enable list llist use query reload"""
@@ -68,25 +77,6 @@ class Command(object):
 
 
 
-def test():
-    class Bconsole(object): #Mock
-
-        def connect(self):
-            pass
-
-        def execute_command(self, arg):
-            pass
-
-        def set_configfile(self, filename):
-            pass
-
-        def close(self):
-            pass
-
-    global bconsole
-    bconsole = Bconsole()
-    #cmd = BaculaCommandLine()
-    #cmd.status.dir["linconet-dir"].run()
 
 
 if __name__ == "__main__":
