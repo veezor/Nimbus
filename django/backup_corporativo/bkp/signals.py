@@ -3,6 +3,7 @@
 
 
 from xmlrpclib import ServerProxy
+import socket
 
 from django.db.models.signals import post_save, post_delete 
 
@@ -10,6 +11,7 @@ from django.db.models.signals import post_save, post_delete
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.models import *
+
 
 bacula = Bacula()
 
@@ -67,16 +69,20 @@ def create_pools(sender, instance, signal, *args, **kwargs):
 ### NetworkInterface ###
 @connect_on(model=NetworkInterface, signal=post_save)
 def update_networks_file(instance):
-    server = ServerProxy("http://localhost:8888")
+    try:
+        server = ServerProxy("http://localhost:8888")
 
-    server.generate_interfaces( instance.interface_name, 
-            instance.interface_address, 
-            instance.interface_netmask, 
-            "static",
-            instance.interface_broadcast, 
-            instance.interface_network, 
-            instance.interface_gateway)
-    server.generate_dns( instance.interface_dns1, instance.interface_dns2)
+        server.generate_interfaces( instance.interface_name, 
+                instance.interface_address, 
+                instance.interface_netmask, 
+                "static",
+                instance.interface_broadcast, 
+                instance.interface_network, 
+                instance.interface_gateway)
+        server.generate_dns( instance.interface_dns1, instance.interface_dns2)
+    except socket.error:
+        pass
+
 
 
 
