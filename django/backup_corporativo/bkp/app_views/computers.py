@@ -95,7 +95,7 @@ def view_computer(request, comp_id):
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
         unsuccessful_jobs = E.comp.unsuccessful_jobs()
-        paginator = Paginator(unsuccessful_jobs, 25)
+        paginator = Paginator(unsuccessful_jobs, 15)
         # Eta paginador ruinzin...
         try:
             page = int(request.GET.get('page', '1'))

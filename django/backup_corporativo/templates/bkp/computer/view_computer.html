@@ -110,6 +110,7 @@
 		                {% else %}
 		                    -
 		                {% endif %}</strong></span>
+                        <span>Último Sucesso: <strong>{{proc.last_success_date.Level|friendly_level}} em {{proc.last_success_date.EndTime|friendly_date}}</strong></span>
 		            </div>
 		            <div class="acoes">
 		                <button class="popup" rel="view_comp_02_{{ forloop.counter }}"><span>ações</span></button>
