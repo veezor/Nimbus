@@ -23,7 +23,7 @@ CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY =\
     ON Job.FileSetID = FileSet.FileSetID
     WHERE Client.Name = '%(client_name)s'
     AND Job.JobStatus in ('E','e','f','I')
-    ORDER BY EndTime DESC LIMIT 15
+    ORDER BY EndTime DESC
     '''
 
 CLIENT_RUNNING_JOBS_RAW_QUERY =\

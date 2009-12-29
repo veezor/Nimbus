@@ -4,6 +4,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from environment import ENV
 
@@ -93,12 +94,24 @@ def view_computer(request, comp_id):
 
     if request.method == 'GET':
         E.comp = get_object_or_404(Computer,pk=comp_id)
+        unsuccessful_jobs = E.comp.unsuccessful_jobs()
+        paginator = Paginator(unsuccessful_jobs, 25)
+        # Eta paginador ruinzin...
+        try:
+            page = int(request.GET.get('page', '1'))
+        except ValueError:
+            page = 1
+        try:
+            E.unsuccessful_jobs = paginator.page(page)
+        except (EmptyPage, InvalidPage):
+            E.unsuccessful_jobs = paginator.page(paginator.num_pages)
+
         E.procs = E.comp.procedure_set.all()
         E.running_jobs = E.comp.running_jobs()
         E.successful_jobs = E.comp.successful_jobs()
-        E.unsuccessful_jobs = E.comp.unsuccessful_jobs()
         E.compstatus = E.comp.get_status()
         E.DAYS_OF_THE_WEEK = DAYS_OF_THE_WEEK
+        
         E.template = 'bkp/computer/view_computer.html'
         return E.render()
 

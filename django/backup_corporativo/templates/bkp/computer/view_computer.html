@@ -256,7 +256,7 @@
 			    </h3>
 			</div>
 			<div class="bloco_texto">
-				{% for job in unsuccessful_jobs %}
+				{% for job in unsuccessful_jobs.object_list %}
 					{% if forloop.first %}
 				        <table>
 				        <thead>
@@ -288,6 +288,19 @@
 				</table>
 					{% endif %}
 		        {% endfor %}
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if unsuccessful_jobs.has_previous %}
+                            <a href="?page={{ unsuccessful_jobs.previous_page_number }}">previous</a>
+                        {% endif %}                
+                        <span class="current">
+                            Page {{ unsuccessful_jobs.number }} of {{ unsuccessful_jobs.paginator.num_pages }}.
+                        </span>
+                        {% if unsuccessful_jobs.has_next %}
+                            <a href="?page={{ unsuccessful_jobs.next_page_number }}">next</a>
+                        {% endif %}
+                    </span>
+                </div>
 		    </div>
 		</div>
 	</div>
