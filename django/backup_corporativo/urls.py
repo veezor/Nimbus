@@ -45,6 +45,9 @@ urlpatterns += patterns(
     (r'^strongbox/headerbkp/(?P<hbkp_id>\d+)/restore$', 'restore_headerbkp'),
     # system
     (r'^system/$', 'main_system'),
+    (r'^system/time/$', 'manage_system_time'),
+    (r'^system/time/ajax_area_request$', 'ajax_area_request'),
+    (r'^system/time/update$', 'update_system_time'),    
     (r'^system/network/$', 'manage_system_network'),
     (r'^system/network/update$', 'update_system_network'),
     (r'^system/network/ping/create$', 'create_ping'),
@@ -99,26 +102,4 @@ urlpatterns += patterns(
     #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/restore/create$', 'create_procedure_restore'),
     (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'new_job_restore'),
     (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/create$', 'create_job_restore'),
-    #
-    #
-    #
-    # Próxima parte do código não será organizada porque será refeita
-    #
-    #
-    #
-    # TODO: Refazer wizard. Toda a comunicação entre as etapas do
-    # novo wizard será feita através de POST, permitindo ida e volta
-    # nas etapas.
-    # Também separar o wizard em mais de um view object.
-    # Novo Design da Funcionalidade do Restore:
-    # PASSO 1: Selecione Computador
-    #(r'^restore/new$', 'new_restore'),
-    # PASSO 2: Selecione Procedimento
-    #(r'^computer/(?P<comp_id>\d+)/restore/new$', 'new_restore'),
-    # PASSO 3: Selecione Data
-    #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/restore/new$', 'new_restore'),
-    # PASSO 4: Selecione Arquivos e Detalhes do Restore
-    #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'new_restore'),
-    # PASSO 5: Execute!
-    #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'restore_files'),    
 )

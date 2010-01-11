@@ -3,6 +3,8 @@
 
 
 import re
+from pytz import common_timezones, country_timezones, country_names
+
 
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -17,7 +19,7 @@ import networkutils
 
 from backup_corporativo.bkp.utils import redirect, reverse
 from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
-from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TraceRouteForm, NsLookupForm
+from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TraceRouteForm, NsLookupForm, TimeZoneForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 import logging
@@ -42,6 +44,60 @@ def main_system(request):
         E.template = 'bkp/system/main_system.html'
         return E.render()
 
+
+@authentication_required
+def manage_system_time(request):
+    E = ENV(request)
+
+    if request.method == 'GET':
+        E.tzform = TimeZoneForm()        
+        E.template = 'bkp/system/manage_time.html'
+        return E.render()
+
+
+#
+# Atenção:
+#
+# Por essa view ser ativada via ajax, um erro
+# aqui gerado nunca vai ser renderizado como os erros
+# comuns no django. Quando errros por aqui surgirem,
+# só poderão ser vistos através de uma ferramenta de
+# debug de javascript.
+#
+# Exemplo: console do FireBug
+#
+def ajax_area_request(request):
+    E = ENV(request)
+    
+    if request.is_ajax() and request.method == 'POST':
+        tz_country = request.POST.get('tz_country', None)
+        if not tz_country in country_timezones:
+            raise Exception("Erro de Programação: País Inválido")
+        if tz_country is not None:
+            choices = country_timezones[tz_country]
+            # TODO: nunca ouviu falar em serialização? :(
+            i = 0
+            response = "{"
+            for c in choices:
+                response += "%i: '%s'," % (i, c)
+                i += 1
+            response += "}"
+            return HttpResponse(response, mimetype="application/json")
+
+
+@authentication_required
+def update_system_time(request):
+    E = ENV(request)
+
+    if request.method == 'POST':
+        tz_country = request.POST.get('tz_country', [])
+        E.tzform = TimeZoneForm(request.POST)
+        E.tzform.load_area_choices(tz_country)
+        if E.tzform.is_valid():
+            pass #it works!
+        else:
+            E.template = 'bkp/system/manage_time.html'
+            return E.render()
 
 @authentication_required
 def edit_system_config(request):

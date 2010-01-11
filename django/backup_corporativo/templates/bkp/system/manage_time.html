@@ -1,0 +1,52 @@
+{% extends "bkp/base.html" %}
+
+{% block headtags %}
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $("select#id_tz_country").bind("change", getAreaChoices);
+    });
+ 
+    function getAreaChoices() {
+        $.ajax({
+            type: "POST",
+            url: "{% url bkp.views.ajax_area_request %}",
+            dataType: "json",
+            data: {tz_country: $('[name=tz_country]').val()},
+            success: function(data, textStatus){
+                $.each(data, function(i, item){
+                    $("select#id_tz_area").append(
+                        '<option value="'+item+'" selected="selected">'+item+'</option>'
+                    );
+                });
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("Status: "+textStatus+".");
+                this; // the options for this ajax request
+            }
+        });
+    }
+
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="titulo_botoes">
+    <h3>Configurações de Horário</h3>
+    
+</div>
+<div class="bloco_texto">
+
+<form action="{% url bkp.views.update_system_time %}" method="POST">
+    {% for field in tzform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Salvar" /></p>
+</form>
+</div>
+
+{% endblock%}

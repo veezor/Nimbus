@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from pytz import common_timezones, country_timezones, country_names
+
 from django.forms import ModelForm
 from django.forms.util import ErrorList
 from django import forms
@@ -13,7 +15,31 @@ from backup_corporativo.bkp import customfields as cfields
 
 BOOLEAN_CHOICES = ((True,'Ativo'),(0,'Desativado'),)
 BR_DATES = ['%d/%m/%Y']
+COUNTRY_CHOICES = \
+    [('', '----------')] + \
+    [(cs, country_names[cs]) for cs in country_names]
+AREA_CHOICES = [('', '----------')]
 
+
+class TimeZoneForm(forms.Form):
+    tz_country = forms.ChoiceField(
+        label=u'País',
+        choices=COUNTRY_CHOICES,
+        widget=forms.Select(),
+    )
+    tz_area = forms.ChoiceField(
+        label = u'Área',
+        choices=AREA_CHOICES, 
+        widget=forms.Select(),
+    )
+    
+    def load_area_choices(self, country_name):
+        if country_name:
+            self.fields['tz_area'].choices = \
+                [('', '----------')] + \
+                [(a,a) for a in country_timezones[country_name]]
+        else:
+            self.fields['tz_area'].choices = [('', '----------')]
 
 class EncryptionForm(ModelForm):
     class Meta:
@@ -371,10 +397,10 @@ class WeeklyTriggerForm(ModelForm):
 
 
 class NetworkInterfaceEditForm(ModelForm):
-	class Meta:
-		model = NetworkInterface
-		fields = ('interface_name','interface_address',
-                  'interface_network', 'interface_gateway',
+    class Meta:
+        model = NetworkInterface
+        fields = ('interface_name','interface_address',
+                'interface_network', 'interface_gateway',
                   'interface_netmask', 'interface_broadcast',
                   'interface_dns1', 'interface_dns2')
 
