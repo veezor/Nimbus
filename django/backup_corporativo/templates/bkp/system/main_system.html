@@ -13,8 +13,6 @@
 </div>
 <div class="bloco_texto">
 <br /><br />
-
-
 <p>Nome: <strong>{{gconfig.globalconfig_name}}</strong></p>
 <p>Porta Director: <strong>{{gconfig.director_port}}</strong></p>
 <p>Porta Storage: <strong>{{gconfig.storage_port}}</strong></p>
@@ -26,7 +24,6 @@
 </div>
 <div class="bloco_texto">
 <br /><br />
-
 <p>Status Offsite: <strong>{{gconfig.offsite_on}}</strong></p>
 <p>Horário Envio: <strong>{{gconfig.offsite_hour}}</strong></p>
 <p><a href="{% url bkp.views.edit_system_offsite %}">Alterar Offsite</a></p>
@@ -37,10 +34,19 @@
 </div>
 <div class="bloco_texto">
 <br /><br />
-
 <p>Endereço IP: <strong>{{iface.interface_address}}</strong></p>
 <p>Gateway Padrão: <strong>{{iface.interface_gateway}}</strong></p>
 <p><a href="{% url bkp.views.manage_system_network %}">Gerenciar Rede</a></p>
+</div>
+
+<div class="titulo_botoes">
+<h3>Configurações de Hora</h3>
+</div>
+<div class="bloco_texto">
+<br /><br />
+<p>País: <strong>{{tzconfig.tz_country}}</strong></p>
+<p>Área: <strong>{{tzconfig.tz_area}}</strong></p>
+<p><a href="{% url bkp.views.manage_system_time %}">Gerenciar Hora</a></p>
 </div>
 
 

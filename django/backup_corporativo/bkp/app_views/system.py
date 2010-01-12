@@ -18,8 +18,8 @@ from networkutils import ping, traceroute, resolve_name, resolve_addr, HostAddrN
 import networkutils
 
 from backup_corporativo.bkp.utils import redirect, reverse
-from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
-from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TraceRouteForm, NsLookupForm, TimeZoneForm
+from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure, TimezoneConfig
+from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TraceRouteForm, NsLookupForm, TimezoneForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 import logging
@@ -35,7 +35,8 @@ def main_system(request):
 
     if request.method == 'GET':
         if GlobalConfig.system_configured():
-            E.gconfig = GlobalConfig.objects.get(pk=1)
+            E.gconfig = GlobalConfig.get_instance()
+            E.tzconfig = TimezoneConfig.get_instance()
         else:
             E.msg = u"Configure seu sistema."
             location = reverse('edit_system_config')
@@ -50,7 +51,10 @@ def manage_system_time(request):
     E = ENV(request)
 
     if request.method == 'GET':
-        E.tzform = TimeZoneForm()        
+        tzconf = TimezoneConfig.get_instance()
+        E.tzform = TimezoneForm(instance=tzconf)
+        if TimezoneConfig.timezone_configured():
+            E.tzform.load_area_choices(tzconf.tz_country)
         E.template = 'bkp/system/manage_time.html'
         return E.render()
 
@@ -91,10 +95,12 @@ def update_system_time(request):
 
     if request.method == 'POST':
         tz_country = request.POST.get('tz_country', [])
-        E.tzform = TimeZoneForm(request.POST)
+        tzconf = TimezoneConfig.get_instance()
+        E.tzform = TimezoneForm(request.POST, instance=tzconf)
         E.tzform.load_area_choices(tz_country)
         if E.tzform.is_valid():
-            pass #it works!
+            E.tzform.save()
+            return redirect("main_system")
         else:
             E.template = 'bkp/system/manage_time.html'
             return E.render()

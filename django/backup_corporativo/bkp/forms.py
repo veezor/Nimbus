@@ -15,23 +15,14 @@ from backup_corporativo.bkp import customfields as cfields
 
 BOOLEAN_CHOICES = ((True,'Ativo'),(0,'Desativado'),)
 BR_DATES = ['%d/%m/%Y']
-COUNTRY_CHOICES = \
-    [('', '----------')] + \
-    [(cs, country_names[cs]) for cs in country_names]
-AREA_CHOICES = [('', '----------')]
+COUNTRY_CHOICES = [(cs, country_names[cs]) for cs in country_names]
+EMPTY_CHOICES = [('', '----------')]
 
 
-class TimeZoneForm(forms.Form):
-    tz_country = forms.ChoiceField(
-        label=u'País',
-        choices=COUNTRY_CHOICES,
-        widget=forms.Select(),
-    )
-    tz_area = forms.ChoiceField(
-        label = u'Área',
-        choices=AREA_CHOICES, 
-        widget=forms.Select(),
-    )
+class TimezoneForm(ModelForm):
+    class Meta:
+        model = TimezoneConfig
+        fields = ('ntp_server', 'tz_country', 'tz_area')
     
     def load_area_choices(self, country_name):
         if country_name:

@@ -6,4 +6,5 @@
     <li {% if request.META.PATH_INFO|isequal:"/system/network/" %}class="active"{% endif %}><a href="{% url bkp.views.manage_system_network %}">Rede</a></li>
     <li {% if request.META.PATH_INFO|isequal:"/system/password/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_password %}">Senha</a></li>
     <li {% if request.META.PATH_INFO|isequal:"/system/offsite/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_offsite %}">Offsite</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/time/" %}class="active"{% endif %}><a href="{% url bkp.views.manage_system_time %}">Hora</a></li>
 </ul>
