@@ -165,7 +165,7 @@ class HeaderBkpForm(ModelForm):
         headerbkp_name = cleaned_data.get(u"headerbkp_name")
         drive_password = cleaned_data.get(u"drive_password")
         km = KeyManager()
-        km.set_password(drive_password)
+        km.set_password(drive_password.encode("utf-8"))
         uuid = NimbusUUID.generate_uuid_or_leave(self.instance)
         try:
             bkp_created = km.make_drive_backup(self.instance.filepath())
