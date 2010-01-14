@@ -49,14 +49,9 @@ def connect_on(model, signal):
     return generic_connect
 
 
-
-
-
 ###
 ###   Main Definitions
 ###
-
-
 
 def create_pools(sender, instance, signal, *args, **kwargs):
     """create associated pools to the procedure."""
@@ -66,6 +61,12 @@ def create_pools(sender, instance, signal, *args, **kwargs):
             fpool = Pool(procedure=instance)
             fpool.save()
 
+
+### Timezone ###
+@connect_on(model=TimezoneConfig, signal=post_save)
+def update_system_timezone(instance):
+    server = ServerProxy("http://localhost:8888")
+    server.change_timezone(instance.tz_area)
 
 
 ### NetworkInterface ###
