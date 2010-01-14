@@ -1,4 +1,6 @@
 from backup_corporativo.bkp.models import Computer
+from backup_corporativo.bkp import utils
+
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
@@ -10,6 +12,7 @@ class Environment(object):
         self.current_user = request.user
         self.computers = Computer.objects.all()
         self.context = RequestContext(request)
+        self.current_time = utils.current_time()
 
     def _set_user_msg(self, msg):
         self.current_user.message_set.create(message=msg)

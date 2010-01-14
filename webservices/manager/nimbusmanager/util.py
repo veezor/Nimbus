@@ -3,6 +3,7 @@
 
 
 import os
+import time
 import logging
 import logging.config
 import shutil
@@ -69,3 +70,9 @@ def kill_older_manager():
     except OSError, e:
         logger.info("Nenhum manager rodando")
 
+def current_time(uct=False):
+    if uct:
+        time_function = time.gmtime
+    else:
+        time_function = time.localtime
+    return time.strftime("%d-%m-%Y %H:%M:%S", time_function())

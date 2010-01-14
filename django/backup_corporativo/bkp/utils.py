@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import string
 import re
 import os
-from backup_corporativo.settings import MAIN_APP
+import time
+import string
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
@@ -12,10 +12,14 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.shortcuts import redirect as _redirect
 from django.core.urlresolvers import reverse as _reverse
 
+from backup_corporativo.settings import MAIN_APP
 from backup_corporativo import settings
 
 
-### Routing ###
+###
+###   Routing
+###
+
 def reverse(viewname, args=None, kwargs=None):
     path = "%s.views.%s" % (MAIN_APP, viewname)
     return _reverse( path , args=args, kwargs=kwargs)
@@ -30,6 +34,7 @@ def redirect(viewname, *args, **kwargs):
 ###   Auxiliar Definitions
 ###
 
+
 def get_settings_dict():
     settings_dict = dict()
     items = [
@@ -42,15 +47,6 @@ def get_settings_dict():
     for i in items:
         settings_dict.update([[i, getattr(settings, i)]])
     return settings_dict
-
-
-#TODO migrar para usar apenas reverse e url
-def new_computer_backup(comp_id, request, wizard=False):
-    script_name = request.META['SCRIPT_NAME']
-    location = "%s/computer/%s/backup/new" % (script_name, comp_id,)
-    if wizard:
-        location += "?wizard=%s" % wizard
-    return location
 
 
 def new_procedure_schedule(proc_id, request, type='Weekly', wizard=False):
@@ -67,18 +63,6 @@ def schedule_inverse(type):
         return 'Monthly'
     elif type == 'Monthly':
         return 'Weekly'
-
-
-# Passo 1
-def restore_computer_path(request, computer_id):
-    """Returns restore computer path."""
-    return "%s/computer/%s/restore/new" % (request.META['SCRIPT_NAME'], computer_id)
-
-
-# Passo 2
-def restore_procedure_path(request, computer_id, procedure_id):
-    """Returns restore procedure path."""
-    return "%s/computer/%s/procedure/%s/restore/new" % (request.META['SCRIPT_NAME'], computer_id,procedure_id)
 
     
 def random_password(size=20):
@@ -101,9 +85,24 @@ def dictfetch(cursor):
         result.append(row_dict)
     return result
 
+
+###
+###   Time Handling Specific Definitions
+###
+
+
+def current_time(uct=False):
+    if uct:
+        time_function = time.gmtime
+    else:
+        time_function = time.localtime
+    return time.strftime("%d-%m-%Y %H:%M:%S", time_function())
+
+
 ###
 ###   File Handling Specific Definitions
 ###
+
 
 def create_or_leave(dirpath):
     "create dir if dont exists"
@@ -113,8 +112,8 @@ def create_or_leave(dirpath):
         if os.path.isdir(dirpath):
             pass
         else:
-            #TODO: ajeitar
-            raise
+            #TODO: adicionar entrada no log
+            pass
 
 
 def remove_or_leave(filepath):
@@ -160,6 +159,13 @@ def isdir(path):
         return False
 
 
+#
+# Atenção:
+#
+# Não mude nada aqui a menos
+# que tenha absoluta certeza
+# do que está fazendo.
+#
 def parse_filetree(files):
     """
     Parse a list of files creating a new hierarchical data structure.
@@ -205,5 +211,6 @@ def parse_filetree(files):
                     if n == len(file_path) - 1 and file_name:
                         local_tree.append(file_name)
     return file_tree
-      
+
+
 CERTIFICATE_CONFIG_PATH = absolute_file_path('certificate.conf','custom/crypt')
