@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from pytz import common_timezones, country_timezones, country_names
+
 from django.forms import ModelForm
 from django.forms.util import ErrorList
 from django import forms
@@ -13,7 +15,22 @@ from backup_corporativo.bkp import customfields as cfields
 
 BOOLEAN_CHOICES = ((True,'Ativo'),(0,'Desativado'),)
 BR_DATES = ['%d/%m/%Y']
+COUNTRY_CHOICES = [(cs, country_names[cs]) for cs in country_names]
+EMPTY_CHOICES = [('', '----------')]
 
+
+class TimezoneForm(ModelForm):
+    class Meta:
+        model = TimezoneConfig
+        fields = ('ntp_server', 'tz_country', 'tz_area')
+    
+    def load_area_choices(self, country_name):
+        if country_name:
+            self.fields['tz_area'].choices = \
+                [('', '----------')] + \
+                [(a,a) for a in country_timezones[country_name]]
+        else:
+            self.fields['tz_area'].choices = [('', '----------')]
 
 class EncryptionForm(ModelForm):
     class Meta:
@@ -148,7 +165,7 @@ class HeaderBkpForm(ModelForm):
         headerbkp_name = cleaned_data.get(u"headerbkp_name")
         drive_password = cleaned_data.get(u"drive_password")
         km = KeyManager()
-        km.set_password(drive_password)
+        km.set_password(drive_password.encode("utf-8"))
         uuid = NimbusUUID.generate_uuid_or_leave(self.instance)
         try:
             bkp_created = km.make_drive_backup(self.instance.filepath())
@@ -371,10 +388,10 @@ class WeeklyTriggerForm(ModelForm):
 
 
 class NetworkInterfaceEditForm(ModelForm):
-	class Meta:
-		model = NetworkInterface
-		fields = ('interface_name','interface_address',
-                  'interface_network', 'interface_gateway',
+    class Meta:
+        model = NetworkInterface
+        fields = ('interface_name','interface_address',
+                'interface_network', 'interface_gateway',
                   'interface_netmask', 'interface_broadcast',
                   'interface_dns1', 'interface_dns2')
 

@@ -39,7 +39,7 @@
                     </ul>
                     {% if current_user.username %}
                     <form class="link" action="{% url bkp.views.delete_session %}" method="post">
-                        <p>Bem-vindo, {{current_user.username}} | <button type="submit">Sair</button></p>
+                        <p>{{current_time}} - Bem-vindo, {{current_user.username}} | <button type="submit">Sair</button></p>
                     </form>
                     {% endif %}
                     {% if not current_user.username %}

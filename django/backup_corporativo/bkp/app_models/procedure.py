@@ -1,15 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import string
+import time
+
 from django.core import serializers
 from django.db import models
 from django import forms
-from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
+
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-import os, string, time
-
+from backup_corporativo.bkp.sql_queries import JOBS_FOR_RESTORE_QUERY, CLIENT_RESTORE_JOBS_RAW_QUERY, JOB_INFO_RAW_QUERY, DROP_TABLE_RAW_QUERY, CREATE_TEMP_QUERY, CREATE_TEMP1_QUERY, LOAD_LAST_FULL_RAW_QUERY, LOAD_FULL_RAW_QUERY, TEMP1_TDATE_QUERY, LOAD_FULL_MEDIA_INFO_QUERY, LOAD_INC_MEDIA_INFO_RAW_QUERY, FILE_TREE_RAW_QUERY, LAST_SUCCESS_DATE_RAW_QUERY
+from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp.bacula import BaculaDatabase
+
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.computer import Computer
 from backup_corporativo.bkp.app_models.storage import Storage
@@ -19,18 +24,10 @@ class Procedure(models.Model):
     nimbus_uuid = models.ForeignKey(NimbusUUID)
     computer = models.ForeignKey(Computer)
     storage = models.ForeignKey(Storage)
-    procedure_name = models.CharField(
-        "Nome",
-        max_length=50,unique=True)
-    offsite_on = models.BooleanField(
-        "Enviar para offsite?",
-        default=False)
-    pool_size = models.IntegerField(
-        "Tamanho total ocupado (MB)",
-        default=2048)
-    retention_time = models.IntegerField(
-        "Tempo de renteção (dias)",
-        default=30)
+    procedure_name = models.CharField("Nome", max_length=50,unique=True)
+    offsite_on = models.BooleanField("Enviar para offsite?", default=False)
+    pool_size = models.IntegerField("Tamanho total ocupado (MB)", default=2048)
+    retention_time = models.IntegerField("Tempo de renteção (dias)", default=30)
 
     # Classe Meta é necessária para resolver um problema gerado quando se
     # declara um model fora do arquivo models.py. Foi utilizada uma solução
@@ -51,6 +48,8 @@ class Procedure(models.Model):
         app_label = 'bkp'    
 
     def save(self):
+        # Pool e Procedure possuem dependências mútuas, por isso
+        # esse import deve ser feito em escopo local
         from backup_corporativo.bkp.app_models.pool import Pool
         NimbusUUID.generate_uuid_or_leave(self)
         super(Procedure, self).save()
@@ -79,20 +78,29 @@ class Procedure(models.Model):
         trigg.schedule = sched
         trigg.save()
 
+    def last_success_date(self):
+        last_success_date_query = LAST_SUCCESS_DATE_RAW_QUERY % {
+            'procedure_name':self.procedure_bacula_name()
+        }
+        baculadb = BaculaDatabase()
+        cursor = baculadb.execute(last_success_date_query)
+        result = utils.dictfetch(cursor)
+        return result and result[0] or {}
+
+
     def restore_jobs(self):
-        from backup_corporativo.bkp.sql_queries import CLIENT_RESTORE_JOBS_RAW_QUERY
         restore_jobs_query = CLIENT_RESTORE_JOBS_RAW_QUERY % {
             'client_name':self.computer.computer_bacula_name(), 
-            'file_set':self.fileset_bacula_name(),}
-	baculadb = BaculaDatabase()
+            'file_set':self.fileset_bacula_name(),
+        }
+        baculadb = BaculaDatabase()
         cursor = baculadb.execute(restore_jobs_query)
         return utils.dictfetch(cursor)
 
     def get_bkp_dict(self, bkp_jid):
         """Returns a dict with job information of a given job id"""
-        from backup_corporativo.bkp.sql_queries import JOB_INFO_RAW_QUERY
         starttime_query = JOB_INFO_RAW_QUERY % {'job_id':bkp_jid,}
-	baculadb = BaculaDatabase()
+        baculadb = BaculaDatabase()
         cursor = baculadb.execute(starttime_query)
         result = utils.dictfetch(cursor)
         return result and result[0] or {}
@@ -100,10 +108,9 @@ class Procedure(models.Model):
   
     def clean_temp(self):
         """Drop temp and temp1 tables"""
-        from backup_corporativo.bkp.sql_queries import DROP_TABLE_RAW_QUERY, CREATE_TEMP_QUERY, CREATE_TEMP1_QUERY
         drop_temp_query = DROP_TABLE_RAW_QUERY % {'table_name':'temp'}
         drop_temp1_query = DROP_TABLE_RAW_QUERY % {'table_name':'temp1'}
-	baculadb = BaculaDatabase()
+        baculadb = BaculaDatabase()
         baculadb.execute(drop_temp_query)
         baculadb.execute(drop_temp1_query)
         baculadb.execute(CREATE_TEMP_QUERY)
@@ -115,8 +122,6 @@ class Procedure(models.Model):
         Loads last full job id and startime at table called temp1.
         for more information, see CLIENT_LAST_FULL_RAW_QUERY at sql_queries.py
         """
-        from backup_corporativo.bkp.sql_queries import LOAD_LAST_FULL_RAW_QUERY
-        from backup_corporativo.bkp.sql_queries import LOAD_FULL_RAW_QUERY
         self.clean_temp()
         if ('StartTime' in initial_bkp and
             'Level' in initial_bkp
@@ -138,8 +143,7 @@ class Procedure(models.Model):
         """Gets tdate from a 1-row-table called temp1 which
         holds last full backup when properly loaded.
         """
-        from backup_corporativo.bkp.sql_queries import TEMP1_TDATE_QUERY
-	b2 = BaculaDatabase()
+        b2 = BaculaDatabase()
         cursor = b2.execute(TEMP1_TDATE_QUERY)
         result = cursor.fetchone()
         return result and result[0] or ''
@@ -151,7 +155,6 @@ class Procedure(models.Model):
         called temp. For more information, see
         LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
         """
-        from backup_corporativo.bkp.sql_queries import LOAD_FULL_MEDIA_INFO_QUERY
         b2 = BaculaDatabase()
         cursor = b2.execute(LOAD_FULL_MEDIA_INFO_QUERY)
         b2.commit()
@@ -162,7 +165,6 @@ class Procedure(models.Model):
         table called temp. For more information, see
         LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
         """
-        from backup_corporativo.bkp.sql_queries import LOAD_INC_MEDIA_INFO_RAW_QUERY
         tdate = self.get_tdate()
         
         if 'StartTime' in initial_bkp:
@@ -192,7 +194,6 @@ class Procedure(models.Model):
         For more information, see 
         JOBS_FOR_RESTORE_QUERY at sql_queries.py
         """
-        from backup_corporativo.bkp.sql_queries import JOBS_FOR_RESTORE_QUERY
         initial_bkp = self.get_bkp_dict(bkp_jid)
         jid_list = []
         if initial_bkp:
@@ -208,7 +209,6 @@ class Procedure(models.Model):
 
     def get_file_tree(self, bkp_jid):
         """Retrieves tree with files from a job id list"""
-        from backup_corporativo.bkp.sql_queries import FILE_TREE_RAW_QUERY
         # build list with all job ids
         jid_list = self.build_jid_list(bkp_jid)    
         if jid_list:
@@ -223,7 +223,6 @@ class Procedure(models.Model):
     
     def build_file_tree(self, file_list):
         """Build tree from file list"""
-        import os
         files = [
             '%s:%s' % (
                 os.path.join(f['FPath'],

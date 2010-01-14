@@ -123,7 +123,7 @@ def check_user():
 
 @rule
 def database_alert():
-    logger.warning( "Não foi possível criar o bando de dados,"\
+    logger.warning( "Não foi possível criar o banco de dados,"\
                      "o mesmo já existe")
     return True
 

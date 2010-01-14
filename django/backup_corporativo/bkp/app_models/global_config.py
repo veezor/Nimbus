@@ -1,15 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import time
+import string
 
 from django.core import serializers
 from django.db import models
 from django import forms
+
+from backup_corporativo.settings import BACULA_DATABASE_NAME, BACULA_DATABASE_USER, BACULA_DATABASE_PASSWORD
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-import os, string, time
-
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 
 
@@ -19,21 +22,11 @@ class GlobalConfig(models.Model):
     NIMBUS_BLANK = -1
     # Atributos
     nimbus_uuid = models.ForeignKey(NimbusUUID)
-    globalconfig_name = models.CharField(
-        "Nome da Instância",
-        max_length=50)
-    director_password = models.CharField(
-        max_length=50,
-        default=NIMBUS_BLANK)
-    director_port = models.IntegerField(
-        "Porta do Director",
-        default='9101')
-    storage_port = models.IntegerField(
-        "Porta do Storage",
-        default='9103')
-    offsite_on = models.BooleanField(
-        "Offsite ativo?",
-        default=False)
+    globalconfig_name = models.CharField("Nome da Instância", max_length=64)
+    director_password = models.CharField(max_length=64, default=NIMBUS_BLANK)
+    director_port = models.IntegerField("Porta do Director", default='9101')
+    storage_port = models.IntegerField("Porta do Storage", default='9103')
+    offsite_on = models.BooleanField("Offsite ativo?", default=False)
     offsite_hour = models.TimeField("Horário", default="00:00:00")
 
     # Classe Meta é necessária para resolver um problema gerado quando se
@@ -96,15 +89,12 @@ class GlobalConfig(models.Model):
     
     @classmethod
     def bacula_database_name(cls):
-        from backup_corporativo.settings import BACULA_DATABASE_NAME
         return BACULA_DATABASE_NAME
 
     @classmethod
     def bacula_database_user(cls):
-        from backup_corporativo.settings import BACULA_DATABASE_USER
         return BACULA_DATABASE_USER
    
     @classmethod
     def bacula_database_password(cls):
-        from backup_corporativo.settings import BACULA_DATABASE_PASSWORD
         return BACULA_DATABASE_PASSWORD

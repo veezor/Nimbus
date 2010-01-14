@@ -1,3 +1,11 @@
+LAST_SUCCESS_DATE_RAW_QUERY =\
+    '''
+    SELECT Level, EndTime
+    FROM Job
+    WHERE Name = '%(procedure_name)s' AND JobStatus = 'T'
+    ORDER BY EndTime DESC LIMIT 1;    
+    '''
+
 CLIENT_SUCCESSFUL_JOBS_RAW_QUERY =\
     '''
     SELECT DISTINCT JobID, Client.Name as cName, Job.Name,
