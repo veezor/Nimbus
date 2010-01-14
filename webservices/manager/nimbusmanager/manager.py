@@ -39,7 +39,8 @@ def _get_secure_method(instance, attr_name):
                 daemon in instance.ALLOWED_DAEMON:
             
             def method():
-                return instance._control_daemon(daemon, operation)
+                d = instance.DAEMON_MAP[daemon]
+                return instance._control_daemon(d, operation)
 
             method.__name__ = operation + "_" + daemon
             return method
@@ -58,8 +59,13 @@ class Manager(object):
 
     DAEMON_OPERATIONS = ("start", "stop", "restart", "status")
 
-    ALLOWED_DAEMON = (  "bacula-ctl-dir", "bacula-ctl-fd", 
-                        "bacula-ctl-sd", "networking"  )
+    ALLOWED_DAEMON = (  "director", "client", 
+                        "storage", "networking"  )
+
+    DAEMON_MAP = { "director" : "bacula-ctl-dir",
+                   "storage" : "bacula-ctl-sd", 
+                   "client" : "bacula-ctl-fd",
+                   "network" : "networking" }
 
 
     def __init__(self, debug=False):
@@ -150,7 +156,6 @@ class Manager(object):
 
    
     def __getattr__(self, attr):
-        print "vou procurar"
         return _get_secure_method(self, attr)
 
 
