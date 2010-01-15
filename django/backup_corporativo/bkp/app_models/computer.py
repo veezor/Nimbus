@@ -23,6 +23,10 @@ bacula = Bacula()
 class ComputerLimitExceeded(Exception):
     pass
 
+class Test(Exception):
+    pass
+
+
 ### Computer ###
 class Computer(models.Model):
     # Constants
