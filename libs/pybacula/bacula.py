@@ -65,6 +65,8 @@ class Command(object):
         return  " ".join(self.content)
 
     def run(self):
+        if not self.connected:
+            return False
         txt = self.get_content()
         txt = txt.encode("utf-8")
         result = bconsole.execute_command( txt )
