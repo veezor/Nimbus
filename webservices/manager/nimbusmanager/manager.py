@@ -112,6 +112,8 @@ class Manager(object):
         self.logger.info("DNS file created")
 
     def change_timezone(self, timezone):
+        uct_time = util.current_time(uct=True)
+        local_time = util.current_time()
         self.logger.info("Attempting to change timezone to %s..." % timezone)
         self.logger.info("UCT is %s and localtime is %s." % (uct_time, local_time))
         os.rename(self.localtime, self.localtimebkp)
@@ -125,7 +127,6 @@ class Manager(object):
             raise InvalidTimeZoneError(emsg)
         os.remove(self.localtimebkp)
         os.system("hwclock --systohc")
-        uct_time = util.current_time(uct=True)
         local_time = util.current_time()
         self.logger.info("Successfully changed timezone to %s!" % timezone)
         self.logger.info("UCT is %s and localtime is %s." % (uct_time, local_time))
