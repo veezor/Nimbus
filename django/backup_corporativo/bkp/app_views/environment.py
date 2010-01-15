@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response
 
 class Environment(object):
 
+
     def __init__(self, request):
         self.request = request
         self.script_name = request.META['SCRIPT_NAME']
