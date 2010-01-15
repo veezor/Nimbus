@@ -30,7 +30,7 @@ class BaculaCommandLine(object):
             try: 
                 bconsole.connect()
                 BaculaCommandLine.connected = True
-            except BConsoleInitError:
+            except Exception:
                 BaculaCommandLine.connected = False
 
 
