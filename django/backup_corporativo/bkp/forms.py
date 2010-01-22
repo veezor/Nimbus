@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from pytz import common_timezones, country_timezones, country_names
 
 from django.forms import ModelForm
 from django.forms.util import ErrorList
@@ -15,22 +14,7 @@ from backup_corporativo.bkp import customfields as cfields
 
 BOOLEAN_CHOICES = ((True,'Ativo'),(0,'Desativado'),)
 BR_DATES = ['%d/%m/%Y']
-COUNTRY_CHOICES = [(cs, country_names[cs]) for cs in country_names]
-EMPTY_CHOICES = [('', '----------')]
 
-
-class TimezoneForm(ModelForm):
-    class Meta:
-        model = TimezoneConfig
-        fields = ('ntp_server', 'tz_country', 'tz_area')
-    
-    def load_area_choices(self, country_name):
-        if country_name:
-            self.fields['tz_area'].choices = \
-                [('', '----------')] + \
-                [(a,a) for a in country_timezones[country_name]]
-        else:
-            self.fields['tz_area'].choices = [('', '----------')]
 
 class EncryptionForm(ModelForm):
     class Meta:

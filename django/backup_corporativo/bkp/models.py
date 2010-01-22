@@ -39,7 +39,6 @@ from backup_corporativo.bkp.app_models.encryption import Encryption
 
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 from backup_corporativo.bkp.app_models.network_interface import NetworkInterface
-from backup_corporativo.bkp.app_models.timezone_config import TimezoneConfig
 
 from backup_corporativo.bkp.app_models.storage import Storage
 

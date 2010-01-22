@@ -45,9 +45,6 @@ urlpatterns += patterns(
     (r'^strongbox/headerbkp/(?P<hbkp_id>\d+)/restore$', 'restore_headerbkp'),
     # system
     (r'^system/$', 'main_system'),
-    (r'^system/time/$', 'manage_system_time'),
-    (r'^system/time/ajax_area_request$', 'ajax_area_request'),
-    (r'^system/time/update$', 'update_system_time'),    
     (r'^system/network/$', 'manage_system_network'),
     (r'^system/network/update$', 'update_system_network'),
     (r'^system/network/ping/create$', 'create_ping'),

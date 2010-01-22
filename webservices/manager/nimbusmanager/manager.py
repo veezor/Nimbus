@@ -29,9 +29,6 @@ class ThreadedXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):
 class DaemonOperationError(Exception):
     pass
 
-class InvalidTimeZoneError(Exception):
-    pass
-
 def _get_secure_method(instance, attr_name):
     clsname = instance.__class__.__name__
     try:
@@ -78,9 +75,6 @@ class Manager(object):
         self.ip = config.get("NETWORK","address")
         self.port = config.get("NETWORK","port")
         
-        self.zoneinfo = config.get("PATH",'zoneinfo')
-        self.localtime = config.get("PATH", 'localtime')
-        self.localtimebkp = config.get("PATH", 'localtimebkp')
         self.iftabpath = config.get("PATH","iftab")
         self.interfacespath = config.get("PATH","interfaces")
         self.dnspath = config.get("PATH","dns")
@@ -110,26 +104,6 @@ class Manager(object):
         dns.write(_templates.DNS % locals())
         dns.close()
         self.logger.info("DNS file created")
-
-    def change_timezone(self, timezone):
-        uct_time = util.current_time(uct=True)
-        local_time = util.current_time()
-        self.logger.info("Attempting to change timezone to %s..." % timezone)
-        self.logger.info("UCT is %s and localtime is %s." % (uct_time, local_time))
-        os.rename(self.localtime, self.localtimebkp)
-        tz_path = os.path.join(self.zoneinfo, timezone)
-        try:
-            os.link(tz_path, self.localtime)
-        except OSError: # No such file or directory
-            os.rename(self.localtimebkp, self.localtime)
-            self.logger.info("Timezone change has failed.")
-            emsg = u"Could not reach timezone file. Tried: %s" % tz_path
-            raise InvalidTimeZoneError(emsg)
-        os.remove(self.localtimebkp)
-        os.system("hwclock --systohc")
-        local_time = util.current_time()
-        self.logger.info("Successfully changed timezone to %s!" % timezone)
-        self.logger.info("UCT is %s and localtime is %s." % (uct_time, local_time))
 
     def generate_interfaces(self, interface_name, interface_addr=None, netmask=None, 
             type="static", broadcast=None, 

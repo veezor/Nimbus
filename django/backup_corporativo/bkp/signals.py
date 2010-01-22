@@ -62,13 +62,6 @@ def create_pools(sender, instance, signal, *args, **kwargs):
             fpool.save()
 
 
-### Timezone ###
-@connect_on(model=TimezoneConfig, signal=post_save)
-def update_system_timezone(instance):
-    server = ServerProxy("http://localhost:8888")
-    server.change_timezone(instance.tz_area)
-
-
 ### NetworkInterface ###
 @connect_on(model=NetworkInterface, signal=post_save)
 def update_networks_file(instance):
