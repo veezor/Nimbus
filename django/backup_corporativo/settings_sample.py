@@ -90,6 +90,10 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
 
+FIXTURE_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'bkp/app_tests/fixtures'),
+)
+
 #DMIGRATIONS_DIR = 'C:/Documents and Settings/Luke/Meus documentos/My Dropbox/Django/Linconet/backup_corporativo/migrations'
 
 INSTALLED_APPS = (

@@ -36,7 +36,7 @@ def create_restore(request):
                 location = reverse('new_computer_restore', args=[comp_id])
                 return HttpResponseRedirect(location)
             else:
-                E.template = 'bkp/wizard/restore/restore_rizard.html'
+                E.template = 'bkp/wizard/restore/restore_wizard.html'
                 return E.render()
 
 
