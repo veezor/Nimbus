@@ -38,9 +38,9 @@ def connect_on(model, signal):
         function_wrapper.__name__ = function.__name__ + "_wrapper"
 
 
-        if isinstance(model, tuple):
-            for type in model:
-                signal.connect(function_wrapper, sender=type)
+        if isinstance(signal, tuple):
+            for sig in signal:
+                sig.connect(function_wrapper, sender=model)
         else:
             signal.connect(function_wrapper, sender=model)
 
@@ -449,7 +449,7 @@ def remove_computer_file(comp):
 
 #### FileSet #####
 
-@connect_on(model=(FileSet,Procedure), signal=post_save)
+@connect_on(model=FileSet, signal=(post_save,post_delete))
 def update_fileset_file(instance):
     """FileSet update filesets to a procedure instance"""
 
@@ -584,22 +584,25 @@ def run_dict(schedules_list):
 
 
 
-@connect_on(model=(Procedure,Schedule), signal=post_save)
+@connect_on(model=Schedule, signal=post_save)
 def update_schedule(instance):
     return update_schedule_file(instance.proc)
 
 
 
-@connect_on(model=(Procedure,Schedule), signal=post_save)
+@connect_on(model=Schedule, signal=post_save)
 def update_schedule(instance):
     return update_schedule_file(instance.procedure)
 
 
 
-@connect_on(model=(WeeklyTrigger, MonthlyTrigger), signal=post_save)
-def update_schedule(instance):
+@connect_on(model=WeeklyTrigger, signal=post_save)
+def update_weekly_trigger(instance):
     return update_schedule_file(instance.schedule.procedure)
 
+@connect_on(model=MonthlyTrigger, signal=post_save)
+def update_monthly_trigger(instance):
+    return update_schedule_file(instance.schedule.procedure)
 
 
 def update_schedule_file(proc):

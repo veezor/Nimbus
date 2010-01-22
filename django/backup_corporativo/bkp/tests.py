@@ -2,12 +2,25 @@
 # -*- coding: utf-8 -*-
 
 import os
+import unittest
+
 
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 
 import truecrypt
+
+
+class NimbusUnitTest(unittest.TestCase):
+    files_to_remove = []
+    
+    def tearDown(self):
+        for fpath in self.files_to_remove:
+            try:
+                os.remove(fpath)
+            except OSError:
+                pass
 
 
 class NimbusTest(TestCase):
@@ -50,7 +63,7 @@ class NimbusTest(TestCase):
                                                          attr, value) )
         return response
 
-
+from backup_corporativo.bkp.app_tests.unit.fileset import FilesetUnitTest
 from backup_corporativo.bkp.app_tests.functional.strongbox import StrongboxViewTest
 from backup_corporativo.bkp.app_tests.functional.management import ManagementViewTest
 from backup_corporativo.bkp.app_tests.functional.system import SystemViewTest
