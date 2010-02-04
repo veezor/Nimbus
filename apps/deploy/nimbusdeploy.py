@@ -20,7 +20,7 @@ NIMBUS_VAR_PATH = "/var/nimbus/"
 NIMBUS_HG_PATH = NIMBUS_VAR_PATH + "hg/"
 NIMBUS_CUSTOM_PATH = NIMBUS_VAR_PATH + "custom/"
 NIMBUS_DEPS_PATH = NIMBUS_VAR_PATH + "deps/"
-NIMBUS_HG_URL = "http://hg.devel.linconet.com.br/bc-devel-fenrrir"
+NIMBUS_HG_URL = "http://hg.devel.linconet.com.br/bc-devel"
 NIMBUS_ETC_PATH = "/etc/nimbus"
 NIMBUS_LOG_PATH = "/var/log/nimbus"
 
@@ -67,7 +67,8 @@ def get_new_nimbus_version():
 
 @rule(depends=get_new_nimbus_version)
 def install_config_files():
-    os.rename( join(NIMBUS_HG_PATH, "custom"), NIMBUS_CUSTOM_PATH)
+    shutil.copytree( join(NIMBUS_HG_PATH, "custom"), NIMBUS_CUSTOM_PATH)
+    
     shutil.copy( join( NIMBUS_HG_PATH, 
                        "webservices/gateway/nimbus_gateway.conf"),
                  NIMBUS_ETC_PATH )
@@ -82,7 +83,7 @@ def install_config_files():
                  "/usr/local/bin/" )
 
     shutil.copy( join( NIMBUS_HG_PATH, 
-                       "webservices/init.d/nimbusmanager"),
+                       "webservices/manager/init.d/nimbusmanager"),
                  "/etc/init.d/" )
 
     shutil.copy( join(NIMBUS_HG_PATH, "django/backup_corporativo/logging.conf"),
@@ -92,10 +93,10 @@ def install_config_files():
                  join(NIMBUS_HG_PATH, "django/backup_corporativo/settings.py"))
 
     shutil.copy( join( NIMBUS_HG_PATH,
-                       "django/backup_corporativo/apacheconf/default"), 
+                       "django/apacheconf/default"), 
                   "/etc/apache2/sites-enabled/000-default" )
     shutil.copy( join( NIMBUS_HG_PATH,
-                       "django/backup_corporativo/apacheconf/nimbus.wsgi"), 
+                       "django/apacheconf/nimbus.wsgi"), 
                   "/usr/lib/cgi-bin/nimbus.wsgi" )
                         
     return True
