@@ -1,16 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from environment import ENV
+from keymanager import KeyManager
 
 from backup_corporativo.bkp.utils import reverse
-from backup_corporativo.bkp.models import Computer, GlobalConfig
-from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm, WizardAuxForm
+from backup_corporativo.bkp.models import Computer, GlobalConfig, Encryption
+from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm, WizardAuxForm, MountStrongBoxForm
 from backup_corporativo.bkp.views import global_vars, authentication_required, DAYS_OF_THE_WEEK
 
 
@@ -19,6 +21,11 @@ def new_computer(request):
     E = ENV(request)
 
     if request.method == 'GET':
+        km = KeyManager()
+        if not km.has_drive():
+            E.msg = u'Para criar um computador é necessário haver um cofre'
+            location = reverse("new_strongbox")
+            return HttpResponseRedirect(location)
         if 'wizard' in request.GET:
             E.wizard = request.GET['wizard']
         else:
@@ -27,7 +34,10 @@ def new_computer(request):
             E.msg = u"Erro ao adicionar computador: limite de computadores foi atingido."
             location = reverse('list_computers')
             return HttpResponseRedirect(location)
-        E.compform = ComputerForm(instance=Computer())
+        E.mounted = km.mounted
+        if not E.mounted:
+            E.mountform = MountStrongBoxForm()
+        E.compform = ComputerForm()
         E.template = 'bkp/computer/new_computer.html'
         return E.render()
 
@@ -36,8 +46,9 @@ def new_computer(request):
 def create_computer(request):
     E = ENV(request)
 
-    
     if request.method == 'POST':
+        km = KeyManager()
+        E.mountform = MountStrongBoxForm(request.POST)
         E.compform = ComputerForm(request.POST, instance=Computer())
         E.wizauxform = WizardAuxForm(request.POST)
         if E.wizauxform.is_valid():
@@ -50,7 +61,16 @@ def create_computer(request):
             location = reverse('list_computers')
             return HttpResponseRedirect(location)
         if E.compform.is_valid():
+            if not km.mounted:
+                if E.mountform.is_valid():
+                    pass
+                else:
+                    E.template = 'bkp/computer/new_computer.html'
+                    return E.render()                
             comp = E.compform.save()
+            enc = Encryption()
+            enc.computer = comp
+            enc.save()
             location = reverse('new_computer_backup', [comp.id])
             location += "?wizard=%s" % E.wizard
             return HttpResponseRedirect(location)

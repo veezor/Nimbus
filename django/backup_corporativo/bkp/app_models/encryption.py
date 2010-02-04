@@ -19,7 +19,6 @@ from backup_corporativo.bkp.app_models.computer import Computer
 
 
 class Encryption(models.Model):
-    nimbus_uuid = models.ForeignKey(NimbusUUID)
     computer = models.ForeignKey(Computer, unique=True)
     
     # Classe Meta é necessária para resolver um problema gerado quando se
@@ -41,22 +40,20 @@ class Encryption(models.Model):
         app_label = 'bkp'
 
 
-    @classmethod
-    def build_files(self, client_name):
+    def _build_files(self):
         km = KeyManager()
         
         if not km.mounted:
             error = u"Cofre precisa estar aberto para criaçao de encriptaçao."
             raise Exception(error)
-        rsa,cert = km.generate_and_save_keys_for_client(client_name)
+        rsa,cert = km.generate_and_save_keys_for_client(self.computer.computer_name)
         if not (rsa and cert):
             error = u"Nao foi possivel criar encriptaçao. Favor contactar suporte."
             raise Exception(error)
         return True
 
     def save(self):
-        NimbusUUID.generate_uuid_or_leave(self)
-        Encryption.build_files(self.computer.computer_name)
+        self._build_files()
         super(Encryption, self).save()
         
     def __unicode__(self):

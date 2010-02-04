@@ -11,6 +11,12 @@ from backup_corporativo.bkp.models import HeaderBkp
 
 class StrongboxViewTest(NimbusTest):
     
+    def runTest(self):
+         pass
+    
+    def set_client(self, client):
+        self.client = client
+    
     def test_create_strongbox(self):
         self.post( "/management/strongbox/create", 
                    dict( sb_password="test", 
