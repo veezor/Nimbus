@@ -11,7 +11,7 @@ TRUECRYPT_EXEC = "/usr/bin/truecrypt"
 
 
 DRIVEPOINT = "/media/strongbox"
-DRIVEFILE = "/tmp/strongbox.crypto"
+DRIVEFILE = "/var/nimbus/strongbox.crypto"
 
 
 COMMANDS = {
