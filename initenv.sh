@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# copiando diretório custom
-if [ ! -d django/backup_corporativo/bkp/custom ];
-then
-    echo "copiando diretório custom";
-    cp -a custom django/backup_corporativo/bkp;
-fi
-
 # copiando setting.py
 if [ ! -f django/backup_corporativo/settings.py ];
 then
@@ -15,4 +8,4 @@ then
 fi
 
 # sobrescrevendo PYTHONPATH
-export PYTHONPATH=$(pwd)/libs
+export PYTHONPATH=$(pwd)/libs:$(pwd)/webservices/manager
