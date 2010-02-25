@@ -91,12 +91,11 @@ def update_config_file(gconf):
     dir_dict = config_dir_dict(gconf.director_bacula_name(), 
                                gconf.director_port, gconf.director_password)
 
-    sto_list = []
-    for sto in Storage.objects.all():
-        sto_list.append( config_sto_dict(  sto.storage_bacula_name(), 
-                                           sto.storage_ip, 
-                                           sto.storage_port, 
-                                           sto.storage_password ))
+    sto = Storage.get_instance()
+    sto_dict = config_sto_dict( sto.storage_bacula_name(), 
+                                sto.storage_ip, 
+                                sto.storage_port, 
+                                sto.storage_password )
 
     cat_dict = config_cat_dict("MyCatalog", gconf.bacula_database_name(), 
                                 gconf.bacula_database_user(), gconf.bacula_database_password())
@@ -104,7 +103,7 @@ def update_config_file(gconf):
     smsg_dict = config_msg_dict("Standard",gconf.admin_mail())
     dmsg_dict = config_msg_dict("Daemon",gconf.admin_mail())    
     
-    generate_config("bacula-dir.conf", dir_dict, sto_list, 
+    generate_config("bacula-dir.conf", dir_dict, sto_dict, 
                     cat_dict, smsg_dict, dmsg_dict)
 
 
@@ -167,15 +166,14 @@ def _write_section(name, fileobj, dictobj):
 
 
 
-def generate_config(filename,dir_dict, sto_list, cat_dict, smsg_dict, dmsg_dict):
+def generate_config(filename,dir_dict, sto_dict, cat_dict, smsg_dict, dmsg_dict):
     """generate config file"""
     fileobj = utils.prepare_to_write(filename,'config/')
     
     _write_section("Director", fileobj, dir_dict)
 
-    # sto_dict is now sto_list.
-    for sto in sto_list:
-        _write_section("Storage", fileobj, sto)
+    # sto_dict is now sto_dict.
+    _write_section("Storage", fileobj, sto_dict)
     
     _write_section("Catalog", fileobj, cat_dict)
     _write_section("Messages", fileobj, smsg_dict)
@@ -273,7 +271,7 @@ def device_msg_dict(msg_name, dir_name):
 def update_device_file(gconf):
     """Update Device File"""
     def_sto = Storage.get_instance()
-    sto_dict = device_sto_dict(def_sto.storage_name, def_sto.storage_port)
+    sto_dict = device_sto_dict(def_sto.storage_bacula_name(), def_sto.storage_port)
     dir_dict = device_dir_dict(gconf.director_bacula_name(),def_sto.storage_password)
     dev_dict = device_dev_dict("FileStorage")
     msg_dict = device_msg_dict("Standard","%s" % gconf.director_bacula_name())
