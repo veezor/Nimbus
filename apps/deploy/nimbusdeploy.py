@@ -20,6 +20,7 @@ NIMBUS_VAR_PATH = "/var/nimbus/"
 NIMBUS_HG_PATH = NIMBUS_VAR_PATH + "hg/"
 NIMBUS_CUSTOM_PATH = NIMBUS_VAR_PATH + "custom/"
 NIMBUS_DEPS_PATH = NIMBUS_VAR_PATH + "deps/"
+NIMBUS_CHECK_FILE= NIMBUS_VAR_PATH + "check"
 NIMBUS_HG_URL = "http://hg.devel.linconet.com.br/bc-devel"
 NIMBUS_ETC_PATH = "/etc/nimbus"
 NIMBUS_LOG_PATH = "/var/log/nimbus"
@@ -37,7 +38,10 @@ logger = logging.getLogger(__name__)
 class RootRequired(Exception):
     pass
 
-class PackageNotFound(Exception):
+class FileNotFound(Exception):
+    pass
+
+class PackagesNotFound(Exception):
     pass
 
 
@@ -199,7 +203,7 @@ def chown_nimbus_files():
 
 @rule(on_failure='install_nimbus')
 def has_nimbus():
-    return os.access(NIMBUS_VAR_PATH, os.R_OK)
+    return os.access(NIMBUS_CHECK_FILE, os.R_OK)
 
 
 def check_python_dep(name):
@@ -217,6 +221,8 @@ def check_python_dep(name):
 def unzip_pythonlibs():
     cmd = subprocess.Popen(["unzip", NIMBUSDEP_ZIP, "-d", NIMBUS_DEPS_PATH])
     cmd.wait()
+    if cmd.returncode:
+        raise FileNotFound("Zipfile pythondeps.zip not found in current dir.")
     return not bool(cmd.returncode)
 
 
@@ -244,11 +250,54 @@ def generate_hgrc_for_root_user():
     return True
 
 
+
+
+
+@rule
+def check_system_dependencies():
+    import apt
+    cache = apt.cache.Cache()
+    packages = ['apache2', 'libapache2-mod-wsgi', 'libapache2-mod-python', 'mysql-server-5.0', 'unzip']
+    packages_not_found = [ name for name in packages if not cache[name].isInstalled ]
+    if packages_not_found:
+        raise PackagesNotFound("Packages %s not found" % packages_not_found)
+    return True
+
+
+
+@rule
+def generate_check_file():
+    try:
+        f = open(NIMBUS_CHECK_FILE, "w")
+        return True
+    finally:
+        f.close()
+
+
+
+def rmdir(dirname):
+    try:
+        shutil.rmtree(dirname)
+    except OSError, e :
+        pass
+
+@rule
+def cleanup_bad_install():
+    rmdir(NIMBUS_VAR_PATH)
+    rmdir(NIMBUS_LOG_PATH)
+    rmdir(NIMBUS_ETC_PATH)
+    return True
+
+
+
 @rule( depends=( has_truecrypt,
                  generate_hgrc_for_root_user,
+                 cleanup_bad_install,
                  make_dirs,
+                 check_system_dependencies,
                  check_python_packages,
                  chown_nimbus_files, 
+                 generate_check_file,
                   )) #depends use reverse order
 def install_nimbus(): # for semantic way, bypass to chown_nimbus_files
     return True
@@ -256,20 +305,9 @@ def install_nimbus(): # for semantic way, bypass to chown_nimbus_files
 
 
 
-def is_installed(package):
-    if not package.isInstalled:
-        raise PackageNotFound("Package %s not found" % package.name)
 
 
-@rule
-def check_system_dependencies():
-    import apt
-    cache = apt.cache.Cache()
-    is_installed(cache['apache2'])
-    is_installed(cache['libapache2-mod-wsgi'])
-    is_installed(cache['libapache2-mod-python'])
-    is_installed(cache['mysql-server-5.0'])
-    return True
+
     
 @rule
 def set_python_path():
@@ -277,8 +315,7 @@ def set_python_path():
     return True
 
 
-@rule(depends=(has_nimbus, 
-               check_system_dependencies))
+@rule(depends=has_nimbus)
 def update_nimbus_version():
 
     import mercurial.ui , mercurial.hg, mercurial.commands
