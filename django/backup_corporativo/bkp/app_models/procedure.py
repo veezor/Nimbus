@@ -8,6 +8,7 @@ import time
 from django.core import serializers
 from django.db import models
 from django import forms
+from django.db.models import Sum
 
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
@@ -16,7 +17,7 @@ from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICE
 from backup_corporativo.bkp.bacula import BaculaDatabase
 
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
-from backup_corporativo.bkp.app_models.computer import Computer
+from backup_corporativo.bkp.app_models.computer import Computer, GlobalConfig
 from backup_corporativo.bkp.app_models.storage import Storage
 
 ### Procedure ###
@@ -26,7 +27,7 @@ class Procedure(models.Model):
     storage = models.ForeignKey(Storage)
     procedure_name = models.CharField("Nome", max_length=50,unique=True)
     offsite_on = models.BooleanField("Enviar para offsite?", default=False)
-    pool_size = models.IntegerField("Tamanho total ocupado (MB)", default=2048)
+    pool_size = models.FloatField("Tamanho total ocupado")
     retention_time = models.IntegerField("Tempo de renteção (dias)", default=30)
 
     # Classe Meta é necessária para resolver um problema gerado quando se
@@ -54,6 +55,9 @@ class Procedure(models.Model):
         NimbusUUID.generate_uuid_or_leave(self)
         super(Procedure, self).save()
         Pool.generate_pool_or_leave(self)
+
+    def humanize(self):
+        self.pool_size = "%s GB" % self.pool_size
 
     def procedure_bacula_name(self):
         return "%s_job" % self.nimbus_uuid.uuid_hex
@@ -258,3 +262,10 @@ class Procedure(models.Model):
             proc.offsite_on = False
             proc.save()
     disable_offsite = classmethod(disable_offsite)
+
+    @classmethod
+    def max_pool_size(cls, discount):
+        gconfig = GlobalConfig.get_instance()
+        spsize = Procedure.objects.aggregate(Sum("pool_size"))['pool_size__sum'] or 0
+        psize = gconfig.total_backup_size - spsize + discount
+        return float(psize)

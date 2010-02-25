@@ -17,6 +17,7 @@ class SystemViewTest(NimbusTest):
                                        dict( globalconfig_name="test",
                                              director_port=2000,
                                              storage_port=2001,
+                                             total_backup_size=1000,
                                              offsite_on = False )),
 
     def test_system_network_update(self):

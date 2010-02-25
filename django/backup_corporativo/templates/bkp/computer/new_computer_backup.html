@@ -25,6 +25,20 @@
             {{ procform.storage.errors }}
             {{ procform.storage.label_tag }} {{ procform.storage }}
         </div>
+	<br /><br />	
+	<h3>Dados do Backup</h3><br />
+		<div class="fieldWrapper">
+            <label>Limite disponível</label>
+			<input value="{{ procform.max_pool_size }} GB" type="text" disabled="True" />
+        </div>
+		<div class="fieldWrapper">
+            {{ procform.pool_size.errors }}
+            {{ procform.pool_size.label_tag }} {{ procform.pool_size }}
+        </div>
+		<div class="fieldWrapper">
+            {{ procform.retention_time.errors }}
+            {{ procform.retention_time.label_tag }} {{ procform.retention_time }}
+        </div>
 	<br /><br />
     <h3>Nimbus Cloud Backup</h3>
         <div class="fieldWrapper">

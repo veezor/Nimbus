@@ -21,6 +21,7 @@ def edit_backup(request, proc_id):
     
     if request.method == 'GET':
         E.proc = get_object_or_404(Procedure, pk=proc_id)
+        E.proc.humanize()
         E.comp = E.proc.computer
         E.fsets = E.proc.fileset_set.all()
         E.scheds = E.proc.schedule_set.all()

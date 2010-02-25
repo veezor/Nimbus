@@ -16,7 +16,9 @@ class ProcedureViewTest(NimbusTest):
                    dict(offsite_on=True,
                         procedure_name="test",
                         storage=1,
-                        path="c:/test/"))
+                        path="c:/test/",
+                        pool_size="1000 M",
+                        retention_time=30))
         self.assertEqual(Procedure.objects.count(), 1)
         self.assertEqual(FileSet.objects.count(), 1)
 
@@ -24,10 +26,13 @@ class ProcedureViewTest(NimbusTest):
         management.call_command('loaddata', 'procedure.json', verbosity=0)
 
         self.get("/procedure/1/backup/edit")
+
         response = self.post( "/procedure/1/backup/update",
                               dict( procedure_name="test2",
                                     offsite_on=False,
-                                    storage=1))
+                                    storage=1,
+                                    pool_size="1000 M",
+                                    retention_time=30))
         procedure = response.context['proc']
         self.assertEqual(procedure.procedure_name, "test2")
         self.assertEqual(procedure.offsite_on, False)

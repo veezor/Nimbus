@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import re
 
 from django.forms import ModelForm
 from django.forms.util import ErrorList
@@ -258,12 +259,14 @@ class RestoreDumpForm(forms.Form):
 
 
 class GlobalConfigForm(ModelForm):
-	class Meta:
+    total_backup_size = forms.IntegerField(label=u'Tamanho Total do Backup (GB)', max_value=1000, min_value=80)
+    class Meta:
 		model = GlobalConfig
 		fields = (
 			'globalconfig_name',
 			'director_port',
 			'storage_port',
+            'total_backup_size',
 			'offsite_on')
 
 
@@ -305,10 +308,41 @@ class ProcedureForm(ModelForm):
 #	offsite_on = forms.ChoiceField(
 #		choices=BOOLEAN_CHOICES,
 #		widget=forms.RadioSelect)
-	class Meta:
-		model = Procedure
-		fields = ('procedure_name', 'storage', 'offsite_on')
 
+
+    pool_size = forms.CharField(label=u'Tamanho total ocupado')
+    retention_time = forms.IntegerField(initial=30, min_value=1, max_value=365)
+
+    class Meta:
+		model = Procedure
+		fields = ('procedure_name', 'storage', 'offsite_on', 'pool_size', 'retention_time')
+        
+    def max_pool_size(self):
+        discount = self.instance.pool_size or 0
+        return Procedure.max_pool_size(discount) 
+
+    def clean_pool_size(self):
+        re_pool_size = "^(?P<num>\d+(\.\d+)?)( )?(?P<unidade>M|m|GB|gb)$"
+        result = re.search(re_pool_size, self.cleaned_data['pool_size'])
+        
+        if result:
+            ipool_size = float(result.group("num"))
+            mpool_size = self.max_pool_size()
+
+            if result.group("unidade") == 'M' or result.group("unidade") == 'm':
+                ipool_size = ipool_size/1000
+
+            if ipool_size > mpool_size:
+                error = u"Certifique-se que este valor seja menor ou igual a %s GB." % mpool_size
+                raise forms.ValidationError(error)
+            elif ipool_size < 0.5:
+                error = u"Certifique-se que este valor seja maior ou igual a 0.5 GB."
+                raise forms.ValidationError(error)
+        else:
+            error = u"Certifique-se que este valor esteja neste formato \"00 M\" ou \"00 GB\""
+            raise forms.ValidationError(error)
+        return ipool_size
+            
 
 class ProcedureAuxForm(forms.Form):
 	FileSet = forms.BooleanField(widget=forms.HiddenInput, initial=True)

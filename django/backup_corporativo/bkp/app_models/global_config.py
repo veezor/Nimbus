@@ -28,6 +28,7 @@ class GlobalConfig(models.Model):
     storage_port = models.IntegerField("Porta do Storage", default='9103')
     offsite_on = models.BooleanField("Offsite ativo?", default=False)
     offsite_hour = models.TimeField("Horário", default="00:00:00")
+    total_backup_size = models.FloatField("Tamanho Total do Backup (GB)")
 
     # Classe Meta é necessária para resolver um problema gerado quando se
     # declara um model fora do arquivo models.py. Foi utilizada uma solução
