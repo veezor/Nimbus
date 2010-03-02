@@ -9,6 +9,8 @@ from django.core import serializers
 from django.db import models
 from django import forms
 
+from keymanager import KeyManager
+
 from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY, CLIENT_STATUS_RAW_QUERY, CLIENT_ID_RAW_QUERY, CLIENT_SUCCESSFUL_JOBS_RAW_QUERY, CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp import customfields as cfields
@@ -19,17 +21,26 @@ from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 
 bacula = Bacula()
 
-
 class ComputerLimitExceeded(Exception):
     pass
 
 class Test(Exception):
     pass
 
+class UnableToGetFile(Exception):
+    pass
+
+class InvalidFileType(Exception):
+    pass
 
 ### Computer ###
 class Computer(models.Model):
     # Constants
+    FILE_NAMES = {'config':'bacula-fd.conf',
+                  'key':'client.key',
+                  'certificate':'client.cert',
+                  'pem':'client.pem'
+                  }
     DEFAULT_LOCATION="/tmp/bacula-restore"
     NIMBUS_BLANK = -1
     NIMBUS_ERROR = 0
@@ -120,9 +131,32 @@ class Computer(models.Model):
             return 'Unix'
         else:
             return 'Desconhecido'
+        
+    def get_file(self, file_type):
+        if not file_type in self.FILE_NAMES:
+            emsg = "parameter 'file_type' was not configured properly."
+            raise InvalidFileType(emsg)
+        if file_type == 'config':
+            file_content = ''.join(self.get_config_file())
+        elif file_type in ('key', 'certificate', 'pem'):
+            file_content = self.get_crypt_file(file_type) 
+        return file_content 
 
+    def get_crypt_file(self, file_type):
+        km = KeyManager()
+        client_path = km.get_client_path(self.computer_name)
+        file_name = self.FILE_NAMES[file_type]
+        file_path = '%s/%s' % (client_path, file_name) 
+        try:
+            file_content = open(file_path, 'r') 
+            file_read = file_content.read()
+            file_content.close()
+            return file_read
+        except IOError, e:
+            raise UnableToGetFile("Original error was: %s" % e)      
+    
     # TODO: refatorar código e separar em várias funções
-    def dump_filedaemon_config(self):
+    def get_config_file(self):
         """Gera arquivo de configuraçãodo cliente bacula-sd.conf."""
         import time
         
@@ -231,33 +265,6 @@ class Computer(models.Model):
         bacula.run_backup(
             JobName='Teste Conectividade',
             client_name=self.computer_bacula_name())
-
-    def absolute_url(self):
-        """Returns absolute url."""
-        return "computer/%s" % self.id
-
-    def view_url(self):
-        """Returns absolute url."""
-        return "computer/%s" % self.id
-
-    def edit_url(self):
-        """Returns absolute url."""
-        return "computer/%s/edit" % self.id
-
-    def delete_url(self):
-        """Returns delete url."""
-        return "computer/%s/delete" % self.id
-
-    def computer_config_url(self):
-        return "computer/%s/config/" % self.id 
-    
-    def computer_dump_config_url(self):
-        """Returns config dump url."""
-        return "computer/%s/config/dump" % self.id
-   
-    def run_test_url(self):
-        """Returns run test url."""
-        return "computer/%s/test" % self.id
 
     def __update_bacula_id(self):
         """Queries bacula database for client id"""

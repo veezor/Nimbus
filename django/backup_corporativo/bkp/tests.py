@@ -25,6 +25,12 @@ class NimbusUnitTest(unittest.TestCase):
 
 class NimbusTest(TestCase):
 
+    def runTest(self):
+        pass
+
+    def set_client(self, client):
+        self.client = client
+
     def setUp(self):
         TestCase.setUp(self)
         self.client = Client()
