@@ -5,20 +5,57 @@
         <img class="ico_secao" src="{{script_name}}/static/imagens/ico_big_comp.gif" />
 	    <h2>
 	        <span>Computador</span><br/>
-	        {{ comp.computer_name }} <span class="toogle_pequeno"><a href="{{script_name}}/{{comp.view_url}}">(voltar)</a></span>
-	        
+	        {{ comp.computer_name }} <span class="toogle_pequeno"><a href="{% url bkp.views.view_computer comp.id %}">(voltar)</a></span>	        
 	    </h2>
     </div>
+{% if not mounted %}
+<br />
+<div class="bloco_texto">
+	{% if has_drive %}
+	<p>Não é possível acessar as chaves e certificados pois o cofre está desmontado.</p>
+	{% else %}
+	<p>Não é possível acessar as chaves e certificados pois o cofre não foi criado.</p>
+	{% endif %}
+<a href="{% url bkp.views.manage_strongbox %}">Gerenciar Cofre</a>
+</div>
+{% endif%}
+
+
 <div class="titulo_botoes">
     <h3>bacula-fd.conf</h3>
     <div class="botao_acoes">
-         <form action="{{script_name}}/{{comp.computer_dump_config_url}}" method="POST"><button type="submit"><span>baixar</span></form>
+         <form action="{% url bkp.views.dump_computer_file comp.id %}" method="POST">
+         	<input type="hidden" name="file_type" value="config" id="file_type_id" />
+         	<button type="submit"><span>Configuração</span>
+		</form>
     </div>
+
+{% if mounted %}
+    <div class="botao_acoes">
+         <form action="{% url bkp.views.dump_computer_file comp.id %}" method="POST">
+         	<input type="hidden" name="file_type" value="certificate" id="file_type_id" />
+         	<button type="submit"><span>Certificado</span>
+		</form>
+    </div>
+    <div class="botao_acoes">
+         <form action="{% url bkp.views.dump_computer_file comp.id %}" method="POST">
+         	<input type="hidden" name="file_type" value="key" id="file_type_id" />
+         	<button type="submit"><span>Chave</span>
+		</form>
+    </div>
+    <div class="botao_acoes">
+         <form action="{% url bkp.views.dump_computer_file comp.id %}" method="POST">
+         	<input type="hidden" name="file_type" value="pem" id="file_type_id" />
+         	<button type="submit"><span>PEM</span>
+		</form>
+    </div>
+{% endif%}
 </div>
 <div class="bloco_texto">
 {% for line in comp_config %}
 {{ line }}<br />
 {% endfor %}
 </div>
+
 
 {% endblock %}

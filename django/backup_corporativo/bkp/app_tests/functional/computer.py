@@ -3,12 +3,13 @@
 
 import os
 from os.path import join
-from django.core import management
 
 from keymanager import KeyManager
 
 from backup_corporativo.bkp.tests import NimbusTest
 from backup_corporativo.bkp.models import Computer
+from backup_corporativo.bkp.app_tests.functional.system import SystemViewTest
+from backup_corporativo.bkp.app_tests.functional.strongbox import StrongboxViewTest
 
 class ComputerViewTest(NimbusTest):
     
@@ -16,7 +17,6 @@ class ComputerViewTest(NimbusTest):
         response  = self.get("/computer/new")
 
     def test_computer_create(self):
-        from backup_corporativo.bkp.app_tests.functional.strongbox import StrongboxViewTest
         sbox_test = StrongboxViewTest()
         sbox_test.set_client(self.client)
         sbox_test.test_mount_strongbox()
@@ -30,21 +30,43 @@ class ComputerViewTest(NimbusTest):
         self.assertEquals(Computer.objects.count(), 1)
         
         comp = Computer.objects.get(pk=1)
-        client_path = km.get_client_path(comp.computer_name)
-        key_path = join(client_path, 'client.key')
-        pem_path = join(client_path, 'client.pem')
-        cert_path = join(client_path, 'client.cert')
+        self.client_path = km.get_client_path(comp.computer_name)
+        key_path = join(self.client_path, 'client.key')
+        pem_path = join(self.client_path, 'client.pem')
+        cert_path = join(self.client_path, 'client.cert')
         self.assertTrue(os.access(key_path, os.R_OK))
         self.assertTrue(os.access(pem_path, os.R_OK))
         self.assertTrue(os.access(cert_path, os.R_OK))
 
     def test_computer_view(self):
-        management.call_command('loaddata', 'computer.json', verbosity=0)
+        gconf_test = SystemViewTest()
+        gconf_test.set_client(self.client)
+        gconf_test.test_system_config_update()
+        self.test_computer_create()
 
         self.assertEquals(Computer.objects.count(), 1)
+        
         response = self.get( "/computer/1" )
         response = self.get( "/computer/1/edit" )
         response = self.get( "/computer/1/config/" )
         response = self.get( "/computer/1/backup/new" )
-        response = self.post( "/computer/1/config/dump", {})
-        response = self.get( "/computer/1/config/")
+        response = self.get( "/computer/1/config/")        
+        config_r = self.post( "/computer/1/file/dump", dict(file_type="config"))
+        key_r = self.post( "/computer/1/file/dump", dict(file_type="key"))
+        cert_r=self.post("/computer/1/file/dump", dict(file_type="certificate"))
+        pem_r = self.post( "/computer/1/file/dump", dict(file_type="pem"))
+        
+        key = self.get_file_name('key')
+        certificate = self.get_file_name('certificate')
+        pem = self.get_file_name('pem')
+
+        emsg='arquivo "%s" baixado através do sistema é diferente do existente'
+        self.assertEquals(key, key_r.content, msg=emsg % 'key')
+        self.assertEquals(pem, pem_r.content, msg=emsg % 'pem')
+        self.assertEquals(certificate,cert_r.content,msg=emsg%'certificate')
+
+    def get_file_name(self, type):
+        file_name = Computer.FILE_NAMES[type]
+        file_path = '%s/%s' % (self.client_path,file_name)
+        file_content = open(file_path, 'r') 
+        return file_content.read()

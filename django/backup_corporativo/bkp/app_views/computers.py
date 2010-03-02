@@ -1,19 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from environment import ENV
 from keymanager import KeyManager
 
 from backup_corporativo.bkp.utils import reverse
-from backup_corporativo.bkp.models import Computer, GlobalConfig, Encryption
+from backup_corporativo.bkp.models import Computer, Encryption
 from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm, WizardAuxForm, MountStrongBoxForm
-from backup_corporativo.bkp.views import global_vars, authentication_required, DAYS_OF_THE_WEEK
+from backup_corporativo.bkp.views import authentication_required, DAYS_OF_THE_WEEK
+from backup_corporativo.bkp.app_models.computer import UnableToGetFile
 
 
 @authentication_required
@@ -166,26 +165,48 @@ def test_computer(request, comp_id):
 @authentication_required
 def view_computer_config(request, comp_id):
     E = ENV(request)
+    km = KeyManager()
+    E.has_drive = km.has_drive()
+    E.mounted = km.mounted
+    
     
     if request.method == 'GET':
         E.comp = Computer.objects.get(pk=comp_id)
-        E.comp_config = E.comp.dump_filedaemon_config()
+        E.comp_config = E.comp.get_config_file()
         E.template = 'bkp/computer/view_computer_config.html'
         return E.render()
 
 
 @authentication_required
-def dump_computer_config(request, comp_id):
+def dump_computer_file(request, comp_id):
+    km = KeyManager()
     if request.method == 'POST':
+        E = ENV(request)
         computer = Computer.objects.get(pk=comp_id)
-        dump_list = computer.dump_filedaemon_config()
-        dump_file = ''.join(dump_list)
+        if 'file_type' in request.POST:
+            file_type = request.POST['file_type']
+        else:
+            file_type = None 
+        
+        # Caso seja um arquivo de criptografia, o cofre precisa estar aberto
+        # senão usuário será redirecionado de volta para view_computer
+        if (file_type in ('key', 'certificate', 'pem') and (not km.mounted)):
+            E.msg = 'É necessário abrir o cofre.'
+            location = reverse('view_computer_config', args=[computer.id])
+            return HttpResponseRedirect(location)
+        try:
+            file_content = computer.get_file(file_type)
+        except UnableToGetFile:
+            E.msg = 'Erro ao baixar chave, por favor entre em contato com o suporte.'
+            location = reverse('view_computer_config',args=[computer.id])
+            return HttpResponseRedirect(location)
+        file_name = Computer.FILE_NAMES[file_type]
         response = HttpResponse(mimetype='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=bacula-fd.conf'
-        response.write(dump_file)
+        response['Content-Disposition'] = 'attachment; filename=%s' % file_name
+        response.write(file_content)
         return response
-    
-    
+
+
 @authentication_required
 def new_computer_backup(request, comp_id):
     E = ENV(request)
