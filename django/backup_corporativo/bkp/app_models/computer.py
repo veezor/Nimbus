@@ -78,15 +78,28 @@ class Computer(models.Model):
     class Meta:
         app_label = 'bkp'
  
-    def save(self):
-        if Computer.objects.count() > 14:
+    def save(self, *args, **kwargs):
+        self._check_computers_limit()
+        self._generate_password_or_leave()
+        self._generate_uuid_or_leave()
+        super(Computer, self).save(*args, **kwargs)
+        self._update_bacula_id_or_leave()
+
+    def _check_computers_limit(self):
+        if Computer.objects.count() >= 15:
             raise ComputerLimitExceeded
+
+    def _generate_password_or_leave(self):
         if self.computer_password == self.NIMBUS_BLANK:
             self.computer_password = utils.random_password()
+        
+    def _generate_uuid_or_leave(self):
         NimbusUUID.generate_uuid_or_leave(self)
-        super(Computer, self).save()
+        
+    def _update_bacula_id_or_leave(self):
         if self.computer_bacula_id == self.NIMBUS_BLANK:
-            self.__update_bacula_id()
+            self._update_bacula_id()
+        
 
     def computer_bacula_name(self):
         return "%s_client" % self.nimbus_uuid.uuid_hex
@@ -259,7 +272,7 @@ class Computer(models.Model):
         """Returns run test url."""
         return "computer/%s/test" % self.id
 
-    def __update_bacula_id(self):
+    def _update_bacula_id(self):
         """Queries bacula database for client id"""
         cliend_id_query = CLIENT_ID_RAW_QUERY % {
             'client_name':self.computer_bacula_name()}
