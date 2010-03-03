@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import time
+import random
+import pytz
+
 from django.contrib.auth.models import User
 
 from backup_corporativo.bkp.tests import NimbusTest
@@ -61,3 +65,17 @@ class SystemViewTest(NimbusTest):
         response = self.post( "/system/network/nslookup/create",
                               dict(nslookup_address="127.0.0.1") )
 
+    def test_timezone(self):
+        
+        country = random.choice(pytz.country_names.keys())
+        area = pytz.country_timezones[country]
+        
+        old_tz = time.strftime("%Z")
+        
+        response = self.post( "/system/time/update",
+                              dict( ntp_server="a.ntp.br",
+                                    tz_country=country,
+                                    tz_area=area ) )
+        
+        current_tz = time.strftime("%Z")
+        self.assertNotEqual(old_tz, current_tz)

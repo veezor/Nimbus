@@ -4,6 +4,12 @@
 
 import re
 
+try:
+    import json
+except ImportError, e:
+    import simplejson as json # python < 2.6
+
+
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -11,14 +17,18 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import PasswordChangeForm
 
-from environment import ENV
+from pytz import common_timezones, country_timezones, country_names
 from networkutils import ping, traceroute, resolve_name, resolve_addr, HostAddrNotFound, HostNameNotFound
 import networkutils
 
+from environment import ENV
+
 from backup_corporativo.bkp.utils import redirect, reverse
-from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure
-from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TraceRouteForm, NsLookupForm
+from backup_corporativo.bkp.models import GlobalConfig, NetworkInterface, Procedure, TimezoneConfig
+from backup_corporativo.bkp.forms import NetworkInterfaceEditForm, GlobalConfigForm, OffsiteConfigForm, PingForm, TraceRouteForm, NsLookupForm, TimezoneForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
+
+from backup_corporativo.bkp.app_models.timezone_config import InvalidTimezone
 
 import logging
 logger = logging.getLogger(__name__)
@@ -34,6 +44,7 @@ def main_system(request):
     if request.method == 'GET':
         if GlobalConfig.system_configured():
             E.gconfig = GlobalConfig.get_instance()
+            E.tzconfig = TimezoneConfig.get_instance()
         else:
             E.msg = u"Configure seu sistema."
             location = reverse('edit_system_config')
@@ -41,6 +52,60 @@ def main_system(request):
         E.iface = NetworkInterface.get_instance()
         E.template = 'bkp/system/main_system.html'
         return E.render()
+
+
+@authentication_required
+def manage_system_time(request):
+    E = ENV(request)
+
+    if request.method == 'GET':
+        tzconf = TimezoneConfig.get_instance()
+        E.tzform = TimezoneForm(instance=tzconf)
+        if TimezoneConfig.timezone_configured():
+            E.tzform.load_area_choices(tzconf.tz_country)
+        E.template = 'bkp/system/manage_time.html'
+        return E.render()
+
+
+#
+# Atenção:
+#
+# Por essa view ser ativada via ajax, um erro
+# aqui gerado nunca vai ser renderizado como os erros
+# comuns no django. Quando errros por aqui surgirem,
+# só poderão ser vistos através de uma ferramenta de
+# debug de javascript.
+#
+# Exemplo: console do FireBug
+#
+def ajax_area_request(request):
+    E = ENV(request)
+    
+    if request.is_ajax() and request.method == 'POST':
+        tz_country = request.POST.get('tz_country', None)
+        if not tz_country in country_timezones:
+            raise InvalidTimezone("Erro de Programação: País Inválido")
+        if tz_country is not None:
+            choices = country_timezones[tz_country]
+            response = json.dumps(country_timezones[tz_country])
+            return HttpResponse(response, mimetype="application/json")
+
+
+@authentication_required
+def update_system_time(request):
+    E = ENV(request)
+
+    if request.method == 'POST':
+        tz_country = request.POST.get('tz_country', [])
+        tzconf = TimezoneConfig.get_instance()
+        E.tzform = TimezoneForm(request.POST, instance=tzconf)
+        E.tzform.load_area_choices(tz_country)
+        if E.tzform.is_valid():
+            E.tzform.save()
+            return redirect("main_system")
+        else:
+            E.template = 'bkp/system/manage_time.html'
+            return E.render()
 
 
 @authentication_required

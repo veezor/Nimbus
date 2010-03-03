@@ -1,12 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import time
+import string
+
 from django.core import serializers
 from django.db import models
 from django import forms
+
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-import os, string, time
 
 
 ### Constants ###
@@ -39,6 +43,7 @@ from backup_corporativo.bkp.app_models.encryption import Encryption
 
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 from backup_corporativo.bkp.app_models.network_interface import NetworkInterface
+from backup_corporativo.bkp.app_models.timezone_config import TimezoneConfig
 
 from backup_corporativo.bkp.app_models.storage import Storage
 
@@ -57,3 +62,16 @@ from backup_corporativo.bkp.app_models.header_bkp import HeaderBkp
 ###   Signals
 ###
 import backup_corporativo.bkp.signals
+
+#
+# Atenção:
+#
+# É preciso remover variável de ambiente
+# para que o Django não interfira no 
+# funcionamento do timezone
+# que normalmente é estático e configurado
+# no "settings.py".
+#
+# Este código deve ser executado apenas uma vez.
+if 'TZ' in os.environ:
+    del(os.environ['TZ'])
