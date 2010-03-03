@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from backup_corporativo.bkp.tests import NimbusTest
 
 class SystemViewTest(NimbusTest):
-    
+
     def test_system(self):
         self.get("/system/config/edit")
         self.get("/system/network/")

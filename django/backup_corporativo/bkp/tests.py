@@ -25,6 +25,12 @@ class NimbusUnitTest(unittest.TestCase):
 
 class NimbusTest(TestCase):
 
+    def runTest(self):
+        pass
+
+    def set_client(self, client):
+        self.client = client
+
     def setUp(self):
         TestCase.setUp(self)
         self.client = Client()
@@ -64,6 +70,7 @@ class NimbusTest(TestCase):
         return response
 
 from backup_corporativo.bkp.app_tests.unit.fileset import FilesetUnitTest
+from backup_corporativo.bkp.app_tests.unit.computer import ComputerUnitTest
 from backup_corporativo.bkp.app_tests.functional.strongbox import StrongboxViewTest
 from backup_corporativo.bkp.app_tests.functional.management import ManagementViewTest
 from backup_corporativo.bkp.app_tests.functional.system import SystemViewTest

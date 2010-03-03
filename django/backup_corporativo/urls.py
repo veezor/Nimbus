@@ -76,9 +76,9 @@ urlpatterns += patterns(
     (r'^computer/(?P<comp_id>\d+)/delete$', 'delete_computer'),
     (r'^computer/(?P<comp_id>\d+)/test$', 'test_computer'),
     (r'^computer/(?P<comp_id>\d+)/config/$', 'view_computer_config'),
-    (r'^computer/(?P<comp_id>\d+)/config/dump$', 'dump_computer_config'),
     (r'^computer/(?P<comp_id>\d+)/backup/new$', 'new_computer_backup'),        
-    (r'^computer/(?P<comp_id>\d+)/backup/create$', 'create_computer_backup'),        
+    (r'^computer/(?P<comp_id>\d+)/backup/create$', 'create_computer_backup'),
+    (r'^computer/(?P<comp_id>\d+)/file/dump$', 'dump_computer_file'),        
     # views_app/procedures.py
     (r'^procedure/(?P<proc_id>\d+)/backup/edit$', 'edit_backup'),
     (r'^procedure/(?P<proc_id>\d+)/backup/update$', 'update_backup'),

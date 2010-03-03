@@ -9,6 +9,8 @@ from django.core import serializers
 from django.db import models
 from django import forms
 
+from keymanager import KeyManager
+
 from backup_corporativo.bkp.sql_queries import CLIENT_RUNNING_JOBS_RAW_QUERY, CLIENT_STATUS_RAW_QUERY, CLIENT_ID_RAW_QUERY, CLIENT_SUCCESSFUL_JOBS_RAW_QUERY, CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp import customfields as cfields
@@ -23,13 +25,27 @@ bacula = Bacula()
 class ComputerLimitExceeded(Exception):
     pass
 
-class Test(Exception):
+
+
+
+
+
+class UnableToGetFile(Exception):
+    pass
+
+class InvalidFileType(Exception):
     pass
 
 
 ### Computer ###
 class Computer(models.Model):
     # Constants
+    FILE_NAMES = {'config':'bacula-fd.conf',
+                  'key':'client.key',
+                  'certificate':'client.cert',
+                  'pem':'client.pem'
+                  }
+
     DEFAULT_LOCATION="/tmp/bacula-restore"
     NIMBUS_BLANK = -1
     NIMBUS_ERROR = 0
@@ -78,15 +94,28 @@ class Computer(models.Model):
     class Meta:
         app_label = 'bkp'
  
-    def save(self):
-        if Computer.objects.count() > 14:
+    def save(self, *args, **kwargs):
+        self._check_computers_limit()
+        self._generate_password_or_leave()
+        self._generate_uuid_or_leave()
+        super(Computer, self).save(*args, **kwargs)
+        self._update_bacula_id_or_leave()
+
+    def _check_computers_limit(self):
+        if Computer.objects.count() >= 15:
             raise ComputerLimitExceeded
+
+    def _generate_password_or_leave(self):
         if self.computer_password == self.NIMBUS_BLANK:
             self.computer_password = utils.random_password()
+        
+    def _generate_uuid_or_leave(self):
         NimbusUUID.generate_uuid_or_leave(self)
-        super(Computer, self).save()
+        
+    def _update_bacula_id_or_leave(self):
         if self.computer_bacula_id == self.NIMBUS_BLANK:
-            self.__update_bacula_id()
+            self._update_bacula_id()
+        
 
     def computer_bacula_name(self):
         return "%s_client" % self.nimbus_uuid.uuid_hex
@@ -121,10 +150,33 @@ class Computer(models.Model):
         else:
             return 'Desconhecido'
 
+    def get_file(self, file_type):
+        if not file_type in self.FILE_NAMES:
+            emsg = "parameter 'file_type' was not configured properly."
+            raise InvalidFileType(emsg)
+        if file_type == 'config':
+            file_content = ''.join(self.get_config_file())
+        elif file_type in ('key', 'certificate', 'pem'):
+            file_content = self.get_crypt_file(file_type) 
+        return file_content 
+
+    def get_crypt_file(self, file_type):
+        km = KeyManager()
+        client_path = km.get_client_path(self.computer_name)
+        file_name = self.FILE_NAMES[file_type]
+        file_path = '%s/%s' % (client_path, file_name) 
+        try:
+            file_content = open(file_path, 'r') 
+            file_read = file_content.read()
+            file_content.close()
+            return file_read
+        except IOError, e:
+            raise UnableToGetFile("Original error was: %s" % e)      
+
     # TODO: refatorar código e separar em várias funções
-    def dump_filedaemon_config(self):
+    def get_config_file(self):
         """Gera arquivo de configuraçãodo cliente bacula-sd.conf."""
-        import time
+
         
         fd_dict =   {
                     'Name': self.computer_bacula_name(),
@@ -259,7 +311,7 @@ class Computer(models.Model):
         """Returns run test url."""
         return "computer/%s/test" % self.id
 
-    def __update_bacula_id(self):
+    def _update_bacula_id(self):
         """Queries bacula database for client id"""
         cliend_id_query = CLIENT_ID_RAW_QUERY % {
             'client_name':self.computer_bacula_name()}
