@@ -1,13 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.core import serializers
 from django.db import models
-from django import forms
-from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
-from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-import os, string, time
 
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
@@ -52,89 +47,6 @@ class Storage(models.Model):
 
     def storage_bacula_name(self):
         return "StorageLocal"
-
-
-    def delete(self):
-        # TODO: criar exceção do tipo Nimbus
-        if self.storage_name == 'StorageLocal': 
-            raise Exception(
-                'Erro de Programação: Storage Local não pode ser removido.') 
-        else:
-            super(Storage, self).delete()
-
-    def dump_storagedaemon_config(self):
-        gconf = GlobalConfig.objects.get(pk=1)
-        sto_dict = {
-            'Name':self.storage_bacula_name,
-            'SDPort':self.storage_port,
-            'WorkingDirectory':'"/var/bacula/working"',
-            'Pid Directory':'"/var/run"',
-            'Maximum Concurrent Jobs':'20'}
-        dir_dict = {
-            'Name':gconf.director_bacula_name(),
-            'Password':'"%s"' % self.storage_password}
-        dev_dict = {
-            'Name':"FileStorage",
-            'Media Type':'File',
-            'Archive Device':'/var/backup',
-            'LabelMedia':'yes', 
-            'Random Access':'yes',
-            'AutomaticMount':'yes',
-            'RemovableMedia':'no',
-            'AlwaysOpen':'no'}
-        msg_dict = {
-            'Name':"Standard",
-            'Director':'%s = all' % gconf.director_bacula_name()}
-        
-        dump = []
-    
-        dump.append("Storage {\n")
-        for k in sto_dict.keys():
-            dump.append('''\t%(key)s = %(value)s\n''' % {
-                'key':k,'value':sto_dict[k]})
-        dump.append("}\n\n")
-    
-        dump.append("Director {\n")
-        for k in dir_dict.keys():
-            dump.append('''\t%(key)s = %(value)s\n''' % {
-                'key':k,'value':dir_dict[k]})
-        dump.append("}\n\n")
-        
-        dump.append("Device {\n")
-        for k in dev_dict.keys():
-            dump.append('''\t%(key)s = %(value)s\n''' % {
-                'key':k,'value':dev_dict[k]})
-        dump.append("}\n\n")
-        
-        dump.append("Messages {\n")
-        for k in msg_dict.keys():
-            dump.append('''\t%(key)s = %(value)s\n''' % {
-                'key':k,'value':msg_dict[k]})
-        dump.append("}\n\n")
-        
-        return dump
-
-    def absolute_url(self):
-        """Returns absolute url."""
-        return "storage/%s" % self.id
-
-    def view_url(self):
-        """Returns absolute url."""
-        return "storage/%s" % self.id
-
-    def edit_url(self):
-        """Returns absolute url."""
-        return "storage/%s/edit" % self.id
-
-    def delete_url(self):
-        """Returns delete url."""
-        return "storage/%s/delete" % self.id
-
-    def storage_config_url(self):
-        return "storage/%s/config/" % self.id
-    
-    def storage_dump_config_url(self):
-        return "storage/%s/config/dump" % self.id
 
     def __unicode__(self):
         return "%s (%s:%s)" % (
