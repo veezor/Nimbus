@@ -57,6 +57,7 @@ class NetworkInterface(models.Model):
         sto = Storage.get_instance()
         sto.storage_ip = self.interface_address
         sto.save()
+        self.id = 1
         super(NetworkInterface, self).save()
 
 
