@@ -9,7 +9,7 @@
 
 <br />
 <div class="titulo_botoes">
-<h3>Informações Gerais</h3>
+<h3>Estatisticas Gerais</h3>
 </div>
 <div class="bloco_texto">
 <p>Banco de Dados: {{ dbsize }} MB</p>
@@ -20,6 +20,14 @@
 <p>Storage: {{sd_status}}</p>
 <p>FileDaemon: {{fd_status}}</p>
 <br />
+</div>
+<h3>Uso do disco</h3>
+<div class="bloco_texto">
+    <img src="{{ disk_img }}" alt="Uso de disco">
+</div>
+<h3>Tamanhos dos últimos 10 backups realizados</h3>
+<div class="bloco_texto">
+    <img src="{{ jobs_img }}" alt="Tamanhos dos últimos procedimentos">
 </div>
 
 {% endblock %}

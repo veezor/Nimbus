@@ -1,0 +1,43 @@
+{% extends "bkp/base.html" %}
+{% load bkp_extras %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/stats/menu_statistics.html' %}
+{% endblock %}
+
+{% block content %}
+
+<br />
+<div class="titulo_botoes">
+<h3>Estatística por Procedimento</h3>
+</div>
+<div class="bloco_texto">
+{% block stats_procedures %}
+{% if procedures.count %}
+<h3>Procedimentos</h3>
+<br />
+<ul class="aux list_computers">
+	{% for p,has_img in data %}
+	<li
+        {% if proc %}
+        {% ifequal proc.id p.id %}
+            class="active"
+        {% endifequal %}
+        {% endif %}
+    >
+    <a href="{% url bkp.views.edit_backup p.id %}">{{ p.procedure_name }}</a></li>
+        {% if has_img %}
+            <img src="{{ imagens_url }}{{ p.procedure_bacula_name }}.png" alt="{{ p.procedure_name }}">
+        {% else %}
+            <img src="{{ default_img  }}" alt="{{ p.procedure_name }}">
+        {% endif %}
+
+
+	{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
+</div>
+</div>
+
+{% endblock %}

@@ -6,6 +6,7 @@ import datetime
 import re
 import MySQLdb as Database
 
+from django.conf import settings
 from django.db.backends import BaseDatabaseWrapper, BaseDatabaseFeatures, BaseDatabaseOperations, util
 from django.utils.safestring import SafeString, SafeUnicode
 
@@ -66,7 +67,7 @@ class Bacula(object):
 
     def db_size(self):
         """Returns bacula's database size in MB."""
-        dbsize_query = DB_SIZE_RAW_QUERY % {'bacula_db_name':BACULA_DB_NAME,}
+        dbsize_query = DB_SIZE_RAW_QUERY % {'bacula_db_name': settings.BACULA_DATABASE_NAME}
         cursor = self.baculadb.execute(dbsize_query)
         result = cursor.fetchone()
         return result[0] if result else ''

@@ -288,6 +288,45 @@ JOB_INFO_RAW_QUERY =\
     LIMIT 1
     '''
 
+JOB_STAT_RAW_QUERY =\
+    '''
+    SELECT JobBytes,RealEndTime
+    FROM Job
+    WHERE Name = '%(name)s'
+    AND JobStatus in ('T', 'W')
+    ORDER BY RealEndTime
+    '''
+
+JOB_STAT_GET_N_LAST_WITH_NAME = \
+    '''
+    SELECT JobBytes,RealEndTime 
+    FROM Job 
+    WHERE Name = '%(name)s' AND JobStatus in ('T', 'W')
+    ORDER BY RealEndTime DESC 
+    LIMIT %(size)d
+    '''
+
+JOB_STAT_GET_N_LAST = \
+    '''
+    SELECT JobBytes,RealEndTime 
+    FROM Job 
+    WHERE  JobStatus in ('T', 'W') 
+    ORDER BY RealEndTime DESC 
+    LIMIT %(size)d
+    '''
+
+JOB_STAT_GET_N_LAST_FROM_CLIENT = \
+    '''
+    SELECT DISTINCT JobBytes, RealEndTime
+    FROM Job INNER JOIN Client
+    ON Job.ClientId = Client.ClientId
+    WHERE Client.Name = '%(client_name)s'
+    AND Job.JobStatus in ('T','W')
+    ORDER BY RealEndTime DESC LIMIT %(size)d
+    '''
+
+
+
 #OLD_FILE_TREE_RAW_QUERY =\
 #    '''
 #    SELECT Path.Path, Filename.Name

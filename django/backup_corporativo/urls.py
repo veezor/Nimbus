@@ -61,8 +61,12 @@ urlpatterns += patterns(
     (r'^system/offsite/enable$', 'enable_system_offsite'),
     (r'^system/offsite/disable$', 'disable_system_offsite'),
     # views_app/stats.py
-    (r'^statistics/main$', 'main_statistics'),
-    (r'^statistics/history$', 'history_statistics'),    
+    (r'^statistics/computer/$', 'stats_computer'),
+    (r'^statistics/procedure/$', 'stats_procedure'),
+    (r'^statistics/global/$', 'stats_global'),
+    
+    (r'^statistics/$', 'main_statistics'),
+    (r'^statistics/history/$', 'history_statistics'),    
     # views_app/authentications.py
     (r'^session/$', 'create_session'),
     (r'^session/new$', 'new_session'),
