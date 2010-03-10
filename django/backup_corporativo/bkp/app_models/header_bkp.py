@@ -42,6 +42,7 @@ class HeaderBkp(models.Model):
     
     def filepath(self):
         base_path = os.path.join(NIMBUS_CUSTOM_PATH, 'header_bkp')
+        utils.create_or_leave(base_path)
         return os.path.join(base_path, self.filename())
 
     def created_on(self):
