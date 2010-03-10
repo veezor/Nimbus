@@ -48,12 +48,12 @@ class Procedure(models.Model):
     class Meta:
         app_label = 'bkp'    
 
-    def save(self):
+    def save(self, *args, **kwargs):
         # Pool e Procedure possuem dependências mútuas, por isso
         # esse import deve ser feito em escopo local
         from backup_corporativo.bkp.app_models.pool import Pool
         NimbusUUID.generate_uuid_or_leave(self)
-        super(Procedure, self).save()
+        super(Procedure, self).save(*args, **kwargs)
         Pool.generate_pool_or_leave(self)
 
     def humanize(self):

@@ -52,13 +52,13 @@ class NetworkInterface(models.Model):
         app_label = 'bkp'    
 
     
-    def save(self):
+    def save(self, *args, **kwargs):
         from backup_corporativo.bkp.app_models.storage import Storage
         sto = Storage.get_instance()
         sto.storage_ip = self.interface_address
         sto.save()
         self.id = 1
-        super(NetworkInterface, self).save()
+        super(NetworkInterface, self).save(*args, **kwargs)
 
 
     def __unicode__(self):

@@ -34,6 +34,9 @@ class Pool(models.Model):
     class Meta:
         app_label = 'bkp'    
     
+    def save(self, *args, **kwargs):
+        super(Pool, self).save(*args, **kwargs)
+    
     # ClassMethods
 
     # Esse método é chamado sempre que um procedimento é alterado.

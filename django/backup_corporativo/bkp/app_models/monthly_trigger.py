@@ -41,9 +41,9 @@ class MonthlyTrigger(models.Model):
     class Meta:
         app_label = 'bkp'    
     
-    def save(self):
+    def save(self, *args, **kwargs):
         self.__sanitize_target_days()
-        super(MonthlyTrigger,self).save()
+        super(MonthlyTrigger,self).save(*args, **kwargs)
 
     def level_friendly(self):
         if self.level == 'Full':

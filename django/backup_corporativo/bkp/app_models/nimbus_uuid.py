@@ -45,14 +45,14 @@ class NimbusUUID(models.Model):
         app_label = 'bkp'    
 
     
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.uuid_hex == self.NIMBUS_BLANK:
             import uuid
             self.uuid_hex = uuid.uuid4().hex
             self.uuid_created_on = time.strftime(
                 "%Y-%m-%d %H:%M:%S",
                 time.localtime())
-            super(NimbusUUID, self).save()
+            super(NimbusUUID, self).save(*args, **kwargs)
         else:
             #TODO: Criar exceção do tipo Nimbus
             raise Exception(

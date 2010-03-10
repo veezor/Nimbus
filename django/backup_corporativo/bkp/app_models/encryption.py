@@ -52,9 +52,9 @@ class Encryption(models.Model):
             raise Exception(error)
         return True
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self._build_files()
-        super(Encryption, self).save()
+        super(Encryption, self).save(*args, **kwargs)
         
     def __unicode__(self):
         return "Encriptação"

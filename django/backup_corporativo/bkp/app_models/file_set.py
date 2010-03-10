@@ -39,6 +39,9 @@ class FileSet(models.Model):
     class Meta:
         app_label = 'bkp'    
 
+    def save(self, *args, **kwargs):
+        super(FileSet, self).save(*args, **kwargs)
+
     def delete_url(self):
         """Returns delete url."""
         return "fileset/%s/delete" % self.id
