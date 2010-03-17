@@ -1,0 +1,24 @@
+from cx_Freeze import setup, Executable
+
+
+import sys
+sys.path.append("../libs/")
+
+
+
+
+
+setup(
+        name = "NimbusManager",
+        version = "1.4",
+        description = "Nimbus Manager",
+        executables = [ Executable("bin/nimbus-manager", targetName="nimbus-manager")],
+        options = { "build_exe": 
+                      { "compressed" :  True, 
+                        "silent" : True,
+                        "optimize" :  "1", 
+                        "create_shared_zip" :  False,
+                        "include_in_shared_zip" : False,   
+                        "append_script_to_exe" :  True,
+                        "packages": [ "networkutils", "netifaces"]  }}
+)

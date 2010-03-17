@@ -3,7 +3,13 @@
 
 import os
 import sys
-sys.path.append("/var/nimbus/hg/webservices/manager")
+
+sys.path.extend( [  "/var/lib/python-support/python2.5/", 
+                    "/usr/lib/python2.5/",
+                    "/usr/lib/python2.5/site-packages/",
+                    "/usr/lib/python2.5/lib-dynload/"])
+
+
 from nimbusmanager import daemon
 
 if __name__ == "__main__":
