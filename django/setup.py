@@ -1,6 +1,7 @@
 from cx_Freeze import setup, Executable
 
 
+
 import sys
 sys.path.append("../libs/")
 
@@ -14,7 +15,8 @@ setup(
         description = "Nimbus Backup",
         executables = [ Executable("nimbus.py", targetName="nimbus.fcgi")],
         options = { "build_exe": 
-                      { "compressed" :  True, 
+                      { "compressed" :  True,
+                        "build_exe" : "binary",
                         "silent" : True,
                         "optimize" :  "1", 
                         "create_shared_zip" :  False,

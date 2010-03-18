@@ -14,7 +14,8 @@ setup(
         description = "Nimbus Manager",
         executables = [ Executable("bin/nimbus-manager", targetName="nimbus-manager")],
         options = { "build_exe": 
-                      { "compressed" :  True, 
+                    { "build_exe" : "binary",
+                        "compressed" :  True, 
                         "silent" : True,
                         "optimize" :  "1", 
                         "create_shared_zip" :  False,

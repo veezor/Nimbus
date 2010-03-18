@@ -1,0 +1,7 @@
+Package: nimbus
+Priority: optional
+Version: 0.9
+Architecture: i386
+Maintainer: Veezor
+Depends: apache2, mysql-server-5.0, libapache2-mod-fastcgi, truecrypt, python-pkg-resources
+Description: Nimbus Backup System

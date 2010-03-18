@@ -5,5 +5,8 @@ syntax: glob
 *~
 *.swp
 django/backup_corporativo/settings.py
-django/build
-webservices/manager/build
+django/binary
+webservices/manager/binary
+deb/var/nimbus/custom
+deb/etc/
+*.deb
