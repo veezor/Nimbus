@@ -2,7 +2,7 @@
 import os
 import bkp.log
 
-Debug = False
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -70,8 +70,6 @@ SECRET_KEY = '#6(_m+c4^r)=8fes(yc*xxj5u&ki$9bgdx6y!6)xrtlabd5#5b'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
      'django.template.loaders.eggs.load_template_source',
 )
 

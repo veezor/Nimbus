@@ -8,19 +8,7 @@ NameVirtualHost *
     RewriteEngine On
     RewriteRule ^/(static.*)$ /$1 [QSA,L,PT]
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^/(.*)$ /mysite.fcgi/$1 [QSA,L]
-
-	<Directory />
-		Options FollowSymLinks
-		AllowOverride None
-	</Directory>
-
-	<Directory /var/www/>
-		Options Indexes FollowSymLinks MultiViews
-		AllowOverride None
-		Order allow,deny
-		allow from all
-	</Directory>
+    RewriteRule ^/(.*)$ /nimbus.fcgi/$1 [QSA,L]
 
 
 

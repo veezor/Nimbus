@@ -19,7 +19,7 @@ setup(
                         "build_exe" : "binary",
                         "silent" : True,
                         "optimize" :  "1", 
-                        "create_shared_zip" :  False,
+                        "create_shared_zip" :  True,
                         "include_in_shared_zip" : False,   
                         "append_script_to_exe" :  True,
                         "packages": [ "pybacula",
@@ -31,8 +31,7 @@ setup(
                         "includes" : [ "backup_corporativo.bkp.views",
                                        "backup_corporativo.bkp.templatetags.bkp_extras",
                                        "backup_corporativo.bkp.tests"],
-                        "zip_includes" : [ ("backup_corporativo/templates/", "templates") ],
+                        "zip_includes" : [ ("backup_corporativo/templates/", "backup_corporativo/bkp/templates/") ],
                         "excludes" : ["email","PIL","flup","django", "xml", "pytz"],
-                        "include_files" : [("apacheconf/.htaccess", ".htaccess"), 
-                                           ("backup_corporativo/templates/bkp/static", "static" )] }}
+                        "include_files" : [ ("backup_corporativo/templates/bkp/static", "static" )] }}
 )

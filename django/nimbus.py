@@ -25,7 +25,7 @@ if len(sys.argv) >= 2:
         u = User(username = "teste", 
                  is_superuser=True,
                  email = "suporte@linconet.com.br")
-        u.set_password("test")
+        u.set_password("teste")
         u.save()
 else:
     runfastcgi(method="threaded", daemonize="false")

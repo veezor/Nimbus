@@ -17,18 +17,18 @@ makedir "deb/var/nimbus/deps"
 
 cd django
 cp backup_corporativo/settings_executable.py backup_corporativo/settings.py;
-python2.5 setup.py build_exe 2> /dev/null > /dev/null;
+python2.5 setup.py build_exe ;
 cp -a binary ../deb/var/www;
 cd ..;
 
 
 cd webservices/manager;
-python2.5 setup.py build_exe 2> /dev/null > /dev/null;
+python2.5 setup.py build_exe;
 cp -a binary ../../deb/var/nimbusmanager;
 cd ../..;
 
 
-cp django/apacheconf/default deb/etc/apache2/sites-available
+cp django/apacheconf/default deb/etc/apache2/sites-enabled/000-default
 cp -a custom deb/var/nimbus
 cp django/backup_corporativo/logging.conf deb/etc/nimbus
 cp webservices/manager/nimbus_manager.conf deb/etc/nimbus
