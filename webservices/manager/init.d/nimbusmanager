@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 NAME=nimbusmanager
@@ -12,12 +12,18 @@ if [ $(uname) = "Darwin" ] ; then
     STARTDAEMON="sudo launchctl load -w $DAEMON"
 else
     SYSTEM_OS=linux
-    DAEMON=/usr/local/bin/nimbus-manager
-    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/log/nimbus/$NAME.pid"
-    STARTDAEMON="$STOPLINUX --exec $DAEMON"
+    DAEMON=/var/nimbusmanager/nimbus-manager
+    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/log/nimbus/manager.pid "
+    STARTDAEMON="start-stop-daemon --start --exec $DAEMON"
 fi
 
-test -f $DAEMON || echo 'ERR: The daemon file is no present.'; exit 0
+
+if [ ! -f $DAEMON ];
+then 
+	echo 'ERR: The daemon file is no present.'; 
+	exit 0;
+fi;
+
 set -e
 
 case "$1" in
@@ -50,10 +56,10 @@ case "$1" in
 	#	just the same as "restart".
 	#
 	echo -n "Restarting $DESC: "
-	$STOPDAEMON
-	sleep 1
-	$STARTDAEMON
-	echo "$NAME."
+	$STOPDAEMON > /dev/null || echo;
+	sleep 1;
+	$STARTDAEMON;
+	echo "$NAME.";
 	;;
   *)
 	N=/etc/init.d/$NAME

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+/usr/sbin/userdel nimbus;
+/usr/bin/mysql -uroot -pn1mbus < /var/nimbus/drop.sql;
+/usr/sbin/update-rc.d -f nimbusmanager remove;
+/etc/init.d/nimbusmanager stop || echo;

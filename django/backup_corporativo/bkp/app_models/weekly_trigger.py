@@ -37,8 +37,10 @@ class WeeklyTrigger(models.Model):
     # Para mais informações sobre essa correção, acessar ticket:
     # http://code.djangoproject.com/ticket/3591
     class Meta:
-        app_label = 'bkp'    
-
+        app_label = 'bkp'
+        
+    def save(self, *args, **kwargs):    
+        super(WeeklyTrigger, self).save(*args, **kwargs)
 
     def level_friendly(self):
         if self.level == 'Full':

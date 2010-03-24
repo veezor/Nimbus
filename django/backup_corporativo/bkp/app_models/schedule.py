@@ -34,6 +34,9 @@ class Schedule(models.Model):
     class Meta:
         app_label = 'bkp'    
 
+    def save(self, *args, **kwargs):
+        super(Schedule, self).save(*args, **kwargs)
+
     def type_friendly(self):
         if self.type == 'Weekly':
             return "Semanalmente nos dias"

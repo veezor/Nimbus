@@ -49,7 +49,7 @@ class GlobalConfig(models.Model):
         app_label = 'bkp'    
 
     #TODO: atualizar porta do storage de acordo com campo do GlobalConfig!!
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.director_password == self.NIMBUS_BLANK:
             self.director_password = utils.random_password()
             # NetworkInterface.networkconfig.save()
@@ -63,7 +63,7 @@ class GlobalConfig(models.Model):
         sto.storage_port=self.storage_port
         sto.save()
         self.id = 1
-        super(GlobalConfig, self).save()
+        super(GlobalConfig, self).save(*args, **kwargs)
 
     def director_bacula_name(self):
         return "%s_director" % self.nimbus_uuid.uuid_hex

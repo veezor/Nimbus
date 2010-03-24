@@ -32,16 +32,17 @@ class HeaderBkp(models.Model):
     class Meta:
         app_label = 'bkp'    
 
-    def save(self):
+    def save(self, *args, **kwargs):
         # Geração de NimbusUUID é gerenciada pelo formulário
         #NimbusUUID.generate_uuid_or_leave(self)
-        super(HeaderBkp, self).save()
+        super(HeaderBkp, self).save(*args, **kwargs)
 
     def filename(self):
         return "%s_headerbkp" % self.nimbus_uuid.uuid_hex
     
     def filepath(self):
         base_path = os.path.join(NIMBUS_CUSTOM_PATH, 'header_bkp')
+        utils.create_or_leave(base_path)
         return os.path.join(base_path, self.filename())
 
     def created_on(self):

@@ -38,12 +38,12 @@ class Storage(models.Model):
     class Meta:
         app_label = 'bkp'    
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.storage_password == self.NIMBUS_BLANK:
             self.storage_password = utils.random_password()
         NimbusUUID.generate_uuid_or_leave(self)
         self.id = 1
-        super(Storage, self).save()
+        super(Storage, self).save(*args, **kwargs)
 
     def storage_bacula_name(self):
         return "StorageLocal"

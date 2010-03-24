@@ -1,16 +1,32 @@
 #!/usr/bin/env python
 
 import os, sys
+
+
 sys.path.extend( [  "/var/nimbus/deps/",
                     "/var/lib/python-support/python2.5/", 
                     "/usr/lib/python2.5/",
-                    "/usr/lib/python2.5i/site-packages/"])
+                    "/usr/lib/python2.5/site-packages/",
+                    "/usr/lib/python2.5/lib-dynload/"])
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'backup_corporativo.settings'
 
-if len(sys.argv) == 2  and sys.argv[1] == "--test":
-    from django.core.management import call_command
-    call_command("test")
+from django.core.management import execute_manager
+from django.contrib.auth.models import User
+from django.core.servers.fastcgi import runfastcgi
+from backup_corporativo import settings
+
+
+
+
+if len(sys.argv) >= 2:
+    execute_manager(settings)
+    if sys.argv[1] == "syncdb":
+        u = User(username = "teste", 
+                 is_superuser=True,
+                 email = "suporte@linconet.com.br")
+        u.set_password("teste")
+        u.save()
 else:
-    from django.core.servers.fastcgi import runfastcgi
     runfastcgi(method="threaded", daemonize="false")
+

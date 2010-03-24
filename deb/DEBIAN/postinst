@@ -1,0 +1,28 @@
+#!/bin/sh -e
+
+
+
+case $1 in
+    configure)
+	/usr/sbin/useradd nimbus||echo;
+	if [ ! -e /var/log/nimbus ];
+	then
+		mkdir /var/log/nimbus;
+	fi;
+	echo "/opt/bacula/lib" > /etc/ld.so.conf.d/bacula.conf;
+	/sbin/ldconfig;
+	/usr/sbin/update-rc.d nimbusmanager defaults; 
+	/etc/init.d/mysql start;
+	/usr/bin/mysql -uroot -pn1mbus < /var/nimbus/create.sql;
+	/var/www/nimbus.fcgi syncdb --noinput -v 0;
+        chown -R www-data:www-data /etc/nimbus/;
+        chown -R www-data:www-data /var/log/nimbus/;
+        chown -R www-data:www-data /var/nimbus/;
+        chmod -R 0770 /var/log/nimbus/;
+        chmod -R 0770 /var/nimbus/;
+        chmod -R 0770 /etc/nimbus/;
+	/usr/sbin/a2enmod rewrite;
+	/etc/init.d/apache2 restart;
+	/etc/init.d/nimbusmanager start ;;
+esac
+

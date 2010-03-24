@@ -1,6 +1,7 @@
 from cx_Freeze import setup, Executable
 
 
+
 import sys
 sys.path.append("../libs/")
 
@@ -14,22 +15,23 @@ setup(
         description = "Nimbus Backup",
         executables = [ Executable("nimbus.py", targetName="nimbus.fcgi")],
         options = { "build_exe": 
-                      { "compressed" :  True, 
+                      { "compressed" :  True,
+                        "build_exe" : "binary",
                         "silent" : True,
                         "optimize" :  "1", 
-                        "create_shared_zip" :  False,
+                        "create_shared_zip" :  True,
                         "include_in_shared_zip" : False,   
                         "append_script_to_exe" :  True,
                         "packages": [ "pybacula",
-                                      "bconsole",
                                       "networkutils",
+                                      "bconsole",
                                       "keymanager",
                                       "truecrypt",
                                       "backup_corporativo"],
                         "includes" : [ "backup_corporativo.bkp.views",
                                        "backup_corporativo.bkp.templatetags.bkp_extras",
                                        "backup_corporativo.bkp.tests"],
+                        "zip_includes" : [ ("backup_corporativo/templates/", "backup_corporativo/bkp/templates/") ],
                         "excludes" : ["email","PIL","flup","django", "xml", "pytz"],
-                        "include_files" : [("apacheconf/.htaccess", ".htaccess"), 
-                                           ("backup_corporativo/templates/bkp/static", "static" )] }}
+                        "include_files" : [ ("backup_corporativo/templates/bkp/static", "static" )] }}
 )

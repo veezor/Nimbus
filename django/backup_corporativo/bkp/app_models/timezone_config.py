@@ -36,10 +36,10 @@ class TimezoneConfig(models.Model):
     class Meta:
         app_label = 'bkp'    
 
-    def save(self):
+    def save(self, *args, **kwargs):
         # Salvar sempre na mesma linha do banco de dados
         self.id = 1
-        super(TimezoneConfig, self).save()
+        super(TimezoneConfig, self).save(*args, **kwargs)
     
     @classmethod
     def get_instance(cls):
