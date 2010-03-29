@@ -10,10 +10,11 @@ source initenv.sh;
 makedir "deb/var"
 makedir "deb/etc/init.d"
 makedir "deb/etc/nimbus"
-makedir "deb/etc/apache2/sites-available"
+makedir "deb/etc/apache2/sites-enabled"
 makedir "deb/var/log/nimbus"
 makedir "deb/var/nimbus/deps"
 
+find deb -iname "*~" -exec rm {} \;
 
 cd django
 cp backup_corporativo/settings_executable.py backup_corporativo/settings.py;
