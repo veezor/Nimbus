@@ -19,7 +19,6 @@ from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.global_config import GlobalConfig
 
-bacula = Bacula()
 
 
 class ComputerLimitExceeded(Exception):
@@ -128,6 +127,7 @@ class Computer(models.Model):
         """
         status_query = CLIENT_STATUS_RAW_QUERY % {
             'client_name':self.computer_bacula_name(),}
+        bacula = Bacula()
         cursor = bacula.baculadb.execute(status_query)
         result = cursor.fetchone()
         status = result and result[0] or ''
@@ -253,6 +253,7 @@ class Computer(models.Model):
         successful_jobs_query = CLIENT_SUCCESSFUL_JOBS_RAW_QUERY % {
             'client_name':self.computer_bacula_name(),    
         }
+        bacula = Bacula()
         successful_jobs_cursor = bacula.baculadb.execute(successful_jobs_query)
         return utils.dictfetch(successful_jobs_cursor)
 
@@ -260,6 +261,7 @@ class Computer(models.Model):
         unsuccessful_jobs_query = CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY % {
             'client_name':self.computer_bacula_name(),    
         }
+        bacula = Bacula()
         unsuccessful_jobs_cursor = bacula.baculadb.execute(unsuccessful_jobs_query)
         return utils.dictfetch(unsuccessful_jobs_cursor)
 
@@ -267,18 +269,19 @@ class Computer(models.Model):
         running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {
             'client_name':self.computer_bacula_name(),
         }
+        bacula = Bacula()
         running_jobs_cursor = bacula.baculadb.execute(running_jobs_query)
         return utils.dictfetch(running_jobs_cursor)
 
     def last_jobs(self):
         last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {
             'client_name':self.computer_bacula_name(),}
+        bacula = Bacula()
         last_jobs_cursor = bacula.baculadb.execute(last_jobs_query)
         return utils.dictfetch(last_jobs_cursor)
 
     def run_test_job(self):
         """Sends an empty job running requisition to bacula for this computer"""
-        from backup_corporativo.bkp.bacula import Bacula;
         bacula = Bacula()
         bacula.run_backup(
             JobName='Teste Conectividade',
@@ -315,6 +318,7 @@ class Computer(models.Model):
         """Queries bacula database for client id"""
         cliend_id_query = CLIENT_ID_RAW_QUERY % {
             'client_name':self.computer_bacula_name()}
+        bacula = Bacula()
         cursor = bacula.baculadb.cursor()
         cursor.execute(cliend_id_query)
         client_id = cursor.fetchone()

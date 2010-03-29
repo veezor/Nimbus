@@ -12,8 +12,8 @@ from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.models import *
 
+from bconsole import BConsoleInitError
 
-bacula = Bacula()
 
 ### Constants ###
 DAYS_OF_THE_WEEK = (
@@ -31,7 +31,11 @@ def connect_on(model, signal):
 
         def function_wrapper(sender, instance, signal, *args, **kwargs):
             value = function(instance)
-            bacula.reload()
+            try:
+                bacula = Bacula()
+                bacula.reload()
+            except BConsoleInitError, e:
+                pass
             return value
 
 
@@ -60,6 +64,20 @@ def create_pools(sender, instance, signal, *args, **kwargs):
         if kwargs['created']:   # instance was just created
             fpool = Pool(procedure=instance)
             fpool.save()
+
+
+
+# Must be first
+@connect_on(model=GlobalConfig, signal=post_save)
+def update_console_file(gconf):
+    """Update Console File"""
+
+    dir_dict = console_dir_dict( gconf.director_bacula_name(), 
+                                 gconf.director_port, 
+                                 gconf.director_password)
+    
+    generate_console("bconsole.conf", dir_dict)
+
 
 
 ### Timezone ###
@@ -312,15 +330,6 @@ def console_dir_dict(dir_name, dir_port, dir_passwd):
 
 
 
-@connect_on(model=GlobalConfig, signal=post_save)
-def update_console_file(gconf):
-    """Update Console File"""
-
-    dir_dict = console_dir_dict( gconf.director_bacula_name(), 
-                                 gconf.director_port, 
-                                 gconf.director_password)
-    
-    generate_console("bconsole.conf", dir_dict)
     
 
 
