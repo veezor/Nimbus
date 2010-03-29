@@ -100,10 +100,13 @@ def stats_global(request):
 
 
         update_diskusage_graph()
-        generate_jobs_graph()
+        has_jobs  = generate_jobs_graph()
         E.template = 'bkp/stats/stats_global.html'
         E.disk_img = DISK_IMG
-        E.jobs_img = JOBS_IMG
+        if has_jobs:
+            E.jobs_img = JOBS_IMG
+        else:
+            E.jobs_img = DEFAULT_IMG
         return E.render()
 
 
