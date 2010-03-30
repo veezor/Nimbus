@@ -41,9 +41,6 @@
 	        <button class="popup" rel="view_comp_02"><span>avançado</span></button>
 	        <div id="view_comp_02" class="escondido">
 				<button onclick="location.href='{% url bkp.views.view_computer_config comp.id %}'"><span>Configuração</span></button>
-				<form action="{% url bkp.views.test_computer comp.id %}" method="post">
-					<button type="submit"><span>Testar Conexão</span></button>
-				</form>
 	    	</div>
 	        <button class="popup" rel="view_comp_01"><span>ações</span></button>
 	        <div id="view_comp_01" class="escondido">
