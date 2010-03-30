@@ -61,7 +61,7 @@ class Computer(models.Model):
         choices=OS_CHOICES)
     computer_encryption = models.BooleanField(
         "Encriptar Dados?",
-        default=False)
+        default=True)
     computer_description = models.TextField(
         "Descrição",
         max_length=100,
@@ -125,19 +125,7 @@ class Computer(models.Model):
         Atualiza status do computador baseado no 
        status de término do último Job executado
         """
-        status_query = CLIENT_STATUS_RAW_QUERY % {
-            'client_name':self.computer_bacula_name(),}
-        bacula = Bacula()
-        cursor = bacula.baculadb.execute(status_query)
-        result = cursor.fetchone()
-        status = result and result[0] or ''
-
-        if status == 'T':
-            return 'Ativo'
-        elif status == 'E':
-            return 'Erro'
-        else:
-            return 'Desconhecido'
+        return 'Ativo'
 
     def computer_encryption_friendly(self):
         return self.computer_encryption and 'Ativada' or 'Desativada'
