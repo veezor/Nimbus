@@ -143,7 +143,7 @@ def config_dir_dict(dir_name, dir_port, dir_passwd):
             'QueryFile':'"/opt/bacula/etc/bacula/query.sql"', 
             'WorkingDirectory':'"/opt/bacula/var/bacula/working"', 
             'PidDirectory':'"/opt/bacula/var/run"', 
-            'Maximum Concurrent Jobs':'1',
+            'Maximum Concurrent Jobs':'100',
             'Password':'"%s"' % dir_passwd, 
             'Messages':'Daemon' }
 
