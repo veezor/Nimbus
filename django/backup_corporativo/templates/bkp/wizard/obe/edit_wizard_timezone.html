@@ -1,0 +1,53 @@
+{% extends "bkp/base_wizard.html" %}
+{% load bkp_extras %}
+{% block headtags %}
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $("select#id_tz_country").bind("change", getAreaChoices);
+    });
+ 
+    function getAreaChoices() {
+        $.ajax({
+            type: "POST",
+            url: "{% url bkp.views.ajax_area_request %}",
+            dataType: "json",
+            data: {tz_country: $('[name=tz_country]').val()},
+            success: function(data, textStatus){
+				$("select#id_tz_area").replaceWith("<select id='id_tz_area' name='tz_area'></select>");
+                $.each(data, function(i, item){
+                    $("select#id_tz_area").append(
+                        '<option value="'+item+'" selected="selected">'+item+'</option>'
+                    );
+                });
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("Status: "+textStatus+".");
+                this; // the options for this ajax request
+            }
+        });
+    }
+
+</script>
+{% endblock %}
+{% block horizontal_menu %}
+	{% include 'bkp/wizard/obe/menu_wizard.html' %}
+{% endblock %}
+
+
+{% block content %}
+<br />
+<h2>Timezone</h2>
+<br /><br />
+    <form action="{% url bkp.views.update_wizard_timezone %}" method="POST">
+        {% for field in tconfigform %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+            </div>
+        {% endfor %}
+		<a href="../network/edit" > <button type="button"> <span>Voltar</span> </button> </a>
+        <button type="submit"> <span>Avançar</span> </button>
+    </form>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+<p>Nome da Instância: <strong>{{gconfig.globalconfig_name}}</strong></p>
+<p>Portal do Director: <strong>{{gconfig.director_port}}</strong></p>
+<p>Portal do Storage: <strong>{{gconfig.storage_port}}</strong></p>
+<p>Tamanho Total do Backup (GB): <strong>{{gconfig.total_backup_size}}</strong></p>
+{% ifequal gconfig.offsite_on 1 %}
+<p>Offiste ativo: <strong>Sim</strong>
+{% else %}
+<p>Offiste ativo: <strong>Não</strong>
+{% endifequal %}
+{% if gconfig.offsite_on %}
+<p>Horário Envio: <strong>{{gconfig.offsite_hour}}</strong></p>
+{% endif %}

@@ -68,6 +68,7 @@ def stats_procedure(request):
 
         has_imagens = [ generate_procedure_graph(procedure) for procedure in procedures ]
         E.data = zip(procedures, has_imagens)
+        E.procedures = procedures
 
         E.template = 'bkp/stats/stats_procedure.html'
         return E.render()

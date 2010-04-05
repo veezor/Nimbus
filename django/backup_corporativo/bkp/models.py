@@ -57,6 +57,8 @@ from backup_corporativo.bkp.app_models.file_set import FileSet
 
 from backup_corporativo.bkp.app_models.header_bkp import HeaderBkp
 
+from backup_corporativo.bkp.app_models.wizard import Wizard
+
 
 ###
 ###   Signals

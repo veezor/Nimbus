@@ -1,0 +1,4 @@
+[
+ {"pk": 1, "model": "bkp.wizard", "fields": 
+ 	{"offsite_on": 0, "interface_name": "eth6", "total_backup_size": 100, "wizard_step": 3, "interface_broadcast": "10.0.2.255", "tz_country": "BR", "interface_netmask": "255.255.255.0", "tz_area": "America/Recife", "interface_address": "10.0.2.15", "interface_network": "10.0.0.1", "interface_gateway": "10.1.1.244", "interface_dns1": "192.168.0.1", "wizard_lock": 1, "interface_dns2": "192.168.0.1", "ntp_server": "a.ntp.br", "storage_port": 9103, "globalconfig_name": "teste", "director_port": 9101}}
+]

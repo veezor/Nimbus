@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404
 
 from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, DAYS_OF_THE_WEEK
+from backup_corporativo.bkp.models import Wizard
 
 
 ###
@@ -49,12 +50,21 @@ def require_authentication(request):
     """Redirect user to authentication page."""
     return HttpResponseRedirect(utils.reverse('new_session'))
 
+def require_wizard():
+    """Redirect user to authentication page."""
+    return HttpResponseRedirect(utils.reverse('new_session'))
 
 def authentication_required(view_def):
     """Decorator to force a view to verify if user is authenticated."""
     def check_auth(*args, **kw):
         if not args[0].user.is_authenticated():
             return require_authentication(args[0])
+        
+        if view_def.func_name == 'delete_session':
+            pass
+        elif not Wizard.get_wizard_lock() and not 'wizard' in view_def.func_name:
+            return require_wizard()
+        
         return view_def(*args, **kw)
     check_auth.__name__ = view_def.__name__
     check_auth.__doc__ = view_def.__doc__
@@ -71,3 +81,5 @@ from backup_corporativo.bkp.app_views.procedures import *
 from backup_corporativo.bkp.app_views.schedules import *
 from backup_corporativo.bkp.app_views.stats import *
 from backup_corporativo.bkp.app_views.tmp_restores import *
+
+from backup_corporativo.bkp.app_views.wizard import *

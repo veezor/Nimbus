@@ -32,10 +32,9 @@
                 <h1><a href="{{script_name}}/" title="Home">Linconet - Tencnologia Estratégica</a></h1>
                 <div id="main_menu" class="menu">
                     <ul class="links">
-						<li {% if request.META.PATH_INFO|contains:"/management" %}class="active"{% endif %}><a href="{% url bkp.views.main_management %}" title="">Gerenciar</a></li>
-                        <li {% if request.META.PATH_INFO|contains:"/statistics" %}class="active"{% endif %}><a href="{% url bkp.views.main_statistics %}" title="">Estatísticas</a></li>
-                        {#<li {% if request.META.PATH_INFO|contains:"/tools" %}class="active"{% endif %}><a href="{% url bkp.views.main_tools %}" title="">Ferramentas</a></li>#}
-                        <li {% if request.META.PATH_INFO|contains:"/system" %}class="active"{% endif %}><a href="{% url bkp.views.main_system %}" title="">Sistema</a></li>
+						{% ifnotequal wizard.wizard_lock 1 %} 
+						<li {% if request.META.PATH_INFO|contains:"/wizard" %}class="active"{% endif %}><a href="{% url bkp.views.main_wizard %}" title="">Wizard</a></li>
+						{% endifnotequal %}
                     </ul>
                     {% if current_user.username %}
                     <form class="link" action="{% url bkp.views.delete_session %}" method="post">
@@ -49,37 +48,6 @@
 			</div>
 			<div id="conteudo">	
 				{% block horizontal_menu %}{% endblock %}
-				<div id="sidebar">
-                    <h3>Atalhos</h3>
-                    <ul class="aux">
-					<li><a href="{% url bkp.views.new_computer %}?wizard=True">Adicionar Computador</a></li>
-                    {# TODO: migrar restore para usar url #}
-                    <li><a href="{{script_name}}/restore/new" title="">Restaurar Arquivos</a></li>
-                    </ul>
-                    <br /><br />
-				    <!-- start computers block -->
-				    {% block computers %}
-				    {% if computers.count %}
-				    <h3>Computadores</h3>
-					<ul class="aux list_computers">
-						{% for c in computers %}
-						<li
-                            {% if comp %}
-                            {% ifequal comp.id c.id %}
-                                class="active"
-                            {% endifequal %}
-                            {% endif %}
-                        >
-                        <a href="{% url bkp.views.view_computer c.id %}">{{ c.computer_name }}</a> <span>{{ c.computer_ip }}</span></li>
-						{% endfor %}
-					</ul>
-					{% endif %}
-					{% endblock %}
-					
-					{% block storages %}
-					{% endblock %}
-					<!-- end computers block -->
-				</div>
 				<div id="main_content">
 				    <!-- start messages block -->
 				    {% if messages %}

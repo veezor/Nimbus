@@ -12,7 +12,7 @@ from backup_corporativo.bkp.sql_queries import ( JOB_STAT_RAW_QUERY,
                                                  JOB_STAT_GET_N_LAST,
                                                  JOB_STAT_GET_N_LAST_FROM_CLIENT )  
 
-IMAGENS_DIR = "templates/bkp/static/imagens/"
+IMAGENS_DIR = "/var/www/static/imagens/"
 
 KBYTES = 1024
 MBYTES = 1024 * KBYTES

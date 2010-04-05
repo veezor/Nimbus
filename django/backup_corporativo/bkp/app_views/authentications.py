@@ -12,7 +12,7 @@ from environment import ENV
 
 from backup_corporativo.bkp.utils import reverse
 from backup_corporativo.bkp.forms import LoginForm
-from backup_corporativo.bkp.models import GlobalConfig
+from backup_corporativo.bkp.models import GlobalConfig, Wizard
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
 
@@ -24,7 +24,7 @@ def new_session(request):
         E.template = 'bkp/session/new_session.html'
         return E.render()
     else:
-        location = reverse("list_computers")
+        location = reverse("main_wizard")
         return HttpResponseRedirect(location)
 
 
@@ -40,10 +40,10 @@ def create_session(request):
                 user = authenticate(username=auth_login, password=auth_passwd)
                 if user:
                     login(request, user)
-                    if GlobalConfig.system_configured():
+                    if Wizard.get_wizard_lock():
                         location = reverse("list_computers")
                     else:
-                        location = reverse("edit_system_config")
+                        location = reverse("main_wizard")
                     return HttpResponseRedirect(location)
                 else:
                     E.template = 'bkp/session/new_session.html'

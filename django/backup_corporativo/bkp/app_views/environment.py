@@ -1,4 +1,4 @@
-from backup_corporativo.bkp.models import Computer
+from backup_corporativo.bkp.models import Computer, Wizard
 from backup_corporativo.bkp import utils
 
 from django.template import RequestContext
@@ -14,6 +14,7 @@ class Environment(object):
         self.computers = Computer.objects.all()
         self.context = RequestContext(request)
         self.current_time = utils.current_time()
+        self.wizard = Wizard.get_instance()
 
     def _set_user_msg(self, msg):
         self.current_user.message_set.create(message=msg)

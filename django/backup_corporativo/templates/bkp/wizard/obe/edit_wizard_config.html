@@ -1,0 +1,24 @@
+{% extends "bkp/base_wizard.html" %}
+{% load bkp_extras %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/wizard/obe/menu_wizard.html' %}
+{% endblock %}
+
+
+{% block content %}
+<br />
+<h2>Configurações</h2>
+<br /><br />
+    <form action="{% url bkp.views.update_wizard_config %}" method="POST">
+        {% for field in gconfigform %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+            </div>
+        {% endfor %}
+        <a href="../config/edit" > <button type="button"> <span>Voltar</span> </button> </a>
+        <button type="submit"> <span>Avançar</span> </button>
+    </form>
+
+{% endblock %}

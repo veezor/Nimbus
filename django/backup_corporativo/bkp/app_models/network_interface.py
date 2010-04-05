@@ -1,30 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import time
+import string
+
 from django.core import serializers
 from django.db import models
 from django import forms
+
 from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-import os, string, time
 
-### NetworkConfig ###
-# Futuramente essa classe será substituída por um gerenciamento completo de interfaces
-# Para o momento não faz sentido usar esse nome de modelo, mas vamos usar assim mesmo
-# Pra evitar a mudança no nome do modelo quando o sistema tiver em produção
-# Mas hoje em dia essa classe poderia perfeitamente ser chamada de NetworkConfig
-# Já que centraliza toda a configuração de rede do sistema em um único objeto
-# TODO: Gerenciamento completo de rede
+
 class NetworkInterface(models.Model):
-    #interface_mac = cfields.MACAddressField(
-    #    "Endereço MAC",
-    #    unique=True,
-    #    blank=True)
-        #,choices=())
-    interface_name = cfields.ModelSlugField(
-        "Nome da Interface",
-        max_length=30)
+    interface_name = cfields.ModelSlugField("Nome da Interface", max_length=30)
     interface_address = models.IPAddressField("Endereço IP")
     interface_netmask = models.IPAddressField("Máscara")
     interface_network = models.IPAddressField("Network")
@@ -55,6 +46,7 @@ class NetworkInterface(models.Model):
     def save(self, *args, **kwargs):
         from backup_corporativo.bkp.app_models.storage import Storage
         sto = Storage.get_instance()
+        sto.storage_name = "Storage Local"
         sto.storage_ip = self.interface_address
         sto.save()
         self.id = 1
@@ -69,5 +61,7 @@ class NetworkInterface(models.Model):
         try:
             netconfig = cls.objects.get(pk=1)
             return netconfig
+            iface = cls.objects.get(pk=1)
+            return iface
         except cls.DoesNotExist:
             return cls()

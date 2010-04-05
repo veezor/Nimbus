@@ -30,7 +30,7 @@ class TimezoneForm(ModelForm):
         if country_name:
             self.fields['tz_area'].choices = \
                 [('', '----------')] + \
-                [(a,a) for a in country_timezones[country_name]]
+                [(a,a) for a in sorted(country_timezones[country_name])]
         else:
             self.fields['tz_area'].choices = [('', '----------')]
 
@@ -458,3 +458,38 @@ class FileSetForm(ModelForm):
 
 class ScheduleAuxForm(forms.Form):
 	schedule_type = forms.CharField(max_length=10,widget=forms.HiddenInput)
+
+class WizardNetworkForm(ModelForm):
+    class Meta:
+        model = Wizard
+        fields = ('interface_name','interface_address',
+                'interface_network', 'interface_gateway',
+                  'interface_netmask', 'interface_broadcast',
+                  'interface_dns1', 'interface_dns2')
+        
+class WizardGlobalConfigForm(ModelForm):
+    total_backup_size = forms.IntegerField(label=u'Tamanho Total do Backup (GB)', max_value=1000, min_value=80)
+    class Meta:
+        model = Wizard
+        fields = (
+            'globalconfig_name',
+            'director_port',
+            'storage_port',
+            'total_backup_size',
+            'offsite_on')
+        
+class WizardTimezoneConfigForm(ModelForm):
+    class Meta:
+        model = Wizard
+        fields = (
+            'ntp_server',
+            'tz_country',
+            'tz_area')
+        
+    def load_area_choices(self, country_name):
+        if country_name:
+            self.fields['tz_area'].choices = \
+                [('', '----------')] + \
+                [(a,a) for a in country_timezones[country_name]]
+        else:
+            self.fields['tz_area'].choices = [('', '----------')]

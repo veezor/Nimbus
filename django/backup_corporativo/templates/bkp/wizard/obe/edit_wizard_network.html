@@ -1,0 +1,23 @@
+{% extends "bkp/base_wizard.html" %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/wizard/obe/menu_wizard.html' %}
+{% endblock %}
+
+{% block content %}
+
+<br />
+
+<h2>Alterar Interface de Rede</h2>
+<br /><br />
+    <form action="{% url bkp.views.update_wizard_network %}" method="POST">
+        {% for field in iface_form %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+            </div>
+        {% endfor %}
+		<button type="submit"> <span>Avançar</span> </button>
+    </form>
+
+{% endblock %}

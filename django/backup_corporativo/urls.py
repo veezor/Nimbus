@@ -97,6 +97,21 @@ urlpatterns += patterns(
     (r'^schedule/(?P<sched_id>\d+)/update$', 'update_schedule'),
     (r'^schedule/(?P<sched_id>\d+)/edit$', 'edit_schedule'),
     (r'^schedule/(?P<sched_id>\d+)/delete$', 'delete_schedule'),
+
+    # views_app/wizard.py
+    (r'^wizard/$', 'main_wizard'),
+    (r'^wizard/config/edit$', 'edit_wizard_config'),
+    (r'^wizard/config/update$', 'update_wizard_config'),
+
+    (r'^wizard/network/edit$', 'edit_wizard_network'),
+    (r'^wizard/network/update$', 'update_wizard_network'),
+    
+    (r'^wizard/timezone/edit$', 'edit_wizard_timezone'),
+    (r'^wizard/timezone/update$', 'update_wizard_timezone'),
+        
+    (r'^wizard/strongbox/edit$', 'edit_wizard_strongbox'),
+    (r'^wizard/strongbox/update$', 'update_wizard_strongbox'),
+
     # wizard de restore
     (r'^restore/new$', 'new_restore'),
     (r'^restore/create$', 'create_restore'),

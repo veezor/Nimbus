@@ -9,7 +9,7 @@ from django.forms.extras.widgets import Select
 
 EMPTY_CHOICES = [('', '----------')]
 #COUNTRY_CHOICES = [('', '----------')]
-COUNTRY_CHOICES = [(cs, country_names[cs]) for cs in country_names]
+COUNTRY_CHOICES = [ item  for item in sorted(country_names.items())]
 
 
 
