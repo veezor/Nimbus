@@ -21,7 +21,7 @@ from backup_corporativo import settings
 
 if len(sys.argv) >= 2:
     execute_manager(settings)
-    if sys.argv[1] == "syncdb":
+    if sys.argv[1] == "syncdb" and User.objects.count() == 0:
         u = User(username = "teste", 
                  is_superuser=True,
                  email = "suporte@linconet.com.br")
