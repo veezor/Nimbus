@@ -90,7 +90,7 @@ class SubprocessConsole(IConsole):
 
 
 if bconsole:
-    _active_backend = SubprocessConsole
+
 
     class BindingConsole(IConsole):
 
@@ -108,6 +108,9 @@ if bconsole:
 
         def close(self):
             bconsole.close()
+
+
+    _active_backend = BindingConsole
 
 else:            
     _active_backend = SubprocessConsole
