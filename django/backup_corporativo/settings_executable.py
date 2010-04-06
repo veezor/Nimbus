@@ -20,8 +20,8 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 
 # Bacula config
 BACULA_DATABASE_NAME = 'bacula'
-BACULA_DATABASE_USER = 'bacula'
-BACULA_DATABASE_PASSWORD = 'bacula'
+BACULA_DATABASE_USER = 'root'
+BACULA_DATABASE_PASSWORD = 'n1mbus'
 BACULA_DATABASE_HOST = 'localhost'
 BACULA_DATABASE_PORT = ''
 
@@ -89,7 +89,7 @@ TEMPLATE_DIRS = (
 )
 
 FIXTURE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'bkp/app_tests/fixtures'),
+    os.path.join(os.path.dirname(__file__), 'bkp','app_tests','fixtures'),
 )
 
 #DMIGRATIONS_DIR = 'C:/Documents and Settings/Luke/Meus documentos/My Dropbox/Django/Linconet/backup_corporativo/migrations'

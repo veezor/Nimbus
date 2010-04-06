@@ -33,5 +33,5 @@ setup(
                                        "backup_corporativo.bkp.tests"],
                         "zip_includes" : [ ("backup_corporativo/templates/", "backup_corporativo/bkp/templates/") ],
                         "excludes" : ["email","PIL","flup","django", "xml", "pytz"],
-                        "include_files" : [ ("backup_corporativo/templates/bkp/static", "static" )] }}
+                        "include_files" : [ ("backup_corporativo/static", "static" )] }}
 )

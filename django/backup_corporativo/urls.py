@@ -1,23 +1,24 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from os.path import dirname
+from os.path import dirname, join
 from django.conf.urls.defaults import *
+from django.conf import settings
 
 base_url = 'backup_corporativo'
 
 # Declarando primeiro a rota estática, que no futuro será removida
 # já que o conteúdo estático será servido pelo próprio servidor
 # web seja lá qual for que o Nimbus utilize
-urlpatterns = patterns(
-    '',
-    (r'^static/(?P<path>.*)', 'django.views.static.serve', {
-        'document_root':'%s/templates/bkp/static' % dirname(__file__)}))
+#urlpatterns = patterns(
+#    '',
+#    (r'^static/(?P<path>.*)', 'django.views.static.serve', {
+#        'document_root':'%s/templates/bkp/static' % dirname(__file__)}))
 
 # O resto das rotas é declarado separadamente
 # já que todas tem o prefixo 'backup_corporativo.bkp.views'
 # em comum.
-urlpatterns += patterns(
+urlpatterns = patterns(
     'backup_corporativo.bkp.views',
     (r'^$', 'main_statistics'),
     # management
@@ -122,3 +123,7 @@ urlpatterns += patterns(
     (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'new_job_restore'),
     (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/create$', 'create_job_restore'),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),  )

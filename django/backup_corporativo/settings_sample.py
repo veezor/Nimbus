@@ -53,7 +53,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = join( dirname(__file__), 'static')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -91,7 +91,7 @@ TEMPLATE_DIRS = (
 )
 
 FIXTURE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'bkp/app_tests/fixtures'),
+    os.path.join(os.path.dirname(__file__), 'bkp','app_tests','fixtures'),
 )
 
 #DMIGRATIONS_DIR = 'C:/Documents and Settings/Luke/Meus documentos/My Dropbox/Django/Linconet/backup_corporativo/migrations'
