@@ -1,37 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-
-from mock import Bconsole
-
-
-try:
-    import bconsole
-except ImportError, e:
-    bconsole = Bconsole()
+from backends import get_active_backend
 
 
-def test():
-    global bconsole
-    bconsole = Bconsole()
+
 
 
 valid_commands = """autodisplay automount add cancel create delete label mount prune relabel release restore run setdebug status unmount update wait disable enable list llist use query reload"""
 
 
-
 class BaculaCommandLine(object):
 
     connected = False
+    backend = None
     
     def __init__(self, config="./bconsole.conf"):
+        BaculaCommandLine.backend = get_active_backend()() # get and instantiates
         if not self.connected:
-            bconsole.set_configfile(config)
+            self.backend.set_configfile(config)
             try: 
-                bconsole.connect()
+                self.backend.connect()
                 BaculaCommandLine.connected = True
-            except Exception:
+            except Exception, e:
                 BaculaCommandLine.connected = False
+                raise BConsoleInitError(e)
 
 
     def __getattr__(self, name):
@@ -42,7 +35,7 @@ class BaculaCommandLine(object):
 
     def raw(self, string):
         string = string.encode("utf-8")
-        return bconsole.execute_command(string)
+        return self.backend.execute_command(string)
 
 
 class Command(object):
@@ -69,7 +62,7 @@ class Command(object):
             return False
         txt = self.get_content()
         txt = txt.encode("utf-8")
-        result = bconsole.execute_command( txt )
+        result = BaculaCommandLine.backend.execute_command( txt )
         self.content = []
         return result
 
@@ -84,7 +77,4 @@ class Command(object):
 
 
 
-
-if __name__ == "__main__":
-    test()
 

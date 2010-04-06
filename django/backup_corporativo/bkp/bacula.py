@@ -20,16 +20,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 import pybacula
+from pybacula import BaculaCommandLine
 
 try:
     if settings.PYBACULA_TEST:
-        pybacula.test()
+        pybacula.install_test_backend()
 except AttributeError, e:
     pass
 
 
 
-from pybacula import BaculaCommandLine
+
 
 
 BCONSOLE_CONF = "/var/nimbus/custom/config/bconsole.conf"

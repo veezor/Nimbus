@@ -12,7 +12,7 @@ from backup_corporativo.bkp import utils
 from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.models import *
 
-from bconsole import BConsoleInitError
+from pybacula import BConsoleInitError
 
 
 ### Constants ###
