@@ -98,7 +98,7 @@ if bconsole:
             bconsole.set_configfile(configfile)
 
         def set_configfile(self, configfile):
-            self.configfile = configfile
+            bconsole.set_configfile(configfile)
 
         def execute_command(self, command):
             bconsole.execute_command(command)
