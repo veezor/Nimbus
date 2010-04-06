@@ -36,7 +36,7 @@ CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY =\
 
 CLIENT_RUNNING_JOBS_RAW_QUERY =\
     '''
-    SELECT Job.Name, Level, StartTime, (Now() - EndTime) AS Duration,
+    SELECT Job.Name, Level, StartTime, (Now() - StartTime) AS Duration,
     JobFiles, JobBytes , JobErrors, JobStatus 
     FROM Job INNER JOIN Client 
     ON Job.ClientId = Client.ClientId
