@@ -13,16 +13,21 @@ case $1 in
 	/sbin/ldconfig;
 	/usr/sbin/update-rc.d nimbusmanager defaults; 
 	/etc/init.d/mysql start;
-	/usr/bin/mysql -uroot -pn1mbus < /var/nimbus/create.sql;
-	/var/www/nimbus.fcgi syncdb --noinput -v 0;
-        chown -R www-data:www-data /etc/nimbus/;
-        chown -R www-data:www-data /var/log/nimbus/;
-        chown -R www-data:www-data /var/nimbus/;
-        chmod -R 0770 /var/log/nimbus/;
-        chmod -R 0770 /var/nimbus/;
-        chmod -R 0770 /etc/nimbus/;
-	/usr/sbin/a2enmod rewrite;
-	/etc/init.d/apache2 restart;
-	/etc/init.d/nimbusmanager start ;;
+	/usr/bin/mysql -uroot -pn1mbus < /var/nimbus/create.sql 2> /dev/null || echo;
+    echo "www-data ALL=NOPASSWD: /usr/bin/truecrypt" >> /etc/sudoers;
+
+    /var/www/nimbus.fcgi syncdb --noinput -v 0;
+    chown -R www-data:www-data /etc/nimbus/;
+    chown -R www-data:www-data /var/log/nimbus/;
+    chown -R www-data:www-data /var/nimbus/;
+    chown -R www-data:www-data /var/www/;
+    chmod -R 0775 /var/log/nimbus/;
+    chmod -R 0775 /var/nimbus/;
+    chmod -R 0775 /etc/nimbus/;
+    /etc/init.d/bacula-ctl-dir restart;
+    /etc/init.d/bacula-ctl-sd restart;
+    /usr/sbin/a2enmod rewrite;
+    /etc/init.d/apache2 restart;
+	/etc/init.d/nimbusmanager restart ;;
 esac
 
