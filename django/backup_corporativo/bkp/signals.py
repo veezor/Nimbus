@@ -173,13 +173,10 @@ def config_msg_dict(msg_name, admin_mail="backup@linconet.com.br"):
 
     if msg_name == 'Standard':
         return {'Name':msg_name, 
-        'mailcommand':'"/sbin/bsmtp -h localhost -f \\"\(Bacula\) \<%r\>\\" -s \\"Bacula: %t %e of %c %l\\" %r"', 
-        'operatorcommand':'"/sbin/bsmtp -h localhost -f \\"\(Bacula\) \<%r\>\\" -s \\"Bacula: Intervention needed for %j\\" %r"', 
         'mail':'%s = all, !skipped' % admin_mail, 'operator':'%s = mount' % admin_mail,
         'console':'all, !skipped, !saved', 'append':'"/var/bacula/working/log" = all, !skipped'}
     elif msg_name == 'Daemon':
         return {'Name':msg_name, 
-        'mailcommand':'"/sbin/bsmtp -h localhost -f \\"\(Bacula\) \<%r\>\\" -s \\"Bacula daemon message\\" %r"',
         'mail':'%s = all, !skipped' % admin_mail, 'console':'all, !skipped, !saved', 
         'append':'"/opt/bacula/var/bacula/working/log" = all, !skipped'}
 
