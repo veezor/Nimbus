@@ -1,8 +1,9 @@
+FastCgiServer /var/www/nimbus.fcgi -port 3033
 NameVirtualHost *
 <VirtualHost *>
-	ServerAdmin webmaster@localhost
-	
-	DocumentRoot /var/www/
+    ServerAdmin webmaster@localhost
+
+    DocumentRoot /var/www/
 
     Alias /static /var/www/static
     RewriteEngine On
@@ -13,13 +14,13 @@ NameVirtualHost *
 
 
 
-	ErrorLog /var/log/apache2/error.log
+    ErrorLog /var/log/apache2/error.log
 
-	# Possible values include: debug, info, notice, warn, error, crit,
-	# alert, emerg.
-	LogLevel warn
+    # Possible values include: debug, info, notice, warn, error, crit,
+    # alert, emerg.
+    LogLevel warn
 
-	CustomLog /var/log/apache2/access.log combined
+    CustomLog /var/log/apache2/access.log combined
 
 
 </VirtualHost>
