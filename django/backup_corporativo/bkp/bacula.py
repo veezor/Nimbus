@@ -238,7 +238,6 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
                     bacula_settings_dict[key] = content
             
             bacula_settings_dict['use_unicode'] = True
-            
             self.connection = Database.connect(**bacula_settings_dict)
             self.connection.encoders[SafeUnicode] = self.connection.encoders[unicode]
             self.connection.encoders[SafeString] = self.connection.encoders[str]
@@ -246,7 +245,7 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
         return cursor
 
 
-class BaculaDatabase(object):
+class _BaculaDatabase(object):
     """Classe de fachada utilizada para gerenciar todas as conexões com a base de dados do bacula."""
 
     def __init__(self):
@@ -265,4 +264,9 @@ class BaculaDatabase(object):
 
     def commit(self):
         self.wrapper.commit()
+
+def BaculaDatabase(_memoize=[]):
+    if not _memoize:
+        _memoize.append( _BaculaDatabase() )
+    return _memoize[0]
 
