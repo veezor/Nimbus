@@ -9,6 +9,27 @@ case $1 in
 	then
 		mkdir /var/log/nimbus;
 	fi;
+
+	if [ ! -e /var/nimbus/custom/config/bacula-sd.conf ];
+	then
+        echo mv /var/nimbus/custom/config/bacula-sd.conf.default /var/nimbus/custom/config/bacula-sd.conf;
+		mv /var/nimbus/custom/config/bacula-sd.conf.default /var/nimbus/custom/config/bacula-sd.conf;
+	fi;
+
+	if [ ! -e /var/nimbus/custom/config/bacula-dir.conf ];
+	then
+        echo mv /var/nimbus/custom/config/bacula-dir.conf.default /var/nimbus/custom/config/bacula-dir.conf;
+		mv /var/nimbus/custom/config/bacula-dir.conf.default /var/nimbus/custom/config/bacula-dir.conf;
+	fi;
+
+	if [ ! -e /var/nimbus/custom/config/bconsole.conf ];
+	then
+        echo mv /var/nimbus/custom/config/bconsole.conf.default /var/nimbus/custom/config/bconsole.conf;
+		mv /var/nimbus/custom/config/bconsole.conf.default /var/nimbus/custom/config/bconsole.conf;
+	fi;
+
+
+
 	echo "/opt/bacula/lib" > /etc/ld.so.conf.d/bacula.conf;
 	/sbin/ldconfig;
 	/usr/sbin/update-rc.d nimbusmanager defaults; 
@@ -27,6 +48,7 @@ case $1 in
     /etc/init.d/bacula-ctl-dir restart;
     /etc/init.d/bacula-ctl-sd restart;
     /usr/sbin/a2enmod rewrite;
+    killall -9 nimbus.fcgi;
     /etc/init.d/apache2 restart;
 	/etc/init.d/nimbusmanager restart ;;
 esac
