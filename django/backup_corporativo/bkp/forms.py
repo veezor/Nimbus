@@ -277,7 +277,7 @@ class RestoreDumpForm(forms.Form):
 
 
 class GlobalConfigForm(ModelForm):
-    total_backup_size = forms.IntegerField(label=u'Tamanho Total do Backup (GB)', max_value=1000, min_value=80)
+    total_backup_size = forms.FloatField(label=u'Tamanho Total do Backup (GB)', max_value=1000, min_value=80)
     class Meta:
 		model = GlobalConfig
 		fields = (
