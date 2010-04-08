@@ -20,12 +20,17 @@ class Operation(models.Model):
         return "Operation(%s)" % self.name
 
 class OperationLog(models.Model):
-    datetime = models.DateTimeField(default=datetime.now())
+    datetime = models.DateTimeField(default=datetime.now)
     user = models.ForeignKey(User)
     operation = models.ForeignKey(Operation)
     path = models.CharField(max_length=500)
     datalen = models.IntegerField(default=0)
     httpcode = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return u"%s operation by user %s at %s" % ( self.operation.name,
+                                                    self.user.username,
+                                                    self.datetime)
 
 class UserBucket(models.Model):
     user = models.ForeignKey(User)

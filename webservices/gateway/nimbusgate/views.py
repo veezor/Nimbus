@@ -77,25 +77,44 @@ class Handler(object):
 
 
     @with_auth
-    def call_method(self, request, key, method="GET", headers={}):
+    def call_method(self, request, path, method="GET", headers={}):
         bucket = self.get_bucketname(request)
-        url = self.aws.generate_url(method, bucket, key, headers=headers)
+        url = self.aws.generate_url(method, bucket, path, headers=headers)
 
         ol = OperationLog(  user=User.objects.get(username=request.user),
                             operation = Operation.objects.get(name=method),
-                            path = key )
+                            path = path )
         ol.save()
         return self._get_json_response({'url':url, 'id' : ol.id })
 
-    def get(self, request, key):
-        return self.call_method(request, key)
+    def get(self, request):
+        if request.method == "POST":
+            path = request.POST.get("path")
+            if not path:
+                return HttpResponse(status=400)
+            return self.call_method(request, path)
+        else:
+            raise Http404()
 
-    def put(self, request, base64_of_md5, key):
-        return self.call_method(request, key, method="PUT", 
+    def put(self, request):
+        if request.method == "POST":
+            path = request.POST.get("path")
+            base64_of_md5 = request.POST.get("base64_of_md5")
+            if not path or not base64_of_md5:
+                return HttpResponse(status=400)
+            return self.call_method(request, path, method="PUT", 
                                 headers = { 'Content-MD5': base64_of_md5  })
+        else:
+            raise Http404()
 
-    def delete(self, request, key):
-        return self.call_method(request, key, method="DELETE")
+    def delete(self, request):
+        if request.method == "POST":
+            path = request.POST.get("path")
+            if not path:
+                return HttpResponse(status=400)
+            return self.call_method(request, path, method="DELETE")
+        else:
+            raise Http404()
 
     @with_auth
     def list(self, request):
