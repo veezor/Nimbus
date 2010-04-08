@@ -211,7 +211,7 @@ class BaculaDatabaseWrapper(BaseDatabaseWrapper):
             try:
                 self.connection.ping()
                 return True
-            except DatabaseError:
+            except Database.DatabaseError, e:
                 self.connection.close()
                 self.connection = None
         return False
