@@ -4,6 +4,7 @@
 
 from xmlrpclib import ServerProxy
 import socket
+import logging
 
 from django.db.models.signals import post_save, post_delete 
 
@@ -13,6 +14,7 @@ from backup_corporativo.bkp.bacula import Bacula
 from backup_corporativo.bkp.models import *
 
 from pybacula import BConsoleInitError
+
 
 
 ### Constants ###
@@ -35,7 +37,8 @@ def connect_on(model, signal):
                 bacula = Bacula()
                 bacula.reload()
             except BConsoleInitError, e:
-                pass
+                logger = logging.getLogger(__name__)
+                logger.error("Comunicação com o bacula falhou")
             return value
 
 
