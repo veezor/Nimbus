@@ -14,7 +14,7 @@ else
     SYSTEM_OS=linux
     DAEMON=/var/nimbusmanager/nimbus-manager
     STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/log/nimbus/manager.pid "
-    STARTDAEMON="start-stop-daemon --start --exec $DAEMON"
+    STARTDAEMON="start-stop-daemon --start --exec $DAEMON -b"
 fi
 
 
