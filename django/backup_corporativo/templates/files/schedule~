@@ -1,0 +1,6 @@
+Schedule {
+    Name = "{{name}}"
+    {%for r in runs%}
+    Run = {{r}}
+    { %endfor %}
+}

@@ -1,0 +1,7 @@
+Storage {
+    Name = {{ name }}
+	WorkingDirectory = "/var/bacula/working"
+    Maximum Concurrent Jobs = {{ max_cur_jobs }} 
+    SDPort = {{ port }}
+	PidDirectory = "/var/run"
+}

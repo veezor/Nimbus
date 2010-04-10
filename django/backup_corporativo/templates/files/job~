@@ -1,0 +1,16 @@
+Job {
+    Write Bootstrap = "/var/lib/bacula/{{name}}.bsr"
+    Name = "{{name}}"
+    Schedule = "{{schedule}}"
+    Messages = "Standard"
+    Level = "{{level}}"
+    Storage = "{{storage}}"
+    FileSet = "{{fileset}}"
+    Priority = "{{priority}}"
+    Client = "{{client}}"
+    Type = "Backup"
+    Pool = "{{pool}}"
+    {% if offsite %}
+    Run After Job = "/usr/bin/nimbus-upload -m %v"
+    {% endif %}
+}
