@@ -60,14 +60,6 @@ def connect_on(model, signal):
 ###   Main Definitions
 ###
 
-def create_pools(sender, instance, signal, *args, **kwargs):
-    """create associated pools to the procedure."""
-
-    if 'created' in kwargs and kwargs.get('created'):
-        if kwargs['created']:   # instance was just created
-            fpool = Pool(procedure=instance)
-            fpool.save()
-
 
 
 # Must be first
