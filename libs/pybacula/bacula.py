@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from backends import get_active_backend
+from backends import get_active_backend, BConsoleInitError
 
 
 
