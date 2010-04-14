@@ -11,12 +11,12 @@ Director {
 
 {% for device in devices %}
 Storage {
-	Name = {{ storage_name }}
+	Name = {{ device.storage.storage_bacula_name }}
 	Media Type = File
-	Address = {{ storage_ip }}
-	Device = {{ device }}
-	Password = "{{storage_password}}"
-	SDPort = {{ storage_port }}
+	Address = {{ device.storage.storage_ip }}
+	Device = {{ device.device_bacula_name }}
+	Password = "{{device.storage.storage_password}}"
+	SDPort = {{ device.storage.storage_port }}
 }
 {% endfor %}
 
@@ -44,3 +44,4 @@ Messages {
 @|"sh -c 'for f in /var/nimbus/custom/jobs/* ; do echo @${f} ; done'"
 @|"sh -c 'for f in /var/nimbus/custom/pools/* ; do echo @${f} ; done'"
 @|"sh -c 'for f in /var/nimbus/custom/schedules/* ; do echo @${f} ; done'"
+@|"sh -c 'for f in /var/nimbus/custom/storages/* ; do echo @${f} ; done'"
