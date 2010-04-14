@@ -63,21 +63,6 @@ def connect_on(model, signal):
 
 
 # Must be first
-@connect_on(model=GlobalConfig, signal=post_save)
-def update_console_file(gconf):
-    """Update bconsole file"""
-
-    filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
-                          "config", "bconsole.conf")
-    address = NetworkInterface.get_instance().inteface_address
-
-    render_to_file( filename,
-                    "bconsole",
-                     director_name=gconf.director_bacula_name(),
-                     director_address=address,
-                     director_password=gconf.director_password,
-                     director_port=gconf.director_port)   
-
 
 
 @connect_on(model=GlobalConfig, signal=post_save)
@@ -91,18 +76,37 @@ def update_director_file(gconf):
     sto = Storage.get_instance()
 
     render_to_file( filename,
-                    "bacula-dir",
+                    "files/bacula-dir",
                     director_name=gconf.director_bacula_name(), 
                     director_port=gconf.director_port, 
                     director_password=gconf.director_password,
-                    storage_name=sto.storage_bacula_name(), 
-                    storage_ip=sto.storage_ip, 
-                    storage_port=sto.storage_port, 
-                    storage_password=sto.storage_password,
-                    devices=Devices.objects.all(),
+                    devices=Device.objects.all(),
                     db_name=gconf.bacula_database_name(), 
                     db_user=gconf.bacula_database_user(), 
                     db_password=gconf.bacula_database_password())
+
+    logger = logging.getLogger(__name__)
+    logger.info("Arquivo de configuracao do director gerado com sucesso")
+
+
+
+@connect_on(model=GlobalConfig, signal=post_save)
+def update_console_file(gconf):
+    """Update bconsole file"""
+
+    filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
+                          "config", "bconsole.conf")
+    address = NetworkInterface.get_instance().interface_address
+
+    render_to_file( filename,
+                    "files/bconsole",
+                     director_name=gconf.director_bacula_name(),
+                     director_address=address,
+                     director_password=gconf.director_password,
+                     director_port=gconf.director_port)   
+
+    logger = logging.getLogger(__name__)
+    logger.info("Arquivo de configuracao do bconsole gerado com sucesso")
 
 
 
@@ -117,9 +121,9 @@ def update_storage_file(gconf):
     sto = Storage.get_instance()
 
     render_to_file( filename,
-                    "bacula-sd",
+                    "files/bacula-sd",
                     name=sto.storage_bacula_name(),
-                    port=def_sto.storage_port,
+                    port=sto.storage_port,
                     max_cur_jobs=100,
                     director_name=gconf.director_bacula_name(),
                     director_password=gconf.director_password)
@@ -136,10 +140,10 @@ def update_procedure_file(proc):
     name = proc.procedure_bacula_name()
 
     filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
-                          "config", "jobs", name)
+                          "jobs", name)
 
     render_to_file( filename,
-                    "job",
+                    "files/job",
                     name=name,
                     schedule=proc.schedule_bacula_name(),
                     storage=proc.storage.storage_bacula_name(),
@@ -171,12 +175,12 @@ def update_computer_file(comp):
 
 
     filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
-                          "config", "jobs", name)
+                          "computers", name)
 
     render_to_file( filename,
-                    "computer",
+                    "files/computer",
                     name=name,
-                    id=comp.computer_id,
+                    ip=comp.computer_ip,
                     password=comp.computer_password)
 
 
@@ -203,10 +207,10 @@ def update_fileset_file(instance):
 
 
     filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
-                          "config", "filesets", name)
+                          "filesets", name)
 
     render_to_file( filename,
-                    "fileset",
+                    "files/fileset",
                     name=name,
                     files=[ f.path for f in fsets ])
 
@@ -232,10 +236,10 @@ def update_pool_file(instance):
     name = proc.pool_bacula_name()
 
     filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
-                          "config", "pools", name)
+                          "pools", name)
 
     render_to_file( filename,
-                    "pool",
+                    "files/pool",
                     name=name,
                     max_vol_bytes=1048576,
                     days=proc.retention_time)
@@ -257,15 +261,15 @@ def remove_pool_file(instance):
 
 def update_schedule_file(proc):
 
-    filename = proc.schedule_bacula_name()
+    name = proc.schedule_bacula_name()
     scheds = proc.schedule_set.all()
     runs =  [ "%s %s" % (r[1],[0])   for r in run_dict(scheds).items() ]
 
     filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
-                          "config", "schedules", name)
+                          "schedules", name)
 
     render_to_file( filename,
-                    "schedule",
+                    "files/schedule",
                     name=name,
                     runs=runs )
 
@@ -274,6 +278,31 @@ def update_schedule_file(proc):
 @connect_on(model=Procedure, signal=post_delete)
 def remove_schedule_file(proc):
     base_dir,filepath = utils.mount_path(proc.schedule_bacula_name(),'schedules')
+    utils.remove_or_leave(filepath)
+
+
+
+### Devices ###
+
+@connect_on(model=Device, signal=post_save)
+def update_device_file(instance):
+
+    name = instance.device_bacula_name()
+
+    filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
+                          "devices", name)
+
+    render_to_file( filename,
+                    "files/device",
+                    name=name,
+                    archive_device=instance.archive)
+
+
+
+
+@connect_on(model=Device, signal=post_delete)
+def remove_device_file(instance):
+    base_dir,filepath = utils.mount_path(instance.device_bacula_name(),'devices')
     utils.remove_or_leave(filepath)
 
 
@@ -325,12 +354,12 @@ def update_offsite_file(gconf):
 def generate_offsite_file(filename, offsite_hour):
 
     jobfilename = path.join( settings.NIMBUS_CUSTOM_PATH, 
-                            "config", "jobs", filename)
+                            "jobs", filename)
 
     sto = Storage.get_instance()
 
     render_to_file( jobfilename,
-                    "job",
+                    "files/job",
                     name="Upload offsite",
                     schedule="offsite_schedule",
                     level="Incremental",
@@ -344,10 +373,10 @@ def generate_offsite_file(filename, offsite_hour):
 
 
     schfilename = path.join( settings.NIMBUS_CUSTOM_PATH,
-                             "config", "schedules", "offsite_sched")
+                             "schedules", "offsite_sched")
 
     render_to_file( schfilename,
-                    "schedule",
+                    "files/schedule",
                     name="offsite_schedule",
                     runs=["Run = daily at %s" % offsite_hour])
     
