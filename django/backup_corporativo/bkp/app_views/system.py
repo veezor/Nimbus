@@ -86,8 +86,8 @@ def ajax_area_request(request):
         if not tz_country in country_timezones:
             raise InvalidTimezone("Erro de Programação: País Inválido")
         if tz_country is not None:
-            choices = country_timezones[tz_country]
-            response = json.dumps(country_timezones[tz_country])
+            choices = sorted(country_timezones[tz_country])
+            response = json.dumps(choices)
             return HttpResponse(response, mimetype="application/json")
 
 
