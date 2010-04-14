@@ -48,7 +48,7 @@ case $1 in
     /etc/init.d/bacula-ctl-dir restart;
     /etc/init.d/bacula-ctl-sd restart;
     /usr/sbin/a2enmod rewrite;
-    killall -9 nimbus.fcgi;
+    killall -9 nimbus.fcgi||echo;
     /etc/init.d/apache2 restart;
 	/etc/init.d/nimbusmanager restart ;;
 esac
