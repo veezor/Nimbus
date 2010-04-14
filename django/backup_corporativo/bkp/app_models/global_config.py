@@ -58,10 +58,6 @@ class GlobalConfig(models.Model):
         # dependência mútua entre Storage e GlobalConfig. Assim ambos não
         # podem um referenciar ao outro no escopo geral do arquivo ao
         # mesmo tempo.
-        from backup_corporativo.bkp.app_models.storage import Storage
-        sto = Storage.get_instance()
-        sto.storage_port=self.storage_port
-        sto.save()
         self.id = 1
         super(GlobalConfig, self).save(*args, **kwargs)
 
