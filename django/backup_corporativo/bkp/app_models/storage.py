@@ -13,7 +13,7 @@ class Storage(models.Model):
     NIMBUS_BLANK = -1
     # Atributos
     nimbus_uuid = models.ForeignKey(NimbusUUID, default=NIMBUS_BLANK)
-    storage_name = models.CharField("Nome", max_length=50, unique=True)
+    storage_name = models.CharField("Nome", max_length=50)
     storage_ip = models.IPAddressField("Endereço IP", default="127.0.0.1")
     storage_port = models.IntegerField("Porta do Storage", default='9103')
     storage_password = models.CharField(max_length=50, default=NIMBUS_BLANK)
@@ -41,12 +41,12 @@ class Storage(models.Model):
     def save(self, *args, **kwargs):
         if self.storage_password == self.NIMBUS_BLANK:
             self.storage_password = utils.random_password()
+
         NimbusUUID.generate_uuid_or_leave(self)
-        self.id = 1
         super(Storage, self).save(*args, **kwargs)
 
     def storage_bacula_name(self):
-        return "StorageLocal"
+        return "%s_storage" % self.nimbus_uuid.uuid_hex
 
     def __unicode__(self):
         return "%s (%s:%s)" % (
