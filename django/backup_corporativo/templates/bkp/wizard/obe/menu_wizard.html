@@ -5,5 +5,7 @@
 	<li {% if request.META.PATH_INFO|isequal:"/wizard/config/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_wizard_config %}">Configurações</a></li>
 
 	<li {% if request.META.PATH_INFO|isequal:"/wizard/timezone/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_wizard_timezone %}">Timezone</a></li>
-	<li {% if request.META.PATH_INFO|isequal:"/wizard/strongbox/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_wizard_strongbox %}">Confirmação</a></li>
+	<li {% if request.META.PATH_INFO|isequal:"/wizard/strongbox/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_wizard_strongbox %}">Cofre</a></li>
+	<li {% if request.META.PATH_INFO|isequal:"/wizard/confirm" %}class="active"{% endif %}><a href="{% url bkp.views.confirm_wizard %}">Confirmação</a></li>
+</ul>
 </ul>

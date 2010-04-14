@@ -113,6 +113,9 @@ urlpatterns = patterns(
     (r'^wizard/strongbox/edit$', 'edit_wizard_strongbox'),
     (r'^wizard/strongbox/update$', 'update_wizard_strongbox'),
 
+
+    (r'^wizard/confirm/$', 'confirm_wizard'),
+
     # wizard de restore
     (r'^restore/new$', 'new_restore'),
     (r'^restore/create$', 'create_restore'),

@@ -40,7 +40,7 @@ def create_session(request):
                 user = authenticate(username=auth_login, password=auth_passwd)
                 if user:
                     login(request, user)
-                    if Wizard.get_wizard_lock():
+                    if Wizard.has_completed():
                         location = reverse("list_computers")
                     else:
                         location = reverse("main_wizard")

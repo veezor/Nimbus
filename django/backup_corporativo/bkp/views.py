@@ -50,20 +50,19 @@ def require_authentication(request):
     """Redirect user to authentication page."""
     return HttpResponseRedirect(utils.reverse('new_session'))
 
-def require_wizard():
-    """Redirect user to authentication page."""
-    return HttpResponseRedirect(utils.reverse('new_session'))
 
 def authentication_required(view_def):
     """Decorator to force a view to verify if user is authenticated."""
     def check_auth(*args, **kw):
         if not args[0].user.is_authenticated():
             return require_authentication(args[0])
-        
-        if view_def.func_name == 'delete_session':
-            pass
-        elif not Wizard.get_wizard_lock() and not 'wizard' in view_def.func_name:
-            return require_wizard()
+
+
+        view_name = view_def.func_name
+        redirect = not 'wizard' in view_name and view_name != 'delete_session'
+
+        if not Wizard.has_completed() and redirect:
+            return HttpResponseRedirect(utils.reverse('main_wizard'))
         
         return view_def(*args, **kw)
     check_auth.__name__ = view_def.__name__
