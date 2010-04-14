@@ -100,7 +100,7 @@ Storage {
 
 Catalog {
   Name = MyCatalog
-  dbname = "bacula"; dbuser = "bacula"; dbpassword = ""
+  dbname = "bacula"; dbuser = "root"; dbpassword = "n1mbus"
 }
 
 Messages {
