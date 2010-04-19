@@ -287,15 +287,17 @@ def remove_schedule_file(proc):
 @connect_on(model=Device, signal=post_save)
 def update_device_file(instance):
 
-    name = instance.device_bacula_name()
+    if instance.is_local:
 
-    filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
-                          "devices", name)
+        name = instance.device_bacula_name()
 
-    render_to_file( filename,
-                    "files/device",
-                    name=name,
-                    archive_device=instance.archive)
+        filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
+                              "devices", name)
+
+        render_to_file( filename,
+                        "files/device",
+                        name=name,
+                        archive_device=instance.archive)
 
 
 

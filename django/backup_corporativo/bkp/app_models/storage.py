@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+import networkutils
+
 from backup_corporativo.bkp import utils
 
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
@@ -61,3 +63,10 @@ class Storage(models.Model):
         except cls.DoesNotExist:
             sto = cls()
         return sto
+
+    @property
+    def is_local(self):
+        raw_iface = networkutils.get_interfaces()[0]
+        local_address = raw_iface.addr
+        return self.storage_ip == local_address or  \
+                self.storage_ip == "127.0.0.1"

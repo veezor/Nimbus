@@ -16,5 +16,10 @@ class Device(models.Model):
         return "%s_device" % self.nimbus_uuid.uuid_hex
 
 
+    @property
+    def is_local(self):
+        return self.storage.is_local
+
+
     class Meta:
         app_label = 'bkp'
