@@ -5,7 +5,7 @@ import logging
 
 def render_to_file(filename, template, **kwargs):
     try:
-        logger = logging.getLogger()
+        logger = logging.getLogger(__name__)
         f = file(filename, "w", encoding="utf-8")
         content = render_to_string(template, kwargs)
         try:
