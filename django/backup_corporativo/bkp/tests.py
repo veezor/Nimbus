@@ -33,7 +33,7 @@ class NimbusTest(TestCase):
         self.client = client
 
     def setUp(self, wiz=True):
-        if wiz == True:
+        if wiz:
             management.call_command('loaddata', 'wizard.json', verbosity=0)
         
         TestCase.setUp(self)
