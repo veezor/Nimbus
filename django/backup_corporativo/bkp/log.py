@@ -4,8 +4,9 @@
 
 import logging
 import logging.config
+from django.conf import settings
 
 
-logging.config.fileConfig("/etc/nimbus/logging.conf")
+logging.config.fileConfig(settings.NIMBUS_LOGCONF)
 
 
