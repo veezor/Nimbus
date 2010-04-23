@@ -46,6 +46,7 @@ class Handler(object):
 
 
     def is_authenticated(self, request):
+        print  "opa"*20
         if not request.META.has_key('HTTP_AUTHORIZATION'):
             logout(request)
             return False
@@ -54,6 +55,7 @@ class Handler(object):
             return False
         auth = auth.strip().decode('base64')
         username, password = auth.split(':', 1)
+        print  "opa"*20
         return authenticate(username=username, password=password)
 
 
@@ -71,8 +73,11 @@ class Handler(object):
 
     
     def get_bucketname(self, request):
-        bucket = UserBucket.objects.get(user__username=request.user)
-        return bucket.name
+        try:
+            bucket = UserBucket.objects.get(user__username=request.user)
+            return bucket.name
+        except UserBucket.DoesNotExist, e:
+            raise Http404()
 
 
 
@@ -117,13 +122,23 @@ class Handler(object):
             raise Http404()
 
     @with_auth
-    def list(self, request):
+    def list(self, request):    
         bucket = self.get_bucketname(request)
-        url = self.aws.list_bucket(bucket)
+
+        options = {} 
+
+        if request.method == "POST":
+            marker = request.POST.get("marker", None)
+            options["marker"] = marker
+
+        url = self.aws.list_bucket( bucket, 
+                                    options=options)
+
         ol = OperationLog(  user=User.objects.get(username=request.user),
                             operation = Operation.objects.get(name="LIST"))
         ol.save()
-        return self._get_json_response({'url':url, 'id' : ol.id })
+        return self._get_json_response({'url':url, 'id' : ol.id, 
+                                        'service' : 'amazon' })
 
 
 
