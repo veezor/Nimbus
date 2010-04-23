@@ -29,23 +29,37 @@ class _File(object):
         self.fileobj = file(filename, mode)
         self.callback = callback
         self.filesize = os.path.getsize(filename)
-        self.bytes_read = 0
+        self.read_bytes = 0
+        self.written_bytes = 0
 
 
     def read(self, size):
         r =  self.fileobj.read(size)
-        self.bytes_read += size
+        self.read_bytes += size
+        self.progress_upload( )
         return r
 
-    def progress_download(self, totaldown, downloaded, totalup, uploaded):
+    def write(self, content):
+        size = len(content)
+        r = self.fileobj.write(content)
+        self.written_bytes += size
+        self.progress_download( )
+        return r
+
+    def progress_download(self):
         if self.callback:
-            self.callback( totaldown, downloaded )
+            self.callback( self.written_bytes, self.filesize )
 
 
-    def progress_upload(self, totaldown, dowloaded, totalup, uploaded):
+    def progress_upload(self):
         if self.callback:
-            self.callback( totalup, uploaded )
+            self.callback( self.read_bytes, self.filesize )
 
+
+    def header_callback(self, line):
+        if line.startswith("Content-Length:"):
+            header, size = line.split()
+            self.filesize = int(size)
 
     def close(self):
         self.fileobj.close()
@@ -64,6 +78,8 @@ def _md5_for_file(filename, block_size=2**20):
 
 
 class Api(object):
+
+    MAX_RETRY = 3
 
 
     def __init__(self, username, password, gateway_url, encoding=None):
@@ -152,7 +168,7 @@ class Api(object):
             resume_index = os.path.getsize(dest)
             mode = "ab"
 
-        fp = _File(dest, mode, callback)
+        fileobj = _File(dest, mode, callback)
         curl = pycurl.Curl()
 
         curl.setopt(pycurl.URL, str(url))
@@ -161,22 +177,27 @@ class Api(object):
         curl.setopt(pycurl.NOPROGRESS, 1)
 
         curl.setopt(pycurl.NOSIGNAL, 1)
-        curl.setopt(pycurl.WRITEDATA, fp.fileobj)
+        curl.setopt(pycurl.WRITEFUNCTION, fileobj.write)
+        curl.setopt(pycurl.HEADERFUNCTION, fileobj.header_callback)
 
         if resume:
             curl.setopt(pycurl.RESUME_FROM_LARGE, resume_index)
 
-        if callback:
-            curl.setopt( pycurl.PROGRESSFUNCTION, 
-                         fp.progress_download)
 
         if limitrate:
             curl.setopt(pycurl.MAX_RECV_SPEED_LARGE, limitrate)
 
+        try:
+            curl.perform()
+        except pycurl.error, e:
+            code, msg = e
+            if code == 18:#transfer closed with outstanding read data remaining
+                pass
+            else:
+                raise 
 
-        curl.perform()
         curl.close()
-        fp.close()
+        fileobj.close()
 
 
     def delete_file(self, filename):
@@ -222,10 +243,6 @@ class Api(object):
 
         curl.setopt(pycurl.NOSIGNAL, 1)
 
-        if callback:
-            curl.setopt( pycurl.PROGRESSFUNCTION, 
-                         filereader.progress_upload)
-
         if limitrate:
             curl.setopt(pycurl.MAX_SEND_SPEED_LARGE, limitrate)
 
@@ -251,7 +268,7 @@ class Api(object):
 
             retry = 0
             
-            while retry < 3:
+            while retry < self.MAX_RETRY:
                 try:
                     last = result[-1][0] # entries = [ (file, size) ]
                     entries, is_truncated = self.list_files(marker=last)
