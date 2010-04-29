@@ -2,7 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 
-import os, cairoplot
+import os
+import cairoplot
+
+from django.conf import settings
 from backup_corporativo.bkp.bacula import Bacula, BaculaDatabase
 from backup_corporativo.bkp import utils, models
 
@@ -12,7 +15,11 @@ from backup_corporativo.bkp.sql_queries import ( JOB_STAT_RAW_QUERY,
                                                  JOB_STAT_GET_N_LAST,
                                                  JOB_STAT_GET_N_LAST_FROM_CLIENT )  
 
-IMAGENS_DIR = "/var/www/static/imagens/"
+
+if settings.DEBUG:
+    IMAGENS_DIR = os.path.join(settings.MEDIA_ROOT, "imagens/")
+else:
+    IMAGENS_DIR = "/var/www/static/imagens/"
 
 KBYTES = 1024
 MBYTES = 1024 * KBYTES
