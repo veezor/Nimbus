@@ -15,7 +15,7 @@ def get_trigger_level(obj):
     trigg = obj.get_trigger()
     
     if trigg:
-       return trigg.level
+        return trigg.level
     else:
         return ''
 
@@ -79,6 +79,8 @@ def friendly_size_mb(obj):
     Example: 
 
     """
+    if obj == 0:
+        return "0 MB"
     if obj:
         return  ("%s MB" % str(obj/(1024*1024)))
     else:
