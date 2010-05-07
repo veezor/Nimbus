@@ -3,10 +3,10 @@ from backup_corporativo.bkp.models import NimbusUUID, Storage
 
 
 class Device(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, null=False)
     archive = models.FilePathField()
-    storage = models.ForeignKey(Storage)
-    nimbus_uuid = models.ForeignKey(NimbusUUID, default=-1)
+    storage = models.ForeignKey(Storage, null=False)
+    nimbus_uuid = models.ForeignKey(NimbusUUID, default=-1, null=False)
 
     def save(self, *args, **kwargs):
         NimbusUUID.generate_uuid_or_leave(self)
