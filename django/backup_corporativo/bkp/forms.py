@@ -493,3 +493,29 @@ class WizardTimezoneConfigForm(ModelForm):
                 [(a,a) for a in country_timezones[country_name]]
         else:
             self.fields['tz_area'].choices = [('', '----------')]
+
+
+class ExternalStorageForm(forms.Form):
+
+    name = forms.CharField(label="Nome do computador")
+    ip = forms.IPAddressField(label="Endereço IP")
+    port = forms.IntegerField(label="Porta")
+    device_name =  forms.CharField(label="Nome do dispositivo de armazenamento")
+    password = forms.CharField(label="Senha", 
+                               widget=forms.PasswordInput)
+    description = forms.CharField(label="Descrição do computador",
+                                  widget=forms.Textarea(attrs={'cols': 40, 
+                                                               'rows': 5}))
+
+    def load_data_from_device(self, device):
+        storage = device.storage
+        self.data = {
+            'name' : storage.storage_name,
+            'ip' :  storage.storage_ip,
+            'port' : storage.storage_port,
+            'description' : storage.storage_description,
+            'password' : storage.storage_password,
+            'device_name' : device.name
+        }
+        self.is_bound = True
+
