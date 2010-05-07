@@ -62,6 +62,12 @@ from backup_corporativo.bkp.app_models.header_bkp import HeaderBkp
 from backup_corporativo.bkp.app_models.wizard import Wizard
 
 
+from backup_corporativo.bkp.app_models.offsite import (UploadedVolume, 
+                                                       Volume,
+                                                       DownloadedVolume,
+                                                       DownloadRequest,
+                                                       UploadRequest )
+
 ###
 ###   Signals
 ###
