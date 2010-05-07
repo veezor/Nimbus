@@ -66,6 +66,11 @@ def connect_on(model, signal):
 
 
 @connect_on(model=GlobalConfig, signal=post_save)
+def call_update_director_file(gconf):
+    update_director_file(gconf)
+
+
+
 def update_director_file(gconf):
     """Generate director file"""
 
@@ -298,6 +303,13 @@ def update_device_file(instance):
                         "files/device",
                         name=name,
                         archive_device=instance.archive)
+
+    config = GlobalConfig.get_instance()
+
+    if config.id:
+        update_director_file(config)
+
+
 
 
 
