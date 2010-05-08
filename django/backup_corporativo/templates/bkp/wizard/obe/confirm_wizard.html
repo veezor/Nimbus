@@ -1,0 +1,46 @@
+{% extends "bkp/base_wizard.html" %}
+{% load bkp_extras %}
+
+{% block horizontal_menu %}
+	{% include 'bkp/wizard/obe/menu_wizard.html' %}
+{% endblock %}
+
+{% block content %}
+
+<br />
+<h1>Confirmação de dados</h1>
+<br /><br />
+
+<div id="titulo_botoes">
+<h2>Configuração</h2>
+</div>
+<div class="bloco_texto">
+<br /><br />
+{% include 'bkp/system/show_globalconfig.html' %}
+</div>
+		
+<div id="titulo_botoes">
+<h2>Rede</h2>
+</div>
+<div class="bloco_texto">
+<br /><br />
+{% include 'bkp/system/show_networkinterface.html' %}
+</div>
+
+<div id="titulo_botoes">
+<h2>Timezone</h2>
+</div>
+<div class="bloco_texto">
+<br /><br />
+{% include 'bkp/system/show_timezoneconfig.html' %}
+</div>
+
+
+<form action="{% url bkp.views.confirm_wizard %}" method="POST">
+<br />
+    <a href="../timezone/edit" > <button type="button"> <span>Voltar</span> </button> </a>
+    <button type="submit"> <span>Aplicar</span> </button>
+</form>
+
+
+{% endblock %}
