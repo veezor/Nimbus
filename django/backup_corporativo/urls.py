@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from os.path import dirname, join
 from django.conf.urls.defaults import *
 from django.conf import settings
+
+from backup_corporativo.bkp import views
 
 base_url = 'backup_corporativo'
 
@@ -125,6 +126,27 @@ urlpatterns = patterns(
     #(r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/restore/create$', 'create_procedure_restore'),
     (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/new$', 'new_job_restore'),
     (r'^computer/(?P<comp_id>\d+)/procedure/(?P<proc_id>\d+)/job/(?P<job_id>\d+)/restore/create$', 'create_job_restore'),
+
+
+# external storages
+    (r'^externalstorage/new$', 'new_or_edit_external_storage',
+            None, 'bkp.views.new_external_storage'),
+    (r'^externalstorage/create$', 'create_or_update_external_storage', 
+            None, 'bkp.views.create_external_storage'),
+    (r'^externalstorage/(?P<device_id>\d+)/edit$', 'new_or_edit_external_storage', 
+            None, 'bkp.views.edit_external_storage'),
+    (r'^externalstorage/(?P<device_id>\d+)/update$', 'create_or_update_external_storage', 
+            None, 'bkp.views.update_external_storage'),
+    (r'^externalstorages$', 'list_externalstorages' ),
+
+
+# offsite
+
+    (r'^offsite/list_downloadrequest', 'list_downloadrequest'),
+    (r'^offsite/list_uploadrequest', 'list_uploadrequest'),
+    (r'^offsite/select_storage', 'select_storage'),
+    (r'^offsite/copy_files_to_storage', 'copy_files_to_storage')
+
 )
 
 if settings.DEBUG:
