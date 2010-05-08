@@ -31,6 +31,8 @@ PYBACULA_TEST = False
 NIMBUS_VAR_PATH = '/var/nimbus/'
 NIMBUS_BACKUP_PATH = '/var/nimbus/backup/'
 NIMBUS_CUSTOM_PATH = '/var/nimbus/custom/'
+NIMBUS_LOGCONF = "/etc/nimbus/logging.conf"
+
 
 MAIN_APP = 'backup_corporativo.bkp'
 
