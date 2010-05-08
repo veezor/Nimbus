@@ -1,0 +1,15 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h1> Volumes </h1>
+
+<div class="bloco_texto">
+
+{% for object in object_list %}
+  {{ object.path }}
+  {% endfor %}
+
+</div>
+
+
+{% endblock %}

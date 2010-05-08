@@ -1,0 +1,19 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h1> {{page_title}} </h1>
+
+<div class='bloco_texto'>
+
+<form action="{% url bkp.views.create_external_storage %}" method="post">
+    {% for field in form %}
+    <div class="fieldWrapper">
+        {{ field.errors }}
+        {{ field.label_tag }} {{ field }}
+    </div>
+    {% endfor %}
+    <button type="submit"><span>{{ button_label }}</span></button>
+</form>
+</div>
+
+{% endblock %}
