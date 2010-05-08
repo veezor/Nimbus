@@ -23,7 +23,7 @@ class _S3HttpResponseFake(object):
     def read(self):
         return self.content
 
-class _File(object):
+class File(object):
 
     def __init__(self, filename, mode, callback):
         self.fileobj = file(filename, mode)
@@ -168,7 +168,7 @@ class Api(object):
             resume_index = os.path.getsize(dest)
             mode = "ab"
 
-        fileobj = _File(dest, mode, callback)
+        fileobj = File(dest, mode, callback)
         curl = pycurl.Curl()
 
         curl.setopt(pycurl.URL, str(url))
@@ -222,7 +222,7 @@ class Api(object):
             filemd5 = _md5_for_file(filename)
             base64_of_md5 = base64.standard_b64encode(filemd5)
 
-        filereader = _File(filename, "rb", callback)
+        filereader = File(filename, "rb", callback)
 
         url = self.get_upload_url(dest, base64_of_md5)['url']
 
