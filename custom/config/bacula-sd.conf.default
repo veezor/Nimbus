@@ -2,7 +2,7 @@
 Storage {                             # definition of myself
   Name = nimbus-sd
   SDPort = 9103                  # Director's port      
-  WorkingDirectory = "/opt/bacula/var/bacula/working"
+  WorkingDirectory = "/var/bacula/working"
   Pid Directory = "/var/run"
   Maximum Concurrent Jobs = 20
 }

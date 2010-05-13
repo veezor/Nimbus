@@ -3,8 +3,8 @@
 Director {                            # define myself
   Name = nimbus-dir
   DIRport = 9101                # where we listen for UA connections
-  QueryFile = "/opt/bacula/etc/query.sql"
-  WorkingDirectory = "/opt/bacula/var/bacula/working"
+  QueryFile = "/etc/bacula/query.sql"
+  WorkingDirectory = "/var/bacula/working"
   PidDirectory = "/var/run"
   Maximum Concurrent Jobs = 100
   Password = "nimbuspass"         # Console password
@@ -28,7 +28,7 @@ JobDefs {
 Job {
   Name = "NimbusJob"
   JobDefs = "NimbusDefaultJob"
-  Write Bootstrap = "/opt/bacula/var/bacula/working/nimbus.bsr"
+  Write Bootstrap = "/var/bacula/working/nimbus.bsr"
 }
 
 
@@ -49,14 +49,13 @@ FileSet {
     Options {
       signature = MD5
     }
-    File = /opt/bacula/
+    File = /
   }
 
   Exclude {
-    File = /opt/bacula/var/bacula/working
+    File = /var/bacula/working
     File = /tmp
     File = /proc
-    File = /tmp
     File = /.journal
     File = /.fsck
   }
@@ -108,7 +107,7 @@ Messages {
   mail = root@localhost = all, !skipped            
   operator = root@localhost = mount
   console = all, !skipped, !saved
-  append = "/opt/bacula/var/bacula/working/log" = all, !skipped
+  append = "/var/bacula/working/log" = all, !skipped
   catalog = all
 }
 
@@ -116,5 +115,5 @@ Messages {
   Name = Daemon
   mail = root@localhost = all, !skipped            
   console = all, !skipped, !saved
-  append = "/opt/bacula/var/bacula/working/log" = all, !skipped
+  append = "/var/bacula/working/log" = all, !skipped
 }
