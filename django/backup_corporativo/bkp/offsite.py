@@ -10,7 +10,6 @@ from datetime import datetime
 
 import pycurl
 
-from backup_corporativo.offsite import models
 from backup_corporativo.bkp import models
 from nimbusgateway import Api, File
 
