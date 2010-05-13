@@ -28,11 +28,18 @@ class GlobalConfig(models.Model):
     storage_port = models.IntegerField("Porta do Storage", default='9103')
     offsite_on = models.BooleanField("Offsite ativo?", default=False)
     offsite_hour = models.TimeField("Horário", default="00:00:00")
-    offsite_username = models.CharField(max_length=255,null=False,blank=False)
-    offsite_password = models.CharField(max_length=255,null=False,blank=False)
-    offsite_gateway_url = models.CharField(max_length=255,null=False,blank=False,
-                                 default="http://gateway.nimbus.com")
-    offsite_upload_rate = models.IntegerField(default=-1,null=False, blank=False)
+
+    offsite_username = models.CharField("Nome do usuário", 
+                                        max_length=255)
+
+    offsite_password = models.CharField("Senha", max_length=255)
+
+    offsite_gateway_url = models.CharField("Endereço do serviço nimbus",
+                                            max_length=255,
+                                            default="http://gatewaynimbus.veezor.com")
+
+    offsite_upload_rate = models.IntegerField("Limitar taxa de upload em",
+                                              default=-1)
     total_backup_size = models.FloatField("Tamanho Total do Backup (GB)")
 
     # Classe Meta é necessária para resolver um problema gerado quando se
