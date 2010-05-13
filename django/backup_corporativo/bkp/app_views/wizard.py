@@ -81,7 +81,6 @@ def main_wizard(request):
 
     if request.method == 'GET':
         machine = WizardStateMachine() 
-        logging.info("Ended %s" % machine.ended )
         if machine.ended:
             E.msg = u"Seu sistema já foi configurado!"
             return HttpResponseRedirect( reverse("main_statistics") )
@@ -242,9 +241,9 @@ def update_wizard_strongbox(request):
     if request.method == 'POST':
 
         E.wizard = Wizard.get_instance()
-        E.strongbox_form = NewStrongBoxForm(request.POST)
+        E.sbox_form = NewStrongBoxForm(request.POST)
 
-        if not E.strongbox_form.is_valid():
+        if not E.sbox_form.is_valid():
             E.msg = 'Existem erros com a senha do cofre'
             E.template = 'bkp/wizard/obe/edit_wizard_strongbox.html'
             return E.render()
