@@ -285,13 +285,25 @@ class GlobalConfigForm(ModelForm):
 			'director_port',
 			'storage_port',
             'total_backup_size',
-			'offsite_on')
+			'offsite_on',
+            'offsite_hour',
+            'offsite_username',
+            'offsite_password',
+            'offsite_gateway_url',
+            'offsite_upload_rate')
+
 
 
 class OffsiteConfigForm(ModelForm):
 	class Meta:
 		model = GlobalConfig
-		fields = ('offsite_on', 'offsite_hour')
+		fields = ('offsite_on', 
+                  'offsite_hour', 
+                  'offsite_username',
+                  'offsite_password',
+                  'offsite_gateway_url',
+                  'offsite_upload_rate')
+
 
 
 class LoginForm(forms.Form):
