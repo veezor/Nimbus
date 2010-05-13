@@ -392,7 +392,7 @@ def generate_offsite_file(filename, offsite_hour):
     render_to_file( schfilename,
                     "files/schedule",
                     name="offsite_schedule",
-                    runs=["Run = daily at %s" % offsite_hour])
+                    runs=["daily at %s" % offsite_hour])
     
 
 
