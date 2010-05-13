@@ -6,30 +6,20 @@
 
 {% block content %}
 
-{% if offsite_on %}
-<h2> Configuraçao do Backup Offsite </h2>
-<p> Deseja realmente desabilitar backup offsite? </p>
-<form action="{% url bkp.views.disable_system_offsite %}" method="POST">
-    <p><input type="submit" value="Sim" /></p>
-</form>
-
-{% else %}
 <h2> Configuraçao do Backup Offsite </h2>
 
 <form action="{% url bkp.views.enable_system_offsite %}" method="POST">
-        <div class="fieldWrapper">
-            {{ offsiteform.offsite_hour.errors }}
-            {{ offsiteform.offsite_hour.label_tag }} {{ offsiteform.offsite_hour }}
-        </div>
-        <div class="fieldWrapper">
-            {{ offsiteform.offsite_on }}
-            <p>Concordo com os termos de uso e desejo habilitar o Backup Offsite.</p>
-        </div>
-        
+     {% for field in offsiteform %}
+    <div class="fieldWrapper">
+        {{ field.errors }}
+        {{ field.label_tag }} {{ field }}
+    </div>
+    {% endfor %}
+    <div class="fieldWrapper">
     <p><input type="submit" value="Salvar" /></p>
+    </div>
 </form>
 
-{% endif %}
 
 <br />
 
