@@ -129,15 +129,15 @@ urlpatterns = patterns(
 
 
 # external storages
-    (r'^externalstorage/new$', 'new_or_edit_external_storage',
-            None, 'bkp.views.new_external_storage'),
+    (r'^system/externalstorage/new$', 'new_or_edit_external_storage',
+            None, 'backup_corporativo.bkp.views.new_external_storage'),
     (r'^externalstorage/create$', 'create_or_update_external_storage', 
-            None, 'bkp.views.create_external_storage'),
-    (r'^externalstorage/(?P<device_id>\d+)/edit$', 'new_or_edit_external_storage', 
-            None, 'bkp.views.edit_external_storage'),
+            None, 'backup_corporativo.bkp.views.create_external_storage'),
+    (r'^system/externalstorage/(?P<device_id>\d+)/edit$', 'new_or_edit_external_storage', 
+            None, 'backup_corporativo.bkp.views.edit_external_storage'),
     (r'^externalstorage/(?P<device_id>\d+)/update$', 'create_or_update_external_storage', 
-            None, 'bkp.views.update_external_storage'),
-    (r'^externalstorages$', 'list_externalstorages' ),
+            None, 'backup_corporativo.bkp.views.update_external_storage'),
+    (r'^system/externalstorages/$', 'list_externalstorages' ),
 
 
 # offsite

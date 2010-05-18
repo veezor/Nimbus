@@ -1,11 +1,16 @@
 {% extends "bkp/base.html" %}
+{% block horizontal_menu %}
+	{% include 'bkp/system/menu_system.html' %}
+{% endblock %}
+
+
 {% block content %}
 
 <h1> {{page_title}} </h1>
 
 <div class='bloco_texto'>
 
-<form action="{% url bkp.views.create_external_storage %}" method="post">
+<form action="{{view_url}}" method="post">
     {% for field in form %}
     <div class="fieldWrapper">
         {{ field.errors }}
