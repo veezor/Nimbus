@@ -378,10 +378,10 @@ def generate_offsite_file(filename, offsite_hour):
                     schedule="offsite_schedule",
                     level="Incremental",
                     storage=sto.storage_bacula_name(),
-                    fileset="empty_fileset",
+                    fileset="empty fileset",
                     priority=10,
-                    client="empty_client",
-                    pool="empty_pool",
+                    client="empty client",
+                    pool="empty pool",
                     offsite=True,
                     offsite_param="-u")
 
@@ -392,7 +392,8 @@ def generate_offsite_file(filename, offsite_hour):
     render_to_file( schfilename,
                     "files/schedule",
                     name="offsite_schedule",
-                    runs=["daily at %s" % offsite_hour])
+                    runs=["daily at %s:%s" % (offsite_hour.hour, 
+                                             offsite_hour.minute)])
     
 
 
