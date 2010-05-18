@@ -23,13 +23,16 @@ def new_or_edit_external_storage(request, device_id=None):
         form.load_data_from_device(device)
         title = "Editar computador de armazenamento"
         button_label = "Editar"
+        view_url = utils.reverse('update_external_storage',args=(device_id,))
     else:
         title = "Adicionar novo computador de armazenamento"
         button_label = "Adicionar"
+        view_url = utils.reverse('create_external_storage')
 
 
     return render(request, "bkp/externalstorage/new_externalstorage.html", 
-                {"form": form, "page_title": title, "button_label" : button_label})
+                {"form": form, "page_title": title, "button_label" : button_label,
+                 "view_url" : view_url })
 
 
 
@@ -62,7 +65,7 @@ def create_or_update_external_storage(request, device_id=None):
         device.save()
 
         request.user.message_set.create(message=msg)
-        return utils.redirect('main_statistics')
+        return utils.redirect('list_externalstorages')
     else:
         return render(request, "bkp/externalstorage/new_externalstorage.html", 
                      {"form": form})
