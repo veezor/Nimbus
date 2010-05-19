@@ -96,7 +96,11 @@ def update_director_file(gconf):
 
 
 @connect_on(model=GlobalConfig, signal=post_save)
-def update_console_file(gconf):
+def call_update_bconsole_file(gconf):
+    update_bconsole_file(gconf)
+
+
+def update_bconsole_file(gconf):
     """Update bconsole file"""
 
     filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
@@ -346,6 +350,12 @@ def update_networks_file(instance):
                 instance.interface_network, 
                 instance.interface_gateway)
         server.generate_dns( instance.interface_dns1, instance.interface_dns2)
+
+
+        gconf = GlobalConfig.get_instance()
+        if gconf.id:
+            update_bconsole_file(gconf)
+
     except socket.error:
         logger = logging.getLogger(__name__)
         logger.error("Conexao com nimbus-manager falhou")
