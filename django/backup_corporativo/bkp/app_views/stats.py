@@ -90,9 +90,9 @@ def stats_global(request):
 
 
             server = ServerProxy("http://127.0.0.1:8888")
-            E.dir_status = server.status_director()
-            E.sd_status = server.status_storage()
-            E.fd_status = server.status_client()
+            E.dir_status = server.director_status()
+            E.sd_status = server.storage_status()
+            E.fd_status = server.client_status()
             #TODO: consertar estatísticas
         except socket.error, e:
             E.dir_status = "Director não responde"
