@@ -7,6 +7,8 @@ import socket
 import logging
 from os import path
 from xmlrpclib import ServerProxy
+from xml.parsers.expat import ExpatError
+
 
 from django.db.models.signals import post_save, post_delete 
 from django.conf import settings
@@ -355,6 +357,11 @@ def update_networks_file(instance):
         gconf = GlobalConfig.get_instance()
         if gconf.id:
             update_bconsole_file(gconf)
+
+        try:
+            server.network_restart()
+        except ExpatError, e:
+            pass # TODO: Fix this. Very Ugly
 
     except socket.error:
         logger = logging.getLogger(__name__)
