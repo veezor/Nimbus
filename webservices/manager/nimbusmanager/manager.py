@@ -32,27 +32,6 @@ class DaemonOperationError(Exception):
 class InvalidTimeZoneError(Exception):
     pass
 
-def _get_secure_method(instance, attr_name):
-    clsname = instance.__class__.__name__
-    try:
-        operation, daemon = attr_name.split('_')
-        if operation in instance.DAEMON_OPERATIONS and \
-                daemon in instance.ALLOWED_DAEMON:
-            
-            def method():
-                d = instance.DAEMON_MAP[daemon]
-                return instance._control_daemon(d, operation)
-
-            method.__name__ = operation + "_" + daemon
-            return method
-
-        else:
-            raise AttributeError("'%s' object has no attribute '%s'" % ( 
-                                  clsname, attr_name))
-
-    except ValueError, e:
-        raise AttributeError("'%s' object has no attribute '%s'" % ( 
-                              clsname, attr_name))
 
 
 
@@ -61,7 +40,7 @@ class Manager(object):
     DAEMON_OPERATIONS = ("start", "stop", "restart", "status")
 
     ALLOWED_DAEMON = (  "director", "client", 
-                        "storage", "networking"  )
+                        "storage", "network"  )
 
     DAEMON_MAP = { "director" : "bacula-ctl-dir",
                    "storage" : "bacula-ctl-sd", 
@@ -175,7 +154,31 @@ class Manager(object):
 
    
     def __getattr__(self, attr):
-        return _get_secure_method(self, attr)
+        return self._get_secure_method(attr)
+
+
+
+    def _get_secure_method(self, attr_name):
+        clsname = self.__class__.__name__
+        try:
+            daemon, operation = attr_name.split('_')
+            if operation in self.DAEMON_OPERATIONS and \
+                    daemon in self.ALLOWED_DAEMON:
+                
+                def method():
+                    d = self.DAEMON_MAP[daemon]
+                    return self._control_daemon(d, operation)
+
+                method.__name__ = operation + "_" + daemon
+                return method
+
+            else:
+                raise AttributeError("'%s' object has no attribute '%s'" % ( 
+                                      clsname, attr_name))
+
+        except ValueError, e:
+            raise AttributeError("'%s' object has no attribute '%s'" % ( 
+                                  clsname, attr_name))
 
 
 
