@@ -82,7 +82,7 @@ def friendly_size_mb(obj):
     if obj == 0:
         return "0 MB"
     if obj:
-        return  ("%s MB" % str(obj/(1024*1024)))
+        return  ("%s MB" % str(float(obj)/(1024*1024)))
     else:
         return ''
 
