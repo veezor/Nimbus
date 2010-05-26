@@ -214,3 +214,11 @@ def parse_filetree(files):
 
 
 CERTIFICATE_CONFIG_PATH = absolute_file_path('certificate.conf','custom/crypt')
+
+
+
+# disk usage
+
+
+def bytes_to_mb(bytes):
+    return float(bytes) / (1024 * 1024)
