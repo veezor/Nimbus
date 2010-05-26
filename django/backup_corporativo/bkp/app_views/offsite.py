@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from os.path import join
+from os.path import join, getsize
+from threading import Thread
 
 from django.http import Http404
 
+from devicemanager import StorageDeviceManager, MountError
+
 from backup_corporativo.bkp.views import allow_get, allow_post, render
 from backup_corporativo.bkp import models, offsite, utils
-from threading import Thread
+
 
 
 
@@ -21,27 +24,49 @@ def select_storage(request):
 
 
 
-def worker_thread(storage):
-    archive_devices = offsite.find_archive_devices()
-    for arc_dev in archive_devices:
-        dest = join( "/media" , storage )
-        manager = offsite.LocalManager(origin=arc_dev, 
-                                       destination=dest)
-        manager.upload_all_volumes()
+def worker_thread(storage_manager):
+    manager = offsite.LocalManager(origin=None,
+                                  destination=storage_manager.mountpoint)
+    manager.upload_all_volumes()
+    storage_manager.umount()
 
 
 @allow_post
 def copy_files_to_storage(request):
 
+    error = None
     device = request.POST.get("device")
+
 
     if not device:
         raise Http404()
 
-    thread = Thread(target=worker_thread, args=(device,))
-    thread.start()
+    try:
+        manager = StorageDeviceManager(device)
+        manager.mount()
+    except MountError, e:
+        error = e
 
-    return utils.redirect('list_uploadrequest')
+    sizes = [ getsize( dev) for dev in offsite.get_all_bacula_volumes() ]
+    required_size = sum( sizes )
+
+
+    if required_size <  manager.available_size:
+        thread = Thread(target=worker_thread, args=(manager,))
+        thread.start()
+        return utils.redirect('list_uploadrequest')
+    else:
+        required_size = utils.bytes_to_mb(required_size)
+        available_size = utils.bytes_to_mb(manager.available_size)
+        manager.umount()
+        error = u"Espaço necessário é de %.3fMB, somente %.3fMB disponível em %s" %\
+                (required_size, available_size, device)
+
+    if error:
+        return render(request, "bkp/offsite/mounterror.html",
+                {"error" : error } )
+
+
 
 
 @allow_get
