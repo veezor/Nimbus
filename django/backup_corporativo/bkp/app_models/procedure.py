@@ -2,23 +2,35 @@
 # -*- coding: utf-8 -*-
 
 import os
-import string
-import time
 
-from django.core import serializers
 from django.db import models
-from django import forms
 from django.db.models import Sum
 
-from backup_corporativo.bkp import customfields as cfields
 from backup_corporativo.bkp import utils
-from backup_corporativo.bkp.sql_queries import JOBS_FOR_RESTORE_QUERY, CLIENT_RESTORE_JOBS_RAW_QUERY, JOB_INFO_RAW_QUERY, DROP_TABLE_RAW_QUERY, CREATE_TEMP_QUERY, CREATE_TEMP1_QUERY, LOAD_LAST_FULL_RAW_QUERY, LOAD_FULL_RAW_QUERY, TEMP1_TDATE_QUERY, LOAD_FULL_MEDIA_INFO_QUERY, LOAD_INC_MEDIA_INFO_RAW_QUERY, FILE_TREE_RAW_QUERY, LAST_SUCCESS_DATE_RAW_QUERY
-from backup_corporativo.bkp.models import TYPE_CHOICES, LEVEL_CHOICES, OS_CHOICES, DAYS_OF_THE_WEEK
+
 from backup_corporativo.bkp.bacula import BaculaDatabase
 
 from backup_corporativo.bkp.app_models.nimbus_uuid import NimbusUUID
 from backup_corporativo.bkp.app_models.computer import Computer, GlobalConfig
 from backup_corporativo.bkp.app_models.storage import Storage
+
+from backup_corporativo.bkp.sql_queries import ( JOBS_FOR_RESTORE_QUERY, 
+                                                 CLIENT_RESTORE_JOBS_RAW_QUERY, 
+                                                 JOB_INFO_RAW_QUERY, 
+                                                 DROP_TABLE_RAW_QUERY, 
+                                                 CREATE_TEMP_QUERY, 
+                                                 CREATE_TEMP1_QUERY, 
+                                                 LOAD_LAST_FULL_RAW_QUERY, 
+                                                 LOAD_FULL_RAW_QUERY, 
+                                                 TEMP1_TDATE_QUERY, 
+                                                 LOAD_FULL_MEDIA_INFO_QUERY, 
+                                                 LOAD_INC_MEDIA_INFO_RAW_QUERY, 
+                                                 FILE_TREE_RAW_QUERY, 
+                                                 LAST_SUCCESS_DATE_RAW_QUERY,
+                                                 FILES_FROM_JOB_NAME,
+                                                 VOLUMES_FROM_JOB_NAME )
+
+
 
 ### Procedure ###
 class Procedure(models.Model):
@@ -224,6 +236,19 @@ class Procedure(models.Model):
             file_list = utils.dictfetch(cursor)
             return count,self.build_file_tree(file_list)
         else: return 0,[]
+
+    def get_backup_file_tree(self):
+        query = FILES_FROM_JOB_NAME % {'name' : self.procedure_bacula_name()}
+        conn = BaculaDatabase()
+        cursor = conn.execute(query)
+        return cursor.fetchall()
+
+
+    def get_bacula_volumes(self):
+        query = VOLUMES_FROM_JOB_NAME % {'name' : self.procedure_bacula_name()}
+        conn = BaculaDatabase()
+        cursor = conn.execute(query)
+        return cursor.fetchall()
     
     def build_file_tree(self, file_list):
         """Build tree from file list"""
