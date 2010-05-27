@@ -50,8 +50,16 @@ def get_all_bacula_volumes():
     return volumes
 
 
+def get_local_archive_device():
+    return find_archive_devices()[0]
+
+
 
 class BaseManager(object):
+
+    def __init__(self):
+        config = models.GlobalConfig.get_instance()
+        self.instance_name = config.globalconfig_name
     
     def get_volume(self, volume_path ):
         volume, created = models.Volume.objects.get_or_create(path=volume_path)
@@ -101,8 +109,9 @@ class BaseManager(object):
 
 
     def download_all_volumes(self):
-        volumes = self.get_remote_volumes_list()
-        self.download_volumes(volumes)
+        files = self.get_remote_files_list()
+        files = [ f for f in files if f.startswith(self.instance_name)]
+        self.download_volumes(files)
 
 
     def download_volumes(self, volumes):
@@ -120,13 +129,14 @@ class RemoteManager(BaseManager):
 
 
     def __init__(self):
+        super(RemoteManager, self).__init__()
         settings = models.GlobalConfig.get_instance()
 
-        self.api = Api(username=settings.offsite_gateway_user,
-                       password=settings.offsite_gateway_password,
+        self.api = Api(username=settings.offsite_username,
+                       password=settings.offsite_password,
                        gateway_url=settings.offsite_gateway_url)
 
-        if settings.UPLOAD_RATE > 0:
+        if settings.offsite_upload_rate > 0:
             self.upload_rate = settings.offsite_upload_rate
         else:
             self.upload_rate = None
@@ -138,7 +148,7 @@ class RemoteManager(BaseManager):
                                ratelimit=self.upload_rate)
 
 
-    def get_remote_volumes_list(self):
+    def get_remote_files_list(self):
         return [ f[0] for f in self.api.list_all_files() ]
 
 
@@ -160,8 +170,17 @@ class RemoteManager(BaseManager):
                 try:
                     req.attempts += 1
                     req.save()
-                    process_function(req.volume.path, req.volume.filename,
-                                     limitrate=limitrate, callback=req.update)
+                    if isinstance(req, models.UploadRequest):
+                        process_function(req.volume.path, req.filename,
+                                limitrate=limitrate, callback=req.update)
+
+                    elif isinstance(req, models.DownloadRequest):
+                        destination = get_local_archive_device()
+                        process_function(req.volume.path, 
+                                        join(destination, req.filename),
+                                        limitrate, req.update)
+                    else:
+                        pass
                     req.finish()
                     logger.info("%s processado com sucesso" % req)
                     retry += 1
@@ -178,13 +197,16 @@ class RemoteManager(BaseManager):
 class LocalManager(BaseManager):
     SIZE_512KB = 512 * 1024
 
-    def __init__(self, origin, destination):
-        self.origin = origin
-        self.destination = destination
+    def __init__(self, mountpoint):
+        super(LocalManager, self).__init__()
+        self.mountpoint = mountpoint
 
+    @property
+    def device(self):
+        return os.path.basename(self.mountpoint)
 
-    def get_remote_volumes_list(self):
-        files = [ join(self.origin, f) for f in os.listdir(self.origin) ]
+    def get_remote_files_list(self):
+        files = [ join(self.origin, f) for f in os.listdir(self.mountpoint) ]
         return filter( os.path.isfile, files)
 
     def process_pending_upload_requests(self):
@@ -208,10 +230,16 @@ class LocalManager(BaseManager):
             req.save()
             
             try:
+                if isinstance(req, models.UploadRequest):
+                    self._copy( req.volume.path, 
+                                join(self.mountpoint, req.filename),
+                                callback=req.update)
 
-                self._copy( req.volume.path, join(self.destination, 
-                                                  req.volume.filename), 
-                                                  req.update)
+                elif isinstance(req, models.DownloadRequest):
+                    destination = get_local_archive_device()
+                    self._copy( join(self.mountpoint, req.volume.path), 
+                                join(destination, req.filename),
+                                req.update)
 
                 req.finish()
 

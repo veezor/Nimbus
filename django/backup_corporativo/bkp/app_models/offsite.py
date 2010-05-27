@@ -4,6 +4,8 @@ from django.db import models
 from datetime import datetime
 from time import time
 
+from backup_corporativo.bkp.models import GlobalConfig
+
 
 class Volume(models.Model):
 
@@ -114,6 +116,10 @@ class Request(models.Model):
 
 class UploadRequest(Request):
 
+    @property
+    def filename(self):
+        instance_name = GlobalConfig.get_instance().globalconfig_name
+        return "-".join([instance_name, self.volume.filename])
 
     def __str__(self):
         return "UploadRequest(path=%s)" % self.volume.path
@@ -126,6 +132,12 @@ class UploadRequest(Request):
 
 
 class DownloadRequest(Request):
+
+    @property
+    def filename(self):
+        instance_name_size = len(GlobalConfig.get_instance().globalconfig_name)
+        return self.volume.filename[instance_name_size + 1:] # name-
+
 
     def __str__(self):
         return "DownloadRequest(path=%s)" % self.volume.path
