@@ -356,3 +356,24 @@ FILE_TREE_RAW_QUERY =\
     WHERE File.FileIndex > 0 
     ORDER BY JobId, FileIndex ASC
     '''
+
+
+
+FILES_FROM_JOB_NAME =\
+    '''
+    SELECT DISTINCT CONCAT(Path.Path,Filename.Name)
+    FROM File,Filename,Path,Job 
+    WHERE File.JobId=Job.JobId AND 
+    Filename.FilenameId=File.FilenameId AND 
+    Path.PathId=File.PathId and Job.Name='%(name)s'
+    ORDER BY  Path.Path,Filename.Name;
+    '''
+
+VOLUMES_FROM_JOB_NAME =\
+    '''
+    SELECT DISTINCT VolumeName 
+    FROM Job,JobMedia,Media 
+    WHERE Job.Name='%(name)s' 
+    AND Job.JobId=JobMedia.JobId 
+    AND JobMedia.MediaId=Media.MediaId;
+    '''
