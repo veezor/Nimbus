@@ -157,6 +157,26 @@ class Bacula(object):
                 restoreclient[client_restore].\
                 select.all.done.yes.where[where].jobid[jobid].run()
 
+  
+    def run_restore_from_file(self, client_name, filename, client_restore=None, where=None):
+        logger.info("Executando run_restore_from_file")
+        
+        if not client_restore:
+            client_restore = client_name
+
+        if where:
+            self.cmd.restore.\
+                client[client_name].\
+                file[filename].\
+                restoreclient[client_restore].\
+                select.current.all.done.yes.where[where].run()
+        else:
+            self.cmd.restore.\
+                client[client_name].\
+                file[filename].\
+                restoreclient[client_restore].\
+                select.current.all.done.yes.run()
+
 
     def run_restore(self, client_name, jobid=None, date=None, client_restore=None, where=WHERE_DEFAULT, fileset_name=None):
         """Method to restore a Job"""
