@@ -158,3 +158,4 @@ from backup_corporativo.bkp.app_views.externalstorages import *
 from backup_corporativo.bkp.app_views.offsite import *
 
 from backup_corporativo.bkp.app_views.wizard import *
+from backup_corporativo.bkp.app_views.recovery import *

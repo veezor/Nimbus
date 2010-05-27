@@ -1,0 +1,19 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h1> Sistema de recuperação do servidor de backup </h1>
+
+<div class="bloco_texto">
+
+  <p><b>Erro, infelizmente não foi possível recuperar a base de dados. Isto pode ocorrer quando o nome da instância atual não é idêntico ao instalado anteriormente. Para corrigir esse erro, por favor altere o nome da instância em Sistema > Configurações > Nome da Instância.</p></b>
+  <p><b>Em caso de desconhecimento do nome original da instância clique no botão consultar nomes. Esta operação pode demorar alguns minutos.</p></b>
+
+<form action={% url bkp.views.recovery_select_instance_name %} method="get">
+    <input type="hidden" name="localsource" value="{{ localsource }}"/>
+    <input type="hidden" name="device" value="{{ device }}"/>
+    <button type="submit"><span>Ok</span></button>
+</form>
+</div>
+
+
+{% endblock %}

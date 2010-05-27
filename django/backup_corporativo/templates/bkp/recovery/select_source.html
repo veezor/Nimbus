@@ -1,0 +1,21 @@
+{% extends "bkp/base.html" %}
+{% block horizontal_menu %}
+	{% include 'bkp/system/menu_system.html' %}
+{% endblock %}
+
+
+{% block content %}
+
+<h1> Sistema de recuperação do servidor de backup </h1>
+
+<div class='bloco_texto'>
+  <p>Selecione a origem de onde deseja fazer a recuperação: </p>
+
+<form action="{% url bkp.views.recovery_select_source %}" method="post">
+  <input type="radio" name="source" value="offsite" /> Nimbus Cloud Backup <br />
+  <input type="radio" name="source" value="externalstorage" /> HD externo <br /> <br />
+  <button type="submit"><span>Prosseguir</span></button> <br />
+</form>
+</div>
+
+{% endblock %}

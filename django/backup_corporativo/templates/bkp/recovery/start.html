@@ -1,0 +1,20 @@
+{% extends "bkp/base.html" %}
+{% block horizontal_menu %}
+	{% include 'bkp/system/menu_system.html' %}
+{% endblock %}
+
+
+{% block content %}
+
+<h1> Sistema de recuperação do servidor de backup </h1>
+
+<div class='bloco_texto'>
+  Deseja realizar a recuperação do servidor?
+
+  </p> Atenção, é importante que o nome da instância atual seja igual a anteriormente instalada na máquina para que os arquivos pertencentes a esta máquina possam ser identificados.</p>
+<form action="{% url bkp.views.recovery_select_source %}" method="get">
+    <button type="submit"><span>Prosseguir</span></button>
+</form>
+</div>
+
+{% endblock %}

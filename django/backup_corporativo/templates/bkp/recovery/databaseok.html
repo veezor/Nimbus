@@ -1,0 +1,19 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h1> Sistema de recuperação do servidor de backup </h1>
+
+<div class="bloco_texto">
+
+  <p> A base de dados do nimbus foi recuperada com sucesso. Por favor, clique em prosseguir para continuar com a recuperação</p>
+
+<form action={% url bkp.views.recover_volumes %} method="post">
+    <br />
+    <input type="hidden" name="localsource" value="{{localsource}}"/>
+    <input type="hidden" name="device" value="{{device}}"/>
+    <button type="submit"><span>Prosseguir</span></button>
+</form>
+</div>
+
+
+{% endblock %}

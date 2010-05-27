@@ -1,0 +1,22 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h1> Sistema de recuperação do servidor de backup </h1>
+
+<div class="bloco_texto">
+
+  <p>Por favor, selecione o nome o qual deseja utilizar:</p>
+
+  <form action={% url bkp.views.recovery_select_instance_name %} method="post">
+    {% for name in instance_names %}
+        <input type="radio" name="name" value="{{name}}" /> {{name}}
+        <br />
+    {%endfor%}
+    <input type="hidden" name="localsource" value="{{ localsource }}"/>
+    <input type="hidden" name="device" value="{{ device }}"/>
+    <button type="submit"><span>Ok</span></button>
+</form>
+</div>
+
+
+{% endblock %}

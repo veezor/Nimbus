@@ -1,0 +1,18 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h1> Sistema de recuperação do servidor de backup </h1>
+
+<div class="bloco_texto">
+
+  <p> Iremos tentar recuperar a base de dados do máquina, esta operação pode levar alguns minutos. Para prosseguir clique no botão OK e aguarde.</p>
+
+<form action={% url bkp.views.recovery_databases %} method="post">
+    <input type="hidden" name="localsource" value="{{ localsource }}"/>
+    <input type="hidden" name="device" value="{{ device }}"/>
+    <button type="submit"><span>Ok</span></button>
+</form>
+</div>
+
+
+{% endblock %}

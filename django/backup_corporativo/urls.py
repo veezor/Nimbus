@@ -145,7 +145,17 @@ urlpatterns = patterns(
     (r'^offsite/list_downloadrequest', 'list_downloadrequest'),
     (r'^offsite/list_uploadrequest', 'list_uploadrequest'),
     (r'^offsite/select_storage', 'select_storage'),
-    (r'^offsite/copy_files_to_storage', 'copy_files_to_storage')
+    (r'^offsite/copy_files_to_storage', 'copy_files_to_storage'),
+
+
+# recovery
+    (r'^system/recovery/$', 'recovery_start'),
+    (r'^system/recovery/select_source', 'recovery_select_source'),
+    (r'^system/recovery/select_storage', 'recovery_select_storage'),
+    (r'^system/recovery/select_instance_name', 'recovery_select_instance_name'),
+    (r'^system/recovery/databases', 'recover_databases'),
+    (r'^system/recovery/volumes', 'recover_volumes'),
+    (r'^system/recovery/finish', 'recovery_finish'),
 
 )
 

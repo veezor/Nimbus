@@ -2,19 +2,26 @@
 # -*- coding: UTF-8 -*-
 
 import os
-from os.path import join, exists
-import logging
-from django.conf import settings
-from datetime import datetime
+import bz2
+import subprocess
 
+import logging
+from datetime import datetime
+from os.path import join, exists, basename
 
 import pycurl
 
+from django.conf import settings
+from django.db.models import Model
+
 from backup_corporativo.bkp import models
 from nimbusgateway import Api, File
+from devicemanager import StorageDeviceManager
 
 
 DISK_LABELS_PATH = "/dev/disk/by-label/"
+NIMBUS_DUMP = "/var/nimbus/nimbus-sql.bz2"
+BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
 
 
 def list_disk_labels():
@@ -105,7 +112,17 @@ class BaseManager(object):
         volumes = get_volumes_abspath(volumes)
         for vol in volumes:
             self.create_upload_request(vol)
+
+        self.generate_database_dump_upload_request()
+
         self.process_pending_upload_requests()
+
+
+    def generate_database_dump_upload_request(self):
+        if exists(NIMBUS_DUMP):
+            self.create_upload_request(NIMBUS_DUMP)
+        if exists(BACULA_DUMP):
+            self.create_upload_request(BACULA_DUMP)
 
 
     def download_all_volumes(self):
@@ -268,3 +285,82 @@ class LocalManager(BaseManager):
 
 
 
+
+
+class RecoveryManager(object):
+
+
+    def __init__(self, manager):
+        self.manager = manager
+
+
+    def get_instance_names(self):
+        files = self.manager.get_remote_files_list()
+        names = set([ f.split('-')[0] for f in files ])
+        return list(names)
+
+
+    def upload_databases(self):
+        self.manager.create_upload_request(NIMBUS_DUMP)
+        self.manager.create_upload_request(BACULA_DUMP)
+        self.manager.process_pending_upload_requests()
+
+    def download_databases(self):
+        self.manager.create_download_request(NIMBUS_DUMP)
+        self.manager.create_download_request(BACULA_DUMP)
+        self.manager.process_pending_download_requests()
+
+
+    def recovery_database(self, dumpfile, name, user, password):
+
+        device = get_local_archive_device()
+        dumpname = join(device, dumpfile)
+
+        fileobj = bz2.BZ2File(dumpname)
+        content = fileobj.read()
+        fileobj.close()
+
+        cmd = subprocess.Popen(["mysql",
+                                "-u" + user,
+                                "-p" + password,
+                                "-D" + name ],
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE)
+        cmd.communicate(content)
+        cmd.terminate()
+
+
+    def recovery_nimbus_dabatase(self):
+        nimbus_file = basename(NIMBUS_DUMP)
+        self.recovery_database( nimbus_file,
+                                settings.DATABASE_NAME,
+                                settings.DATABASE_USER,
+                                settings.DATABASE_PASSWORD)
+
+    def recovery_bacula_dabatase(self):
+        bacula_file = basename(BACULA_DUMP)
+        self.recovery_database( bacula_file,
+                                settings.BACULA_DATABASE_NAME,
+                                settings.BACULA_DATABASE_USER,
+                                settings.BACULA_DATABASE_PASSWORD)
+
+    def recovery_databases(self):
+        self.recovery_bacula_dabatase()
+        self.recovery_nimbus_dabatase()
+
+
+    def generate_conf_files(self):
+        attrs = [ getattr(models, attr) for attr in dir(models)]
+        nimbusmodels = [ attr for attr in attrs if isinstance(attr, Model)]
+        for model in nimbusmodels:
+            for instance in model.objects.all():
+                instance.save()
+
+
+    def download_volumes(self):
+        self.manager.download_all_volumes()
+
+    def finish(self):
+        if isinstance(self.manager, LocalManager):
+            storage = StorageDeviceManager( self.manager.device )
+            storage.umount()

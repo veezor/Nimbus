@@ -1,0 +1,27 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h1> Sistema de recuperação do servidor de backup </h1>
+
+<div class="bloco_texto">
+
+  <p> Por favor, selecione o disco de origem dos arquivos: </p>
+
+<form action={% url bkp.views.recovery_select_storage %} method="post">
+    {% for device in devices %}
+        <input type="radio" name="device" value="{{device}}" /> {{device}}
+        <br />
+    {% empty %}
+        Conecte um hd ou pendrive externo.
+    {% endfor %}
+
+    {% if devices %}
+    <br />
+    <input type="hidden" name="localsource" value="True"/>
+    <button type="submit"><span>Prosseguir</span></button>
+    {%endif%}
+</form>
+</div>
+
+
+{% endblock %}

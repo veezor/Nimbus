@@ -8,4 +8,6 @@
     <li {% if request.META.PATH_INFO|isequal:"/system/offsite/edit" %}class="active"{% endif %}><a href="{% url bkp.views.edit_system_offsite %}">Offsite</a></li>
     <li {% if request.META.PATH_INFO|isequal:"/system/time/" %}class="active"{% endif %}><a href="{% url bkp.views.manage_system_time %}">Hora</a></li>
     <li {% if request.META.PATH_INFO|isequal:"/system/externalstorages/" %}class="active"{% endif %}><a href="{% url bkp.views.list_externalstorages %}">Armazenamento externo</a></li>
+    <li {% if request.META.PATH_INFO|isequal:"/system/recovery/" %}class="active"{% endif %}><a href="{% url bkp.views.recovery_start %}">Recuperação</a></li>
+</ul>
 </ul>

@@ -1,0 +1,18 @@
+{% extends "bkp/base.html" %}
+{% block content %}
+
+<h1> Sistema de recuperação do servidor de backup </h1>
+
+<div class="bloco_texto">
+
+  <p>Nome da instância alterado com sucesso. Por favor, clique em continuar.</p>
+
+<form action={% url bkp.views.recover_dabatases %} method="post">
+    <input type="hidden" name="localsource" value="{{ localsource }}"/>
+    <input type="hidden" name="device" value="{{ device }}"/>
+    <button type="submit"><span>Ok</span></button>
+</form>
+</div>
+
+
+{% endblock %}
