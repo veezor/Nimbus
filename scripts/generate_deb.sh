@@ -30,6 +30,7 @@ cd ../..;
 
 
 cp django/apacheconf/default deb/etc/apache2/sites-enabled/000-default
+cp -a django/cron.daily deb/etc/
 cp -a custom deb/var/nimbus
 cp django/backup_corporativo/logging.conf deb/etc/nimbus
 cp webservices/manager/nimbus_manager.conf deb/etc/nimbus
