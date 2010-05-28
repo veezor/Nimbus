@@ -5,6 +5,7 @@
 
 import socket
 import logging
+import thread
 from os import path
 from xmlrpclib import ServerProxy
 from xml.parsers.expat import ExpatError
@@ -358,10 +359,14 @@ def update_networks_file(instance):
         if gconf.id:
             update_bconsole_file(gconf)
 
-        try:
-            server.network_restart()
-        except ExpatError, e:
-            pass # TODO: Fix this. Very Ugly
+        def worker():
+            try:
+                print "vou restartart a rede"
+                server.network_restart()
+            except ExpatError, e:
+                pass # TODO: Fix this. Very Ugly
+
+        thread.start_new_thread(worker, ())
 
     except socket.error:
         logger = logging.getLogger(__name__)
