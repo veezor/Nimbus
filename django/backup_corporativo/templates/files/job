@@ -11,6 +11,6 @@ Job {
     Type = "Backup"
     Pool = "{{pool}}"
     {% if offsite %}
-    Run After Job = "/usr/bin/nimbus-upload {{offsite_param}}"
+    Run After Job = "/var/www/nimbus.fcgi {{offsite_param}}"
     {% endif %}
 }

@@ -161,7 +161,7 @@ def update_procedure_file(proc):
                     fileset=proc.fileset_bacula_name(),
                     priority="10",
                     offsite=proc.offsite_on,
-                    offsite_param="-m %v",
+                    offsite_param="--upload-requests %v",
                     level="Incremental", #CONSERTAR
                     client=proc.computer.computer_bacula_name(),
                     poll=proc.pool_bacula_name() )
@@ -400,7 +400,7 @@ def generate_offsite_file(filename, offsite_hour):
                     client="empty client",
                     pool="empty pool",
                     offsite=True,
-                    offsite_param="-u")
+                    offsite_param="--upload-now")
 
 
     schfilename = path.join( settings.NIMBUS_CUSTOM_PATH,
