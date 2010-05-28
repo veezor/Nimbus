@@ -144,8 +144,8 @@ urlpatterns = patterns(
 
     (r'^offsite/list_downloadrequest', 'list_downloadrequest'),
     (r'^offsite/list_uploadrequest', 'list_uploadrequest'),
-    (r'^offsite/select_storage', 'select_storage'),
-    (r'^offsite/copy_files_to_storage', 'copy_files_to_storage'),
+    (r'^system/backup/', 'select_storage'),
+    (r'^system/backup/copy_files_to_storage', 'copy_files_to_storage'),
 
 
 # recovery
