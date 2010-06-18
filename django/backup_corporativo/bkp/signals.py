@@ -275,7 +275,7 @@ def update_schedule_file(proc):
 
     name = proc.schedule_bacula_name()
     scheds = proc.schedule_set.all()
-    runs =  [ "%s %s" % (r[1],[0])   for r in run_dict(scheds).items() ]
+    runs =  [ "%s %s" % (r[1],r[0]) for r in run_dict(scheds).items() ]
 
     filename = path.join( settings.NIMBUS_CUSTOM_PATH, 
                           "schedules", name)
