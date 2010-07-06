@@ -1,8 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import truecrypt
+
 import os
+
+
+import keymanager
 
 from backup_corporativo.bkp.models import (Wizard, 
                                            NetworkInterface, 
@@ -56,7 +59,7 @@ class WizardViewTest(NimbusTest):
         response = self.post("/wizard/strongbox/update",
                              dict(sb_password = "senha",
                                   sb_password_2 = "senha"))
-        r = os.access(truecrypt.DRIVEFILE, os.R_OK)
+        r = os.access(keymanager.ENCRYPT_DEVICE, os.R_OK)
         self.assertTrue(r)
         self.assertEquals(Wizard.objects.count(),1)
         self.assertEquals(Wizard.objects.get(pk=1).state, 4)

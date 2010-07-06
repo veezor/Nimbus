@@ -3,7 +3,7 @@
 
 import os
 
-import truecrypt
+import keymanager
 
 from backup_corporativo.bkp.tests import NimbusTest
 from backup_corporativo.bkp.models import HeaderBkp
@@ -21,7 +21,7 @@ class StrongboxViewTest(NimbusTest):
         self.post( "/management/strongbox/create", 
                    dict( sb_password="test", 
                          sb_password_2="test"))
-        r = os.access(truecrypt.DRIVEFILE, os.R_OK)
+        r = os.access(keymanager.ENCRYPT_DEVICE, os.R_OK)
         self.assertTrue(r)
         
     def test_mount_strongbox(self):

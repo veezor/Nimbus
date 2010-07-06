@@ -7,11 +7,12 @@ import subprocess
 import logging
 
 
+from encryptdevicemanager import exceptions as exc
+from encryptdevicemanager.backends.base import IEncryptDeviceManager
+
+
 TRUECRYPT_EXEC = "/usr/bin/truecrypt"
 
-
-DRIVEPOINT = "/media/strongbox"
-DRIVEFILE = "/var/nimbus/strongbox.crypto"
 
 
 COMMANDS = {
@@ -21,21 +22,13 @@ COMMANDS = {
         "umountf" : """sudo truecrypt -t -d -f %s""",
         "changepassword" : """truecrypt -t -C --password=%s --keyfiles= --new-keyfiles= --new-password=%s --random-source=/dev/urandom %s""",
         "backup": """truecrypt  -t --backup-headers --random-source=/dev/urandom  %s""",
-        "restore" : """truecrypt -t --restore-headers  --random-source=/dev/urandom %s """,
+        "restore" : """truecrypt -t --restore-headers  --random-source=/dev/urandom %s""",
         "is_mounted" : """truecrypt -t -l""" 
 }
 
 
 
 
-class TrueCryptNotFound(Exception):
-    pass
-
-class PermissionError(Exception):
-    pass
-
-class PasswordError(Exception):
-    pass
 
 
 def has_truecrypt():
@@ -43,7 +36,7 @@ def has_truecrypt():
 
 
 
-class TrueCrypt(object):
+class TrueCrypt(IEncryptDeviceManager):
 
     _MAKE_BACKUP_PARAMS = "%(password)s\n\nn\ny\n%(target)s\n"      # 1 - password
                                                                     # 2 - keyfiles
@@ -57,10 +50,10 @@ class TrueCrypt(object):
                                                                     # 4 - password of backup
                                                                     # 5 - keyfiles
 
-    def __init__(self, debug=False):
-        self.debug = debug
+    def __init__(self, device, mountpoint):
+        super(TrueCrypt, self).__init__( device, mountpoint )
         if not has_truecrypt():
-            raise TrueCryptNotFound("TrueCrypt executable not found")
+            raise exc.SystemExecutableNotFound("TrueCrypt executable not found")
 
     def _get_popen(self, cmd):
         return subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -79,53 +72,67 @@ class TrueCrypt(object):
         cmd = self._generate_list( cmd, *params)
         p = self._get_popen(cmd)
         stdout, stderr = p.communicate(input)
-        if self.debug:
+        try:
             logger = logging.getLogger(__name__)
             msg = "Executando o comando: %s\nStdout: %s\nStderr: %s\nReturn code: %s"
             logger.info( msg % (" ".join(cmd),stdout,stderr,p.returncode ))
+        except Exception, e:
+            logger.exception("Erro ao fazer log de comando do truecrypt")
         return (not bool(p.returncode)),stdout,stderr
 
-    def create_drive(self, password, drive=DRIVEFILE):
-        return self.call_command( "create", params=(password, drive))[0]
+
+    def create(self, password):
+        return self.call_command( "create", params=(password, self.device))[0]
 
 
-    def mount_drive(self, password, drive=DRIVEFILE, target=DRIVEPOINT):
-        #if os.getuid() != 0: SUDO
-        #    raise PermissionError("root privileges required")
+    def mount(self, password):
 
-        ok, stdout, stderr = self.call_command( "mount", params=(password, drive, target))
+        ok, stdout, stderr = self.call_command( "mount", 
+                                                params=(password, 
+                                                        self.device, self.mountpoint))
         if stdout.startswith("Incorrect password"):
-            raise PasswordError("Incorrect password")
+            raise exc.BadPassword("Incorrect password")
         return ok
 
-    def umount_drive(self, target=DRIVEPOINT):
-        return self.call_command( "umount", params=(target,))[0]
 
-    def umountf_drive(self, target=DRIVEPOINT):
-        return self.call_command( "umountf", params=(target,))[0]
+    def umount(self):
+        return self.call_command( "umount", params=(self.mountpoint,))[0]
 
-    def change_password(self, oldpassword, newpassword, drive=DRIVEFILE):
+
+
+    def umountf(self):
+        return self.call_command( "umountf", params=(self.mountpoint,))[0]
+
+
+
+    def change_password(self, oldpassword, newpassword):
         return self.call_command( "changepassword", 
-                                  params=(oldpassword, newpassword, drive))[0]
+                                  params=(oldpassword, newpassword, self.device))[0]
 
-    def make_backup(self, password, target, drive=DRIVEFILE):
-        ok, stdout, stderr = self.call_command( "backup", params=(drive,),
+
+
+    def make_backup(self, password, target):
+        ok, stdout, stderr = self.call_command( "backup", params=(self.device,),
                                  input = self._MAKE_BACKUP_PARAMS % locals())
 
         if "Incorrect password" in stdout:
-            raise PasswordError("Incorrect password")
+            raise exc.BadPassword("Incorrect password")
         return ok
 
-    def restore_backup(self, password, backup, drive=DRIVEFILE):
-        ok, stdout, stderr = self.call_command( "restore", params=(drive,),
+
+
+    def restore_backup(self, password, backup):
+        ok, stdout, stderr = self.call_command( "restore", params=(self.device,),
                                  input = self._RESTORE_BACKUP_PARAMS % locals())
         if "Incorrect password" in stderr:
-            raise PasswordError("Incorrect password")
+            raise exc.BadPassword("Incorrect password")
         return ok
 
-    def is_mounted(self, drive=DRIVEFILE):
-        ok, stdout, stderr = self.call_command( "is_mounted", params=(drive,)) 
-        if ok == True and drive in stdout:
+
+    def is_mounted(self):
+        ok, stdout, stderr = self.call_command( "is_mounted", 
+                                                params=(self.device,)) 
+        if ok == True and self.device in stdout:
             return True
         return False
 

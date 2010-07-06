@@ -35,7 +35,6 @@ case $1 in
 	/usr/sbin/update-rc.d nimbusmanager defaults; 
 	/etc/init.d/mysql start;
 	/usr/bin/mysql -uroot -pn1mbus < /var/nimbus/create.sql 2> /dev/null || echo;
-    echo "www-data ALL=NOPASSWD: /usr/bin/truecrypt" >> /etc/sudoers;
 
     /var/www/nimbus.fcgi --create-database;
     chown -R www-data:www-data /etc/nimbus/;

@@ -3,5 +3,5 @@ Priority: optional
 Version: 0.9
 Architecture: i386
 Maintainer: Veezor
-Depends: nimbus-dependencies (>= 0.9), apache2, mysql-server-5.0, libapache2-mod-fastcgi, truecrypt, python-pkg-resources, python-simplejson, python-flup, python-pycurl
+Depends: nimbus-dependencies (>= 0.9), apache2, mysql-server-5.0, libapache2-mod-fastcgi, python-pkg-resources, python-simplejson, python-flup, python-pycurl
 Description: Nimbus Backup System

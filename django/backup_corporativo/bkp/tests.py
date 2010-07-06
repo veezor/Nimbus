@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 
-import truecrypt 
+import keymanager
 
 
 class NimbusUnitTest(unittest.TestCase):
@@ -43,7 +43,7 @@ class NimbusTest(TestCase):
         test.save()
         self.client.login(username='test', password='test')
         try:
-            os.remove(truecrypt.DRIVEFILE) # remove drive file
+            os.remove(keymanager.ENCRYPT_DEVICE) # remove drive file
         except OSError, e:
             pass
 

@@ -2,12 +2,15 @@
 # -*- coding: UTF-8 -*-
 
 import unittest
-import truecrypt
-import keymanager
+
 import os
 import pdb
 import sys
+import shutil
 
+
+
+import keymanager
 
 class KeyManagerTest(unittest.TestCase):
 
@@ -47,6 +50,11 @@ class KeyManagerTest(unittest.TestCase):
         self.assertTrue( self.keymanager.mounted )
 
     def test_03_create_drive(self):
+        try:
+            shutil.rmtree(self.keymanager.drive)
+        except OSError, error:
+            print error
+            pass
         r = self.keymanager.create_drive()
         self.assertTrue( r )
 
