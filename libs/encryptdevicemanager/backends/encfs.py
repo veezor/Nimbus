@@ -1,27 +1,4 @@
 #!/usr/bin/python
-# vim: set fileencoding=utf-8 :
-# Copyright (C) 2007 Kévin Dunglas <dunglas@gmail.com>
-#
-# Authors:
-#  Kévin Dunglas
-#
-# This program is a part of a the Google Summer Of Code 2007
-# For futher information see :
-# http://code.google.com/soc/ubuntu/appinfo.html?csaid=EF4FCF874D88234
-#
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 3 of the License, or (at your option) any later
-# version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 59 Temple
-# Place, Suite 330, Boston, MA 02111-1307 USA
 
 import subprocess
 import os
@@ -62,7 +39,7 @@ class Encfs(IEncryptDeviceManager):
 
     def change_password(self, old, new):
         """Change password"""
-        param = "%(old)s\n%(new)s\n%(new)s\n" % {"old": old, "new" : new}
+        param = "%(old)s\n%(new)s\n" % {"old": old, "new" : new}
         p1 = subprocess.Popen([ECHO, "-e", param],\
             stdout=subprocess.PIPE)
         p2 = subprocess.Popen([ENCFSCTL, "autopasswd", self.device],\
@@ -91,7 +68,7 @@ class Encfs(IEncryptDeviceManager):
 
         os.makedirs(self.device)
 
-        param = "%(mode)s\n%(pass)s\n%(pass)s\n" % {"mode": MODE, "pass": password}
+        param = "%(mode)s\n%(pass)s\n" % {"mode": MODE, "pass": password}
         p1 = subprocess.Popen([ECHO, "-e", param], stdout=subprocess.PIPE)
         p2 = subprocess.Popen([ENCFS, "-S", self.device,\
             self.mountpoint], stdin=p1.stdout, stdout=subprocess.PIPE)

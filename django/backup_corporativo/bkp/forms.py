@@ -66,8 +66,9 @@ class NewStrongBoxForm(forms.Form):
 
         if password == password_2:
             km = KeyManager(password=password)
-            drive_created = km.create_drive()
-            if not drive_created:
+            try:
+                drive_created = km.create_drive()
+            except exc.BadPassword, error:
                 error = u"Nao foi possível criar o cofre. Favor, contacte o suporte."
                 raise forms.ValidationError(error)
         else:
