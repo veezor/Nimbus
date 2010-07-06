@@ -20,6 +20,7 @@ setup(
                         "optimize" :  "1", 
                         "create_shared_zip" :  False,
                         "include_in_shared_zip" : False,   
+                        "excludes" : ["Tkinter","_tkinter"],
                         "append_script_to_exe" :  True,
                         "packages": [ "networkutils", "netifaces"]  }}
 )
