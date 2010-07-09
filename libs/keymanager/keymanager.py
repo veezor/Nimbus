@@ -5,72 +5,54 @@
 
 import os
 from os.path import join
-from M2Crypto import RSA, X509, EVP, m2
+import subprocess
 
 import encryptdevicemanager as EncDeviceManager
-EncDeviceManager.install()
 
 
 ENCRYPT_DEVICE = "/var/nimbus/strongbox.crypto"
 MOUNTPOINT = "/media/strongbox"
+OPENSSLCONFIG = "/etc/nimbus/ssl.conf"
 
 
-def generate_rsa_key():
-    return RSA.gen_key(2048, m2.RSA_F4)
+
+def generate_pem(prefix, keyfile, certfile):
+    f = file(keyfile)
+    keycontent = f.read()
+    f.close()
+
+    f = file(certfile)
+    certcontent = f.read()
+    f.close()
 
 
-def make_public_key(rsa_key):
-    pkey = EVP.PKey()
-    pkey.assign_rsa(rsa_key, capture=False)
-    return pkey
+    filepem = file( join( prefix, "client.pem"), "w")
+    filepem.write( keycontent)
+    filepem.write( certcontent)
+    filepem.close()
 
 
-def make_certificate(public_key):
-    cert = X509.X509()
-    cert.set_version(cert.get_version())
-    cert.set_pubkey(public_key)
-    name = X509.X509_Name()
-    name.CN =  'CN'
-    name.OU = 'Nimbus'
-    name.O = 'Linconet'
-    name.L = 'Natal'
-    name.ST = 'Rio Grande do Norte'
-    name.C = 'BR'
-    cert.set_subject_name(name)
-    cert.sign(public_key, 'md5')
-    return cert
-
-
-def generate_keys():
-    rsa = generate_rsa_key()
-    pkey = make_public_key(rsa)
-    cert = make_certificate(pkey)
-    return rsa,cert
-
-
-def generate_pem(rsa, cert):
-    return rsa.as_pem(cipher=None) +  cert.as_pem()
-
-
-def generate_keys_as_text():
-    rsa, cert = generate_keys()
-    pem = generate_pem(rsa, cert)
-    return rsa.as_pem(cipher=None), cert.as_pem(), pem
 
 
 def generate_and_save_keys(prefix):
 
-    rsa,cert = generate_keys()
+    keyfilename = join(prefix,  "client.key")
+    cmd = subprocess.Popen(["openssl", "genrsa", "-out", keyfilename, "2048"],
+                           stdout=subprocess.PIPE)
+    cmd.communicate()
 
-    rsa.save_key( join(prefix,  "client.key"), cipher=None)
-    cert.save( join( prefix , "client.cert"))
-    pem = generate_pem(rsa, cert)
 
-    filepem = file( join( prefix, "client.pem"), "w")
-    filepem.write( pem)
-    filepem.close()
+    certfilename = join(prefix,  "client.cert")
+    cmd = subprocess.Popen(["openssl", "req", "-new", 
+                            "-key", keyfilename, "-x509",
+                            "-config", OPENSSLCONFIG,
+                            "-out",certfilename],
+                            stdout=subprocess.PIPE)
+    cmd.communicate()
 
-    return rsa,cert
+
+    generate_pem( prefix, keyfilename, certfilename)
+    return True
 
 
 class KeyManager(object):
