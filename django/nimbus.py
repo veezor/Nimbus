@@ -3,11 +3,14 @@
 import os, sys
 
 
+ver = sys.version_info
+pyversion = "%d.%d" % (ver[0],ver[1])
 sys.path.extend( [  "/var/nimbus/deps/",
-                    "/var/lib/python-support/python2.5/", 
-                    "/usr/lib/python2.5/",
-                    "/usr/lib/python2.5/site-packages/",
-                    "/usr/lib/python2.5/lib-dynload/"])
+                    "/var/lib/python-support/python%s/" % pyversion,
+                    "/usr/lib/python%s/" % pyversion,
+                    "/usr/lib/python%s/site-packages/" % pyversion,
+                    "/usr/lib/python%s/dist-packages/" % pyversion,
+                    "/usr/lib/python%s/lib-dynload/"  % pyversion])
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'backup_corporativo.settings'
 

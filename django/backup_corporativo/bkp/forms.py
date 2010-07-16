@@ -9,7 +9,7 @@ from django import forms
 
 from pytz import common_timezones, country_timezones, country_names
 
-import truecrypt
+import encryptdevicemanager.exceptions as exc
 from keymanager import KeyManager
 
 from backup_corporativo.bkp.models import *
@@ -66,8 +66,9 @@ class NewStrongBoxForm(forms.Form):
 
         if password == password_2:
             km = KeyManager(password=password)
-            drive_created = km.create_drive()
-            if not drive_created:
+            try:
+                drive_created = km.create_drive()
+            except exc.BadPassword, error:
                 error = u"Nao foi possível criar o cofre. Favor, contacte o suporte."
                 raise forms.ValidationError(error)
         else:
@@ -96,7 +97,7 @@ class MountStrongBoxForm(forms.Form):
         km = KeyManager(password=password)
         try:
             drive_mounted = km.mount_drive()
-        except truecrypt.PasswordError:
+        except exc.BadPassword:
             error = u"Senha incorreta ou o cofre está corrompido."
             raise forms.ValidationError(error)    
         if not drive_mounted:
@@ -172,7 +173,7 @@ class HeaderBkpForm(ModelForm):
         uuid = NimbusUUID.generate_uuid_or_leave(self.instance)
         try:
             bkp_created = km.make_drive_backup(self.instance.filepath())
-        except truecrypt.PasswordError:
+        except exc.BadPassword:
             uuid.delete()
             error = u"Senha incorreta ou cofre está corrompido."
             raise forms.ValidationError(error)

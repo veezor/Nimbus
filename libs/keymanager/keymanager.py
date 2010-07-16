@@ -2,12 +2,17 @@
 # -*- coding: UTF-8 -*-
 
 
-import truecrypt
+
 import os
 from os.path import join
 from M2Crypto import RSA, X509, EVP, m2
 
+import encryptdevicemanager as EncDeviceManager
+EncDeviceManager.install()
 
+
+ENCRYPT_DEVICE = "/var/nimbus/strongbox.crypto"
+MOUNTPOINT = "/media/strongbox"
 
 
 def generate_rsa_key():
@@ -70,16 +75,17 @@ def generate_and_save_keys(prefix):
 
 class KeyManager(object):
 
-    def __init__(self, password=None, drive=truecrypt.DRIVEFILE, 
-                                      mountpoint = truecrypt.DRIVEPOINT):
+    def __init__(self, password=None, drive=ENCRYPT_DEVICE, 
+                                      mountpoint=MOUNTPOINT):
         self.drive = drive
         self.password = password
         self.mountpoint = mountpoint
-        self.truecrypt = truecrypt.TrueCrypt()
+        self.devmanager = EncDeviceManager.Manager(self.drive, 
+                                                   self.mountpoint)
 
     @property
     def mounted(self):
-        return self.truecrypt.is_mounted(self.drive)
+        return self.devmanager.is_mounted()
 
     def set_password(self, password):
         self.password = password
@@ -88,7 +94,7 @@ class KeyManager(object):
         return os.access(self.drive, os.R_OK)
 
     def create_drive(self):
-        return self.truecrypt.create_drive(self.password, self.drive)
+        return self.devmanager.create(self.password)
 
     def get_client_path(self, client):
         return os.path.join( self.mountpoint, client )
@@ -111,36 +117,34 @@ class KeyManager(object):
             pass
 
         if not self.mounted:
-            return self.truecrypt.mount_drive( self.password, 
-                                               drive=self.drive, 
-                                               target=self.mountpoint)
+            return self.devmanager.mount( self.password )
         return False
 
 
     def umount_drive(self, force=False):
         if force:
             return self.force_umount_drive()
-        return self.truecrypt.umount_drive( target=self.mountpoint )
+        return self.devmanager.umount()
 
     
     def force_umount_drive(self):
-        return self.truecrypt.umountf_drive( target=self.mountpoint)
+        return self.devmanager.umountf()
 
 
     def change_drive_password(self, new_password):
-        r = self.truecrypt.change_password(self.password, 
-                                              new_password, self.drive)
+        r = self.devmanager.change_password(self.password, 
+                                           new_password)
 
         self.set_password( new_password )
         return r
 
     def make_drive_backup(self, backupfilename):
-        return self.truecrypt.make_backup( self.password, 
-                                           backupfilename, self.drive )
+        return self.devmanager.make_backup( self.password, 
+                                           backupfilename)
 
     def restore_drive_backup(self, backupfilename):
-        return self.truecrypt.restore_backup( self.password, 
-                                           backupfilename, self.drive )
+        return self.devmanager.restore_backup( self.password, 
+                                               backupfilename)
 
     def remove_backup_file(self, backupfilename):
         return os.remove( backupfilename )

@@ -18,13 +18,13 @@ find deb -iname "*~" -exec rm {} \;
 
 cd django
 cp backup_corporativo/settings_executable.py backup_corporativo/settings.py;
-python2.5 setup.py build_exe ;
+python setup.py build_exe ;
 cp -a binary ../deb/var/www;
 cd ..;
 
 
 cd webservices/manager;
-python2.5 setup.py build_exe;
+python setup.py build_exe;
 cp -a binary ../../deb/var/nimbusmanager;
 cd ../..;
 

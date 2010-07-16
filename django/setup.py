@@ -26,7 +26,7 @@ setup(
                                       "networkutils",
                                       "bconsole",
                                       "keymanager",
-                                      "truecrypt",
+                                      "encryptdevicemanager",
                                       "backup_corporativo"],
                         "includes" : [ "backup_corporativo.bkp.views",
                                        "backup_corporativo.bkp.templatetags.bkp_extras",
