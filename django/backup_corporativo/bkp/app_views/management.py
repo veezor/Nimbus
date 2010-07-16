@@ -9,7 +9,10 @@ from environment import ENV
 from keymanager import KeyManager
 
 from backup_corporativo.bkp.utils import reverse
-from backup_corporativo.bkp.models import Storage, HeaderBkp, Encryption
+from backup_corporativo.bkp.models import ( Storage, 
+                                            HeaderBkp, 
+                                            Encryption, 
+                                            ComputerAddRequest )
 from backup_corporativo.bkp.forms import NewStrongBoxForm, MountStrongBoxForm, HeaderBkpForm, EditHeaderBkpForm, UmountStrongBoxForm, RestoreHeaderBkpForm, ChangePwdStrongBoxForm, EncryptionForm
 from backup_corporativo.bkp.views import global_vars, authentication_required
 
@@ -75,6 +78,7 @@ def main_management(request):
     if request.method == 'GET':
         E.km = KeyManager()
         E.encryption_count = Encryption.objects.count()
+        E.computersrequest = ComputerAddRequest.objects.all()
         E.template = 'bkp/management/main_management.html'
         return E.render()
 

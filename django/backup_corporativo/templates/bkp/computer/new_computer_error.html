@@ -1,0 +1,22 @@
+{% extends "bkp/base.html" %}
+
+{% block content %}
+
+{% include "bkp/wizard/wizard_computermenu_partial.html" %}
+
+<div class='bloco_texto'>
+  <p>Infelizmente ocorreu um erro ao tentar configurar o computador solicitado. Favor verificar se o mesmo encontra-se ligado e conectado a rede</p>
+
+
+  <form action="{% url bkp.views.configure_computer  comp.id  %}" method="get">
+  <button type="submit"><span>Tentar novamente</span></button>
+  </form>
+
+  <form action="{% url bkp.views.new_computer_backup  comp.id  %}" method="get">
+  <input type="hidden" name="wizard" value="True"/>
+  <button type="submit"><span>Continuar mesmo assim</span></button>
+  </form>
+
+</div>
+
+{% endblock %}
