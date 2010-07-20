@@ -15,6 +15,30 @@
 <p><a href="{% url bkp.views.list_computers %}">Gerenciar Computadores</a></p>
 </div>
 
+
+<div class="titulo_botoes">
+    <h3>Computadores pendentes para a adição</h3>
+</div>
+
+<div class="bloco_texto">
+    {% for request in computersrequest %}
+    Nome: {{ request.name }}. IP: {{ request.ip }}. OS: {{ request.operation_system  }} 
+    <form action="{% url bkp.views.new_computer %}" method="get">
+      <input type="hidden" name="computer_name" value="{{ request.name }}"/>
+      <input type="hidden" name="computer_ip" value="{{ request.ip }}"/>
+      <input type="hidden" name="computer_so" value="{{ request.operation_system }}"/>
+      <input type="hidden" name="wizard" value="True"/>
+      <button type="submit"><span>Adicionar</span></button>
+    </form>
+    <br/>
+    {% empty %}
+    <p> Nenhum computador pendente. </p>
+    {% endfor %}
+</div>
+
+
+
+
 <div class="titulo_botoes">
     <h3>Cofre</h3>
 </div>

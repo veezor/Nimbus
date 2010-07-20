@@ -24,6 +24,7 @@ urlpatterns = patterns(
     (r'^$', 'main_statistics'),
     # management
     (r'^management/$', 'main_management'),
+    (r'^management/computers/addrequest$', 'autoaddcomputer'),
     (r'^management/computers/list$', 'list_computers'),
     (r'^management/storages/list$', 'list_storages'),
     (r'^management/encryptions/list$', 'list_encryptions'),
@@ -78,6 +79,7 @@ urlpatterns = patterns(
     (r'^computer/create$', 'create_computer'),
     (r'^computer/(?P<comp_id>\d+)$', 'view_computer'),
     (r'^computer/(?P<comp_id>\d+)/edit$', 'edit_computer'),
+    (r'^computer/(?P<comp_id>\d+)/configure$', 'configure_computer'),
     (r'^computer/(?P<comp_id>\d+)/update$', 'update_computer'),
     (r'^computer/(?P<comp_id>\d+)/delete$', 'delete_computer'),
     (r'^computer/(?P<comp_id>\d+)/test$', 'test_computer'),

@@ -149,6 +149,7 @@ from backup_corporativo.bkp.app_views.management import *
 from backup_corporativo.bkp.app_views.system import *
 from backup_corporativo.bkp.app_views.authentications import *
 from backup_corporativo.bkp.app_views.computers import *
+from backup_corporativo.bkp.app_views.computeraddrequest import *
 from backup_corporativo.bkp.app_views.filesets import *
 from backup_corporativo.bkp.app_views.procedures import *
 from backup_corporativo.bkp.app_views.schedules import *

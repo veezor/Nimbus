@@ -177,14 +177,12 @@ class Computer(models.Model):
                 fd_dict.update({
                     'PKI Signatures':'Yes',
                     'PKI Encryption':'Yes',
-                    'PKI Keypair':'''"/etc/bacula/client.pem"''',
-                    'PKI Master Key':'''"/etc/bacula/master.cert"''',})
+                    'PKI Keypair':'''"/etc/bacula/client.pem"'''})
             elif self.computer_so == 'WIN':
                 fd_dict.update({
                     'PKI Signatures':'Yes',
                     'PKI Encryption':'Yes',
-                    'PKI Keypair':'''"C:\\\\Nimbus\\\\client.pem"''',
-                    'PKI Master Key':'''"C:\\\\Nimbus\\\\master.cert"''',})
+                    'PKI Keypair':'''"C:\\\\Nimbus\\\\client.pem"'''})
             
         if self.computer_so == 'UNIX':
             fd_dict.update({

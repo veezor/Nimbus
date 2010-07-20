@@ -48,6 +48,7 @@ from backup_corporativo.bkp.app_models.timezone_config import TimezoneConfig
 from backup_corporativo.bkp.app_models.storage import Storage
 
 from backup_corporativo.bkp.app_models.computer import Computer
+from backup_corporativo.bkp.app_models.computeraddrequest import ComputerAddRequest
 from backup_corporativo.bkp.app_models.procedure import Procedure
 from backup_corporativo.bkp.app_models.schedule import Schedule
 from backup_corporativo.bkp.app_models.weekly_trigger import WeeklyTrigger

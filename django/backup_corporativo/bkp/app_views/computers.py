@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
+import xmlrpclib
+
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -13,6 +17,9 @@ from backup_corporativo.bkp.models import Computer, Encryption
 from backup_corporativo.bkp.forms import ComputerForm, ProcedureForm, FileSetForm, WizardAuxForm, MountStrongBoxForm
 from backup_corporativo.bkp.views import authentication_required, DAYS_OF_THE_WEEK
 from backup_corporativo.bkp.app_models.computer import UnableToGetFile
+
+
+CLIENT_PORT = 17800 
 
 
 @authentication_required
@@ -36,7 +43,7 @@ def new_computer(request):
         E.mounted = km.mounted
         if not E.mounted:
             E.mountform = MountStrongBoxForm()
-        E.compform = ComputerForm()
+        E.compform = ComputerForm(request.GET)
         E.template = 'bkp/computer/new_computer.html'
         return E.render()
 
@@ -66,16 +73,57 @@ def create_computer(request):
                 else:
                     E.template = 'bkp/computer/new_computer.html'
                     return E.render()                
+
+            
             comp = E.compform.save()
             enc = Encryption()
             enc.computer = comp
             enc.save()
+
+            try:
+                configure_client(comp)
+            except Exception, error:
+                E.comp = comp
+                E.template = 'bkp/computer/new_computer_error.html'
+                return E.render()
+
+
             location = reverse('new_computer_backup', [comp.id])
             location += "?wizard=%s" % E.wizard
             return HttpResponseRedirect(location)
         else:
             E.template = 'bkp/computer/new_computer.html'
             return E.render()
+
+
+
+
+def configure_client(computer):
+    url = "http://%s:%d" % (computer.computer_ip, CLIENT_PORT)
+    proxy = xmlrpclib.ServerProxy(url)
+    proxy.save_baculafd(computer.get_config_file())
+    proxy.save_private_key(computer.get_crypt_file("key"))
+    proxy.restart_bacula()
+
+
+@authentication_required
+def configure_computer(request, comp_id):
+    if request.method == "GET":
+        E = ENV(request)
+        comp = Computer.objects.get(id=comp_id)
+        try:
+            configure_client(comp)
+        except Exception, error:
+            print error
+            E.comp = comp
+            E.template = 'bkp/computer/new_computer_error.html'
+            return E.render()
+        
+        location = reverse('new_computer_backup', [comp_id])
+        location += "?wizard=%s" % E.wizard
+        return HttpResponseRedirect(location)
+
+
 
 
 @authentication_required
