@@ -1,0 +1,37 @@
+{% extends base.html" %}
+
+{% block content %}
+
+<h1> Downloads ativos </h1>
+
+<div class="bloco_texto">
+
+<table border="1">
+<tr>
+<th>Caminho do arquivo</th>
+<th>Criado em</th>
+<th>Tentativas</th>
+<th>Última tentativa</th>
+<th>Concluído</th>
+<th>Tempo de download estimado</th>
+<th>Taxa de transferência</th>
+</tr>
+
+{% for object in object_list %}
+  <tr>
+    <td>{{ object.volume.filename }}</td>
+    <td>{{ object.created_at }}</td>
+    <td align="right">{{ object.attempts }}</td>
+    <td align="right">{{ object.last_attempt }}</td>
+    <td align="right">{{ object.finished_percent }}%</td>
+    <td align="right">{{ object.estimated_transfer_time }}</td>
+    <td align="right">{{ object.friendly_rate }}</td>
+  </tr>
+  {{ object.path }}
+{% endfor %}
+
+</table>
+</div>
+
+
+{% endblock %}
