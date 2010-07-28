@@ -2,20 +2,23 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import logging
+from os.path import join
 
-from django.core import serializers
 from django.db import models
-from django import forms
-from django.db.models import Sum
+from django.conf import settings
+from django.db.models.signals import post_save, post_delete 
 
-from nimbus.shared import utils
+from nimbus.shared import utils, signals
 import nimbus.shared.sqlqueries as sql 
-
 from nimbus.base.models import BaseModel
-
-from nimbus.lib.bacula import BaculaDatabase
-
+from nimbus.libs.bacula import BaculaDatabase
 from nimbus.computers.models import Computer
+from nimbus.storages.models import Storage
+from nimbus.filesets.models import FileSet
+from nimbus.schedules.models import Schedule
+from nimbus.pools.models import Pool
+from nimbus.libs.template import render_to_file
 
 
 class Profile(models.Model):
@@ -29,8 +32,10 @@ class Profile(models.Model):
 
 
 class Procedure(BaseModel):
+
     computer = models.ForeignKey(Computer, blank=False, null=False)
     profile = models.ForeignKey(Profile, blank=False, null=False)
+    pool = models.ForeignKey(Pool, blank=False, null=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
 
     def fileset_bacula_name(self):
@@ -42,15 +47,16 @@ class Procedure(BaseModel):
     def schedule_bacula_name(self):
         return self.profile.schedule.bacula_name()
 
-    def pool_bacula_name(self):
-        pool = self.pool_set.get()
-        return pool.bacula_name()
+    def storage_bacula_name(self):
+        return self.profile.storage.bacula_name()
 
+    def pool_bacula_name(self):
+        return self.pool.bacula_name()
 
 
     def last_success_date(self):
         last_success_date_query = sql.LAST_SUCCESS_DATE_RAW_QUERY % {
-            'procedure_name':self.procedure_bacula_name()
+            'procedure_name':self.bacula_name()
         }
         baculadb = BaculaDatabase()
         cursor = baculadb.execute(last_success_date_query)
@@ -99,7 +105,7 @@ class Procedure(BaseModel):
             load_full_query = sql.LOAD_LAST_FULL_RAW_QUERY % {
                 'client_id':self.computer.bacula_id,
                 'start_time':initial_bkp['StartTime'],
-                'fileset':self.get_fileset_name(),}
+                'fileset':self.fileset_bacula_name(),}
         elif ('JobId' in initial_bkp
               and 'Level' in initial_bkp
               and initial_bkp['Level'] == 'F'):
@@ -142,7 +148,7 @@ class Procedure(BaseModel):
                 'tdate':tdate,
                 'start_time':initial_bkp['StartTime'],
                 'client_id':self.computer.bacula_id,
-                'fileset':self.get_fileset_name(),}
+                'fileset':self.fileset_bacula_name(),}
             b2 = BaculaDatabase()
             cursor = b2.execute(incmedia_query)
             b2.commit()
@@ -214,3 +220,37 @@ class Procedure(BaseModel):
             procedure.offsite_on = False
             procedure.save()
 
+
+
+
+def update_procedure_file(procedure):
+    """Procedure update file"""
+
+    name = procedure.bacula_name()
+
+    filename = join(settings.NIMBUS_JOBS_PATH, name)
+
+    render_to_file( filename,
+                    "job",
+                    name=name,
+                    schedule=procedure.schedule_bacula_name(),
+                    storage=procedure.storage.storage_bacula_name(),
+                    fileset=procedure.fileset_bacula_name(),
+                    priority="10",
+                    offsite=procedure.offsite_on,
+                    offsite_param="-m %v",
+                    client=procedure.computer.bacula_name(),
+                    poll=procedure.pool_bacula_name() )
+
+
+
+def remove_procedure_file(procedure):
+    """remove procedure file"""
+    base_dir,filepath = utils.mount_path( procedure.bacula_name(),
+                                          settings.NIMBUS_JOBS_PATH)
+    utils.remove_or_leave(filepath)
+   
+
+
+signals.connect_on( update_procedure_file, Procedure, post_save)
+signals.connect_on( remove_procedure_file, Procedure, post_delete)

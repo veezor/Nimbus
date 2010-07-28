@@ -1,7 +1,16 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+from os import path
+
 from django.db import models
+from django.conf import settings
+from django.db.models.signals import post_save, post_delete
+
 
 from nimbus.base.models import BaseModel
-from nimbus.shared import utils, enums
+from nimbus.shared import utils, enums, signals
+from nimbus.libs.template import render_to_file
 
 
 OS = ( (os,os) for os in enums.operating_systems)
@@ -145,3 +154,33 @@ class Computer(BaseModel):
 
     def __unicode__(self):
        return "%s (%s)" % (self.name, self.address)
+
+
+def update_computer_file(computer):
+    """Computer update file"""
+
+    name = computer.bacula_name()
+
+
+    filename = path.join( settings.NIMBUS_COMPUTERS_PATH, 
+                          name)
+
+    render_to_file( filename,
+                    "computer",
+                    name=name,
+                    ip=comp.computer_ip,
+                    password=comp.computer_password)
+
+
+
+def remove_computer_file(computer):
+    """Computer remove file"""
+
+    filename = path.join( settings.NIMBUS_COMPUTERS_PATH, 
+                          computer.bacula_name())
+    utils.remove_or_leave(filename)
+
+
+
+signals.connect_on( update_computer_file, Computer, post_save)
+signals.connect_on( remove_computer_file, Computer, post_delete)

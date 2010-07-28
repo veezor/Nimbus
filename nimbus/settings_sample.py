@@ -22,10 +22,32 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 
 ### NIMBUS
 
+# Bacula config
+BACULA_DATABASE_NAME = ''
+BACULA_DATABASE_USER = ''
+BACULA_DATABASE_PASSWORD = ''
+BACULA_DATABASE_HOST = ''
+BACULA_DATABASE_PORT = ''
+
+
+NIMBUS_MANAGER_URL = "http://localhost:8888"
+
+NIMBUS_HOME = "/var/nimbus/"
 
 NIMBUS_WIZARD = True
 
-BCONSOLE_CONF = "/var/nimbus/custom/config/bconsole.conf"
+NIMBUS_CUSTOM_PATH = join(NIMBUS_HOME, "custom" )
+NIMBUS_CONFIG_PATH = join(NIMBUS_CUSTOM_PATH, "config" )
+NIMBUS_JOBS_PATH = join(NIMBUS_CUSTOM_PATH, "jobs" )
+NIMBUS_COMPUTERS_PATH = join(NIMBUS_CUSTOM_PATH, "computers" )
+NIMBUS_FILESETS_PATH = join(NIMBUS_CUSTOM_PATH, "filesets" )
+NIMBUS_POOLS_PATH = join(NIMBUS_CUSTOM_PATH, "pools" )
+NIMBUS_DEVICES_PATH = join(NIMBUS_CUSTOM_PATH, "devices" )
+NIMBUS_STORAGES_PATH = join(NIMBUS_CUSTOM_PATH, "schedules" )
+
+BCONSOLE_CONF = join(NIMBUS_CONFIG_PATH, "bconsole.conf")
+BACULADIR_CONF = join(NIMBUS_CONFIG_PATH, "bacula-dir.conf")
+BACULASD_CONF = join(NIMBUS_CONFIG_PATH, "bacula-sd.conf")
 
 RESTORE_POINT_DEFAULT = "/tmp/bacula-restore"
 

@@ -1,8 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+
+from os import path
+
 from django.db import models
+from django.conf import settings
+from django.db.models.signals import post_save
 
 from nimbus.base.models import BaseModel
-from nimbus.shared import enums
-# Create your models here.
+from nimbus.shared import signals, utils, enums
+from nimbus.libs.template import render_to_file
+
 
 LEVELS = tuple( (l,l) for l in enums.levels )  
 WEEKDAYS = tuple( (d,d) for d in enums.weekdays )
@@ -12,11 +21,14 @@ MONTHDAYS = tuple( (d,d) for d in enums.days )
 class Schedule(BaseModel):
     name = models.CharField(max_length=255, unique=True, null=False)
 
-    def get_runs(self):
+    def _get_triggers(self):
         return list(self.hourly_set.get_query_set()) +\
                 list(self.daily_set.get_query_set()) +\
                 list(self.monthly_set.get_query_set()) +\
                 list(self.weekly_set.get_query_set())
+
+    def get_runs(self):
+        return [ trigger.get_run() for trigger in self._get_triggers() ]
 
 
 
@@ -77,3 +89,42 @@ class Weekly(TriggerBase):
 
 
 
+
+
+
+def update_schedule_file(schedule):
+
+    name = schedule.bacula_name()
+
+    filename = path.join( settings.NIMBUS_SCHEDULES_PATH, 
+                          name)
+
+    render_to_file( filename,
+                    "schedule",
+                    name=name,
+                    runs=schedule.get_runs() )
+
+
+
+def remove_schedule_file(schedule):
+    name = schedule.bacula_name()
+
+    filename = path.join( settings.NIMBUS_SCHEDULES_PATH, 
+                          name)
+    utils.remove_or_leave(filename)
+
+
+
+signals.connect_on( update_schedule_file, Schedule, post_save)
+signals.connect_on( remove_schedule_file, Schedule, post_delete)
+
+
+signals.connect_on( update_schedule_file, Monthly, post_save)
+signals.connect_on( update_schedule_file, Daily, post_save)
+signals.connect_on( update_schedule_file, Weekly, post_save)
+signals.connect_on( update_schedule_file, Hourly, post_save)
+
+signals.connect_on( update_schedule_file, Monthly, post_delete)
+signals.connect_on( update_schedule_file, Daily, post_delete)
+signals.connect_on( update_schedule_file, Weekly, post_delete)
+signals.connect_on( update_schedule_file, Hourly, post_delete)

@@ -1,3 +1,5 @@
+from django.conf import settings
+
 LAST_SUCCESS_DATE_RAW_QUERY =\
     '''
     SELECT Level, EndTime
@@ -104,8 +106,6 @@ DB_SIZE_RAW_QUERY =\
     GROUP BY table_schema
     LIMIT 1
     '''
-
-from backup_corporativo import settings
 
 NUM_PROC_QUERY =\
     '''

@@ -1,13 +1,23 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
-from datetime import datetime
-from time import time
+
 import os
+import logging
+from time import time
+from datetime import datetime
+
+
 
 from django.db import models
-
+from django.conf import settings
+from django.db.models.signals import post_save, post_delete 
 
 
 from nimbus.base.models import UUIDSingletonModel as BaseModel
+from nimbus.storages.models import Storage
+from nimbus.libs.template import render_to_file
+from nimbus.shared import utils, signals
 
 
 # Create your models here.
@@ -157,6 +167,56 @@ class DownloadRequest(Request):
         if self.volume.size == 0:
             self.volume.size = total_bytes
         super(DownloadRequest, self).update(new_bytes_size, total_bytes)
+
+
+
+
+
+def update_offsite_file(offsite):
+
+    if offsite.active:
+        generate_offsite_file(offsite.hour)
+    else:
+        job = os.path.join( settings.NIMBUS_JOBS_PATH, "offsite" )
+        schedule = os.path.join( settings.NIMBUS_SCHEDULES_PATH, "offsite" )
+        utils.remove_or_leave(job)
+        utils.remove_or_leave(schedule)
+
+
+signals.connect_on( update_offsite_file, Offsite, post_save)
+
+def generate_offsite_file(hour):
+
+    job = os.path.join( settings.NIMBUS_JOBS_PATH, "offsite" )
+    schedule = os.path.join( settings.NIMBUS_SCHEDULES_PATH, "offsite" )
+
+    try:
+        storage = Storage.objects.get(address="127.0.0.1")
+    except Storage.DoesNotExist, error:
+        logger = logging.getLogger(__name__)
+        logger.error("Impossivel gerar job do offsite. Storage local nao existe")
+        return 
+
+    render_to_file( job,
+                    "job",
+                    name="Upload offsite",
+                    schedule="offsite_schedule",
+                    level="Incremental",
+                    storage=storage.bacula_name(),
+                    fileset="empty fileset",
+                    priority=10,
+                    client="empty client",
+                    pool="empty pool",
+                    offsite=True,
+                    offsite_param="-u")
+
+
+    render_to_file( schedule,
+                    "schedule",
+                    name="offsite_schedule",
+                    runs=["daily at %s:%s" % (hour.hour, 
+                                              hour.minute)])
+    
 
 
 

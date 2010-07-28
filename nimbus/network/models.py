@@ -1,8 +1,19 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+
+import logging
+from xmlrpclib import ServerProxy
 
 import iplib
 import networkutils
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.conf import settings
+
+
+from nimbus.shared import signals
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 # Create your models here.
@@ -44,4 +55,23 @@ class NetworkInterface(BaseModel):
 
 
 
+def update_networks_file(interface):
+    try:
+        server = ServerProxy(settings.NIMBUS_MANAGER_URL)
 
+        server.generate_interfaces( "eth0", 
+                instance.address, 
+                instance.netmask, 
+                "static",
+                instance.broadcast, 
+                instance.network, 
+                instance.gateway)
+
+        server.generate_dns( interface.dns1, 
+                             interface.dns2)
+    except Exception, error:
+        logger = logging.getLogger(__name__)
+        logger.exception("Conexao com nimbus-manager falhou")
+
+
+signals.conncect_on( update_networks_file, NetworkInterface, post_save )
