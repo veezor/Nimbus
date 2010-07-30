@@ -23,23 +23,37 @@ class NetworkInterface(BaseModel):
     netmask = models.IPAddressField(null=False)
     gateway = models.IPAddressField(null=False)
     dns1 = models.IPAddressField(null=False)
-    dns2 = models.IPAddressField(blank=True)
+    dns2 = models.IPAddressField(blank=True,null=True)
+
+
+    def __unicode__(self):
+        return u"%s/%s" % (self.address, self.netmask)
+
+
+    def _get_cidr(self):
+        mask = iplib.IPv4NetMask(self.netmask)
+        ip =  iplib.IPv4Address(self.address)
+        cidr = iplib.CIDR(ip, mask)
+        return cidr
+
 
 
     @property
     def broadcast(self):
-        mask = iplib.IPv4NetMask(self.netmask)
-        ip =  iplib.IPv4Address(self.address)
-        cidr = iplib.CIDR(ip, mask)
+        cidr = self._get_cidr()
         return str(cidr.get_broadcast_ip())
 
 
     @property
     def network(self):
-        mask = iplib.IPv4NetMask(self.netmask)
-        ip =  iplib.IPv4Address(self.address)
-        cidr = iplib.CIDR(ip, mask)
+        cidr = self._get_cidr()
         return str(cidr.get_network_ip())
+
+    @property
+    def default_gateway(self):
+        cidr = self._get_cidr()
+        return str(cidr.get_first_ip())
+
 
 
     @classmethod
@@ -49,6 +63,8 @@ class NetworkInterface(BaseModel):
         raw_iface = networkutils.get_interfaces()[0]
         interface.address = raw_iface.addr
         interface.netmask = raw_iface.netmask
+        interface.gateway = interface.default_gateway
+        interface.dns1 = interface.default_gateway
 
         interface.save()
         return interface
@@ -60,12 +76,12 @@ def update_networks_file(interface):
         server = ServerProxy(settings.NIMBUS_MANAGER_URL)
 
         server.generate_interfaces( "eth0", 
-                instance.address, 
-                instance.netmask, 
+                interface.address, 
+                interface.netmask, 
                 "static",
-                instance.broadcast, 
-                instance.network, 
-                instance.gateway)
+                interface.broadcast, 
+                interface.network, 
+                interface.gateway)
 
         server.generate_dns( interface.dns1, 
                              interface.dns2)
@@ -74,4 +90,4 @@ def update_networks_file(interface):
         logger.exception("Conexao com nimbus-manager falhou")
 
 
-signals.conncect_on( update_networks_file, NetworkInterface, post_save )
+signals.connect_on( update_networks_file, NetworkInterface, post_save )
