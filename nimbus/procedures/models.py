@@ -28,35 +28,39 @@ class Profile(models.Model):
     fileset = models.ForeignKey(FileSet, null=False, blank=False)
     schedule = models.ForeignKey(Schedule, null=False, blank=False)
 
+    def __unicode__(self):
+        return self.name
+
 
 
 
 class Procedure(BaseModel):
 
+    name = models.CharField(max_length=255, blank=False, null=False)
     computer = models.ForeignKey(Computer, blank=False, null=False)
     profile = models.ForeignKey(Profile, blank=False, null=False)
     pool = models.ForeignKey(Pool, blank=False, null=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
 
     def fileset_bacula_name(self):
-        return self.profile.fileset.bacula_name()
+        return self.profile.fileset.bacula_name
     
     def restore_bacula_name(self):
         return "%s_restorejob" % self.uuid.uuid_hex
         
     def schedule_bacula_name(self):
-        return self.profile.schedule.bacula_name()
+        return self.profile.schedule.bacula_name
 
     def storage_bacula_name(self):
-        return self.profile.storage.bacula_name()
+        return self.profile.storage.bacula_name
 
     def pool_bacula_name(self):
-        return self.pool.bacula_name()
+        return self.pool.bacula_name
 
 
     def last_success_date(self):
         last_success_date_query = sql.LAST_SUCCESS_DATE_RAW_QUERY % {
-            'procedure_name':self.bacula_name()
+            'procedure_name':self.bacula_name
         }
         baculadb = BaculaDatabase()
         cursor = baculadb.execute(last_success_date_query)
@@ -66,7 +70,7 @@ class Procedure(BaseModel):
 
     def restore_jobs(self):
         restore_jobs_query = sql.CLIENT_RESTORE_JOBS_RAW_QUERY % {
-            'client_name':self.computer.computer_bacula_name(), 
+            'client_name':self.computer.bacula_name, 
             'file_set':self.fileset_bacula_name(),
         }
         baculadb = BaculaDatabase()
@@ -226,28 +230,29 @@ class Procedure(BaseModel):
 def update_procedure_file(procedure):
     """Procedure update file"""
 
-    name = procedure.bacula_name()
+    name = procedure.bacula_name
 
-    filename = join(settings.NIMBUS_JOBS_PATH, name)
+    filename = join(settings.NIMBUS_JOBS_DIR, name)
 
     render_to_file( filename,
                     "job",
                     name=name,
                     schedule=procedure.schedule_bacula_name(),
-                    storage=procedure.storage.storage_bacula_name(),
+                    storage=procedure.storage_bacula_name(),
                     fileset=procedure.fileset_bacula_name(),
                     priority="10",
                     offsite=procedure.offsite_on,
                     offsite_param="-m %v",
-                    client=procedure.computer.bacula_name(),
+                    pool=procedure.pool_bacula_name(),
+                    client=procedure.computer.bacula_name,
                     poll=procedure.pool_bacula_name() )
 
 
 
 def remove_procedure_file(procedure):
     """remove procedure file"""
-    base_dir,filepath = utils.mount_path( procedure.bacula_name(),
-                                          settings.NIMBUS_JOBS_PATH)
+    base_dir,filepath = utils.mount_path( procedure.bacula_name,
+                                          settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
    
 
