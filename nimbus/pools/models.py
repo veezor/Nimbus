@@ -7,7 +7,7 @@ from os import path
 
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 
 from nimbus.base.models import BaseModel
 from nimbus.shared import signals, utils
@@ -21,13 +21,16 @@ class Pool(BaseModel):
     pool_size = models.FloatField(blank=False, null=False)
     retention_time = models.IntegerField(blank=False, null=False, default=30)
 
+    def __unicode__(self):
+        return self.name
+
 
 def update_pool_file(pool):
     """Pool update pool bacula file""" 
 
-    name = pool.bacula_name()
+    name = pool.bacula_name
 
-    filename = path.join( settings.NIMBUS_POOLS_PATH, 
+    filename = path.join( settings.NIMBUS_POOLS_DIR, 
                           name)
 
     render_to_file( filename,
@@ -41,8 +44,8 @@ def update_pool_file(pool):
 def remove_pool_file(pool):
     """pool remove file"""
 
-    name = pool.bacula_name()
-    filename = path.join( settings.NIMBUS_POOLS_PATH, 
+    name = pool.bacula_name
+    filename = path.join( settings.NIMBUS_POOLS_DIR, 
                           name)
     utils.remove_or_leave(filename)
 
