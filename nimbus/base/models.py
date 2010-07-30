@@ -13,7 +13,16 @@ from nimbus.base.exceptions import UUIDViolation
 
 
 UUID_NONE="none"
-logger = logging.getLogger(__name__)
+
+
+def get_uuidhex_value():
+    return uuid.uuid4().hex 
+
+def new_uuid():
+    uuid = UUID()
+    uuid.save()
+    return uuid
+
 
 class SingletonBaseModel(models.Model):
 
@@ -23,6 +32,7 @@ class SingletonBaseModel(models.Model):
             instance = cls.objects.get(pk=1)
         except cls.DoesNotExist:
             if settings.LOG_DEBUG:
+                logger = logging.getLogger(__name__)
                 logger.info("get_instance called. Instance of %s not exist." % cls.__name__)
             instance = cls()
         return instance
@@ -45,7 +55,7 @@ class UUID(models.Model):
     uuid_hex = models.CharField( editable=False,
                                  max_length=255,
                                  unique=True,
-                                 default=UUID_NONE )
+                                 default=get_uuidhex_value )
     created_on = models.DateTimeField(editable=False, default=datetime.now)
 
 
@@ -54,27 +64,10 @@ class UUID(models.Model):
 
 
 
-    def save(self, *args, **kwargs):
-        if self.uuid_hex == UUID_NONE:
-            self.uuid_hex = uuid.uuid4().hex
-            return super(UUID, self).save(*args, **kwargs)
-        else:
-            if settings.LOG_DEBUG:
-                logger.error("UUIDViolation on %s" % self.__class__.__name__)
-            raise UUIDViolation() 
-
 
 class UUIDBaseModel(models.Model):
-    uuid = models.ForeignKey(UUID)
+    uuid = models.ForeignKey(UUID, default=new_uuid, blank=True, editable=False)
 
-    def save(self, *args, **kwargs):
-        try:
-            self.uuid
-        except UUID.DoesNotExist:
-            uuid = UUID()
-            uuid.save()
-            self.uuid = uuid
-            return super(UUIDBaseModel, self).save(*args, **kwargs)
  
     @property
     def bacula_name(self):
