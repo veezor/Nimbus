@@ -75,6 +75,9 @@ class SubprocessConsole(IConsole):
         executable = os.path.join(self.bconsole_path, self.executable)
         self.connection = Popen( [executable, "-c", self.configfile], 
                                  bufsize=0, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+        if self.connection.returncode != 0:
+            raise BConsoleInitError("Communication failed")
         output = self.connection.communicate(command)[0]
         return output
 
