@@ -6,7 +6,7 @@ from os import path
 
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 
 from nimbus.base.models import BaseModel
 from nimbus.shared import signals, utils, enums
@@ -31,6 +31,10 @@ class Schedule(BaseModel):
         return [ trigger.get_run() for trigger in self._get_triggers() ]
 
 
+    def __unicode__(self):
+        return self.name
+
+
 
 class TriggerBase(models.Model):
     schedule = models.ForeignKey(Schedule, null=False, blank=False)
@@ -43,7 +47,7 @@ class TriggerBase(models.Model):
         return cls.__name__.lower()
 
     def __unicode__(self):
-        return self.run_str()
+        return self.get_run()
 
     class Meta:
         abstract = True
@@ -51,7 +55,7 @@ class TriggerBase(models.Model):
 
 class Daily(TriggerBase):
     
-    def run_str(self):
+    def get_run(self):
         return u"%s at %s" % ( self.type_name(),
                                self.hour.strftime("%H:%M") )
 
@@ -59,7 +63,7 @@ class Daily(TriggerBase):
 
 class Hourly(TriggerBase):
     
-    def run_str(self):
+    def get_run(self):
         return u"%s at 00:%s" % ( self.type_name(),
                                   self.hour.strftime("%M") )
 
@@ -68,7 +72,7 @@ class Monthly(TriggerBase):
     day = models.IntegerField(null=False, blank=False, choices=MONTHDAYS)
 
 
-    def run_str(self):
+    def get_run(self):
         return u"%s %d at %s" % ( self.type_name(), 
                                   int(self.day),
                                   self.hour.strftime("%H:%M") )
@@ -80,7 +84,7 @@ class Weekly(TriggerBase):
                            max_length=4, choices=WEEKDAYS)
 
 
-    def run_str(self):
+    def get_run(self):
         return u"%s %s at %s" % ( self.type_name(), 
                                   self.day,
                                   self.hour.strftime("%H:%M") )
@@ -94,9 +98,9 @@ class Weekly(TriggerBase):
 
 def update_schedule_file(schedule):
 
-    name = schedule.bacula_name()
+    name = schedule.bacula_name
 
-    filename = path.join( settings.NIMBUS_SCHEDULES_PATH, 
+    filename = path.join( settings.NIMBUS_SCHEDULES_DIR, 
                           name)
 
     render_to_file( filename,
@@ -107,24 +111,28 @@ def update_schedule_file(schedule):
 
 
 def remove_schedule_file(schedule):
-    name = schedule.bacula_name()
+    name = schedule.bacula_name
 
-    filename = path.join( settings.NIMBUS_SCHEDULES_PATH, 
+    filename = path.join( settings.NIMBUS_SCHEDULES_DIR, 
                           name)
     utils.remove_or_leave(filename)
 
 
 
+def update_schedule(trigger):
+    update_schedule_file(trigger.schedule)
+    
+
 signals.connect_on( update_schedule_file, Schedule, post_save)
 signals.connect_on( remove_schedule_file, Schedule, post_delete)
 
 
-signals.connect_on( update_schedule_file, Monthly, post_save)
-signals.connect_on( update_schedule_file, Daily, post_save)
-signals.connect_on( update_schedule_file, Weekly, post_save)
-signals.connect_on( update_schedule_file, Hourly, post_save)
+signals.connect_on( update_schedule, Monthly, post_save)
+signals.connect_on( update_schedule, Daily, post_save)
+signals.connect_on( update_schedule, Weekly, post_save)
+signals.connect_on( update_schedule, Hourly, post_save)
 
-signals.connect_on( update_schedule_file, Monthly, post_delete)
-signals.connect_on( update_schedule_file, Daily, post_delete)
-signals.connect_on( update_schedule_file, Weekly, post_delete)
-signals.connect_on( update_schedule_file, Hourly, post_delete)
+signals.connect_on( update_schedule, Monthly, post_delete)
+signals.connect_on( update_schedule, Daily, post_delete)
+signals.connect_on( update_schedule, Weekly, post_delete)
+signals.connect_on( update_schedule, Hourly, post_delete)
