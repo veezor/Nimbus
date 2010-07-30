@@ -107,7 +107,7 @@ def absolute_file_path(filename, rel_dir):
 
 def absolute_dir_path(rel_dir):
     """Return full path to a directory from script file location."""
-    return os.path.join(settings.NIMBUS_CUSTOM_PATH, rel_dir)
+    return os.path.join(settings.NIMBUS_CUSTOM_DIR, rel_dir)
 
 
 def isdir(path):
