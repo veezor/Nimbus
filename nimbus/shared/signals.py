@@ -10,11 +10,13 @@ from nimbus.libs.bacula import Bacula
 
 def call_reload():
     try:
+        logger = logging.getLogger(__name__)
+        logger.info("Iniciando comunicacao com o bacula")
         bacula = Bacula()
         bacula.reload()
+        logger.info("Reload no bacula executado com sucesso")
         del bacula
     except BConsoleInitError, e:
-        logger = logging.getLogger(__name__)
         logger.error("Comunicação com o bacula falhou")
 
 
@@ -27,4 +29,7 @@ def connect_on(function, model, signal):
         call_reload()
         return value
 
-    signal.connect(function_wrapper, sender=model)
+    signal.connect(function_wrapper, sender=model, weak=False)
+
+
+
