@@ -9,6 +9,7 @@ from django.db.models.signals import post_save, post_delete
 
 
 from nimbus.base.models import BaseModel
+from nimbus.config.models import Config
 from nimbus.shared import utils, enums, signals
 from nimbus.libs.template import render_to_file
 
@@ -26,6 +27,15 @@ class InvalidFileType(Exception):
     pass
 
 
+
+class ComputerGroup(models.Model):
+    name = models.CharField( max_length=255, unique=True, 
+                             blank=False, null=False)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Computer(BaseModel):
 
     name = models.CharField( max_length=255, unique=True, 
@@ -39,12 +49,14 @@ class Computer(BaseModel):
                                  blank=False, null=False,
                                  editable=False,
                                  default=utils.random_password)
+    groups = models.ManyToManyField(ComputerGroup, related_name="computers",
+                                    blank=True, null=True)
 
 
 
     def _get_crypt_file(self, filename):
         km = KeyManager()
-        client_path = km.get_client_path(self.computer_name)
+        client_path = km.get_client_path(self.name)
         path = os.path.join(client_path, file_name)
         try:
             file_content = open(file_path, 'r') 
@@ -61,41 +73,41 @@ class Computer(BaseModel):
     def get_config_file(self):
         
         fd_dict =   {
-                    'Name': self.computer_bacula_name(),
+                    'Name': self.bacula_name,
                     #TODO: tratar porta do cliente
                     'FDport':'9102',
                     'Maximum Concurrent Jobs':'5',}
                     
         if self.computer_encryption:
-            if self.computer_so == 'UNIX':
+            if self.operation_system == 'unix':
                 fd_dict.update({
                     'PKI Signatures':'Yes',
                     'PKI Encryption':'Yes',
                     'PKI Keypair':'''"/etc/bacula/client.pem"''',
                     'PKI Master Key':'''"/etc/bacula/master.cert"''',})
-            elif self.computer_so == 'WIN':
+            elif self.operation_system == 'windows':
                 fd_dict.update({
                     'PKI Signatures':'Yes',
                     'PKI Encryption':'Yes',
                     'PKI Keypair':'''"C:\\\\Nimbus\\\\client.pem"''',
                     'PKI Master Key':'''"C:\\\\Nimbus\\\\master.cert"''',})
             
-        if self.computer_so == 'UNIX':
+        if self.operation_system == 'unix':
             fd_dict.update({
                 'WorkingDirectory':'/var/bacula/working ',
                 'Pid Directory':'/var/run ',})
-        elif self.computer_so == 'WIN':
+        elif self.operation_system == 'windows':
             fd_dict.update({
                 'WorkingDirectory':'''"C:\\\\Nimbus"''',
                 'Pid Directory':'''"C:\\\\Nimbus"''',})
-        gconf = GlobalConfig.objects.get(pk=1)
+        conf = Config.get_instance()
         dir_dict =  {
-            'Name':gconf.director_bacula_name(),
-            'Password':'''"%s"''' % (self.computer_password),}
+            'Name':conf.director_name,
+            'Password':'''"%s"''' % (self.password),}
         msg_dict =  {
             'Name':'Standard',
             'director':'%s = all, !skipped, !restored' % \
-                gconf.director_bacula_name(),}
+                conf.director_name,}
         dump = []
     
         dump.append("#\n")
@@ -123,7 +135,7 @@ class Computer(BaseModel):
 
     def successful_jobs(self):
         successful_jobs_query = CLIENT_SUCCESSFUL_JOBS_RAW_QUERY % {
-            'client_name':self.computer_bacula_name(),    
+            'client_name':self.bacula_name,    
         }
         bacula = Bacula()
         successful_jobs_cursor = bacula.baculadb.execute(successful_jobs_query)
@@ -131,7 +143,7 @@ class Computer(BaseModel):
 
     def unsuccessful_jobs(self):
         unsuccessful_jobs_query = CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY % {
-            'client_name':self.computer_bacula_name(),    
+            'client_name':self.bacula_name,    
         }
         bacula = Bacula()
         unsuccessful_jobs_cursor = bacula.baculadb.execute(unsuccessful_jobs_query)
@@ -139,7 +151,7 @@ class Computer(BaseModel):
 
     def running_jobs(self):
         running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {
-            'client_name':self.computer_bacula_name(),
+            'client_name':self.bacula_name,
         }
         bacula = Bacula()
         running_jobs_cursor = bacula.baculadb.execute(running_jobs_query)
@@ -147,7 +159,7 @@ class Computer(BaseModel):
 
     def last_jobs(self):
         last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {
-            'client_name':self.computer_bacula_name(),}
+            'client_name':self.bacula_name,}
         bacula = Bacula()
         last_jobs_cursor = bacula.baculadb.execute(last_jobs_query)
         return utils.dictfetch(last_jobs_cursor)
@@ -159,25 +171,25 @@ class Computer(BaseModel):
 def update_computer_file(computer):
     """Computer update file"""
 
-    name = computer.bacula_name()
+    name = computer.bacula_name
 
 
-    filename = path.join( settings.NIMBUS_COMPUTERS_PATH, 
+    filename = path.join( settings.NIMBUS_COMPUTERS_DIR, 
                           name)
 
     render_to_file( filename,
                     "computer",
                     name=name,
-                    ip=comp.computer_ip,
-                    password=comp.computer_password)
+                    ip=computer.address,
+                    password=computer.password)
 
 
 
 def remove_computer_file(computer):
     """Computer remove file"""
 
-    filename = path.join( settings.NIMBUS_COMPUTERS_PATH, 
-                          computer.bacula_name())
+    filename = path.join( settings.NIMBUS_COMPUTERS_DIR, 
+                          computer.bacula_name)
     utils.remove_or_leave(filename)
 
 

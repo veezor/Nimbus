@@ -3,13 +3,14 @@
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 
+from nimbus.computers.models import Computer
 
-from nimbus.computers.forms import ComputerForm
+
 
 
 def add(request):
     return create_update.create_object( request, 
-                                        form_class = ComputerForm, 
+                                        model = Computer,
                                         template_name = "genericform.html")
 
 
@@ -17,7 +18,7 @@ def add(request):
 def edit(request, object_id):
     return create_update.update_object( request, 
                                         object_id = object_id,
-                                        form_class = ComputerForm, 
+                                        model = Computer,
                                         template_name = "genericform.html")
 
 
