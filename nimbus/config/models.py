@@ -2,6 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 
+import logging
+
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -15,11 +17,13 @@ from nimbus.libs.template import render_to_file
 
 class Config(BaseModel):
     name = models.CharField(max_length=255, blank=False, null=False)
-    director_name = models.CharField(max_length=255, blank=False, null=False)
+    director_name = models.CharField( max_length=255, blank=False, 
+                                      null=False, editable=False)
     director_password = models.CharField( max_length=255, 
+                                          editable=False,
                                           default=utils.random_password,
                                           blank=False, null=False)
-    director_address = models.IPAddressField(null=False, blank=False,
+    director_address = models.IPAddressField("nimbus address", null=False, blank=False,
                                              default="127.0.0.1")
 
 
@@ -37,12 +41,11 @@ def update_director_file(config):
 
     render_to_file( filename,
                     "bacula-dir",
-                    director_name=config.director_bacula_name(), 
-                    director_port=config.director_port, 
+                    director_name=config.director_name, 
                     director_password=config.director_password,
-                    db_name=config.bacula_database_name(), 
-                    db_user=config.bacula_database_user(), 
-                    db_password=config.bacula_database_password())
+                    db_name=settings.BACULA_DATABASE_NAME, 
+                    db_user=settings.BACULA_DATABASE_USER, 
+                    db_password=settings.BACULA_DATABASE_PASSWORD)
 
 
     logger = logging.getLogger(__name__)
@@ -65,7 +68,6 @@ def update_console_file(config):
 
     logger = logging.getLogger(__name__)
     logger.info("Arquivo de configuracao do bconsole gerado com sucesso")
-
 
 
 

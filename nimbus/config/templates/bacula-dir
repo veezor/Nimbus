@@ -3,7 +3,7 @@ Director {
 	Password = "{{director_password}}"
 	Maximum Concurrent Jobs = 100
 	WorkingDirectory = "/var/bacula/working"
-	DIRport = {{director_port}}
+	DIRport = 9103
 	Messages = Daemon
 	PidDirectory = "/var/run"
 	QueryFile = "/etc/bacula/query.sql"
