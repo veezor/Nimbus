@@ -12,6 +12,14 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+
+DATABASES = {
+    'default': {
+        'NAME': 'test.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+    }
+}
+
 DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'test.db'             # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
@@ -32,24 +40,37 @@ BACULA_DATABASE_PORT = ''
 
 NIMBUS_MANAGER_URL = "http://localhost:8888"
 
-NIMBUS_HOME = "/var/nimbus/"
+ROOT_PATH = "/"
 
-NIMBUS_WIZARD = True
 
-NIMBUS_CUSTOM_PATH = join(NIMBUS_HOME, "custom" )
-NIMBUS_CONFIG_PATH = join(NIMBUS_CUSTOM_PATH, "config" )
-NIMBUS_JOBS_PATH = join(NIMBUS_CUSTOM_PATH, "jobs" )
-NIMBUS_COMPUTERS_PATH = join(NIMBUS_CUSTOM_PATH, "computers" )
-NIMBUS_FILESETS_PATH = join(NIMBUS_CUSTOM_PATH, "filesets" )
-NIMBUS_POOLS_PATH = join(NIMBUS_CUSTOM_PATH, "pools" )
-NIMBUS_DEVICES_PATH = join(NIMBUS_CUSTOM_PATH, "devices" )
-NIMBUS_STORAGES_PATH = join(NIMBUS_CUSTOM_PATH, "schedules" )
+NIMBUS_ETC_DIR = join(ROOT_PATH, "etc/nimbus")
+NIMBUS_HOME_DIR = join(ROOT_PATH, "var/nimbus/")
+NIMBUS_DEPLOY_PATH = "/var/www"
 
-BCONSOLE_CONF = join(NIMBUS_CONFIG_PATH, "bconsole.conf")
-BACULADIR_CONF = join(NIMBUS_CONFIG_PATH, "bacula-dir.conf")
-BACULASD_CONF = join(NIMBUS_CONFIG_PATH, "bacula-sd.conf")
+
+NIMBUS_CUSTOM_DIR = join(NIMBUS_HOME_DIR, "custom" )
+NIMBUS_CONFIG_DIR = join(NIMBUS_CUSTOM_DIR, "config" )
+NIMBUS_JOBS_DIR = join(NIMBUS_CUSTOM_DIR, "jobs" )
+NIMBUS_COMPUTERS_DIR = join(NIMBUS_CUSTOM_DIR, "computers" )
+NIMBUS_FILESETS_DIR = join(NIMBUS_CUSTOM_DIR, "filesets" )
+NIMBUS_POOLS_DIR = join(NIMBUS_CUSTOM_DIR, "pools" )
+NIMBUS_DEVICES_DIR = join(NIMBUS_CUSTOM_DIR, "devices" )
+NIMBUS_STORAGES_DIR = join(NIMBUS_CUSTOM_DIR, "storages" )
+NIMBUS_SCHEDULES_DIR = join(NIMBUS_CUSTOM_DIR, "schedules" )
+
+BCONSOLE_CONF = join(NIMBUS_CONFIG_DIR, "bconsole.conf")
+BACULADIR_CONF = join(NIMBUS_CONFIG_DIR, "bacula-dir.conf")
+BACULASD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-sd.conf")
+LOGGING_CONF = join(NIMBUS_ETC_DIR, "logging.conf")
+PYBACULA_TEST = True
+
+
+NIMBUS_UNDEPLOYED_CONF_FILES = join( dirname(__file__), 'confs')
+NIMBUS_UNDEPLOYED_LOG_CONF = join(NIMBUS_UNDEPLOYED_CONF_FILES, "logging.conf")
 
 RESTORE_POINT_DEFAULT = "/tmp/bacula-restore"
+
+NIMBUS_WIZARD = True
 
 # Nimbus log verbose
 LOG_DEBUG = True
@@ -79,7 +100,10 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = join( dirname(__file__), 'media')
+if SERVE_STATIC_FILES:
+    MEDIA_ROOT = join( dirname(__file__), 'media')
+else:
+    MEDIA_ROOT = join( NIMBUS_DEPLOY_PATH, 'media' )
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -104,7 +128,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
-    "django.core.context_processors.media" 
+    "django.core.context_processors.media" ,
+    "django.contrib.messages.context_processors.messages"
 )
 
 # List of callables that know how to import templates from various sources.
@@ -115,9 +140,12 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'nimbus.shared.middlewares.LogSetup',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+
 )
 
 if AJAX_DEBUG:
@@ -141,16 +169,21 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'nimbus.auth',
+    'nimbus.session',
     'nimbus.base',
     'nimbus.users',
     'nimbus.config',
     'nimbus.network',
     'nimbus.schedules',
+    'nimbus.filesets',
+    'nimbus.storages',
+    'nimbus.pools',
+    'nimbus.procedures',
     'nimbus.timezone',
     'nimbus.offsite',
     'nimbus.wizard',
     'nimbus.computers'
 )
 
-
+if DEBUG:
+    INSTALLED_APPS += ("django.contrib.admin",)
