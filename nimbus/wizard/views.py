@@ -8,8 +8,8 @@ from django.shortcuts import redirect
 from django.http import Http404
 
 
-from nimbus.config.forms import ConfigForm
-from nimbus.network.forms import NetworkForm
+from nimbus.config.models import Config
+from nimbus.network.models import NetworkInterface
 from nimbus.timezone.forms import TimezoneForm
 from nimbus.offsite.forms import OffsiteForm
 from nimbus.shared.views import edit_singleton_model, render_to_response
@@ -33,7 +33,7 @@ def only_wizard(view):
 def start(request):
     return edit_singleton_model( request, "genericform.html", 
                                  "nimbus.wizard.views.timezone",
-                                 formclass = ConfigForm )
+                                 model = Config )
 
 @only_wizard
 def timezone(request):
@@ -49,9 +49,10 @@ def offsite(request):
 
 @only_wizard
 def network(request):
+    interface = NetworkInterface.new() # get data from raw interface and save
     return edit_singleton_model( request, "genericform.html", 
                                  "nimbus.wizard.views.password",
-                                 formclass = NetworkForm )
+                                 model = NetworkInterface )
 
 @only_wizard
 def password(request):
