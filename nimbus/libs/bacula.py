@@ -13,7 +13,7 @@ from nimbus.shared import utils
 import nimbus.shared.sqlqueries as sql 
 
 import logging
-logger = logging.getLogger(__name__)
+
 
 import pybacula
 from pybacula import BaculaCommandLine
@@ -29,8 +29,6 @@ except AttributeError, e:
 
 
 
-BCONSOLE_CONF = "/var/nimbus/custom/config/bconsole.conf"
-RESTORE_POINT_DEFAULT = "/tmp/bacula-restore"
 
 
 class RestoreCallError(Exception):
@@ -42,10 +40,11 @@ class Bacula(object):
     def __init__(self):
         self.cmd = BaculaCommandLine(config=settings.BCONSOLE_CONF)
         self.baculadb = BaculaDatabase()
+        self.logger = logging.getLogger(__name__)
 
 
     def reload(self):
-        logger.info("Executando reload no bacula")
+        self.logger.info("Executando reload no bacula")
         output = self.cmd.reload.run()
         return output
 
@@ -89,8 +88,10 @@ class Bacula(object):
         result = cursor.fetchone()
         return result[0] if result else ''
 
-    def run_restore_last(self, client_name, client_restore=None, where=RESTORE_POINT_DEFAULT):
-        logger.info("Executando run_restore_last ")
+    def run_restore_last(self, client_name, client_restore=None, 
+                         where=settings.RESTORE_POINT_DEFAULT):
+
+        self.logger.info("Executando run_restore_last ")
         client_restore = client_restore if client_restore else client_name
         return self.cmd.restore.\
                 client[client_name].\
@@ -99,16 +100,17 @@ class Bacula(object):
     
     def run_restore_date(self, client_name, date, client_restore, where, fileset_name):
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
-        logger.info("Executando run_restore_date ")
+        self.logger.info("Executando run_restore_date ")
         return self.cmd.restore.\
                 client[client_name].\
                 restoreclient[client_restore].\
                 select.all.done.yes.where[where].before[date].\
                 fileset[fileset_name].run()
   
-    def run_restore_jobid(self, client_name, jobid, client_restore=None, where=RESTORE_POINT_DEFAULT):
+    def run_restore_jobid(self, client_name, jobid, client_restore=None, 
+                          where=settings.RESTORE_POINT_DEFAULT):
         """JobId Format: specify a JobId or comma separated list of JobIds to be restored."""
-        logger.info("Executando run_restore_jobid ")
+        self.logger.info("Executando run_restore_jobid ")
         client_restore = client_restore if client_restore else client_name
         return self.cmd.restore.\
                 client[client_name].\
@@ -116,10 +118,11 @@ class Bacula(object):
                 select.all.done.yes.where[where].jobid[jobid].run()
 
 
-    def run_restore(self, client_name, jobid=None, date=None, client_restore=None, where=RESTORE_POINT_DEFAULT, fileset_name=None):
+    def run_restore(self, client_name, jobid=None, date=None, client_restore=None, 
+                     where=settings.RESTORE_POINT_DEFAULT, fileset_name=None):
         """Method to restore a Job"""
 
-        logger.info("Executando run_restore ")
+        self.logger.info("Executando run_restore ")
         client_restore = client_restore if client_restore else client_name
         if fileset_name and date:
             return self.run_restore_date(client_name, date, client_restore, where, fileset_name)
@@ -135,7 +138,7 @@ class Bacula(object):
         """ Date Format:  YYYY-MM-DD HH:MM:SS
             Level: Full/Incremental
         """
-        logger.info("Executando run_backup ")
+        self.logger.info("Executando run_backup ")
         if not date:
             sum_seconds = datetime.timedelta(seconds=10)
             now = datetime.datetime.now() + sum_seconds
@@ -198,10 +201,14 @@ class BaculaDatabase(object):
         'db': settings.BACULA_DATABASE_NAME,
         'passwd': settings.BACULA_DATABASE_PASSWORD,
         'host': settings.BACULA_DATABASE_HOST,
-        'port': int(settings.BACULA_DATABASE_PORT)
     }
 
-    wrapper = BaculaDatabaseWrapper(bacula_settings_dict) #highlander
+    db = None
+    
+    def __init__(self):
+        if not self.db:
+            self.__class__.db =  \
+                    BaculaDatabaseWrapper(settings_dict=self.bacula_settings_dict) #highlander
 
     def cursor(self):
         return self.wrapper.cursor()
