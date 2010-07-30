@@ -17,26 +17,25 @@ from django.db.models.signals import post_save, post_delete
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 from nimbus.storages.models import Storage
 from nimbus.libs.template import render_to_file
-from nimbus.shared import utils, signals
+from nimbus.shared import utils, signals, fields
 
 
 # Create your models here.
 
 class Offsite(BaseModel):
-    username = models.CharField(max_length=255, null=False, blank=False)
-    password = models.CharField(max_length=255, null=False, blank=False)
+    username = models.CharField(max_length=255, blank=True, null=True)
+    password = models.CharField(max_length=255, blank=True, null=True)
     gateway_url = models.CharField( max_length=255,
-                                    null=False,
                                     default="http://gatewaynimbus.veezor.com")
-    upload_rate = models.IntegerField(default=-1,null=False)
-    active = models.BooleanField(null=False)
-    hour = models.TimeField()
+    upload_rate = models.IntegerField(default=-1)
+    active = models.BooleanField()
+    hour = models.TimeField(blank=True, null=True)
 
 
 class Volume(models.Model):
 
-    path = models.FilePathField(null=False, unique=True)
-    size = models.IntegerField(null=False)
+    path = fields.ModelPathField(max_length=1024, null=False, unique=True)
+    size = models.IntegerField(null=False, editable=False)
 
     def __init__(self, *args, **kwargs):
         path = kwargs.get("path", None)
@@ -54,8 +53,6 @@ class Volume(models.Model):
         return os.path.basename(self.path)
 
 
-    class Meta:
-        app_label = 'bkp'
 
 
 
@@ -66,7 +63,6 @@ class OffSiteVolume(models.Model):
 
     class Meta:
         abstract = True
-        app_label = 'bkp'
 
 
 
@@ -85,12 +81,12 @@ class Request(models.Model):
     HOURS = MINUTES * 60
 
     volume = models.ForeignKey(Volume, unique=True, null=False)
-    created_at = models.DateTimeField(default=datetime.now)
-    attempts = models.PositiveSmallIntegerField(default=0)
-    last_attempt = models.DateTimeField(null=True)
-    last_update = models.IntegerField(default=0) #unix time seconds
-    transferred_bytes = models.IntegerField(default=0)
-    rate = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=datetime.now, editable=False)
+    attempts = models.PositiveSmallIntegerField(default=0, editable=False)
+    last_attempt = models.DateTimeField(null=True, editable=False)
+    last_update = models.IntegerField(default=0, editable=False) #unix time seconds
+    transferred_bytes = models.IntegerField(default=0, editable=False)
+    rate = models.IntegerField(default=0, editable=False)
 
 
     def update(self, new_bytes_size, total_bytes):
@@ -135,7 +131,6 @@ class Request(models.Model):
 
     class Meta:
         abstract = True
-        app_label = 'bkp'
 
 
 
@@ -177,8 +172,8 @@ def update_offsite_file(offsite):
     if offsite.active:
         generate_offsite_file(offsite.hour)
     else:
-        job = os.path.join( settings.NIMBUS_JOBS_PATH, "offsite" )
-        schedule = os.path.join( settings.NIMBUS_SCHEDULES_PATH, "offsite" )
+        job = os.path.join( settings.NIMBUS_JOBS_DIR, "offsite" )
+        schedule = os.path.join( settings.NIMBUS_SCHEDULES_DIR, "offsite" )
         utils.remove_or_leave(job)
         utils.remove_or_leave(schedule)
 
@@ -187,8 +182,8 @@ signals.connect_on( update_offsite_file, Offsite, post_save)
 
 def generate_offsite_file(hour):
 
-    job = os.path.join( settings.NIMBUS_JOBS_PATH, "offsite" )
-    schedule = os.path.join( settings.NIMBUS_SCHEDULES_PATH, "offsite" )
+    job = os.path.join( settings.NIMBUS_JOBS_DIR, "offsite" )
+    schedule = os.path.join( settings.NIMBUS_SCHEDULES_DIR, "offsite" )
 
     try:
         storage = Storage.objects.get(address="127.0.0.1")
@@ -202,7 +197,7 @@ def generate_offsite_file(hour):
                     name="Upload offsite",
                     schedule="offsite_schedule",
                     level="Incremental",
-                    storage=storage.bacula_name(),
+                    storage=storage.bacula_name,
                     fileset="empty fileset",
                     priority=10,
                     client="empty client",
