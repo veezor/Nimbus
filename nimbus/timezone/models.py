@@ -31,9 +31,8 @@ class Timezone(BaseModel):
     country = models.CharField( max_length=255, blank=False, 
                                 choices=COUNTRY_CHOICES)
     area = models.CharField( max_length=255, blank=False, 
-                             null=False,
-                             choices=EMPTY_CHOICES, 
-                             default=('', '----------'))
+                             null=False)
+
 
     
 class InvalidTimezone(Exception):
@@ -50,4 +49,4 @@ def update_system_timezone(timezone):
 
 
 
-signals.conncect_on( update_system_timezone, Timezone, post_save )
+signals.connect_on( update_system_timezone, Timezone, post_save )
