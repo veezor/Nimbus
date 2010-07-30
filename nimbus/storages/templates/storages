@@ -4,10 +4,10 @@ Storage {
 	Media Type = File
 	Address = {{ device.storage.address }}
     {% ifequal device.storage.address '127.0.0.1' %}
-	Device = {{ device.bacula_name }}
+    Device = {{ device.bacula_name }}
     {% else %}
     Device = {{ device.name }}
-    {% endif %}
+    {% endifequal %}
 	Password = "{{device.storage.password}}"
 	SDPort = 9102
 }

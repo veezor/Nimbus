@@ -5,14 +5,14 @@ from os import path
 import logging
 
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 
 
 import networkutils
 
 from nimbus.base.models import BaseModel
-from nimbus.shared import utils, signals
+from nimbus.shared import utils, signals, fields
 from nimbus.libs.template import render_to_file
 from nimbus.config.models import Config
 
@@ -20,11 +20,6 @@ from nimbus.config.models import Config
 
 
 
-
-class Device(BaseModel):
-    name = models.CharField(max_length=255, null=False)
-    archive = models.FilePathField()
-    storage = models.ForeignKey(Storage, null=False)
 
 
 class Storage(BaseModel):
@@ -36,9 +31,19 @@ class Storage(BaseModel):
     description = models.CharField(max_length=500, blank=True)
 
     def __unicode__(self):
-        return "%s (%s:%s)" % (
+        return "(%s:%s)" % (
             self.name,
             self.address) 
+
+
+class Device(BaseModel):
+    name = models.CharField(max_length=255, null=False)
+    archive = fields.ModelPathField(max_length=1024, null=False, unique=True)
+    storage = models.ForeignKey(Storage, null=False)
+
+
+    def __unicode__(self):
+        return "%s in %s" % (self.name, self.archive)
 
 
 
@@ -55,7 +60,7 @@ def update_storage_file(storage):
 
             render_to_file( filename,
                             "bacula-sd",
-                            name=storage.bacula_name(),
+                            name=storage.bacula_name,
                             port=9102,
                             max_cur_jobs=100,
                             director_name=config.director_name,
@@ -71,12 +76,12 @@ signals.connect_on( update_storage_file, Storage, post_save)
 
 def update_device_file(device):
 
-    name = device.bacula_name()
+    name = device.bacula_name
 
-    filename = path.join( settings.NIMBUS_DEVICES_PATH, 
+    filename = path.join( settings.NIMBUS_DEVICES_DIR, 
                           name)
     
-    storagefile = path.join( settings.NIMBUS_STORAGES_PATH, 
+    storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
                           name)
 
     render_to_file( filename,
@@ -94,11 +99,11 @@ def update_device_file(device):
 
 
 def remove_device_file(instance):
-    name = device.bacula_name()
+    name = device.bacula_name
 
-    filename = path.join( settings.NIMBUS_DEVICES_PATH, 
+    filename = path.join( settings.NIMBUS_DEVICES_DIR, 
                           name)
-    storagefile = path.join( settings.NIMBUS_STORAGES_PATH, 
+    storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
                           name)
 
     utils.remove_or_leave(filename)
