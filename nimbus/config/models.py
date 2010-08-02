@@ -43,9 +43,9 @@ def update_director_file(config):
                     "bacula-dir",
                     director_name=config.director_name, 
                     director_password=config.director_password,
-                    db_name=settings.BACULA_DATABASE_NAME, 
-                    db_user=settings.BACULA_DATABASE_USER, 
-                    db_password=settings.BACULA_DATABASE_PASSWORD)
+                    db_name=settings.DATABASES['bacula']['NAME'], 
+                    db_user=settings.DATABASES['bacula']['USER'], 
+                    db_password=settings.DATABASES['bacula']['PASSWORD'])
 
 
     logger = logging.getLogger(__name__)

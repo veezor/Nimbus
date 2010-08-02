@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import re
-import MySQLdb as Database
 
 from django.conf import settings
-import django.db.backends as dbbackends 
-from django.utils.safestring import SafeString, SafeUnicode
+from django.db import connections
+from django.db.models import Sum
 
 from nimbus.shared import utils
+from nimbus.bacula import models
+
+
 import nimbus.shared.sqlqueries as sql 
 
 import logging
@@ -26,20 +27,14 @@ except AttributeError, e:
 
 
 
-
-
-
-
-
 class RestoreCallError(Exception):
     pass
 
-# TODO dividir funções de manipulação da console e de queries com banco de dados em duas classes distintas
+
 class Bacula(object):
 
     def __init__(self):
         self.cmd = BaculaCommandLine(config=settings.BCONSOLE_CONF)
-        self.baculadb = BaculaDatabase()
         self.logger = logging.getLogger(__name__)
 
 
@@ -49,44 +44,29 @@ class Bacula(object):
         return output
 
 
-    def last_jobs(self):
-        """Returns list of dicts with  20 last jobs in overall system."""
-        cursor = self.baculadb.execute(sql.LAST_JOBS_QUERY)
-        return utils.dictfetch(cursor)
-
-
-    def running_jobs(self):
-        """Returns list of dicts with  10 running jobs in overall system."""
-        cursor = self.baculadb.execute(sql.RUNNING_JOBS_QUERY)
-        return utils.dictfetch(cursor)
-
-
     def db_size(self):
         """Returns bacula's database size in MB."""
-        dbsize_query = sql.DB_SIZE_RAW_QUERY % {'bacula_db_name': settings.BACULA_DATABASE_NAME}
-        cursor = self.baculadb.execute(dbsize_query)
-        result = cursor.fetchone()
-        return result[0] if result else ''
+        cursor = connections['bacula'].cursor()
+        return cursor.execute(sql.DB_SIZE_RAW_QUERY, 
+                                [settings.DATABASES['bacula']['NAME']])
 
     def num_procedures(self):
         """Returns generator of dict with number or total procedures stored at Nimbus."""
-        cursor = self.baculadb.execute(sql.NUM_PROC_QUERY)
-        result = cursor.fetchone()
-        return result[0] if result else ''
+        from nimbus.procedures.models import Procedure
+        return Procedure.objects.count()
 
 
     def num_clients(self):
         """Returns generator of dict with number of clients stored at Nimbus."""
-        cursor = self.baculadb.execute(sql.NUM_CLI_QUERY)
-        result = cursor.fetchone() 
-        return result[0] if result else ''
+        from nimbus.computers.models import Computer
+        return Computer.objects.count()
                         
    
     def total_mbytes(self):
         """Returns generator of dict with total megabytes at bacula system backups."""
-        cursor = self.baculadb.execute(sql.TOTAL_MBYTES_QUERY)
-        result = cursor.fetchone()
-        return result[0] if result else ''
+        r = models.Job.objects.filter(jobstatus='T').aggregate(sum=Sum('jobbytes'))
+        return utils.bytes_to_mb(r['sum'])
+
 
     def run_restore_last(self, client_name, client_restore=None, 
                          where=settings.RESTORE_POINT_DEFAULT):
@@ -97,6 +77,7 @@ class Bacula(object):
                 client[client_name].\
                 restoreclient[client_restore].\
                 select.current.all.done.yes.where[where].run()
+
     
     def run_restore_date(self, client_name, date, client_restore, where, fileset_name):
         """Date Format:  YYYY-MM-DD HH:MM:SS ."""
@@ -154,73 +135,4 @@ class Bacula(object):
     
   
 
-# AVISO:
-# essa classe foi apenas parcialmente implementada e contempla somente
-# a execução de queries SQL puras através de seu método execute.
-# Além do que foi descrito acima, seu funcionamento não é garantido
-# para nenhum outro tipo de operação.
-# Para maiores informações, consultar código original em: 
-# http://djangoapi.quamquam.org/trunk/toc-django.db.backends.mysql-module.html
-class BaculaDatabaseWrapper(dbbackends.BaseDatabaseWrapper):
-    """Classe que encapsula operações básicas com banco de dados."""
-    def __init__(self, **kwargs):
-        super(BaculaDatabaseWrapper, self).__init__(**kwargs)
-        self.server_version = None
-
-    def _valid_connection(self):
-        if self.connection is not None:
-            try:
-                self.connection.ping()
-                return True
-            except Database.DatabaseError, e:
-                self.connection.close()
-                self.connection = None
-        return False
-    
-    def commit(self):
-        self._commit()
-
-    def cursor(self):
-        return self._cursor()
-
-    def _cursor(self):
-        if not self._valid_connection():
-            bacula_settings_dict['use_unicode'] = True
-            self.connection = Database.connect(**bacula_settings_dict)
-            self.connection.encoders[SafeUnicode] = self.connection.encoders[unicode]
-            self.connection.encoders[SafeString] = self.connection.encoders[str]
-        cursor = self.connection.cursor()
-        return cursor
-
-
-class BaculaDatabase(object):
-    """Classe de fachada utilizada para gerenciar todas as conexões com a base de dados do bacula."""
-
-    bacula_settings_dict = {
-        'user': settings.BACULA_DATABASE_USER,
-        'db': settings.BACULA_DATABASE_NAME,
-        'passwd': settings.BACULA_DATABASE_PASSWORD,
-        'host': settings.BACULA_DATABASE_HOST,
-    }
-
-    db = None
-    
-    def __init__(self):
-        if not self.db:
-            self.__class__.db =  \
-                    BaculaDatabaseWrapper(settings_dict=self.bacula_settings_dict) #highlander
-
-    def cursor(self):
-        return self.wrapper.cursor()
-    
-    def execute(self, query):
-        try:
-            cursor = self.cursor()
-            cursor.execute(query)
-            return cursor
-        except Database.Warning:
-            pass
-
-    def commit(self):
-        self.wrapper.commit()
 

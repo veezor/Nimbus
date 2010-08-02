@@ -7,7 +7,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete
 
-
+from nimbus.bacula.models import Job, Client
 from nimbus.base.models import BaseModel
 from nimbus.config.models import Config
 from nimbus.shared import utils, enums, signals
@@ -133,39 +133,35 @@ class Computer(BaseModel):
         
         return dump
 
+
+    @property
+    def bacula_id(self):
+        return Client.objects.get(name=self.bacula_name).clientid
+
     def successful_jobs(self):
-        successful_jobs_query = CLIENT_SUCCESSFUL_JOBS_RAW_QUERY % {
-            'client_name':self.bacula_name,    
-        }
-        bacula = Bacula()
-        successful_jobs_cursor = bacula.baculadb.execute(successful_jobs_query)
-        return utils.dictfetch(successful_jobs_cursor)
+        return Job.objects.filter( jobstatus__in=('T','W'), 
+                             client__name=self.bacula_name)\
+                                     .order_by('endtime').distinct()[:15]
 
     def unsuccessful_jobs(self):
-        unsuccessful_jobs_query = CLIENT_UNSUCCESSFUL_JOBS_RAW_QUERY % {
-            'client_name':self.bacula_name,    
-        }
-        bacula = Bacula()
-        unsuccessful_jobs_cursor = bacula.baculadb.execute(unsuccessful_jobs_query)
-        return utils.dictfetch(unsuccessful_jobs_cursor)
+        return Job.objects.filter( jobstatus__in=('E','e','f','I'), 
+                             client__name=self.bacula_name)\
+                                     .order_by('endtime').distinct()[:15]
 
     def running_jobs(self):
-        running_jobs_query = CLIENT_RUNNING_JOBS_RAW_QUERY % {
-            'client_name':self.bacula_name,
-        }
-        bacula = Bacula()
-        running_jobs_cursor = bacula.baculadb.execute(running_jobs_query)
-        return utils.dictfetch(running_jobs_cursor)
+        status = ('R','p','j','c','d','s','M','m','s','F','B')
+        return Job.objects.filter( jobstatus__in=status, 
+                             client__name=self.bacula_name)\
+                                     .order_by('starttime').distinct()[:5]
+
 
     def last_jobs(self):
-        last_jobs_query = CLIENT_LAST_JOBS_RAW_QUERY % {
-            'client_name':self.bacula_name,}
-        bacula = Bacula()
-        last_jobs_cursor = bacula.baculadb.execute(last_jobs_query)
-        return utils.dictfetch(last_jobs_cursor)
+        return Job.objects.filter(client__name=self.bacula_name)\
+                                .order_by('endtime').distinct()[:15]
 
     def __unicode__(self):
        return "%s (%s)" % (self.name, self.address)
+
 
 
 def update_computer_file(computer):
