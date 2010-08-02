@@ -15,27 +15,23 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'NAME': 'test.db',
-        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '',
+        'ENGINE': '',
+        'USER' : '',
+        'PASSWORD' : '',
+        'HOST' : ''
+    },
+    'bacula' : {
+        'NAME' : '',
+        'ENGINE' : '',
+        'USER' : '',
+        'PASSWORD' : '',
+        'HOST' : ''
     }
 }
 
-DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'test.db'             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
-
 
 ### NIMBUS
-
-# Bacula config
-BACULA_DATABASE_NAME = ''
-BACULA_DATABASE_USER = ''
-BACULA_DATABASE_PASSWORD = ''
-BACULA_DATABASE_HOST = ''
-BACULA_DATABASE_PORT = ''
 
 
 NIMBUS_MANAGER_URL = "http://localhost:8888"
@@ -148,6 +144,9 @@ MIDDLEWARE_CLASSES = (
 
 )
 
+
+DATABASE_ROUTERS = ['nimbus.bacula.dbrouting.Router']
+
 if AJAX_DEBUG:
     MIDDLEWARE_CLASSES += ('nimbus.shared.middlewares.AjaxDebug' ,)
 
@@ -169,6 +168,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'nimbus.bacula',
     'nimbus.session',
     'nimbus.base',
     'nimbus.users',
