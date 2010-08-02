@@ -102,7 +102,7 @@ DB_SIZE_RAW_QUERY =\
     ''' 
     SELECT (SUM(data_length+index_length)/(1024 * 1024)) AS DBSIZE
     FROM information_schema.TABLES
-    WHERE table_schema = '%(bacula_db_name)s'
+    WHERE table_schema = %s
     GROUP BY table_schema
     LIMIT 1
     '''
@@ -345,7 +345,7 @@ FILE_TREE_RAW_QUERY =\
     (SELECT max(FileId) as FileId, PathId, FilenameId 
     FROM (SELECT FileId, PathId, FilenameId 
     FROM File 
-    WHERE JobId IN (%(jid_string_list)s)) AS F 
+    WHERE JobId IN (%(ids)s)) AS F 
     GROUP BY PathId, FilenameId) AS Temp 
     JOIN Filename 
     ON (Filename.FilenameId = Temp.FilenameId) 
@@ -355,4 +355,31 @@ FILE_TREE_RAW_QUERY =\
     ON (File.FileId = Temp.FileId) 
     WHERE File.FileIndex > 0 
     ORDER BY JobId, FileIndex ASC
+    '''
+
+FILES_QUERY =\
+    '''
+    SELECT DISTINCT CONCAT(Path.Path,Filename.Name) 
+    FROM File, Path, Filename 
+    WHERE Filename.FilenameId = File.FilenameId 
+    AND Path.PathId = File.PathId 
+    AND File.JobId in (%s)
+    AND File.FileIndex > 0 
+    GROUP BY Path.Path, Filename.Name 
+    ORDER BY File.JobID, File.FileIndex
+    '''
+
+FILES_BY_NIVEL_QUERY =\
+    '''
+    SELECT DISTINCT 
+        SUBSTRING_INDEX(CONCAT(Path.Path,Filename.Name), '/', %d) ,
+        SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(Path.Path,Filename.Name) , '/', %d)  , '/', -1),
+        IF (STRCMP(RIGHT(SUBSTRING_INDEX(CONCAT(Path.Path,Filename.Name), '/', %d),1), '/'), 0, 1)
+    FROM File, Path, Filename 
+    WHERE Filename.FilenameId = File.FilenameId 
+    AND Path.PathId = File.PathId 
+    AND File.JobId in (%s)
+    AND File.FileIndex > 0 
+    GROUP BY Path.Path, Filename.Name 
+    ORDER BY File.JobID, File.FileIndex
     '''

@@ -5,20 +5,27 @@ import os
 import logging
 from os.path import join
 
-from django.db import models
+from django.db import models, connections
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete 
 
 from nimbus.shared import utils, signals
 import nimbus.shared.sqlqueries as sql 
+
 from nimbus.base.models import BaseModel
-from nimbus.libs.bacula import BaculaDatabase
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.filesets.models import FileSet
 from nimbus.schedules.models import Schedule
 from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
+
+
+from nimbus.bacula.models import (Job, 
+                                  Temp1, 
+                                  JobMedia, 
+                                  Temp,
+                                  File)
 
 
 class Profile(models.Model):
@@ -59,87 +66,72 @@ class Procedure(BaseModel):
 
 
     def last_success_date(self):
-        last_success_date_query = sql.LAST_SUCCESS_DATE_RAW_QUERY % {
-            'procedure_name':self.bacula_name
-        }
-        baculadb = BaculaDatabase()
-        cursor = baculadb.execute(last_success_date_query)
-        result = utils.dictfetch(cursor)
-        return result and result[0] or {}
+        return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
+                .order_by('endtime')[0]
 
 
     def restore_jobs(self):
-        restore_jobs_query = sql.CLIENT_RESTORE_JOBS_RAW_QUERY % {
-            'client_name':self.computer.bacula_name, 
-            'file_set':self.fileset_bacula_name(),
-        }
-        baculadb = BaculaDatabase()
-        cursor = baculadb.execute(restore_jobs_query)
-        return utils.dictfetch(cursor)
+        return Job.objects.filter( client__name=self.computer.bacula_name,
+                                   fileset__fileset=self.fileset_bacula_name,
+                                   jobstatus='T').order_by('endtime').distinct()[:15]
 
-    def get_bkp_dict(self, bkp_jid):
-        """Returns a dict with job information of a given job id"""
-        starttime_query = sql.JOB_INFO_RAW_QUERY % {'job_id':bkp_jid,}
-        baculadb = BaculaDatabase()
-        cursor = baculadb.execute(starttime_query)
-        result = utils.dictfetch(cursor)
-        return result and result[0] or {}
+    def get_job(self, id):
+        """Returns job information of a given job id"""
+        return Job.objects.get(jobid=bkp_jid)
 
   
-    def clean_temp(self):
+    @classmethod
+    def clean_temp(cls):
         """Drop temp and temp1 tables"""
-        drop_temp_query = sql.DROP_TABLE_RAW_QUERY % {'table_name':'temp'}
-        drop_temp1_query = sql.DROP_TABLE_RAW_QUERY % {'table_name':'temp1'}
-        baculadb = BaculaDatabase()
-        baculadb.execute(drop_temp_query)
-        baculadb.execute(drop_temp1_query)
-        baculadb.execute(sql.CREATE_TEMP_QUERY)
-        baculadb.execute(sql.CREATE_TEMP1_QUERY)
+        cursor = connections['bacula'].cursor()
+        cursor.execute('delete from temp')
+        cursor.execute('delete from temp1')
         
     
-    def load_full_bkp(self, initial_bkp):
+    def load_full_bkp(self, job):
         """
         Loads last full job id and startime at table called temp1.
         for more information, see CLIENT_LAST_FULL_RAW_QUERY at sql_queries.py
         """
         self.clean_temp()
-        if ('StartTime' in initial_bkp and
-            'Level' in initial_bkp
-            and initial_bkp['Level'] == 'I'):
+        if job.level == 'I':
             load_full_query = sql.LOAD_LAST_FULL_RAW_QUERY % {
-                'client_id':self.computer.bacula_id,
-                'start_time':initial_bkp['StartTime'],
-                'fileset':self.fileset_bacula_name(),}
-        elif ('JobId' in initial_bkp
-              and 'Level' in initial_bkp
-              and initial_bkp['Level'] == 'F'):
+                                    'client_id': job.client.clientid,
+                                    'start_time': job.starttime,
+                                    'fileset':self.fileset_bacula_name()
+            }
+        elif  job.level == 'F':
             load_full_query = sql.LOAD_FULL_RAW_QUERY % {
-                'jid':initial_bkp['JobId']}
-        b2 = BaculaDatabase()
-        cursor = b2.execute(load_full_query)
-        b2.commit()
+                'jid': job.jobid}
+        else:
+            pass
 
-    def get_tdate(self):
+        cursor = connections['bacula'].cursor()
+        cursor.execute(load_full_query)
+        cursor.commit()
+
+
+    @classmethod
+    def get_tdate(cls):
         """Gets tdate from a 1-row-table called temp1 which
         holds last full backup when properly loaded.
         """
-        b2 = BaculaDatabase()
-        cursor = b2.execute(sql.TEMP1_TDATE_QUERY)
-        result = cursor.fetchone()
-        return result and result[0] or ''
+        return Temp1.objects.all()[0]
 
 
-    def load_full_media(self):
+    @classmethod
+    def load_full_media(cls):
         """
         Loads media information for lasfull backup at table
         called temp. For more information, see
         LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
         """
-        b2 = BaculaDatabase()
-        cursor = b2.execute(sql.LOAD_FULL_MEDIA_INFO_QUERY)
-        b2.commit()
+        cursor = connections['bacula'].cursor()
+        cursor.execute(sql.LOAD_FULL_MEDIA_INFO_RAW_QUERY)
+        cursor.commit()
+
         
-    def load_inc_media(self,initial_bkp):
+    def load_inc_media(self, job):
         """
         Loads media information for incremental backups at
         table called temp. For more information, see
@@ -149,67 +141,49 @@ class Procedure(BaseModel):
         
         if 'StartTime' in initial_bkp:
             incmedia_query = sql.LOAD_INC_MEDIA_INFO_RAW_QUERY % {
-                'tdate':tdate,
-                'start_time':initial_bkp['StartTime'],
-                'client_id':self.computer.bacula_id,
-                'fileset':self.fileset_bacula_name(),}
-            b2 = BaculaDatabase()
-            cursor = b2.execute(incmedia_query)
-            b2.commit()
+                'tdate': job.jobtdate,
+                'start_time': job.starttime,
+                'client_id': job.client.clientid,
+                'fileset': self.fileset_bacula_name()
+            }
+            
+            cursor = connections['bacula'].cursor()
+            cursor.execute(incmedia_query)
+            cursor.commit()
 
-    def load_backups_information(self,initial_bkp):
+    def load_backups_information(self, job):
         # load full bkp general info into temp1
-        self.load_full_bkp(initial_bkp)
+        self.load_full_bkp(job)
         # load full bkp media info into temp
         self.load_full_media() 
-        if 'Level' in initial_bkp and initial_bkp['Level'] == 'I':
+        if job.level == 'I':
             # load inc bkps media info into temp
             self.load_inc_media(initial_bkp) 
             
 
-    def build_jid_list(self,bkp_jid):
+    def build_jid_list(self, jobid):
         """
         If temp1 and temp tables are properly feeded, will
         build a list with all job ids included at this restore.
         For more information, see 
         JOBS_FOR_RESTORE_QUERY at sqlqueries.py
         """
-        initial_bkp = self.get_bkp_dict(bkp_jid)
-        jid_list = []
-        if initial_bkp:
+        job = self.get_job(jobid)
+
+        if job:
             # loads full bkp info and inc bkps information if exists
-            self.load_backups_information(initial_bkp)
-            b2 = BaculaDatabase()
-            cursor = b2.execute(sql.JOBS_FOR_RESTORE_QUERY)
-            job_list = utils.dictfetch(cursor)
+            self.load_backups_information(job)
+            jobs = Temp.objects.all().distinct().order_by('starttime').values('job_id')
+            return [ job['job_id'] for job in jobs  ]  
 
-            for job in job_list:
-                jid_list.append(str(job['JobId']))
-        return jid_list
 
-    def get_file_tree(self, bkp_jid):
+    def get_file_tree(self, job_id):
         """Retrieves tree with files from a job id list"""
         # build list with all job ids
-        jid_list = self.build_jid_list(bkp_jid)    
-        if jid_list:
-            filetree_query = sql.FILE_TREE_RAW_QUERY % {
-                'jid_string_list':','.join(jid_list),}
-            b2 = BaculaDatabase()
-            cursor = b2.execute(filetree_query)
-            count = cursor.rowcount
-            file_list = utils.dictfetch(cursor)
-            return count,self.build_file_tree(file_list)
-        else: return 0,[]
+        ids = self.build_jid_list( job_ids )    
+        files = File.objects.filter(job__jobid__in=ids)\
+                .distinct()
     
-    def build_file_tree(self, file_list):
-        """Build tree from file list"""
-        files = [
-            '%s:%s' % (
-                os.path.join(f['FPath'],
-                f['FName']),
-                f['FId']) \
-            for f in file_list]
-        return utils.parse_filetree(files)
         
 
     def __unicode__(self):

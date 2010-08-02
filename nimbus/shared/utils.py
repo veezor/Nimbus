@@ -25,7 +25,11 @@ def schedule_inverse(type):
     elif type == 'Monthly':
         return 'Weekly'
 
-    
+
+
+def bytes_to_mb(size):
+    return size/1024.0/1024
+
 def random_password(size=20):
     """Generates random password of a given size."""
     return ''.join([choice(string.letters + string.digits) for i in range(size)])
