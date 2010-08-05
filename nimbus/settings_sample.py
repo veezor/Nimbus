@@ -46,6 +46,7 @@ NIMBUS_DEPLOY_PATH = "/var/www"
 
 NIMBUS_CUSTOM_DIR = join(NIMBUS_HOME_DIR, "custom" )
 NIMBUS_CONFIG_DIR = join(NIMBUS_CUSTOM_DIR, "config" )
+NIMBUS_CERTIFICATES_DIR = join(NIMBUS_CUSTOM_DIR, "certificates" )
 NIMBUS_JOBS_DIR = join(NIMBUS_CUSTOM_DIR, "jobs" )
 NIMBUS_COMPUTERS_DIR = join(NIMBUS_CUSTOM_DIR, "computers" )
 NIMBUS_FILESETS_DIR = join(NIMBUS_CUSTOM_DIR, "filesets" )
@@ -56,6 +57,7 @@ NIMBUS_SCHEDULES_DIR = join(NIMBUS_CUSTOM_DIR, "schedules" )
 
 BCONSOLE_CONF = join(NIMBUS_CONFIG_DIR, "bconsole.conf")
 BACULADIR_CONF = join(NIMBUS_CONFIG_DIR, "bacula-dir.conf")
+BACULAFD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-fd.conf")
 BACULASD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-sd.conf")
 LOGGING_CONF = join(NIMBUS_ETC_DIR, "logging.conf")
 PYBACULA_TEST = True
