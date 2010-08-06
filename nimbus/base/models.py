@@ -65,15 +65,20 @@ class UUID(models.Model):
 
 
 class UUIDBaseModel(models.Model):
-    uuid = models.ForeignKey(UUID)
+    uuid = models.ForeignKey(UUID, editable=False)
+
+
+    def _generate_uuid(self):
+        uuid = UUID()
+        uuid.save()
+        self.uuid = uuid
+
 
     def save(self, *args, **kwargs):
         try:
             self.uuid
         except UUID.DoesNotExist:
-            uuid = UUID()
-            uuid.save()
-            self.uuid = uuid
+            self._generate_uuid()
             return super(UUIDBaseModel, self).save(*args, **kwargs)
  
     @property
