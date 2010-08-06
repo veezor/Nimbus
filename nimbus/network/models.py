@@ -26,6 +26,18 @@ class NetworkInterface(BaseModel):
     dns2 = models.IPAddressField(blank=True,null=True)
 
 
+    def __init__(self, *args, **kwargs):
+        super(NetworkInterface, self).__init__(*args, **kwargs)
+        if not self.id:
+            raw_iface = networkutils.get_interfaces()[0]
+            self.address = raw_iface.addr
+            self.netmask = raw_iface.netmask
+            self.gateway = self.default_gateway
+            self.dns1 = self.default_gateway
+
+
+
+
     def __unicode__(self):
         return u"%s/%s" % (self.address, self.netmask)
 
@@ -56,18 +68,8 @@ class NetworkInterface(BaseModel):
 
 
 
-    @classmethod
-    def new(cls):
-        interface = cls.get_instance()
 
-        raw_iface = networkutils.get_interfaces()[0]
-        interface.address = raw_iface.addr
-        interface.netmask = raw_iface.netmask
-        interface.gateway = interface.default_gateway
-        interface.dns1 = interface.default_gateway
 
-        interface.save()
-        return interface
 
 
 
