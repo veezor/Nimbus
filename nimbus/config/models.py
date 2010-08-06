@@ -28,10 +28,12 @@ class Config(BaseModel):
                                              default="127.0.0.1")
 
 
-    def save(self, *args, **kwargs):
+
+    def _generate_uuid(self):
+        super(Config, self)._generate_uuid()
         if not self.director_name:
             self.director_name = self.uuid.uuid_hex
-        super(Config, self).save(*args, **kwargs)
+
 
 
 
