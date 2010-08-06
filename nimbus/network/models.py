@@ -14,6 +14,7 @@ from django.conf import settings
 
 
 from nimbus.shared import signals
+from nimbus.shared.middlewares import ThreadPool
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 # Create your models here.
@@ -71,25 +72,29 @@ class NetworkInterface(BaseModel):
 
 
 
-
-
 def update_networks_file(interface):
-    try:
-        server = ServerProxy(settings.NIMBUS_MANAGER_URL)
 
-        server.generate_interfaces( "eth0", 
-                interface.address, 
-                interface.netmask, 
-                "static",
-                interface.broadcast, 
-                interface.network, 
-                interface.gateway)
+    def callable(interface):
+        try:
+            server = ServerProxy(settings.NIMBUS_MANAGER_URL)
 
-        server.generate_dns( interface.dns1, 
-                             interface.dns2)
-    except Exception, error:
-        logger = logging.getLogger(__name__)
-        logger.exception("Conexao com nimbus-manager falhou")
+            server.generate_interfaces( "eth0", 
+                    interface.address, 
+                    interface.netmask, 
+                    "static",
+                    interface.broadcast, 
+                    interface.network, 
+                    interface.gateway)
+
+            server.generate_dns( interface.dns1, 
+                                 interface.dns2)
+        except Exception, error:
+            logger = logging.getLogger(__name__)
+            logger.exception("Conexao com nimbus-manager falhou")
+
+
+    Pool = ThreadPool.get_instance()
+    Pool.add_job( callable, (interface,), {} )
 
 
 signals.connect_on( update_networks_file, NetworkInterface, post_save )
