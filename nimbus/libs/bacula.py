@@ -1,23 +1,24 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
 import datetime
 
 from django.conf import settings
 from django.db import connections
 from django.db.models import Sum
 
+import pybacula
+from pybacula import BaculaCommandLine, configcheck
+
 from nimbus.shared import utils
 from nimbus.bacula import models
-
-
 import nimbus.shared.sqlqueries as sql 
 
-import logging
 
 
-import pybacula
-from pybacula import BaculaCommandLine
+
+
 
 try:
     if settings.PYBACULA_TEST:
@@ -40,8 +41,13 @@ class Bacula(object):
 
     def reload(self):
         self.logger.info("Executando reload no bacula")
-        output = self.cmd.reload.run()
-        return output
+        try:
+            configcheck.check_baculadir(settings.BCONSOLE_CONF)
+            output = self.cmd.reload.run()
+            return output
+        except configcheck.ConfigFileError, error:
+            logging.exception("Erro ao executar o reload")
+
 
 
     def db_size(self):
