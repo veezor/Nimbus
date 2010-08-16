@@ -34,7 +34,7 @@ class Offsite(BaseModel):
 
 class Volume(models.Model):
 
-    path = fields.ModelPathField(max_length=1024, null=False, unique=True)
+    path = fields.ModelPathField(max_length=255, null=False, unique=True)
     size = models.IntegerField(null=False, editable=False)
 
     def __init__(self, *args, **kwargs):

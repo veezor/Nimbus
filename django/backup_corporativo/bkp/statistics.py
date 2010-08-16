@@ -3,7 +3,7 @@
 
 
 import os
-import cairoplot
+#import cairoplot
 
 from django.conf import settings
 from backup_corporativo.bkp.bacula import Bacula, BaculaDatabase
@@ -89,10 +89,10 @@ def generate_graph( name,  items ):
     max_value = max(items_data)
     step  = max_value / 5
     y_labels = [  ("%.2f MB" % (step*x)) for x in xrange(6)  ]  
-    cairoplot.vertical_bar_plot( "%s%s.png" % (IMAGENS_DIR, name), 
-                                 data, 640, 480, border=20, display_values=True,
-                                 colors = ["gray"], rounded_corners = True,
-                                 grid=True, x_labels = x_labels, y_labels=y_labels)
+    #cairoplot.vertical_bar_plot( "%s%s.png" % (IMAGENS_DIR, name), 
+    #                             data, 640, 480, border=20, display_values=True,
+    #                             colors = ["gray"], rounded_corners = True,
+    #                             grid=True, x_labels = x_labels, y_labels=y_labels)
 
 
 
@@ -142,12 +142,12 @@ def update_diskusage_graph(filename=IMAGENS_DIR+"disk.png"):
     total = info.f_bsize * info.f_blocks
     free = info.f_bsize * info.f_bfree
     used = total - free
-    cairoplot.pie_plot( filename, 
-                        {"used" : used, "free" : free}, 
-                        480, 320,
-                        gradient = True,
-                        shadow = True,
-                        colors = [ "lime", "blue" ]) 
+    #cairoplot.pie_plot( filename, 
+    #                    {"used" : used, "free" : free}, 
+    #                    480, 320,
+    #                    gradient = True,
+    #                    shadow = True,
+    #                    colors = [ "lime", "blue" ]) 
 
 
 

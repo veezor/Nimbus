@@ -8,8 +8,13 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 
 
+from nimbus.shared import forms
+
 def edit_singleton_model(request, templatename, redirect_to, 
                          formclass = None, model = None):
+
+    if not formclass and model:
+        formclass = forms.form(model)
     try:
         return update_object( request, object_id=1, 
                               form_class = formclass, 

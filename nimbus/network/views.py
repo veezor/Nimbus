@@ -8,7 +8,7 @@ from nimbus.shared.views import edit_singleton_model
 
 @login_required
 def network_conf(request):
-    return edit_singleton_model( request, "genericform.html", 
+    return edit_singleton_model( request, "myform.html", 
                                  "nimbus.network.views.network_conf",
                                  model = NetworkInterface )
 

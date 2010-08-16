@@ -1,38 +1,42 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt-BR" lang="pt-BR">
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<meta http-equiv="Content-Language" content="pt-BR" />
+{% extends "base_login.html" %}
 
-		<title>Login - Backup corporativo</title>
+{% block content %}
 
-		<style type="text/css">
-            body { font: 12px Arial, Sans; }
-            h1 { letter-spacing: -0.05em; margin: 0 0 10px 0; color: #1e91a3 }
-            #box_login { background: url(/media/images/bg_login.jpg) top left no-repeat; padding: 125px 20px 20px 27px; width: 300px; margin: 30px auto 0; }
-            label { display: block; padding-bottom: 5px; float: left; width: 70px; padding-top: 9px; }
-            input { margin-bottom: 10px; width: 200px; font-size: 15px; font-weight: bold; padding: 5px; }
-            button { margin-left: 70px; }
-            p { margin: 0; }
-		</style>
-	</head>
-	<body>
+<!-- <form action="page.html" method="post">
+    <p>
+        <label>Usuário:</label> <br />
+        <input type="text" class="text" value="admin" />
+    </p>
+    
+    <p>
+        <label>Senha:</label> <br />
+        <input type="password" class="text" value="pass" />
+    </p>
+    
+    <p>
+        <input type="submit" class="submit" value="Acessar" /> &nbsp; 
+        <input type="checkbox" class="checkbox" checked="checked" id="rememberme" /> <label for="rememberme">Manter minha sessão ativa</label>
+    </p>
+</form> -->
 
-        <!-- Begin Login -->
-        <div id="box_login">
-            <h1>Login</h1>
-            <form action="{% url django.contrib.auth.views.login  %}" method="post">
-               {% include "form.html" %}
-               <input type="hidden" name="next" value="{{ next }}" />
-                <p><button type="submit">Entrar</button></p>
-              </form>
-              {% if form.errors %}
-              <p>Your username and password didn't match. Please try again.</p>
-              {% endif %}
-
+    <form action="{% url django.contrib.auth.views.login  %}" method="post">
+        
+        {% if form.errors %}
+        <div class="message errormsg">
+            <p>Your username and password didn't match. Please try again.</p>
         </div>
-        <!-- End Login -->
+        {% endif %}
+        
+        {% include "form.html" %}
 
-	</body>
-</html>
+        <p>
+            <input type="submit" class="submit" value="Acessar" /> &nbsp;
+            <input type="checkbox" class="checkbox" checked="checked" id="rememberme" /> <label for="rememberme">Manter minha sessão ativa</label>
+        </p>
+               
+        <input type="hidden" name="next" value="{{ next }}" />
+
+    </form>
+
+
+{% endblock %}

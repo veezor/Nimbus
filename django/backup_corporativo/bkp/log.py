@@ -6,6 +6,6 @@ import logging
 import logging.config
 
 
-logging.config.fileConfig("/etc/nimbus/logging.conf")
+logging.config.fileConfig("/Users/jonatas/Sources/nimbus-env/etc/nimbus/logging.conf")
 
 

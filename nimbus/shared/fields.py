@@ -21,3 +21,22 @@ class ModelPathField(models.CharField):
         kwargs['form_class'] = FormPathField
         return super(ModelPathField, self).formfield(*args, **kwargs)
 
+
+
+class CharFormField(forms.CharField):
+
+    def widget_attrs(self, widget):
+        attrs = super(CharFormField, self).widget_attrs(widget)
+        
+        if not attrs:
+            attrs = {}
+        
+        if self.max_length < 20:
+            attrs['class'] = 'text small'
+        elif self.max_length < 200:
+            attrs['class'] = 'text medium'
+        else:
+            attrs['class'] = "text"
+            
+        return attrs
+        

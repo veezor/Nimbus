@@ -38,7 +38,7 @@ class Storage(BaseModel):
 
 class Device(BaseModel):
     name = models.CharField(max_length=255, null=False)
-    archive = fields.ModelPathField(max_length=1024, null=False, unique=True)
+    archive = fields.ModelPathField(max_length=255, null=False, unique=True)
     storage = models.ForeignKey(Storage, null=False)
 
 
