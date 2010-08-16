@@ -13,6 +13,7 @@ from nimbus.network.models import NetworkInterface
 from nimbus.timezone.forms import TimezoneForm
 from nimbus.offsite.forms import OffsiteForm
 from nimbus.shared.views import edit_singleton_model, render_to_response
+from nimbus.shared.forms import form
 from nimbus.wizard import models
 
 
@@ -49,10 +50,15 @@ def offsite(request):
 
 @only_wizard
 def network(request):
-    interface = NetworkInterface.new() # get data from raw interface and save
-    return edit_singleton_model( request, "genericform.html", 
-                                 "nimbus.wizard.views.password",
-                                 model = NetworkInterface )
+    if request.method == "GET":
+        interface = NetworkInterface()
+        Form = form(NetworkInterface)
+        return render_to_response( request, "genericform.html",
+                                   { "form" : Form(instance=interface) })
+    else:
+        return edit_singleton_model( request, "genericform.html", 
+                                     "nimbus.wizard.views.password",
+                                     model = NetworkInterface )
 
 @only_wizard
 def password(request):

@@ -4,11 +4,18 @@
 import logging
 from functools import wraps
 from pybacula import BConsoleInitError
+
+
 from nimbus.libs.bacula import Bacula
+from nimbus.shared.middlewares import ThreadPool
 
 
 
-def call_reload():
+
+
+
+
+def call_reload_baculadir():
     try:
         logger = logging.getLogger(__name__)
         logger.info("Iniciando comunicacao com o bacula")
@@ -26,7 +33,8 @@ def connect_on(function, model, signal):
     @wraps(function)
     def function_wrapper(sender, instance, signal, *args, **kwargs):
         value = function(instance)
-        call_reload()
+        Pool = ThreadPool.get_instance()
+        Pool.add_job( call_reload_baculadir, (), {} )
         return value
 
     signal.connect(function_wrapper, sender=model, weak=False)

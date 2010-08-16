@@ -3,6 +3,7 @@
 
 
 import logging
+from os import path
 
 from django.db import models
 from django.conf import settings
@@ -27,10 +28,12 @@ class Config(BaseModel):
                                              default="127.0.0.1")
 
 
-    def save(self, *args, **kwargs):
+
+    def _generate_uuid(self):
+        super(Config, self)._generate_uuid()
         if not self.director_name:
             self.director_name = self.uuid.uuid_hex
-        super(Config, self).save(*args, **kwargs)
+
 
 
 
@@ -45,7 +48,13 @@ def update_director_file(config):
                     director_password=config.director_password,
                     db_name=settings.DATABASES['bacula']['NAME'], 
                     db_user=settings.DATABASES['bacula']['USER'], 
-                    db_password=settings.DATABASES['bacula']['PASSWORD'])
+                    db_password=settings.DATABASES['bacula']['PASSWORD'],
+                    computers_dir=settings.NIMBUS_COMPUTERS_DIR,
+                    filesets_dir=settings.NIMBUS_FILESETS_DIR,
+                    jobs_dir=settings.NIMBUS_JOBS_DIR,
+                    pools_dir=settings.NIMBUS_POOLS_DIR,
+                    schedules_dir=settings.NIMBUS_SCHEDULES_DIR,
+                    storages_dir=settings.NIMBUS_STORAGES_DIR)
 
 
     logger = logging.getLogger(__name__)
@@ -71,5 +80,33 @@ def update_console_file(config):
 
 
 
+def update_client_file(config):
+
+    filename = path.join( settings.NIMBUS_COMPUTERS_DIR, 
+                          config.director_name)
+
+    render_to_file( filename,
+                    "client",
+                    name=config.director_name,
+                    ip=config.director_address,
+                    password=config.director_password)
+
+
+
+def update_baculafd_file(config):
+
+    render_to_file( settings.BACULAFD_CONF,
+                    "bacula-fd",
+                    director_name=config.director_name,
+                    password=config.director_password,
+                    name=config.director_name,
+                    os="unix",
+                    nimbus=True,
+                    certificates=settings.NIMBUS_CERTIFICATES_DIR)
+
+
+
 signals.connect_on( update_director_file, Config, post_save)
+signals.connect_on( update_baculafd_file, Config, post_save)
+signals.connect_on( update_client_file, Config, post_save)
 signals.connect_on( update_console_file, Config, post_save)

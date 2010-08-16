@@ -14,6 +14,7 @@ from django.conf import settings
 
 
 from nimbus.shared import signals
+from nimbus.shared.middlewares import ThreadPool
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 # Create your models here.
@@ -24,6 +25,18 @@ class NetworkInterface(BaseModel):
     gateway = models.IPAddressField(null=False)
     dns1 = models.IPAddressField(null=False)
     dns2 = models.IPAddressField(blank=True,null=True)
+
+
+    def __init__(self, *args, **kwargs):
+        super(NetworkInterface, self).__init__(*args, **kwargs)
+        if not self.id:
+            raw_iface = networkutils.get_interfaces()[0]
+            self.address = raw_iface.addr
+            self.netmask = raw_iface.netmask
+            self.gateway = self.default_gateway
+            self.dns1 = self.default_gateway
+
+
 
 
     def __unicode__(self):
@@ -56,38 +69,32 @@ class NetworkInterface(BaseModel):
 
 
 
-    @classmethod
-    def new(cls):
-        interface = cls.get_instance()
-
-        raw_iface = networkutils.get_interfaces()[0]
-        interface.address = raw_iface.addr
-        interface.netmask = raw_iface.netmask
-        interface.gateway = interface.default_gateway
-        interface.dns1 = interface.default_gateway
-
-        interface.save()
-        return interface
 
 
 
 def update_networks_file(interface):
-    try:
-        server = ServerProxy(settings.NIMBUS_MANAGER_URL)
 
-        server.generate_interfaces( "eth0", 
-                interface.address, 
-                interface.netmask, 
-                "static",
-                interface.broadcast, 
-                interface.network, 
-                interface.gateway)
+    def callable(interface):
+        try:
+            server = ServerProxy(settings.NIMBUS_MANAGER_URL)
 
-        server.generate_dns( interface.dns1, 
-                             interface.dns2)
-    except Exception, error:
-        logger = logging.getLogger(__name__)
-        logger.exception("Conexao com nimbus-manager falhou")
+            server.generate_interfaces( "eth0", 
+                    interface.address, 
+                    interface.netmask, 
+                    "static",
+                    interface.broadcast, 
+                    interface.network, 
+                    interface.gateway)
+
+            server.generate_dns( interface.dns1, 
+                                 interface.dns2)
+        except Exception, error:
+            logger = logging.getLogger(__name__)
+            logger.exception("Conexao com nimbus-manager falhou")
+
+
+    Pool = ThreadPool.get_instance()
+    Pool.add_job( callable, (interface,), {} )
 
 
 signals.connect_on( update_networks_file, NetworkInterface, post_save )

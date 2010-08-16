@@ -16,5 +16,5 @@ Messages {
 	Director = {{ director_name }} = all
 }
 
-@|"sh -c 'for f in /var/nimbus/custom/devices/* ; do echo @${f} ; done'"
+@|"sh -c 'for f in {{ devices_dir }}/* ; do echo @${f} ; done'"
 

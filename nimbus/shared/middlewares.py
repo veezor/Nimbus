@@ -9,12 +9,33 @@ import logging.config
 
 from django.conf import settings
 
+from workerthread import WorkerThread
+
+
+
+
 
 
 class LogSetup(object): # on bootstrap
 
     def __init__(self):
         logging.config.fileConfig(settings.LOGGING_CONF)
+
+
+
+class ThreadPool(object):
+
+    instance = None
+
+    def __init__(self):
+        if not self.instance:
+            self.__class__.instance = WorkerThread()
+        self.instance.start()
+
+
+    @classmethod
+    def get_instance(cls):
+        return cls.instance
 
 
 

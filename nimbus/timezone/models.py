@@ -14,6 +14,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 
 from nimbus.shared import signals
+from nimbus.shared.middlewares import ThreadPool
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 
@@ -34,18 +35,26 @@ class Timezone(BaseModel):
                              null=False)
 
 
+
+
     
 class InvalidTimezone(Exception):
     pass
 
 
 def update_system_timezone(timezone):
-    try:
-        server = ServerProxy(settings.NIMBUS_MANAGER_URL)
-        server.change_timezone(timezone.area)
-    except Exception, error:
-        logger = logging.getLogger(__name__)
-        logger.exception("Conexao com nimbus-manager falhou")
+
+    def callable(timezone):
+        try:
+            server = ServerProxy(settings.NIMBUS_MANAGER_URL)
+            server.change_timezone(timezone.area)
+        except Exception, error:
+            logger = logging.getLogger(__name__)
+            logger.exception("Conexao com nimbus-manager falhou")
+
+
+    Pool = ThreadPool.get_instance()
+    Pool.add_job( callable, (timezone,), {} )
 
 
 

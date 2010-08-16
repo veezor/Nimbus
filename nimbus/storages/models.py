@@ -64,7 +64,8 @@ def update_storage_file(storage):
                             port=9102,
                             max_cur_jobs=100,
                             director_name=config.director_name,
-                            director_password=config.director_password)
+                            director_password=config.director_password,
+                            devices_dir=settings.NIMBUS_DEVICES_DIR)
 
             logger.info("Arquivo de configuracao do storage gerado com sucesso")
         except Config.DoesNotExist, error:
