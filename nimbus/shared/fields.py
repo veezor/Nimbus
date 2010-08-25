@@ -36,7 +36,23 @@ class CharFormField(forms.CharField):
         elif self.max_length < 200:
             attrs['class'] = 'text medium'
         else:
-            attrs['class'] = "text"
+            attrs['class'] = "text big"
             
         return attrs
-        
+
+# class IPAddressField(forms.IPAddressField):
+# 
+#     def widget_attrs(self, widget):
+#         attrs = super(CharFormField, self).widget_attrs(widget)
+# 
+#         if not attrs:
+#             attrs = {}
+# 
+#         if self.max_length < 20:
+#             attrs['class'] = 'text small'
+#         elif self.max_length < 200:
+#             attrs['class'] = 'text medium'
+#         else:
+#             attrs['class'] = "text big"
+# 
+#         return attrs

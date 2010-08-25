@@ -35,9 +35,13 @@
 	
 	<script type="text/javascript" charset="utf-8">
         $(document).ready( function() {
-            $('#filetree').fileTree({ root: '/media/lib/demo/', script: 'arquivos.txt' }, function(file) { 
-                alert(file);
-            });
+            $('.filetree').each(function(){
+                script = $(this).attr("ref");
+                $(this).fileTree({ root: '/media/lib/demo/', script: script }, function(file) { 
+                    alert(file);
+                });
+            })
+
         });
 	</script>
 	
@@ -66,11 +70,16 @@
 					<li class="active"><a href="/base/home">Painel</a></li>
 					<li><a href="/computers">Computador</a>
                         <ul>
-                            <li><a href="/computers/list">Litar todos</a></li>
-                            <li><a href="/computers/add">Adicionar computador</a></li>
+                            <li><a href="/computers/list">Listar</a></li>
+                            <li><a href="/computers/add">Adicionar</a></li>
                         </ul>
 					</li>
-					<li><a href="#">Armazenamento</a></li>
+					<li><a href="#">Armazenamento</a>
+					    <ul>
+                            <li><a href="/storages/list">Listar</a></li>
+                            <li><a href="/storages/add">Adicionar</a></li>
+                        </ul>
+                    </li>
 					<li><a href="#">Offsite</a></li>
 					<li><a href="#">Ferramentas</a></li>
 					<li><a href="#">Configurações</a>
@@ -109,13 +118,23 @@
                     </li> -->
 				</ul>
 				
-				<p class="user">Olá, <a href="#">Administrador</a> | <a href="index.html">Sair do sistema</a></p>
+				<!-- <p class="user">Olá, <a href="#">Administrador</a> | <a href="index.html">Sair do sistema</a></p> -->
+				<p class="user">
+				    <div class="status" style="background: url(/media/lib/images/status_bg_ok.png) left; width: 122px; height: 40px; float: right; margin-top: 5px;">
+				        <div style="margin-top: 8px; padding-left: 40px; color: #666; line-height: 1em">
+				            Normal<br/>
+				            <small><a href="/base/home" style="color: blue">Histórico</a></small>
+				        </div>
+				    </div>
+				</p>
 			</div>		<!-- #header ends -->
 			
             {% if messages %}
                 {% for msg in messages %}
                     <!-- TODO: Criar tipos de mensagens: errormsg, success, info, warning -->
-                    <div class="message success"><p>{{ msg }}</p></div>
+                    <div class="message success">
+                        <p>{{ msg }}</p>
+                    </div>
                 {% endfor %}
             {% endif %}
 

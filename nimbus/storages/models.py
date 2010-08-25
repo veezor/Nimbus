@@ -33,7 +33,7 @@ class Storage(BaseModel):
     def __unicode__(self):
         return "(%s:%s)" % (
             self.name,
-            self.address) 
+            self.address)
 
 
 class Device(BaseModel):

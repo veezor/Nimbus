@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     (r'^timezone/', include('nimbus.timezone.urls')),
     (r'^wizard/', include('nimbus.wizard.urls')),
     (r'^computers/', include('nimbus.computers.urls')),
+    (r'^storages/', include('nimbus.storages.urls')),
+    (r'^restore/', include('nimbus.restore.urls')),
 )
 
 if settings.SERVE_STATIC_FILES:

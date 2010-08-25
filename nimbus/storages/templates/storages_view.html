@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block headtags %}
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $('.toggle').click(function(){
+            var target = $(this).attr('ref');
+            $(this).parent().parent().find('.' + target).slideToggle();
+        });
+    });
+</script>
+{% endblock %}
+
+{% block page %}
+
+<div class="block">
+
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>		<!-- .block_head ends -->
+
+    <div class="block_content">
+        <p><a href="/storages/add">Adicionar armazenamento</a> • <a href="/storages/list">Visualizar todos os armazenamentos</a></p>
+        <div class="storages">
+            <div class="storage" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
+                <div class="left" style="float: left; width: 250px">
+                    <div class="title">
+                        <img src="/media/icons/storage.png" style="float: left; height: 32px; padding-right: 10px" />
+                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{storage.name}}</h3>
+                        <small class="ip">{{storage.address}}</small>
+                    </div>
+                    <p style="font-size: 10px; margin-top: 10px; line-height: 1.4em">{{storage.description}}</p>
+                    <p style="font-size: 10px; margin: 0; padding: 0; line-height: 1.4em"><a href="/storages/{{storage.id}}/edit/">Editar</a> - <a href="/storages/{{storage.id}}/delete/">Remover</a></p>
+                    
+                </div>
+                <div class="right" style="float: right; width: 600px">
+                    {% if not storage.profile_set.count %}
+                        <div class="message warning">
+                            <p>Não existem procedimentos relacionados a este armazenamento.</p>
+                        </div>
+                    {% else %}
+                        <h4>COMPUTADORES RELACIONADOS</h4>
+                        
+                        <div style="background: #FFF; border: 1px solid #DDD; -moz-border-radius: 5px; padding: 10px">
+                        {% for profile in storage.profile_set.all %}
+                            {% for proc in profile.procedure_set.all %}
+                            <div class="computers">
+                                <div class="title">
+                                    <a href="#" class="toggle" ref="computer_detail">
+                                    <img src="/media/icons/computer.png" style="float: left; padding-right: 10px" />
+                                    <h4>{{proc.computer.name}}</h4>
+                                    </a>
+                                </div>
+                                <div class="computer_detail" style="display: none">
+                                    <h4 class="name">{{proc.name}}</h4>
+                                    <small><a href="/computers/{{proc.computer.id}}/view">Visualizar computador</a></small><br/>
+                                    Offsite: {% if proc.offsite_on %}Sim{% else %}Não{% endif %}<br/>
+                                    Pool: <span title="{{proc.pool.pool_size}} MB - {{proc.pool.retention_time}} dias">{{proc.pool.name}}</span><br/>
+                                    Profile: {{proc.profile.name}}<br/>
+                                    Storage: <span title="Endereço: {{proc.profile.storage.address}} - {{proc.profile.storage.description|slice:":25"}}...">{{proc.profile.storage.name}}</span><br/>
+                                    Schedule: {{proc.profile.schedule}}<br/>
+                                    Fileset: {{proc.profile.fileset}}
+                                    {% if proc.profile.fileset.files.count %}
+                                    <ul>
+                                        {% for file in proc.profile.fileset.files.all %}
+                                        <li>{{file.path}}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+
+</div>
+
+{% endblock %}

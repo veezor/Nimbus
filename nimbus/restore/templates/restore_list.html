@@ -23,40 +23,34 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <p><a href="/computers/add">Adicionar computador</a></p>
+        <p><a href="/computers/list">Listar todos os computadores</a></p>
         <div class="computers">
-        {% for comp in computers %}
             <div class="computer" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
                 <div class="left" style="float: left; width: 250px">
                     <div class="title">
                         <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{comp.name}}</h3>
-                        <small class="ip">{{comp.address}} - {{comp.operation_system|title}} - {% for g in comp.groups.all %}{{g.name}}{% endfor %}</small>
+                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{computer.name}}</h3>
+                        <small class="ip">{{computer.address}} - {{computer.operation_system|title}} - {% for g in computer.groups.all %}{{g.name}}{% endfor %}</small>
                     </div>
-                    <p style="font-size: 10px; margin-top: 10px; line-height: 1.4em">{{comp.description}}</p>
-                    <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/computers/{{comp.id}}/edit/">Editar</a> - <a href="/computers/{{comp.id}}/delete/">Remover</a></p>
+                    <p style="font-size: 10px; margin: 10px 0 0 0; padding: 0; line-height: 1.4em"><a href="/computers/{{computer.id}}/edit/">Editar</a> - <a href="/computers/{{computer.id}}/delete/">Remover</a></p>
                 </div>
                 <div class="right" style="float: right; width: 600px">
-                    {% if not comp.procedure_set.count %}
+                    <p style="font-size: 10px; margin-top: 10px; line-height: 1.4em">{{computer.description}}</p>
+                    {% if not computer.procedure_set.count %}
                         <div class="message warning">
                             <p>Não há procedimentos neste computador.</p>
                         </div>
                     {% else %}
-                        <h4 style="float: left">ARQUIVOS PARA BACKUP</h4>
-                        <div style="float: right">
-                            <form action="/restore/{{comp.id}}/view/" method="post">
-                            <input type="submit" class="submit small" value="Restaurar" style="float: right; font-size: 11px; margin-right: 0" />
-                            </form>
-                        </div>
-                        <div class="clear"></div>
+                        <!-- <h4>ARQUIVOS PARA BACKUP</h4>
+                        
                         <div class="files" style="padding: 10px; -moz-border-radius: 5px; background: #FFF; margin-bottom: 20px; border: 1px solid #CCC">
-                            {% for proc in comp.procedure_set.all %}
+                            {% for proc in computer.procedure_set.all %}
                             <div class="file">
                                 <div class="title">
                                     <a href="#" class="toggle" ref="fileset_detail">
                                         <img src="/media/icons/folder.png" style="float: left; height: 32px; padding-right: 10px" />
                                         <h4 class="name" style="margin: 0 0 -5px 0; padding: 0">{{proc.profile.fileset}}</h4>
-                                        <small class="ip">{% for file in proc.profile.fileset.files.all|slice:":3" %}{{file.path}} - {% endfor %}</small>
+                                        <small class="ip">{% for file in proc.profile.fileset.files.all|slice:":3" %}{{file.path}} {% endfor %}</small>
                                     </a>
                                 </div>
                                 <div class="fileset_detail" style="display: none">
@@ -71,14 +65,47 @@
                                 <div class="clear"></div>
                             </div>
                             {% endfor %}
-                        </div>
+                        </div> -->
                     {% endif %}
                 </div>
                 <div class="clear"></div>
             </div>
-        {% endfor %}
         </div>
     
+        <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">1. Data para restauração</h2>
+        <form>
+            <p>
+				<label>Data inicial:</label> 
+				<input type="text" class="text date_picker" />
+				&nbsp;&nbsp;
+				<label>Data final:</label> 
+				<input type="text" class="text date_picker" />
+			</p>
+        </form>
+    
+        <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">2. Arquivos para restauração</h2>
+        <form>
+            <p>
+				<label>Buscar arquivo:</label> <input type="text" class="text small" /> <input type="submit" class="submit small" value="Buscar" />
+			</p>
+        </form>
+        <div class="filetree" id="filetree" style="float: left; width: 240px" ref="/restore/get_tree/root"></div>
+        <div class="filetree" id="filetree" style="width: 600px; float: right" ref="/restore/get_tree/1"></div>
+        <div class="clear"></div>
+        
+        <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">3. Restauração</h2>
+        <form action="" method="post">
+            <p>
+                <label>Selecione o local de destino:</label><br/>
+                <input type="radio" name="radio" checked="checked" class="radio" /> <label>Download</label>
+			    <input type="radio" name="radio" class="radio" /> <label>Armazenar no servidor</label>
+			    <input type="radio" name="radio" class="radio" /> <label>Enviar por e-mail</label><br/>
+		    </p>
+		    <p>
+                <input type="submit" class="submit mid" value="Restaurar" />
+            </p>
+        </form>
+        <div class="clear"></div>
     </div>
     
     <div class="bendl"></div>
