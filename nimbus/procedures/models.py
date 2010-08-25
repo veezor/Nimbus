@@ -46,7 +46,7 @@ class Procedure(BaseModel):
     name = models.CharField(max_length=255, blank=False, null=False)
     computer = models.ForeignKey(Computer, blank=False, null=False)
     profile = models.ForeignKey(Profile, blank=False, null=False)
-    pool = models.ForeignKey(Pool, blank=False, null=False)
+    pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
 
     def fileset_bacula_name(self):

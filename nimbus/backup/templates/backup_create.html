@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block headtags %}
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $('.toggle').click(function(){
+            var target = $(this).attr('ref');
+            $(this).parent().parent().find('.' + target).slideToggle();
+        });
+    });
+</script>
+{% endblock %}
+
+{% block page %}
+
+<div class="block">
+
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>		<!-- .block_head ends -->
+
+    <div class="block_content">
+        
+        <form action="#" method="post">
+            <p>
+                <label>Nome para o procedimento de backup:</label><br/>
+                <input type="text" class="text small" />
+            </p>
+            <p>
+                <label for="computer_id">Computador que será efetuado o backup:</label><br/>
+                <select class="styled" id="computer_id" name="computer_id">
+                    <option value=""> - Selecione - </option>
+                    {% for computer in computers %}
+                    <option value="{{computer.id}}">{{computer.name}}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            
+            <script type="text/javascript" charset="utf-8">
+	            $(document).ready(function(){
+		            $('.profile').change(function(){
+		                if ($('.profile:checked').attr('id') == 'profile_0') {
+		                    $('.novo_perfil').slideDown();
+		                } else {
+		                    $('.novo_perfil').slideUp();
+		                }
+		            });
+		            $('.profile').change();
+	            });
+	        </script>
+            
+            <p>
+                <label>Escolha um perfil de configuração:</label><br/>
+                {% for profile in profiles %}
+                <input type="radio" name="profile_id" value="{{profile.id}}" class="radio profile" id="profile_{{profile.id}}" />
+                <label for="profile_{{profile.id}}">{{profile.name}}</label>
+                {% endfor %}
+                <input type="radio" name="profile_id" value="" class="radio profile" id="profile_0" />
+                <label for="profile_0">Criar um novo perfil</label><br/>
+                <small>Um perfil de configuração é um conjunto de armazenamento, agendamento e caminhos de diretórios que serão feitos backup.</small>
+            </p>
+            
+            <div class="novo_perfil" style="display: none; padding: 20px; background: #FFF2A7">
+                <p>
+                    <label for="storage_id">Local de armazenamento dos arquivos:</label><br/>
+                    <select class="styled" id="storage_id" name="storage_id">
+                        <option value=""> - Selecione - </option>
+                        {% for storage in storages %}
+                        <option value="{{storage.id}}">{{storage.name}} - {{storage.address}}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+                
+                <script type="text/javascript" charset="utf-8">
+    	            $(document).ready(function(){
+    		            $('#schedule_id').change(function(){
+    		                if ($('#schedule_id :checked').attr('id') == 'new_schedule') {
+    		                    $('#schedule').slideDown();
+    		                } else {
+    		                    $('#schedule').slideUp();
+    		                }
+    		            });
+    		            $('#schedule_id').change();
+    	            });
+    	        </script>
+                
+                <p>
+                    <label for="schedule_id">Agendamento:</label><br/>
+                    <select class="styled" id="schedule_id" name="schedule_id">
+                        <option> - Selecione - </option>
+                        {% for schedule in schedules %}
+                        <option value="{{schedule.id}}">{{schedule.name}}</option>
+                        {% endfor %}
+                        <option id="new_schedule">Criar novo agendamento</option>
+                    </select>
+                </p>
+        
+                <!-- TODO: Prever um agendamento já definido. -->
+                <div class="block withsidebar" id="schedule" style="display: none">
+	
+            		<div class="block_head">
+            			<div class="bheadl"></div>
+            			<div class="bheadr"></div>
+			
+            			<h2 style="font-size: 1.2em">Criar novo agendamento</h2>
+            		</div>		<!-- .block_head ends -->
+		
+            		<div class="block_content">
+			
+    			        <script type="text/javascript" charset="utf-8">
+    			            $(document).ready(function(){
+        			            $('.schedule_activate').change(function(){
+        			                _checked = $(this).attr('checked');
+        			                _class = $(this).attr('name');
+        			                if (_checked) {
+            			                $('.' + _class).addClass('active');
+        			                } else {
+        			                    $('.' + _class).removeClass('active');
+        			                }
+        			            });
+        			            $('.schedule_activate').change();
+    			            });
+    			        </script>
+			
+            			<div class="sidebar">
+            				<ul class="sidemenu">
+            					<li><a href="#mensal" class="monthly active">Mensal</a></li>
+            					<li><a href="#semanal" class="weekly">Semanal</a></li>
+            					<li><a href="#diario" class="dayly">Diário</a></li>
+            					<li><a href="#minuto" class="hourly">Minuto</a></li>
+            				</ul>
+				
+                            <p>Agende a execução deste backup, é possível ativar mais de um agendamento.</p>
+            			</div>		<!-- .sidebar ends -->
+			        
+            			<div class="sidebar_content" id="mensal">
+            			    <p>
+                                <input type="checkbox" name="monthly" class="schedule_activate" id="monthly_activate" value="1" /> <label for="monthly_activate">Ativar</label>
+                            </p>
+                            <div class="personal_message"><p>Executa o backup em determinados dias do mês, sempre no horário especificado.</p></div>
+                            <p>
+                                <label>Dias do mês:</label><br/>
+                                {% for day in days %}
+                                <input type="checkbox" id="day_{{day}}" name="monthly_schedule" value="{{day}}" />
+                                <label for="day_{{day}}">{{day}}º</label>
+                                {% endfor %}
+                            </p>
+                            <p>
+                                <label for="mothly_hour">Hora:</label><br/>
+                                <input type="text" name="mothly_hour" id="mothly_hour" class="text small" style="width: 45px" /><br/>
+                                <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
+                            </p>
+                            <p>
+                                <label for="level_id">Tipo de backup:</label>
+                                <select class="styled" id="level_id" name="level_id">
+                                    {% for level in levels %}
+                                    <option value="{{level}}">{{level}}</option>
+                                    {% endfor %}
+                                </select>
+                                <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                            </p>
+            			</div>		<!-- .sidebar_content ends -->
+			        
+            			<div class="sidebar_content" id="semanal">
+            			    <p>
+                                <input type="checkbox" name="weekly" class="schedule_activate" id="weekly_activate" value="1" /> <label for="weekly_activate">Ativar</label>
+                            </p>
+                            <div class="personal_message"><p>Executa o backup em determinados dias da semana, sempre no horário especificado.</p></div>
+                            <p>
+                                <label>Dias da semana:</label><br/>
+                                {% for day in weekdays %}
+                                <input type="checkbox" id="day_{{day}}" name="monthly_schedule" value="{{day}}" />
+                                <label for="day_{{day}}">{{day|title}}</label>
+                                {% endfor %}
+                            </p>
+                            <p>
+                                <label for="mothly_hour">Hora:</label><br/>
+                                <input type="text" name="mothly_hour" id="mothly_hour" class="text small" style="width: 45px" maxlength="5" /><br/>
+                                <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
+                            </p>
+                            <p>
+                                <label for="level_id">Tipo de backup:</label><br/>
+                                <select class="styled" id="level_id" name="level_id">
+                                    {% for level in levels %}
+                                    <option value="{{level}}">{{level}}</option>
+                                    {% endfor %}
+                                </select>
+                                <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                            </p>
+            			</div>		<!-- .sidebar_content ends -->
+			        
+            			<div class="sidebar_content" id="diario">
+            			    <p>
+                                <input type="checkbox" name="dayly" class="schedule_activate" id="dayly_activate" value="1" /> <label for="dayly_activate">Ativar</label><br/>
+                            </p>
+                            <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
+                            <p>
+                                <label for="dayly_hour">Hora:</label><br/>
+                                <input type="text" name="dayly_hour" id="dayly_hour" class="text small" style="width: 45px" maxlength="5" /><br/>
+                                <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
+                            </p>
+                            <p>
+                                <label for="level_id">Tipo de backup:</label>
+                                <select class="styled" id="level_id" name="level_id">
+                                    {% for level in levels %}
+                                    <option value="{{level}}">{{level}}</option>
+                                    {% endfor %}
+                                </select>
+                                <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                            </p>
+            			</div>		<!-- .sidebar_content ends -->
+                    
+                        <div class="sidebar_content" id="minuto">
+                            <p>
+                                <input type="checkbox" name="hourly" class="schedule_activate" id="hourly_activate" value="1" /> <label for="hourly_activate">Ativar</label>
+                            </p>
+                            <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
+                            <p>
+                                <label for="hourly_hour">Minuto:</label><br/>
+                                <input type="text" name="hourly_hour" id="hourly_hour" class="text small" style="width: 20px" maxlength="2" /><br/>
+                                <small>Exemplo: 20, 35 ou 08.</small>
+                            </p>
+                            <p>
+                                <label for="level_id">Tipo de backup:</label>
+                                <select class="styled" id="level_id" name="level_id">
+                                    {% for level in levels %}
+                                    <option value="{{level}}">{{level}}</option>
+                                    {% endfor %}
+                                </select>
+                                <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                            </p>
+                        </div>
+
+            		</div>		<!-- .block_content ends -->
+
+		
+            		<div class="bendl"></div>
+            		<div class="bendr"></div>
+		
+            	</div>		<!-- .block .schedule ends -->
+            	
+            	
+            	<script type="text/javascript" charset="utf-8">
+    	            $(document).ready(function(){
+    		            $('#fileset_id').change(function(){
+    		                if ($('#fileset_id :checked').attr('id') == 'new_fileset') {
+    		                    $('#fileset').slideDown();
+    		                } else {
+    		                    $('#fileset').slideUp();
+    		                }
+    		            });
+    		            $('#fileset_id').change();
+    	            });
+    	        </script>
+
+                <p>
+                    <label for="fileset_id">Conjunto de arquivos para backup:</label><br/>
+                    <select class="styled" id="fileset_id" name="fileset_id">
+                        <option> - Selecione - </option>
+                        {% for fileset in filesets %}
+                        <option value="{{fileset.id}}">{{fileset.name}}</option>
+                        {% endfor %}
+                        <option id="new_fileset">Criar novo conjunto de arquivo</option>
+                    </select>
+                </p>
+                
+                <script type="text/javascript" charset="utf-8">
+    	            $(document).ready(function(){
+    	                $('#filepath_template').clone().appendTo('.filepaths').show();
+    	                
+    	                $('.filepaths .add').click(function(){
+    	                    $('#filepath_template').clone().appendTo('.filepaths').show();
+    	                });
+    	            });
+    	        </script>
+                
+                <div class="block" id="fileset">
+            		<div class="block_head">
+            			<div class="bheadl"></div>
+            			<div class="bheadr"></div>
+            			<h2>Criar novo conjunto de arquivos</h2>
+            		</div>		<!-- .block_head ends -->
+            		<div class="block_content">
+                        <p>
+                            <label for="fileset_name">Nome do conjunto de arquivos:</label><br/>
+                            <input type="text" name="fileset_name" id="fileset_name" class="text small" />
+                        </p>
+                        <p>
+                            <label for="fileset_name">Caminhos para backup:</label><br/>
+                            <ol class="filepaths">
+                                <li id="filepath_template" style="display: none"><input type="text" name="fileset_name" id="fileset_name" class="text medium" /> <span class="add"><img src="/media/icons/plus.png" /></span> <span class="del"><img src="/media/icons/minus.png" /></span></li>
+                            </ol>
+                        </p>
+            		</div>		<!-- .block_content ends -->
+            		<div class="bendl"></div>
+            		<div class="bendr"></div>
+            	</div>		<!-- .block ends -->
+                
+        	</div> <!-- .novo_perfil -->
+        	
+        	<p>
+    	    </p>
+    	</form>
+        <p></p>
+        
+    </div>
+    
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+
+</div>
+
+{% endblock %}
