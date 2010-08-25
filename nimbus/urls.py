@@ -8,6 +8,7 @@ if settings.DEBUG:
     admin.autodiscover()
 
 urlpatterns = patterns('',
+    (r'^$', include('nimbus.base.urls')),
     (r'^base/', include('nimbus.base.urls')),
     (r'^session/', include('nimbus.session.urls')),
     (r'^users/', include('nimbus.users.urls')),
