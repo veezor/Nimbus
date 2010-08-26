@@ -38,11 +38,39 @@ def list(request):
                                         post_save_redirect = "/computers/")
 
 
-# def list(request):
-#     computers = Computer.objects.all()
-#     
-#     extra_content = {
-#         'computers': computers,
-#         'title': u"Computadores"
-#     }
-#     return render_to_response(request, "computers_list.html", extra_content)
+def add(request):
+    if request.method == "POST":
+        print request.POST
+        # import pdb; pdb.set_trace()
+        
+        ### Campos que serão recebidos nesta função:
+        
+        # procedure_name - str
+        # computer_id - int
+        # profile_id - int
+        # 
+        # profile.storage_id - int
+        # profile.schedule_id - int
+        # profile.fileset_id - int
+        # 
+        # schedule.monthly.active - bool
+        # schedule.monthly.day - list
+        # schedule.monthly.hour - str
+        # schedule.monthly.level - int
+        # 
+        # schedule.weekly.active - bool
+        # schedule.weekly.day - list
+        # schedule.weekly.hour - str
+        # schedule.weekly.level - int
+        # 
+        # schedule.dayly.active - bool
+        # schedule.dayly.day - list
+        # schedule.dayly.hour - str
+        # schedule.dayly.level - int
+        # 
+        # schedule.hourly.active - bool
+        # schedule.hourly.day - list
+        # schedule.hourly.hour - str
+        # schedule.hourly.level - int
+        
+
