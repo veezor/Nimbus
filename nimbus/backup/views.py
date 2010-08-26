@@ -73,4 +73,26 @@ def add(request):
         # schedule.hourly.hour - str
         # schedule.hourly.level - int
         
+        ## Exemplo do objeto.
+        # {
+        # u'schedule.monthly.level': [u'Full'],
+        # u'procedure_name': [u'asdasdas'],
+        # u'schedule.dayly.level': [u'Full'],
+        # u'profile.schedule_id': [u'Criar novo agendamento'],
+        # u'schedule.weekly.active': [u'1'],
+        # u'schedule.dayly.hour': [u''],
+        # u'computer_id': [u'1'],
+        # u'schedule.weekly.level': [u'Full'],
+        # u'profile_id': [u''],
+        # u'profile.fileset_id': [u'2'],
+        # u'schedule.hourly.minute': [u''],
+        # u'fileset_name': [u'', u'', u''],
+        # u'schedule.monthly.hour': [u'13:00'],
+        # u'profile.storage_id': [u'1'],
+        # u'schedule.weekly.day[]': [u'mon', u'wed'],
+        # u'schedule.hourly.level': [u'Full'],
+        # u'schedule.weekly.hour': [u'21:00'],
+        # u'schedule.monthly.day[]': [u'1', u'17', u'29'],
+        # u'schedule.monthly.active': [u'1']
+        # }
 
