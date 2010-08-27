@@ -37,24 +37,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 #     pass
 
 
-def list(request):
-    computer = Computer.objects.get(id=1)
+
+def view(request, object_id=None):
+    if object_id:
+        computer = Computer.objects.get(id=object_id)
+    else:
+        computer = None
+    computers = Computer.objects.all()
     extra_content = {
         'computer': computer,
+        'computers': computers,
         'title': u"Restauração de arquivos"
     }
-    
-    return render_to_response(request, "restore_list.html", extra_content)
-
-
-
-def view(request, object_id):
-    computer = Computer.objects.get(id=object_id)
-    extra_content = {
-        'computer': computer,
-        'title': u"Restauração de arquivos"
-    }
-    
     return render_to_response(request, "restore_list.html", extra_content)
 
 

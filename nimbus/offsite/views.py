@@ -5,10 +5,10 @@ from threading import Thread
 
 from django.http import Http404
 from django.shortcuts import redirect
-
+from django.contrib.auth.decorators import login_required
 
 from nimbus.libs import offsite
-from nimbus.offsite.models impotr UploadRequest, DowloadRequest
+from nimbus.offsite.models import UploadRequest, DownloadRequest
 from nimbus.shared.views import render_to_response
 
 
@@ -17,7 +17,7 @@ from nimbus.shared.views import render_to_response
 @login_required
 def select_storage(request):
     return render_to_response( request, 
-                               "bkp/offsite/select_storage.html",
+                               "select_storage.html",
                                {"devices" : offsite.list_disk_labels() })
 
 
@@ -54,14 +54,14 @@ def list_downloadrequest(request):
     return render_to_response( request, 
                                "list_downloadrequest.html", 
                                {"object_list": 
-                                    models.DownloadRequest.objects.all()})
+                                    DownloadRequest.objects.all()})
 
 @login_required
 def list_uploadrequest(request):
-    return render_to_reponse( request, 
+    return render_to_response( request, 
                               "list_uploadrequest.html", 
                               {"object_list": 
-                                  models.UploadRequest.objects.all()})
+                                    UploadRequest.objects.all()})
 
 
 

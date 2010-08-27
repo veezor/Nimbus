@@ -629,7 +629,7 @@ a:hover {
 	outline: none;
 	vertical-align: middle;
 	}
-
+.block form input.text.small { width: 200px; }
 .block form input.text.medium { width: 600px; }
 .block form input.text.big { width: 98%; }
 

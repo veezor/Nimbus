@@ -23,57 +23,39 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <p><a href="/computers/list">Listar todos os computadores</a></p>
-        <div class="computers">
-            <div class="computer" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
-                <div class="left" style="float: left; width: 250px">
-                    <div class="title">
-                        <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{computer.name}}</h3>
-                        <small class="ip">{{computer.address}} - {{computer.operation_system|title}} - {% for g in computer.groups.all %}{{g.name}}{% endfor %}</small>
-                    </div>
-                    <p style="font-size: 10px; margin: 10px 0 0 0; padding: 0; line-height: 1.4em"><a href="/computers/{{computer.id}}/edit/">Editar</a> - <a href="/computers/{{computer.id}}/delete/">Remover</a></p>
-                </div>
-                <div class="right" style="float: right; width: 600px">
-                    <p style="font-size: 10px; margin-top: 10px; line-height: 1.4em">{{computer.description}}</p>
-                    {% if not computer.procedure_set.count %}
-                        <div class="message warning">
-                            <p>Não há procedimentos neste computador.</p>
+        <form action="#" method="post">
+            {% if computer %}
+            <p><a href="/computers/list">Listar todos os computadores</a></p>
+            <div class="computers">
+                <div class="computer" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
+                    <div class="left" style="float: left; width: 250px">
+                        <div class="title">
+                            <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
+                            <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{computer.name}}</h3>
+                            <small class="ip">{{computer.address}} - {{computer.operation_system|title}} - {% for g in computer.groups.all %}{{g.name}}{% endfor %}</small>
                         </div>
-                    {% else %}
-                        <!-- <h4>ARQUIVOS PARA BACKUP</h4>
-                        
-                        <div class="files" style="padding: 10px; -moz-border-radius: 5px; background: #FFF; margin-bottom: 20px; border: 1px solid #CCC">
-                            {% for proc in computer.procedure_set.all %}
-                            <div class="file">
-                                <div class="title">
-                                    <a href="#" class="toggle" ref="fileset_detail">
-                                        <img src="/media/icons/folder.png" style="float: left; height: 32px; padding-right: 10px" />
-                                        <h4 class="name" style="margin: 0 0 -5px 0; padding: 0">{{proc.profile.fileset}}</h4>
-                                        <small class="ip">{% for file in proc.profile.fileset.files.all|slice:":3" %}{{file.path}} {% endfor %}</small>
-                                    </a>
-                                </div>
-                                <div class="fileset_detail" style="display: none">
-                                    Procedure: {{proc.name}}<br/>
-                                    Offsite: {% if proc.offsite_on %}Sim{% else %}Não{% endif %}<br/>
-                                    Pool: <span title="{{proc.pool.pool_size}} MB - {{proc.pool.retention_time}} dias">{{proc.pool.name}}</span><br/>
-                                    Profile: {{proc.profile.name}}<br/>
-                                    Storage: <a href="/storages/{{proc.profile.storage.id}}/view"><span title="Endereço: {{proc.profile.storage.address}} - {{proc.profile.storage.description|slice:":25"}}...">{{proc.profile.storage.name}}</span></a><br/>
-                                    Schedule: {{proc.profile.schedule}}<br/>
-                                    <br/>
-                                </div>
-                                <div class="clear"></div>
-                            </div>
-                            {% endfor %}
-                        </div> -->
-                    {% endif %}
+                    </div>
+                    <div class="right" style="float: right; width: 600px">
+                        <p style="font-size: 10px; margin: 0; line-height: 1.4em">{{computer.description}}</p>
+                    </div>
+                    <div class="clear"></div>
                 </div>
-                <div class="clear"></div>
+                <input type="hidden" name="computer_id" value="{{computer.id}}" />
             </div>
-        </div>
+            {% else %}
+            <p>
+                <label for="computer_id">Computador que será restaurado:</label><br/>
+                <select class="styled" id="computer_id" name="computer_id">
+                    <option value=""> - Selecione - </option>
+                    {% for computer in computers %}
+                    <option value="{{computer.id}}">{{computer.name}}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            {% endif %}
     
-        <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">1. Data para restauração</h2>
-        <form>
+            <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">1. Data para restauração</h2>
+
             <p>
 				<label>Data inicial:</label> 
 				<input type="text" class="text date_picker" />
@@ -81,20 +63,19 @@
 				<label>Data final:</label> 
 				<input type="text" class="text date_picker" />
 			</p>
-        </form>
+
     
-        <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">2. Arquivos para restauração</h2>
-        <form>
+            <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">2. Arquivos para restauração</h2>
+
             <p>
 				<label>Buscar arquivo:</label> <input type="text" class="text small" /> <input type="submit" class="submit small" value="Buscar" />
 			</p>
-        </form>
-        <div class="filetree" id="filetree" style="float: left; width: 240px" ref="/restore/get_tree/root"></div>
-        <div class="filetree" id="filetree" style="width: 600px; float: right" ref="/restore/get_tree/1"></div>
-        <div class="clear"></div>
+
+            <div class="filetree" id="filetree" style="float: left; width: 240px" ref="/restore/get_tree/root"></div>
+            <div class="filetree" id="filetree" style="width: 600px; float: right" ref="/restore/get_tree/1"></div>
+            <div class="clear"></div>
         
-        <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">3. Restauração</h2>
-        <form action="" method="post">
+            <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">3. Restauração</h2>
             <p>
                 <label>Selecione o local de destino:</label><br/>
                 <input type="radio" name="radio" checked="checked" class="radio" /> <label>Download</label>

@@ -31,28 +31,43 @@ class CharFormField(forms.CharField):
         if not attrs:
             attrs = {}
         
-        if self.max_length < 20:
+        # import pdb; pdb.set_trace()
+        
+        # if self.choices:
+        #     attrs['class'] = 'styled'
+        # else:
+        if self.max_length < 40:
             attrs['class'] = 'text small'
-        elif self.max_length < 200:
+        elif self.max_length < 260:
             attrs['class'] = 'text medium'
         else:
             attrs['class'] = "text big"
             
         return attrs
 
-# class IPAddressField(forms.IPAddressField):
-# 
-#     def widget_attrs(self, widget):
-#         attrs = super(CharFormField, self).widget_attrs(widget)
-# 
-#         if not attrs:
-#             attrs = {}
-# 
-#         if self.max_length < 20:
-#             attrs['class'] = 'text small'
-#         elif self.max_length < 200:
-#             attrs['class'] = 'text medium'
-#         else:
-#             attrs['class'] = "text big"
-# 
-#         return attrs
+class IPAddressField(forms.IPAddressField):
+
+    def widget_attrs(self, widget):
+        
+        attrs = super(IPAddressField, self).widget_attrs(widget)
+
+        if not attrs:
+            attrs = {}
+
+        attrs['class'] = 'text small'
+
+        return attrs
+
+class ChoiceField(forms.ChoiceField):
+    
+    def widget_attrs(self, widget):
+        attrs = super(ChoiceField, self).widget_attrs(widget)
+        import pdb; pdb.set_trace()
+        return attrs
+
+class Select(forms.Select):
+
+    def widget_attrs(self, widget):
+        attrs = super(ComboField, self).widget_attrs(widget)
+        import pdb; pdb.set_trace()
+        return attrs

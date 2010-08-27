@@ -11,7 +11,7 @@ from datetime import datetime
 import pycurl
 
 from nimbus.offsite.models import Volume, UploadRequest, DownloadRequest
-from nimbus.devices.models import Device
+from nimbus.storages.models import Device
 from nimbus.config.models import Config
 
 from nimbusgateway import Api, File

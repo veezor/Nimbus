@@ -24,10 +24,29 @@
     <div class="block_content">
         
         <form action="/backup/add/" method="post">
+            {% if computer %}
+            <p></p>
+            <div class="computer" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
+                <div class="left" style="float: left; width: 250px">
+                    <div class="title">
+                        <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
+                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{computer.name}}</h3>
+                        <small class="ip">{{computer.address}} - {{computer.operation_system|title}} - {% for g in computer.groups.all %}{{g.name}}{% endfor %}</small>
+                    </div>
+                </div>
+                <div class="right" style="float: right; width: 600px">
+                    <p style="font-size: 10px; margin: 0; line-height: 1.4em">{{computer.description}}</p>
+                </div>
+                <div class="clear"></div>
+                <input type="hidden" name="computer_id" value="{{computer.id}}" />
+            </div>
+            {% endif %}
+            
             <p>
                 <label>Nome para o procedimento de backup:</label><br/>
                 <input type="text" class="text small" name="procedure_name" />
             </p>
+            {% if not computer %}
             <p>
                 <label for="computer_id">Computador que será efetuado o backup:</label><br/>
                 <select class="styled" id="computer_id" name="computer_id">
@@ -37,6 +56,7 @@
                     {% endfor %}
                 </select>
             </p>
+            {% endif %}
             
             <script type="text/javascript" charset="utf-8">
 	            $(document).ready(function(){
@@ -329,7 +349,7 @@
         	</div> <!-- .novo_perfil -->
         	
         	<p>
-        	    <input type="submit" class="submit mid" value="Cadastrar" />
+        	    <input type="submit" class="submit small" value="Criar" />
     	    </p>
     	</form>
         

@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Create your views here.
 
 from django.views.generic import create_update
@@ -12,7 +13,12 @@ from nimbus.backup.forms import StorageForm
 
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 
-def list(request):
+def backup_form(request, object_id=None):
+    if object_id:
+        computer = Computer.objects.get(id=object_id)
+    else:
+        computer = None
+    
     computers = Computer.objects.all()
     profiles = Profile.objects.all()
     storages = Storage.objects.all()
@@ -21,6 +27,7 @@ def list(request):
     
     extra_context = {
         'title': u"Criar Backup",
+        'computer': computer,
         'computers': computers,
         'profiles': profiles,
         'storages': storages,

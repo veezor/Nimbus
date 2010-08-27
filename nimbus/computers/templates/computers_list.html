@@ -37,17 +37,18 @@
                     <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/computers/{{comp.id}}/edit/">Editar</a> - <a href="/computers/{{comp.id}}/delete/">Remover</a></p>
                 </div>
                 <div class="right" style="float: right; width: 600px">
+                    <div style="float: right">
+                        <form action="/restore/{{comp.id}}/view/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Restaurar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                        <form action="/backup/{{comp.id}}/add/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Criar backup" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                    </div>
                     {% if not comp.procedure_set.count %}
-                        <div class="message warning">
-                            <p>Não há procedimentos neste computador.</p>
-                        </div>
+                        <p>Não existem procedimentos para este computador.</p>
                     {% else %}
                         <h4 style="float: left">ARQUIVOS PARA BACKUP</h4>
-                        <div style="float: right">
-                            <form action="/restore/{{comp.id}}/view/" method="post">
-                            <input type="submit" class="submit small" value="Restaurar" style="float: right; font-size: 11px; margin-right: 0" />
-                            </form>
-                        </div>
                         <div class="clear"></div>
                         <div class="files" style="padding: 10px; -moz-border-radius: 5px; background: #FFF; margin-bottom: 20px; border: 1px solid #CCC">
                             {% for proc in comp.procedure_set.all %}

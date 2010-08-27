@@ -4,10 +4,11 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('nimbus.backup.views',
-    (r'^$', 'list'), 
-    (r'^list/$', 'list'), 
-    (r'^add/$', 'add'), 
-    (r'^(?P<object_id>\d+)/view/$', 'view'), 
-    (r'^(?P<object_id>\d+)/edit/$', 'edit'), 
-    (r'^delete/$', 'delete'), 
+    (r'^(?P<object_id>\d+)/add/$', 'backup_form'), 
+    (r'^add/$', 'backup_form'), 
+    # (r'^list/$', 'list'), 
+    # (r'^add/$', 'add'), 
+    # (r'^(?P<object_id>\d+)/view/$', 'view'), 
+    # (r'^(?P<object_id>\d+)/edit/$', 'edit'), 
+    # (r'^delete/$', 'delete'), 
 )
