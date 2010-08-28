@@ -637,7 +637,7 @@ a:hover {
 	width: 100px;
 	padding-right: 36px;
 	cursor: pointer;
-	background: url(../images/cal.jpg) center right no-repeat;
+	background: #FFF url(../images/cal.jpg) center right no-repeat;
 	}
 
 .block form textarea {

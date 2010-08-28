@@ -1,41 +1,17 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 
+import simplejson
+
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
+from django.core import serializers
 
 from nimbus.computers.models import Computer
+from nimbus.procedures.models import Procedure
 from nimbus.shared.views import render_to_response
 
 from django.http import HttpResponse, HttpResponseRedirect
-
-
-
-
-# def add(request):
-#     extra_context = {'title': u"Adicionar computador"}
-#     return create_update.create_object( request, 
-#                                         model = Computer,
-#                                         template_name = "base_computers.html",
-#                                         extra_context = extra_context,
-#                                         post_save_redirect = "/computers/")
-# 
-# 
-# 
-# def edit(request, object_id):
-#     extra_context = {'title': u"Editar computador"}
-#     return create_update.update_object( request, 
-#                                         object_id = object_id,
-#                                         model = Computer,
-#                                         template_name = "base_computers.html",
-#                                         extra_context = extra_context,
-#                                         post_save_redirect = "/computers/")
-# 
-# 
-# 
-# def delete(request):
-#     pass
-
 
 
 def view(request, object_id=None):
@@ -51,6 +27,26 @@ def view(request, object_id=None):
     }
     return render_to_response(request, "restore_list.html", extra_content)
 
+
+
+def get_procedures(request, object_id=None):
+    if not object_id:
+        message = {'error': 'Erro ao tentar selecionar o computador.'}
+        response = simplejson.dumps(message)
+        return HttpResponse(response, mimetype="text/plain")
+    
+    procedures = Procedure.objects.filter(computer=object_id)
+    # computer = Computer.objects.get(id=object_id)
+    if not procedures.count():
+        message = {'error': 'Erro ao tentar selecionar o computador.'}
+        response = simplejson.dumps(message)
+        return HttpResponse(response, mimetype="text/plain")
+    
+    # message = {'error': 'Erro ao tentar selecionar o computador.'}
+    # response = simplejson.dumps(computer.procedure_set.all())
+    response = serializers.serialize("json", procedures)
+    return HttpResponse(response, mimetype="text/plain")
+    
 
 
 def get_tree(request, root=None):

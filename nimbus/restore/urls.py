@@ -9,7 +9,8 @@ urlpatterns = patterns('nimbus.restore.views',
     # (r'^add/$', 'add'), 
     (r'^(?P<object_id>\d+)/view/$', 'view'), 
     (r'^view/$', 'view'), 
-    (r'^get_tree/(?P<root>\w+)$', 'get_tree'), 
+    (r'^get_tree/(?P<root>\w+)$', 'get_tree'),
+    (r'^get_procedures/(?P<object_id>\d+)/', 'get_procedures') 
     # (r'^(?P<object_id>\d+)/edit/$', 'edit'), 
     # (r'^delete/$', 'delete'), 
 )

@@ -42,6 +42,16 @@
                 </div>
                 <input type="hidden" name="computer_id" value="{{computer.id}}" />
             </div>
+            
+            <p>
+                <label for="procedure_id">Selecione o procedimento:</label><br/>
+                <select name="procedure_id" id="procedure_id" class="styled">
+                    <option value=""> - Selecione - </option>
+                    {% for procedure in computer.procedure_set.all %}
+                    <option value="{{procedure.id}}">{{procedure.name}}</option>
+                    {% endfor %}
+                </select>
+            </p>
             {% else %}
             <p>
                 <label for="computer_id">Computador que será restaurado:</label><br/>
@@ -52,39 +62,82 @@
                     {% endfor %}
                 </select>
             </p>
+            <div class="computer_error" style="display: none"></div>
+            <script type="text/javascript" charset="utf-8">
+                $(document).ready(function(){
+                    $('#computer_id').change(function()
+                    {
+                        var computer_id = $(this).val();
+                        $.getJSON('/restore/get_procedures/' + computer_id + '/', {}, function(data)
+                        {
+                            if (data['error']) {
+                                $('.computer_error').html($('<p>').text(data['error'])).addClass("message error").show('slow');
+                            }
+                            
+                            $('#procedure_id').empty();
+                            $('<option>').attr('value', '').text(' - Selecione - ').appendTo('#procedure_id');
+                            for (proc in data) {
+                                proc = data[proc];
+                                $('<option>').attr('value', proc['pk']).text(proc['fields']['name']).appendTo("#procedure_id");
+                            }
+                            $('.procedure_select').slideDown();
+                        });
+                    });
+                    $('#computer_id').change();
+                
+                    $('#procedure_id').change(function()
+                    {
+                        if ($(this).val()) {
+                            $('.restore_steps').slideDown();
+                        }
+                    });
+                    $('#procedure_id').change();
+                });
+            </script>
+            <p class="procedure_select" style="display: none">
+                <label for="procedure_id">Selecione o procedimento:</label><br/>
+                <select name="procedure_id" id="procedure_id" class="styled">
+                    <option value=""> - Selecione - </option>
+                    {% for procedure in computer.procedure_set.all %}
+                    <option value="{{procedure.id}}">{{procedure.name}}</option>
+                    {% endfor %}
+                </select>
+            </p>
             {% endif %}
     
-            <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">1. Data para restauração</h2>
+            <div class="restore_steps" style="display: none; padding: 20px; background: #FFF2A7">
+                <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">1. Data para restauração</h2>
 
-            <p>
-				<label>Data inicial:</label> 
-				<input type="text" class="text date_picker" />
-				&nbsp;&nbsp;
-				<label>Data final:</label> 
-				<input type="text" class="text date_picker" />
-			</p>
+                <p>
+    				<label>Data inicial:</label> 
+    				<input type="text" class="text date_picker" />
+    				&nbsp;&nbsp;
+    				<label>Data final:</label> 
+    				<input type="text" class="text date_picker" />
+    			</p>
 
     
-            <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">2. Arquivos para restauração</h2>
+                <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">2. Arquivos para restauração</h2>
 
-            <p>
-				<label>Buscar arquivo:</label> <input type="text" class="text small" /> <input type="submit" class="submit small" value="Buscar" />
-			</p>
+                <p>
+    				<label>Buscar arquivo:</label> <input type="text" class="text small" /> <input type="submit" class="submit small" value="Buscar" />
+    			</p>
 
-            <div class="filetree" id="filetree" style="float: left; width: 240px" ref="/restore/get_tree/root"></div>
-            <div class="filetree" id="filetree" style="width: 600px; float: right" ref="/restore/get_tree/1"></div>
-            <div class="clear"></div>
+                <div class="filetree" id="filetree" style="float: left; width: 30%" ref="/restore/get_tree/root"></div>
+                <div class="filetree" id="filetree" style="width: 60%; float: right" ref="/restore/get_tree/1"></div>
+                <div class="clear"></div>
         
-            <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">3. Restauração</h2>
-            <p>
-                <label>Selecione o local de destino:</label><br/>
-                <input type="radio" name="radio" checked="checked" class="radio" /> <label>Download</label>
-			    <input type="radio" name="radio" class="radio" /> <label>Armazenar no servidor</label>
-			    <input type="radio" name="radio" class="radio" /> <label>Enviar por e-mail</label><br/>
-		    </p>
-		    <p>
-                <input type="submit" class="submit mid" value="Restaurar" />
-            </p>
+                <h2 style="border-bottom: 1px solid #CCC; padding-bottom: 10px; margin-top: 30px">3. Restauração</h2>
+                <p>
+                    <label>Selecione o local de destino:</label><br/>
+                    <input type="radio" name="radio" checked="checked" class="radio" /> <label>Download</label>
+    			    <input type="radio" name="radio" class="radio" /> <label>Armazenar no servidor</label>
+    			    <input type="radio" name="radio" class="radio" /> <label>Enviar por e-mail</label><br/>
+    		    </p>
+    		    <p>
+                    <input type="submit" class="submit mid" value="Restaurar" />
+                </p>
+            </div>
         </form>
         <div class="clear"></div>
     </div>
