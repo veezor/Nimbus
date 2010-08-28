@@ -42,7 +42,19 @@
                 </div>
                 <input type="hidden" name="computer_id" value="{{computer.id}}" />
             </div>
-            
+            <script type="text/javascript" charset="utf-8">
+                $(document).ready(function(){
+                    $('#procedure_id').change(function()
+                    {
+                        if ($(this).val()) {
+                            $('.restore_steps').slideDown();
+                        } else {
+                            $('.restore_steps').slideUp();
+                        }
+                    });
+                    $('#procedure_id').change();
+                });
+            </script>
             <p>
                 <label for="procedure_id">Selecione o procedimento:</label><br/>
                 <select name="procedure_id" id="procedure_id" class="styled">
@@ -89,6 +101,8 @@
                     {
                         if ($(this).val()) {
                             $('.restore_steps').slideDown();
+                        } else {
+                            $('.restore_steps').slideUp();
                         }
                     });
                     $('#procedure_id').change();
