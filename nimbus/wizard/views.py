@@ -1,4 +1,5 @@
 # Create your views here.
+# -*- coding: utf-8 -*-
 
 from functools import wraps
 
@@ -32,48 +33,73 @@ def only_wizard(view):
 
 @only_wizard
 def start(request):
-    return edit_singleton_model( request, "genericform.html", 
+    extra_context = {
+        'wizard_title': u'1 de 5 - Configuração inicial',
+        'page_name': u'start'
+    }
+    return edit_singleton_model( request, "generic.html", 
                                  "nimbus.wizard.views.timezone",
-                                 model = Config )
+                                 model = Config,
+                                 extra_context = extra_context )
 
 @only_wizard
 def timezone(request):
-    return edit_singleton_model( request, "timezoneconf.html", 
+    extra_context = {
+        'wizard_title': u'2 de 5 - Configuração de Hora',
+        'page_name': u'timezone'
+    }
+    return edit_singleton_model( request, "generic.html", 
                                  "nimbus.wizard.views.offsite",
-                                 formclass = TimezoneForm )
+                                 formclass = TimezoneForm,
+                                 extra_context = extra_context )
 
 @only_wizard
 def offsite(request):
-    return edit_singleton_model( request, "genericform.html", 
+    extra_context = {
+        'wizard_title': u'3 de 5 -Configuração do Offsite',
+        'page_name': u'offsite'
+    }
+    return edit_singleton_model( request, "generic.html", 
                                  "nimbus.wizard.views.network",
-                                 formclass = OffsiteForm )
+                                 formclass = OffsiteForm,
+                                 extra_context = extra_context )
 
 @only_wizard
 def network(request):
+    extra_context = {
+        'wizard_title': u'4 de 5 - Configuração de Rede',
+        'page_name': u'network'
+    }
     if request.method == "GET":
         interface = NetworkInterface()
         Form = form(NetworkInterface)
-        return render_to_response( request, "genericform.html",
-                                   { "form" : Form(instance=interface) })
+        extra_context['form'] = Form(instance=interface)
+        return render_to_response( request, "generic.html", extra_context)
     else:
-        return edit_singleton_model( request, "genericform.html", 
+        return edit_singleton_model( request, "generic.html", 
                                      "nimbus.wizard.views.password",
-                                     model = NetworkInterface )
+                                     model = NetworkInterface,
+                                     extra_context = extra_context )
 
 @only_wizard
 def password(request):
+    extra_context = {
+        'wizard_title': u'5 de 5 - Configuração de Senha',
+        'page_name': u'network'
+    }
     user = User.objects.get(id=1)
     if request.method == "GET":
-        return render_to_response( request, "genericform.html", 
-                                   { "form" : SetPasswordForm(user) })
+        extra_context['form'] = SetPasswordForm(user)
+        return render_to_response( request, "generic.html", extra_context )
     elif request.method == "POST":
         form = SetPasswordForm(user, request.POST)
         if form.is_valid():
             form.save()
             return redirect('nimbus.wizard.views.finish')
         else:
-            return render_to_response( request, "genericform.html", 
-                                      { "form" : SetPasswordForm(user) })
+            extra_context['form'] = SetPasswordForm(user)
+            extra_context['messages'] = [u'Please fill all fields.']
+            return render_to_response( request, "generic.html", extra_context )
     else:
         raise Http404()
 

@@ -6,10 +6,14 @@ from pytz import country_timezones
 from django import forms
 from django.forms import ModelForm, ValidationError
 from nimbus.timezone.models import Timezone
+from nimbus.shared.forms import make_custom_fields
 
 
 class TimezoneForm(ModelForm):
-    area = forms.ChoiceField(choices=[('', '----------')])
+    area = forms.ChoiceField(choices=[('', '----------')],
+            widget=forms.Select(attrs={'class': 'styled'}))
+
+    formfield_callback = make_custom_fields
 
     def __init__(self, data=None, *args, **kwargs):
         super(TimezoneForm, self).__init__(data, *args, **kwargs)

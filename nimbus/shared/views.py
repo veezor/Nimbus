@@ -11,7 +11,7 @@ from django.template import RequestContext
 from nimbus.shared import forms
 
 def edit_singleton_model(request, templatename, redirect_to, 
-                         formclass = None, model = None):
+                         formclass = None, model = None, extra_context = None):
 
     if not formclass and model:
         formclass = forms.form(model)
@@ -20,13 +20,15 @@ def edit_singleton_model(request, templatename, redirect_to,
                               form_class = formclass, 
                               model = model,
                               template_name = templatename, 
-                              post_save_redirect = reverse(redirect_to) )
+                              post_save_redirect = reverse(redirect_to),
+                              extra_context = extra_context )
     except Http404, error:
         return create_object( request, 
                               form_class = formclass, 
                               model = model,
                               template_name = templatename, 
-                              post_save_redirect = reverse(redirect_to) )
+                              post_save_redirect = reverse(redirect_to),
+                              extra_context = extra_context )
 
 
 
