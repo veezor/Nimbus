@@ -49,6 +49,19 @@ def get_procedures(request, object_id=None):
     
 
 
+def get_jobs(request, computer_id=None, procedure_id=None, data_inicio=None, data_fim=None):
+    """Return all jobs that match computer, procedure and date."""
+    # TODO: Get the jobs...
+    jobs = [{"name": "Job1 - 10 Aug 2010", "id": "1"},
+            {"name": "Job2 - 11 Aug 2010", "id": "2"},
+            {"name": "Job3 - 12 Aug 2010", "id": "3"}]
+    
+    # response = serializers.serialize("json", jobs)
+    response = simplejson.dumps(jobs)
+    return HttpResponse(response, mimetype="text/plain")
+
+
+
 def get_tree(request, root=None):
     html = """
 <ul class="jqueryFileTree" style="display: none;">
