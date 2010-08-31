@@ -2,36 +2,55 @@
 
 {% block content %}
 
-<h1> Downloads ativos </h1>
+<div class="block">
 
-<div class="bloco_texto">
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>Downloads ativos</h2>
+	</div>		<!-- .block_head ends -->
 
-<table border="1">
-<tr>
-<th>Caminho do arquivo</th>
-<th>Criado em</th>
-<th>Tentativas</th>
-<th>Última tentativa</th>
-<th>Concluído</th>
-<th>Tempo de download estimado</th>
-<th>Taxa de transferência</th>
-</tr>
+    <div class="block_content">
 
-{% for object in object_list %}
-  <tr>
-    <td>{{ object.volume.filename }}</td>
-    <td>{{ object.created_at }}</td>
-    <td align="right">{{ object.attempts }}</td>
-    <td align="right">{{ object.last_attempt }}</td>
-    <td align="right">{{ object.finished_percent }}%</td>
-    <td align="right">{{ object.estimated_transfer_time }}</td>
-    <td align="right">{{ object.friendly_rate }}</td>
-  </tr>
-  {{ object.path }}
-{% endfor %}
+        {% if not object_list %}
+            <p>Não existem downloads ativos no momento.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Caminho do arquivo</th>
+                        <th>Criado em</th>
+                        <th>Tentativas</th>
+                        <th>Última tentativa</th>
+                        <th>Concluído</th>
+                        <th>Tempo de download estimado</th>
+                        <th>Taxa de transferência</th>
+                    </tr>
+                </thead>
 
-</table>
+                <tbody>
+                {% for object in object_list %}
+                    <tr>
+                        <td>{{ object.volume.filename }}</td>
+                        <td>{{ object.created_at }}</td>
+                        <td align="right">{{ object.attempts }}</td>
+                        <td align="right">{{ object.last_attempt }}</td>
+                        <td align="right">{{ object.finished_percent }}%</td>
+                        <td align="right">{{ object.estimated_transfer_time }}</td>
+                        <td align="right">{{ object.friendly_rate }}</td>
+                    </tr>
+                {{ object.path }}
+                {% endfor %}
+                </tbody>
+
+            </table>
+        {% endif %}
+
+    </div>
+
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+
 </div>
-
 
 {% endblock %}

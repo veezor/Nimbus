@@ -47,6 +47,8 @@ def copy_files_to_storage(request):
         thread.start()
 
         return redirect('nimbus.offsite.views.list_uploadrequest')
+    else:
+        return redirect('nimbus.offsite.views.list_uploadrequest')
 
 
 @login_required

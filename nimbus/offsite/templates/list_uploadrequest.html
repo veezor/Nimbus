@@ -2,38 +2,53 @@
 
 {% block content %}
 
+<div class="block">
 
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>Uploads ativos</h2>
+	</div>		<!-- .block_head ends -->
 
-<h1> Uploads ativos </h1>
+    <div class="block_content">
 
-<div class="bloco_texto">
+        {% if not object_list %}
+            <p>Não existem uploads ativos no momento.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Caminho do arquivo</th>
+                        <th>Criado em</th>
+                        <th>Tentativas</th>
+                        <th>Última tentativa</th>
+                        <th>Concluído</th>
+                        <th>Tempo de upload estimado</th>
+                        <th>Taxa de transferência</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td>{{ object.volume.filename }}</td>
+                        <td>{{ object.created_at }}</td>
+                        <td align="right">{{ object.attempts }}</td>
+                        <td align="right">{{ object.last_attempt }}</td>
+                        <td align="right">{{ object.finished_percent }}%</td>
+                        <td align="right">{{ object.estimated_transfer_time }}</td>
+                        <td align="right">{{ object.friendly_rate }}</td>
+                    </tr>
+                    {{ object.path }}
+                    {% endfor %}
+                <tbody>
+            </table>
+        {% endif %}
 
-<table border="1">
-<tr>
-<th>Caminho do arquivo</th>
-<th>Criado em</th>
-<th>Tentativas</th>
-<th>Última tentativa</th>
-<th>Concluído</th>
-<th>Tempo de upload estimado</th>
-<th>Taxa de transferência</th>
-</tr>
+    </div>
 
-{% for object in object_list %}
-  <tr>
-    <td>{{ object.volume.filename }}</td>
-    <td>{{ object.created_at }}</td>
-    <td align="right">{{ object.attempts }}</td>
-    <td align="right">{{ object.last_attempt }}</td>
-    <td align="right">{{ object.finished_percent }}%</td>
-    <td align="right">{{ object.estimated_transfer_time }}</td>
-    <td align="right">{{ object.friendly_rate }}</td>
-  </tr>
-  {{ object.path }}
-{% endfor %}
+    <div class="bendl"></div>
+	<div class="bendr"></div>
 
-</table>
 </div>
-
 
 {% endblock %}
