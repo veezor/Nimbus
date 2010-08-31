@@ -13,7 +13,6 @@ def add(request):
     extra_context = {'title': u"Adicionar armazenamento"}
     return create_update.create_object( request, 
                                         model = Storage,
-                                        # model = StorageForm,
                                         template_name = "base_storages.html",
                                         extra_context = extra_context,
                                         post_save_redirect = "/storages/list")

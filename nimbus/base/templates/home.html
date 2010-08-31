@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
 
     	<div class="block">
@@ -22,131 +23,18 @@
 		
 		
     		<div class="block_content tab_content" id="days">
-    			<h3>Quantidade de backups executados por armazenamento (diário)</h3>
-    			<table class="stats" rel="line" cellpadding="0" cellspacing="0" width="100%">
-    				<thead>
-    					<tr>
-    						<td>&nbsp;</td>
-    						<th scope="col">05/07/10</th>
-    						<th scope="col">06/07/10</th>
-    						<th scope="col">07/07/10</th>
-    						<th scope="col">08/07/10</th>
-    						<th scope="col">09/07/10</th>
-    						<th scope="col">10/07/10</th>
-    						<th scope="col">11/07/10</th>
-    						<th scope="col">12/07/10</th>
-    						<th scope="col">13/07/10</th>
-    						<th scope="col">14/07/10</th>
-    						<th scope="col">15/07/10</th>
-    						<th scope="col">16/07/10</th>
-    						<th scope="col">17/07/10</th>
-    						<th scope="col">18/07/10</th>
-    					</tr>
-    				</thead>
-				
-    				<tbody>
-    					<tr>
-    						<th scope="row">Principal</th>
-    						<td>50</td>
-    						<td>90</td>
-    						<td>40</td>
-    						<td>120</td>
-    						<td>180</td>
-    						<td>280</td>
-    						<td>320</td>
-    						<td>220</td>
-    						<td>100</td>
-    						<td>120</td>
-    						<td>40</td>
-    						<td>70</td>
-    						<td>20</td>
-    						<td>60</td>
-    					</tr>
-					
-    					<tr>
-    						<th scope="row">Secundário</th>								
-    						<td>30</td>
-    						<td>50</td>
-    						<td>15</td>
-    						<td>90</td>
-    						<td>140</td>
-    						<td>160</td>
-    						<td>230</td>
-    						<td>170</td>
-    						<td>50</td>
-    						<td>90</td>
-    						<td>30</td>
-    						<td>50</td>
-    						<td>10</td>
-    						<td>40</td>
-    					</tr>
-    				</tbody>
-    			</table>
+
+                {% with table1 as table %}
+			        {% include "table_chart.html" %}
+			    {% endwith %}
 			
     		</div>		<!-- .block_content ends -->
 		
     		<div class="block_content tab_content" id="months">
-    			<h3>Quantidade de backups executados por armazenamento (mensal)</h3>
-    			<table class="stats" rel="bar" cellpadding="0" cellspacing="0" width="100%">
-			
-    				<thead>
-    					<tr>
-    						<td>&nbsp;</td>
-    						<th scope="col">06/2009</th>
-    						<th scope="col">07/2009</th>
-    						<th scope="col">08/2009</th>
-    						<th scope="col">09/2009</th>
-    						<th scope="col">10/2009</th>
-    						<th scope="col">11/2009</th>
-    						<th scope="col">12/2009</th>
-    						<th scope="col">01/2010</th>
-    						<th scope="col">02/2010</th>
-    						<th scope="col">03/2010</th>
-    						<th scope="col">04/2010</th>
-    						<th scope="col">05/2010</th>
-    						<th scope="col">06/2010</th>
-    						<th scope="col">07/2010</th>
-    					</tr>
-    				</thead>
-				
-    				<tbody>
-    					<tr>
-    						<th scope="row">Principal</th>
-    						<td>1800</td>
-    						<td>900</td>
-    						<td>700</td>
-    						<td>1200</td>
-    						<td>600</td>
-    						<td>2800</td>
-    						<td>3200</td>
-    						<td>500</td>
-    						<td>2200</td>
-    						<td>1000</td>
-    						<td>1200</td>
-    						<td>700</td>
-    						<td>650</td>
-    						<td>800</td>
-    					</tr>
-					
-    					<tr>
-    						<th scope="row">Secundário</th>								
-    						<td>1600</td>
-    						<td>650</td>
-    						<td>550</td>
-    						<td>900</td>
-    						<td>500</td>
-    						<td>2300</td>
-    						<td>2700</td>
-    						<td>350</td>
-    						<td>1700</td>
-    						<td>600</td>
-    						<td>1000</td>
-    						<td>500</td>
-    						<td>400</td>
-    						<td>700</td>
-    					</tr>
-    				</tbody>
-    			</table>	
+
+                {% with table2 as table %}
+			        {% include "table_chart.html" %}
+			    {% endwith %}
 		
     		</div>		<!-- .block_content ends -->
 		

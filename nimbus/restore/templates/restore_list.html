@@ -10,6 +10,16 @@
         });
     });
 </script>
+<style type="text/css" media="screen">
+    h2.titulo_step {
+        -moz-border-radius-topleft: 5px;
+        -moz-border-radius-topright: 5px;
+        background: #EEEEEE;
+        border-bottom: 4px solid #E9E9E9;
+        margin-top: 30px;
+        padding: 15px 15px;
+    }
+</style>
 {% endblock %}
 
 {% block page %}
@@ -120,7 +130,7 @@
             {% endif %}
     
             <div class="restore_step_1">
-                <h2 style="border-bottom: 1px solid #666; padding-bottom: 10px; margin-top: 30px">1. Data para restauração</h2>
+                <h2 class="titulo_step">1. Data para restauração</h2>
                 <script type="text/javascript" charset="utf-8">
                     $(document).ready(function(){
                         $('.submit_step_1').click(function(){
@@ -170,12 +180,13 @@
     		</div>
 
             <div class="restore_step_2" style="display: none">
-                <h2 style="border-bottom: 1px solid #666; padding-bottom: 10px; margin-top: 30px">2. Selecione um Job para restauração</h2>
+                <h2 class="titulo_step">2. Selecione um Job para restauração</h2>
 
                 <script type="text/javascript" charset="utf-8">
                     $(document).ready(function(){
                         $('#jobs_list').change(
                             function(){
+                                $('.restore_step_3').slideUp();
                                 if ($(this).val()) {
                                     $('.restore_step_3').slideDown();
                                 } else {
@@ -192,7 +203,7 @@
             </div>
 
             <div class="restore_step_3" style="display: none">
-                <h2 style="border-bottom: 1px solid #666; padding-bottom: 10px; margin-top: 30px">2. Arquivos para restauração</h2>
+                <h2 class="titulo_step">3. Arquivos para restauração</h2>
 
                 <p>
     				<label>Buscar arquivo:</label> <input type="text" class="text small" /> <input type="submit" class="submit small" value="Buscar" />
@@ -204,7 +215,7 @@
             </div>
             
             <div class="restore_step_4" style="display: none">
-                <h2 style="border-bottom: 1px solid #666; padding-bottom: 10px; margin-top: 30px">3. Restauração</h2>
+                <h2 class="titulo_step">3. Restauração</h2>
                 <p>
                     <label>Selecione o local de destino:</label><br/>
                     <input type="radio" name="radio" checked="checked" class="radio" /> <label>Download</label>

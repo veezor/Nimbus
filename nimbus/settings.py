@@ -23,7 +23,7 @@ DATABASES = {
         'HOST' : '127.0.0.1'
     },
     'bacula' : {
-        'NAME': 'nimbus',
+        'NAME': 'bacula',
         'ENGINE': 'mysql',
         'USER' : 'root',
         'PASSWORD' : 'root',
