@@ -62,105 +62,52 @@ def get_jobs(request, computer_id=None, procedure_id=None, data_inicio=None, dat
 
 
 
-def get_tree(request, root=None):
-    html = """
-<ul class="jqueryFileTree" style="display: none;">
-<li class="directory collapsed">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-admin/">wp-admin</a>
-</li>
-<li class="directory collapsed">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-content/">wp-content</a>
-</li>
-<li class="directory collapsed">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-includes/">wp-includes</a>
-</li>
-</ul>"""
-
-    html2 = """
-<ul class="jqueryFileTree" style="display: none;">
-<li class="file ext_htaccess">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/.htaccess">.htaccess</a>
-</li>
-<li class="file ext_error_log">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/error_log">error_log</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/index.php">index.php</a>
-</li>
-<li class="file ext_txt">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/license.txt">license.txt</a>
-</li>
-<li class="file ext_html">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/readme.html">readme.html</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-app.php">wp-app.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-atom.php">wp-atom.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-blog-header.php">wp-blog-header.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-comments-post.php">wp-comments-post.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-commentsrss2.php">wp-commentsrss2.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-config.php">wp-config.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-cron.php">wp-cron.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-feed.php">wp-feed.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-links-opml.php">wp-links-opml.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-load.php">wp-load.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-login.php">wp-login.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-mail.php">wp-mail.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-pass.php">wp-pass.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-rdf.php">wp-rdf.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-register.php">wp-register.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-rss.php">wp-rss.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-rss2.php">wp-rss2.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-settings.php">wp-settings.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/wp-trackback.php">wp-trackback.php</a>
-</li>
-<li class="file ext_php">
-<a href="#" rel="/Users/jonatas/Desktop/maxima_wp/xmlrpc.php">xmlrpc.php</a>
-</li>
-</ul>
-    """
-    # return html
-    # response = json.dumps(choices)
-    # return render_to_response(request, "json.html", {'json': json})
-    response = html
-    if root == '1':
-        response = html2
+def get_tree(request):
+    path = request.POST['path']
+    
+    if path == '/':
+        files = [
+            path + 'var/',
+            path + 'mach_kernel'
+        ]
+    
+    if path == '/var/':
+        files = [
+            path + 'tmp/',
+            path + 'abc/',
+            path + 'duque/',
+        ]
+    
+    if path == '/var/tmp/':
+        files = [
+            path + 'a.sql',
+            path + 'b.txt',
+            path + 'c.py',
+        ]
+    
+    if path == '/var/abc/':
+        files = []
+    
+    if path == '/var/duque/':
+        files = [
+            path + 'o.out'
+        ]
+    
+    # files = [
+    #     '/var/',
+    #     '/var/tmp/',
+    #     '/var/tmp/a.sql',
+    #     '/var/tmp/b.txt',
+    #     '/var/tmp/c.py',
+    #     '/var/abc/',
+    #     '/var/duque/',
+    #     '/var/duque/o.out'
+    #     '/etc/',
+    #     '/etc/nimbus/',
+    #     '/etc/nimbus/manager.py',
+    #     '/etc/nimbus/teste.py',
+    # ]
+    response = simplejson.dumps(files)
     return HttpResponse(response, mimetype="text/plain")
 
 # def view(request, object_id):

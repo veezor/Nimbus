@@ -17,7 +17,7 @@ def home(request):
     
     table2 = {}
     table2['title'] = u"Bytes trafegados no backup Offsite"
-    table2['type'] = "line"
+    table2['type'] = "area"
     table2['header'] = ["10/02/2010", "10/03/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010"]
     table2['lines'] = {
         "Out": ["145", "197", "244", "37", "397", "233", "791", "981", "112"],

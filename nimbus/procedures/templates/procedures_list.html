@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block headtags %}
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $('.toggle').click(function(){
+            var target = $(this).attr('ref');
+            $(this).parent().parent().find('.' + target).slideToggle();
+            return false;
+        });
+    });
+</script>
+{% endblock %}
+
+{% block page %}
+
+<div class="block">
+
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>		<!-- .block_head ends -->
+
+    <div class="block_content">
+        <div class="procedures">
+        {% for procedure in procedures %}
+            <div class="procedure" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
+                <div class="left" style="float: left; width: 250px">
+                    <div class="title">
+                        <img src="/media/icons/engine.png" style="float: left; height: 32px; padding-right: 10px" />
+                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{procedure.name}}</h3>
+                        <small>Computador: {{procedure.computer.name}} ({{procedure.computer.operation_system|title}})</small>
+                    </div>
+                    <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p>
+                </div>
+                <div class="right" style="float: right; width: 600px">
+                    <h4>CONFIGURAÇÕES DO PROCEDIMENTO</h4>
+                    <div class="" style="background: #FFF; -moz-border-radius: 5px; padding: 10px; border: 1px solid #CCC">
+                        <p>
+                            Offsite ativado: <strong>{{procedure.offsite_on|yesno:"Sim,Não"}}</strong><br/>
+                            Perfil de configuração: <strong>{{procedure.profile.name}}</strong><br/>
+                        </p>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        {% endfor %}
+        </div>
+    
+    </div>
+    
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+
+</div>
+
+{% endblock %}

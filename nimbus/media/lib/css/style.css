@@ -1079,3 +1079,27 @@ a:hover {
 #schedule.withsidebar .block_content .sidebar .sidemenu li a.active {
     background: url(/media/icons/tick_circle.png) no-repeat 10px center;
 }
+
+.tree li {
+    padding: 0 !important;
+    background: none !important;
+}
+
+.tree ul {
+    margin-left: 9px;
+    padding-left: 10px;
+    border-left: 1px solid #DDD;
+    padding-bottom: 0 !important;
+}
+
+.tree li.directory a {
+    padding-left: 20px;
+    background: url('/media/icons/folder.png') left no-repeat;
+    display: block;
+}
+
+.tree li.file span {
+    padding-left: 20px;
+    background: url('/media/icons/file_generic.png') left no-repeat;
+    display: block;
+}
