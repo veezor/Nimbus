@@ -1080,26 +1080,89 @@ a:hover {
     background: url(/media/icons/tick_circle.png) no-repeat 10px center;
 }
 
+.tree {
+    padding: 20px;
+    background: #EEE;
+}
+
 .tree li {
     padding: 0 !important;
     background: none !important;
+    padding-top: 5px;
 }
 
 .tree ul {
     margin-left: 9px;
-    padding-left: 10px;
+    padding: 0 0 5px 10px;
     border-left: 1px solid #DDD;
     padding-bottom: 0 !important;
 }
 
 .tree li.directory a {
-    padding-left: 20px;
+    margin-left: 20px;
+    padding-left: 25px;
     background: url('/media/icons/folder.png') left no-repeat;
     display: block;
 }
 
-.tree li.file span {
-    padding-left: 20px;
+.tree li a.directory_open {
+    background: url('/media/icons/folder-open.png') left no-repeat;
+}
+
+.tree .file span span {
+    margin-left: 20px;
+    padding-left: 25px;
     background: url('/media/icons/file_generic.png') left no-repeat;
     display: block;
 }
+
+.tree li input {
+    float: left;
+    margin-top: 3px;
+}
+
+
+
+.tree .ext_exe span span,
+.tree .ext_bin span span { background-image: url('/media/icons/mimetypes/application-x-executable.png'); }
+
+.tree .ext_mp3 span span,
+.tree .ext_aac span span { background-image: url('/media/icons/mimetypes/audio-x-generic.png'); }
+
+.tree .ext_ttf span span,
+.tree .ext_otf span span { background-image: url('/media/icons/mimetypes/font-x-generic.png'); }
+
+.tree .ext_jpg span span,
+.tree .ext_gif span span,
+.tree .ext_png span span,
+.tree .ext_jpeg span span { background-image: url('/media/icons/mimetypes/image-x-generic.png'); }
+
+.tree .ext_zip span span,
+.tree .ext_bz span span,
+.tree .ext_gz span span { background-image: url('/media/icons/mimetypes/package-x-generic.png'); }
+
+.tree .ext_html span span,
+.tree .ext_htm span span { background-image: url('/media/icons/mimetypes/text-html.png'); }
+
+/*
+.tree .ext_template { background-image: url('/media/icons/mimetypes/text-x-generic-template.png'); }
+*/
+
+.tree .ext_txt span span,
+.tree .ext_rtf span span { background-image: url('/media/icons/mimetypes/text-x-generic.png'); }
+
+.tree .ext_sh span span,
+.tree .ext_py span span,
+.tree .ext_java span span { background-image: url('/media/icons/mimetypes/text-x-script.png'); }
+
+.tree .ext_mp4 span span,
+.tree .ext_mov span span,
+.tree .ext_rmvb span span { background-image: url('/media/icons/mimetypes/video-x-generic.png'); }
+
+.tree .ext_doc span span,
+.tree .ext_docx span span,
+.tree .ext_dot span span { background-image: url('/media/icons/mimetypes/x-office-document.png'); }
+
+.tree .ext_ppt span { background-image: url('/media/icons/mimetypes/x-office-presentation.png'); }
+
+.tree .ext_xls span { background-image: url('/media/icons/mimetypes/x-office-spreadsheet.png'); }

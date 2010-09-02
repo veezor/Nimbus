@@ -186,14 +186,9 @@ class Procedure(BaseModel):
 
 
     def get_backup_jobs_between(self, start, end):
-        # jobs = Job.objects.filter(realendtime__range=(start,end), 
-        #                           jobfiles__gt=0,
-        #                           type='B',
-        #                           name=self.bacula_name)\
-        #         .distinct()
         jobs = Job.objects.filter(realendtime__range=(start,end), 
                                   jobfiles__gt=0,
-                                  type='B')\
+                                  name=self.bacula_name)\
                 .distinct()
         return jobs
     
@@ -215,6 +210,7 @@ class Procedure(BaseModel):
     @staticmethod
     def locate_files(jobid, path="/"):
         depth = utils.pathdepth(path)
+        depth += 1
 
         cursor = connections['bacula'].cursor()
 
@@ -223,9 +219,7 @@ class Procedure(BaseModel):
         if path == "/": # get min depth files
             cursor.execute(sql.SELECT_MIN_FILES_DEPTH, params=(jobid,))
             depth = cursor.fetchone()[0]
-        else:
-            cursor.execute(sql.SELECT_NEXT_FILES_DEPTH, params=(jobid,depth))
-            depth = cursor.fetchone()[0]
+
 
         cursor.execute(sql.SELECT_FILES_FROM_JOB_PATH_DEPTH, 
                               params=(jobid, regex, depth))

@@ -20,6 +20,7 @@
         padding: 15px 15px;
     }
 </style>
+
 {% endblock %}
 
 {% block page %}
@@ -33,82 +34,7 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <form action="#" method="post" onsubmit="return false;">
-            
-            <script type="text/javascript" charset="utf-8">
-            $(document).ready(function(){
-                
-                function update_tree(root_path) {
-                    get_tree_path = "/restore/get_tree/";
-                    
-                    wrapper = $("*[path="+root_path+"]").parent();
-                    
-                    if (wrapper.find('ul').length) {
-                        var ul = wrapper.find('>ul');
-                        if (ul.hasClass('open')) {
-                            ul.removeClass('open').addClass('closed');
-                            wrapper.find('ul').slideUp();
-                        } else if (ul.hasClass('closed')) {
-                            ul.removeClass('closed').addClass('open');
-                            wrapper.find('ul').hide();
-                            wrapper.find('>ul').slideDown();
-                        }
-                        return false;
-                    }
-                    
-                    $.post(get_tree_path, {path: root_path}, function(data)
-                    {
-                        root = $("*[path="+root_path+"]");
-                        var ul = $("<ul>").addClass("open").hide();
-                        ul.insertAfter($("*[path="+root_path+"]"));
-                        for (var item in data) {
-                            path = data[item];
-                            
-                            var input = $("<input>").attr("type", "checkbox").attr("name", "path").val(path);
-                            
-                            // If is a directory.
-                            if (path.match("/$") == "/" || path.match("\\$") == "\\") {
-                                attr_class = "directory";
-                                var file = $("<a>").attr("href", "#").attr("path", path).text(path);
-                            } else {
-                                attr_class = "file";
-                                var file = $("<span>").attr("path", path).text(path);
-                            }
-                            
-                            input.appendTo(file);
-                            
-                            var li = $("<li>").addClass(attr_class);
-                            file.appendTo(li);
-                            li.appendTo(ul);
-                        }
-                        ul.slideDown();
-                        $(".tree a").unbind("click").click(function()
-                        {
-                            update_tree($(this).attr("path"));
-                            return false;
-                        });
-                        console.log(data);
-                    }, "json");
-                }
-                
-                $('#update_tree').click(function()
-                {
-                    // $('.tree').attr("path", "/");
-                    update_tree('/');
-                    return false;
-                });
-                
-                $(".tree a").click(function()
-                {
-                    update_tree($(this).attr("path"));
-                    return false;
-                });
-            });
-            </script>
-            <a href="#" id="update_tree">atualizar arvore</a>
-            <ul class="tree">
-                <li class="directory"><a href="#" path="/">/</a></li>
-            </ul>
+        <form action="/restore/restore_files" method="post">
             
             {% if computer %}
                 <p><a href="/computers/list">Listar todos os computadores</a></p>
@@ -222,15 +148,16 @@
                         
                             if (data_inicio && data_fim) {
                                 $.getJSON(
-                                    '/restore/get_jobs/' + computer_id + '/' + procedure_id + '/' + data_inicio + '/' + data_fim,
+                                    '/restore/get_jobs/' + procedure_id + '/' + data_inicio + '/' + data_fim + '/',
                                     function(data)
                                     {
                                         $("#jobs_list").empty();
                                         if (data) {
                                             // TODO: Populate the jobs list.
-                                            $("<option>").val("").text(" - Selecione um Job  - ").attr("selected", "selected").appendTo("#jobs_list");
+                                            $("<option>").val("").text(" - " + data.length + " jobs, selecione um  - ").attr("selected", "selected").appendTo("#jobs_list");
                                             for (var i in data) {
-                                                $("<option>").val(data[i].id).text(data[i].name).appendTo("#jobs_list");
+                                                job = data[i];
+                                                $("<option>").val(job.pk).text(job.fields.realendtime + ' - ' + job.fields.jobfiles + ' arquivos').appendTo("#jobs_list");
                                             }
                                             $("#jobs_list").change();
                                             $('.restore_step_2').slideDown();
@@ -263,6 +190,9 @@
                         $('#jobs_list').change(
                             function(){
                                 $('.restore_step_3').slideUp();
+                                
+                                $('.tree .directory.first ul').remove().removeClass("open");
+                                
                                 if ($(this).val()) {
                                     $('.restore_step_3').slideDown();
                                 } else {
@@ -272,7 +202,7 @@
                         ).click();
                     });
                 </script>
-                <select name="job_id" class="styled" id="jobs_list">
+                <select name="job_id" class="styled" id="jobs_list" style="width: 600px">
                     <option value=""> - Selecione um Job - </option>
                 </select>
                 <div class="clear"></div>
@@ -285,15 +215,108 @@
     				<label>Buscar arquivo:</label> <input type="text" class="text small" /> <input type="submit" class="submit small" value="Buscar" />
     			</p>
 
-                ... Aqui entrará a ávore.
+                <script type="text/javascript" charset="utf-8">
+                    $(document).ready(function(){
+
+                        function update_tree(root_path) {
+                            get_tree_path = "/restore/get_tree/";
+                            job_id = $('#jobs_list').val();
+
+                            link = $("*[path="+root_path+"]");
+                            wrapper = link.parent();
+
+                            if (wrapper.find('ul').length) {
+                                var ul = wrapper.find('>ul');
+                                if (ul.hasClass('open')) {
+                                    ul.removeClass('open').addClass('closed');
+                                    link.removeClass('directory_open').addClass('directory_closed');
+                                    wrapper.find('ul').slideUp();
+                                } else if (ul.hasClass('closed')) {
+                                    ul.removeClass('closed').addClass('open');
+                                    link.removeClass('directory_closed').addClass('directory_open');
+                                    wrapper.find('ul').hide();
+                                    wrapper.find('>ul').slideDown();
+                                }
+                                return false;
+                            }
+
+                            $.post(get_tree_path, {job_id: job_id, path: root_path}, function(data)
+                            {
+                                root = $("*[path="+root_path+"]");
+                                root.addClass('directory_open');
+                                var ul = $("<ul>").addClass("open").hide();
+                                ul.insertAfter($("*[path="+root_path+"]"));
+                                for (var item in data) {
+                                    path = data[item];
+                                    root_path_re = new RegExp("^" + root_path, "g");
+                                    path_name = path.replace(root_path_re, '');
+
+                                    var input = $("<input>").attr("type", "checkbox").attr("name", "path").val(path);
+                                    
+                                    // If is a directory.
+                                    if (path.match("/$") == "/" || path.match("\\$") == "\\") {
+                                        attr_class = "directory";
+                                        mime_class = "folder";
+                                        var inner = $("<a>").attr("href", "#").attr("path", path).text(path_name);
+                                    } else {
+                                        attr_class = "file";
+                                        if (path_name.split('.').length > 1) {
+                                            mime_class = "ext_" + $(path_name.split('.')).eq(-1)[0].toLowerCase();
+                                        } else {
+                                            mime_class = "";
+                                        }
+                                        
+                                        var inner = $("<span>").html(path_name);
+                                    }
+
+                                    var file = $("<span>").html(inner);
+
+                                    input.change(function(){
+                                        checked = $(this).attr("checked") && "checked" || "";
+                                        $(this).parent().find('input').attr("checked", checked);
+                                    });
+                                    input.prependTo(file);
+
+                                    var li = $("<li>").addClass(attr_class).addClass(mime_class);
+                                    file.appendTo(li);
+                                    li.appendTo(ul);
+                                }
+                                ul.slideDown();
+                                $(".tree a").unbind("click").click(function()
+                                {
+                                    update_tree($(this).attr("path"));
+                                    return false;
+                                });
+                                // console.log(data);
+                            }, "json");
+                        }
+
+                        $('#update_tree').click(function()
+                        {
+                            // $('.tree').attr("path", "/");
+                            update_tree('/');
+                            return false;
+                        });
+
+                        $(".tree a").click(function()
+                        {
+                            update_tree($(this).attr("path"));
+                            return false;
+                        });
+                    });
+                </script>
+
+                <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
+                <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
+                
                 <div class="clear"></div>
                 
                 <h2 class="titulo_step">4. Restauração</h2>
                 <p>
                     <label>Selecione o local de destino:</label><br/>
-                    <input type="radio" name="radio" checked="checked" class="radio" /> <label>Download</label>
-    			    <input type="radio" name="radio" class="radio" /> <label>Armazenar no servidor</label>
-    			    <input type="radio" name="radio" class="radio" /> <label>Enviar por e-mail</label><br/>
+                    <input type="radio" name="destino" checked="checked" class="radio" value="download" /> <label>Download</label>
+    			    <input type="radio" name="destino" class="radio" value="server" /> <label>Armazenar no servidor</label>
+    			    <input type="radio" name="destino" class="radio" value="email" /> <label>Enviar por e-mail</label><br/>
     		    </p>
     		    <p>
                     <input type="submit" class="submit mid" value="Restaurar" />

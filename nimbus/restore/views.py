@@ -29,6 +29,25 @@ def view(request, object_id=None):
 
 
 
+def restore_files(request):
+    """docstring for restore_files"""
+    # TODO: Implementar o restore.
+    
+    ## Parametros:
+    # computer_id
+    # procedure_id
+    # job_id
+    # destino
+    # data_inicio
+    # data_fim
+    # path (lista)
+    
+    
+    print request.POST
+    return HttpResponse('', mimetype="text/plain")
+
+
+
 def get_procedures(request, object_id=None):
     if not object_id:
         message = {'error': 'Erro ao tentar selecionar o computador.'}
@@ -49,64 +68,40 @@ def get_procedures(request, object_id=None):
     
 
 
-def get_jobs(request, computer_id=None, procedure_id=None, data_inicio=None, data_fim=None):
+def get_jobs(request, procedure_id, data_inicio, data_fim):
     """Return all jobs that match computer, procedure and date."""
     # TODO: Get the jobs...
-    jobs = [{"name": "Job1 - 10 Aug 2010", "id": "1"},
-            {"name": "Job2 - 11 Aug 2010", "id": "2"},
-            {"name": "Job3 - 12 Aug 2010", "id": "3"}]
+    # jobs = [{"name": "Job1 - 10 Aug 2010", "id": "59"},
+    #         {"name": "Job2 - 11 Aug 2010", "id": "60"},
+    #         {"name": "Job3 - 12 Aug 2010", "id": "61"},
+    #         {"name": "Job3 - 12 Aug 2010", "id": "37"}]
     
     # response = serializers.serialize("json", jobs)
-    response = simplejson.dumps(jobs)
+    
+    from datetime import datetime
+    data_inicio = "%s 00:00:00" % data_inicio
+    print data_inicio
+    data_inicio = datetime.strptime(data_inicio, '%d-%m-%Y %H:%M:%S')
+    
+    data_fim = "%s 23:59:59" % data_fim
+    print data_fim
+    data_fim = datetime.strptime(data_fim, '%d-%m-%Y %H:%M:%S')
+    
+    procedure = Procedure.objects.get(id=procedure_id)
+    jobs = procedure.get_backup_jobs_between(data_inicio, data_fim)
+    
+    # response = simplejson.dumps(jobs)
+    response = serializers.serialize("json", jobs, fields=("realendtime", "jobfiles", "name"))
     return HttpResponse(response, mimetype="text/plain")
 
 
 
 def get_tree(request):
     path = request.POST['path']
+    job_id = request.POST['job_id']
     
-    if path == '/':
-        files = [
-            path + 'var/',
-            path + 'mach_kernel'
-        ]
-    
-    if path == '/var/':
-        files = [
-            path + 'tmp/',
-            path + 'abc/',
-            path + 'duque/',
-        ]
-    
-    if path == '/var/tmp/':
-        files = [
-            path + 'a.sql',
-            path + 'b.txt',
-            path + 'c.py',
-        ]
-    
-    if path == '/var/abc/':
-        files = []
-    
-    if path == '/var/duque/':
-        files = [
-            path + 'o.out'
-        ]
-    
-    # files = [
-    #     '/var/',
-    #     '/var/tmp/',
-    #     '/var/tmp/a.sql',
-    #     '/var/tmp/b.txt',
-    #     '/var/tmp/c.py',
-    #     '/var/abc/',
-    #     '/var/duque/',
-    #     '/var/duque/o.out'
-    #     '/etc/',
-    #     '/etc/nimbus/',
-    #     '/etc/nimbus/manager.py',
-    #     '/etc/nimbus/teste.py',
-    # ]
+    files = Procedure.locate_files(job_id, path)
+
     response = simplejson.dumps(files)
     return HttpResponse(response, mimetype="text/plain")
 
