@@ -109,13 +109,13 @@ class Request(models.Model):
         time = self.remaining_bytes / self.rate
         hours,seconds = divmod(time, self.HOURS)
         minutes,seconds = divmod(seconds, self.MINUTES)
-        return "%dh%m%ds" % (hours, minutes, seconds)
+        return "%dh%dm%ds" % (hours, minutes, seconds)
 
     @property
     def finished_percent(self):
         if self.volume.size == 0:
             return 100
-        return float(self.transferred_bytes) / self.volume.size
+        return "%.1f" % (float(self.transferred_bytes * 100) / self.volume.size)
 
     @property
     def friendly_rate(self):

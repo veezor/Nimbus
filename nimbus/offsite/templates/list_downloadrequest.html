@@ -1,5 +1,77 @@
 {% extends "base.html" %}
 
+
+{% block headtags %}
+<script type="text/javascript" charset="utf-8">
+    function update_table(table) {
+        table = $('.request_list');
+        $.post('{{script_name}}', {ajax: 1}, function(data)
+        {
+            if (!data.length) {
+                console.log('Não existem uploads ativos.');
+            }
+            
+            table.find('tbody tr').remove();
+            for (var item in data) {
+                down = data[item];
+                tr = $('<tr>');
+                caminho_arquivo = $('<td>').text(down.fields.filename);
+                criado_em = $('<td>').text(down.fields.created_at);
+                tentativas = $('<td>').html(down.fields.attempts + " <small>(última: " + down.fields.last_attempt + ")</small>");
+                transferencia = $('<td>').html(down.fields.friendly_rate + " <small>(restante: " + down.fields.estimated_transfer_time + ")</small>");
+                
+                wrapper = $('<div>').addClass("concluido_wrapper").attr({"title": down.fields.finished_percent + "% concluído."});
+                percent = $('<div>').addClass("concluido_percent").css("width", down.fields.finished_percent + "%").html("&nbsp;");
+                concluido = $('<td>').append(wrapper.append(percent));
+                
+                tr.append(caminho_arquivo).append(criado_em).append(tentativas).append(transferencia).append(concluido);
+                tr.appendTo(table.find('tbody'));
+            }
+        },
+        "json");
+    }
+    
+    
+    var countDownInterval = 20;
+    var countDownTime = countDownInterval + 1;
+    
+    function countDown(){
+        countDownTime--;
+        if (countDownTime <= 0){
+            $('.tempo_restante').text(countDownTime);
+            countDownTime = countDownInterval;
+            clearTimeout(counter);
+            // window.location="http://www.wallpaperama.com";
+            update_table();
+            return startit();
+        }
+        $('.tempo_restante').text(countDownTime);
+        counter=setTimeout("countDown()", 1000);
+    }
+
+    function startit(){
+        if (document.all||document.getElementById)
+            $('.tempo_restante').text(countDownTime);
+        countDown()
+    }
+
+    $(document).ready(function(){
+        startit()
+    });
+</script>
+
+<style type="text/css" media="screen">
+    .concluido_wrapper {
+        width: 100%; border: 1px solid green;
+    }
+    
+    .concluido_percent {
+        background: #67ca1e;
+    }
+</style>
+{% endblock %}
+
+
 {% block content %}
 
 <div class="block">
@@ -8,6 +80,9 @@
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
 		<h2>Downloads ativos</h2>
+		<div class="right">
+            A lista será atualizada em <span class="tempo_restante">10</span> segundos.
+		</div>
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
@@ -15,16 +90,14 @@
         {% if not object_list %}
             <p>Não existem downloads ativos no momento.</p>
         {% else %}
-            <table>
+            <table class="request_list" style="width: 100%">
                 <thead>
                     <tr>
                         <th>Caminho do arquivo</th>
                         <th>Criado em</th>
                         <th>Tentativas</th>
-                        <th>Última tentativa</th>
+                        <th>Transferência</th>
                         <th>Concluído</th>
-                        <th>Tempo de download estimado</th>
-                        <th>Taxa de transferência</th>
                     </tr>
                 </thead>
 
@@ -32,17 +105,18 @@
                 {% for object in object_list %}
                     <tr>
                         <td>{{ object.volume.filename }}</td>
-                        <td>{{ object.created_at }}</td>
-                        <td align="right">{{ object.attempts }}</td>
-                        <td align="right">{{ object.last_attempt }}</td>
-                        <td align="right">{{ object.finished_percent }}%</td>
-                        <td align="right">{{ object.estimated_transfer_time }}</td>
-                        <td align="right">{{ object.friendly_rate }}</td>
+                        <td>{{ object.created_at|date:"d/m/Y H:i" }}</td>
+                        <td align="right">{{ object.attempts }} <small>(última: {{ object.last_attempt }})</small></td>
+                        <td align="right">{{ object.friendly_rate }} <small>(tempo restante: {{ object.estimated_transfer_time }})</small></td>
+                        <td align="right">
+                            <div class="concluido_wrapper" title="{{ object.finished_percent }}% concluído.">
+                                <div class="concluido_percent" style="width: {{ object.finished_percent }}%">&nbsp;</div>
+                            </div>
+                        </td>
                     </tr>
                 {{ object.path }}
                 {% endfor %}
                 </tbody>
-
             </table>
         {% endif %}
 

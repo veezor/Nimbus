@@ -54,6 +54,14 @@ a:hover {
 	}
 
 
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
 /* Header */
 
 #header {
@@ -1166,3 +1174,12 @@ a:hover {
 .tree .ext_ppt span { background-image: url('/media/icons/mimetypes/x-office-presentation.png'); }
 
 .tree .ext_xls span { background-image: url('/media/icons/mimetypes/x-office-spreadsheet.png'); }
+
+
+.tree .wait {
+    background: #FFFFFF url('/media/icons/loading_bar.gif') right no-repeat;
+    display: inline;
+    height: 11px;
+    padding-left: 52px;
+    width: 43px;
+}

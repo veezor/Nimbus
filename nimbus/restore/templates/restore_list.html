@@ -223,6 +223,7 @@
                             job_id = $('#jobs_list').val();
 
                             link = $("*[path="+root_path+"]");
+                            link.append($("<div class='wait'>"));
                             wrapper = link.parent();
 
                             if (wrapper.find('ul').length) {
@@ -237,6 +238,7 @@
                                     wrapper.find('ul').hide();
                                     wrapper.find('>ul').slideDown();
                                 }
+                                link.find(".wait").remove();
                                 return false;
                             }
 
@@ -287,6 +289,8 @@
                                     update_tree($(this).attr("path"));
                                     return false;
                                 });
+                                
+                                link.find(".wait").remove();
                                 // console.log(data);
                             }, "json");
                         }
