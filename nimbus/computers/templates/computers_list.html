@@ -61,13 +61,17 @@
                                     </a>
                                 </div>
                                 <div class="fileset_detail" style="display: none">
-                                    Procedure: {{proc.name}}<br/>
-                                    Offsite: {% if proc.offsite_on %}Sim{% else %}Não{% endif %}<br/>
-                                    Pool: <span title="{{proc.pool.pool_size}} MB - {{proc.pool.retention_time}} dias">{{proc.pool.name}}</span><br/>
-                                    Profile: {{proc.profile.name}}<br/>
-                                    Storage: <a href="/storages/{{proc.profile.storage.id}}/view"><span title="Endereço: {{proc.profile.storage.address}} - {{proc.profile.storage.description|slice:":25"}}...">{{proc.profile.storage.name}}</span></a><br/>
-                                    Schedule: {{proc.profile.schedule}}<br/>
                                     <br/>
+                                    Offsite ativado? <strong>{% if proc.offsite_on %}Sim{% else %}Não{% endif %}</strong><br/>
+                                    Perfil de configuração: <strong>{{proc.profile.name}}</strong><br/>
+                                    Local de armazenamento: <strong><a href="/storages/{{proc.profile.storage.id}}/view"><span title="Endereço: {{proc.profile.storage.address}} - {{proc.profile.storage.description|slice:":25"}}...">{{proc.profile.storage.name}}</span></a></strong><br/>
+                                    Agendamento: <strong>{{proc.profile.schedule}}</strong><br/>
+                                    Arquivos:
+                                    <ul>
+                                        {% for file in proc.profile.fileset.files.all %}
+                                        <li><strong>{{file}}</strong></li>
+                                        {% endfor %}
+                                    </ul>
                                 </div>
                                 <div class="clear"></div>
                             </div>

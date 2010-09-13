@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     (r'^backup/', include('nimbus.backup.urls')),
     (r'^offsite/', include('nimbus.offsite.urls')),
     (r'^procedures/', include('nimbus.procedures.urls')),
+    (r'^system/', include('nimbus.system.urls')),
 )
 
 if settings.SERVE_STATIC_FILES:

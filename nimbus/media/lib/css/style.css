@@ -1089,8 +1089,8 @@ a:hover {
 }
 
 .tree {
-    padding: 20px;
-    background: #EEE;
+    padding: 20px 0;
+    padding-left: 0 !important;
 }
 
 .tree li {

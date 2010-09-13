@@ -1,8 +1,11 @@
 # -*- coding: UTF-8 -*-
 # Create your views here.
 
+import simplejson
+
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 
 from nimbus.computers.models import Computer
 from nimbus.procedures.models import Profile, Procedure
@@ -103,3 +106,14 @@ def add(request):
         # u'schedule.monthly.active': [u'1']
         # }
 
+
+def get_tree(request):
+    path = request.POST['path']
+    computer_id = request.POST['computer_id']
+    
+    # files = Procedure.locate_files(job_id, path)
+    files = ["D:/Dados/", "D:/Pessoal/", "D:/Fotos/"]
+
+    response = simplejson.dumps(files)
+    return HttpResponse(response, mimetype="text/plain")
+    

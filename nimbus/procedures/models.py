@@ -242,7 +242,9 @@ class Procedure(BaseModel):
         cursor.execute(sql.SELECT_FILES_FROM_PATTERN, 
                               params=(jobid, pattern))
 
-        files = [ row[0] for row in cursor.fetchall() ]
+        # files = [ row[0] for row in cursor.fetchall() ]
+        files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
+                    for row in cursor.fetchall() ]
         return files
 
 
