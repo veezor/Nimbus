@@ -79,7 +79,7 @@ class UUIDBaseModel(models.Model):
             self.uuid
         except UUID.DoesNotExist:
             self._generate_uuid()
-            return super(UUIDBaseModel, self).save(*args, **kwargs)
+        return super(UUIDBaseModel, self).save(*args, **kwargs)
  
     @property
     def bacula_name(self):
