@@ -9,6 +9,14 @@
         });
     });
 </script>
+
+<style type="text/css" media="screen">
+    .storage.desativado {
+        background: #FFE5EB !important;
+        border: 2px solid #e7696d;
+        -moz-border-radius: 5px; 
+    }
+</style>
 {% endblock %}
 
 {% block page %}
@@ -25,7 +33,7 @@
         <p><a href="/storages/add">Adicionar armazenamento</a></p>
         <div class="storages">
         {% for storage in storages %}
-            <div class="storage" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
+            <div class="storage {% if not storage.active %}desativado{% endif %}" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
                 <div class="left" style="float: left; width: 250px">
                     <div class="title">
                         <img src="/media/icons/storage.png" style="float: left; height: 32px; padding-right: 10px" />
@@ -37,6 +45,17 @@
                     
                 </div>
                 <div class="right" style="float: right; width: 600px">
+                    <div style="float: right">
+                        {% if not storage.active %}
+                        <form action="/storages/{{storage.id}}/activate/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                        {% else %}
+                        <form action="/storages/{{storage.id}}/deactivate/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Desativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                        {% endif %}
+                    </div>
                     {% if not storage.profile_set.count %}
                         <div class="message warning">
                             <p>Não existem procedimentos relacionados a este armazenamento.</p>

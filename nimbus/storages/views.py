@@ -2,6 +2,7 @@
 
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
 from nimbus.storages.models import Storage
 from nimbus.storages.models import Device
@@ -47,3 +48,22 @@ def view(request, object_id):
         "title": u"Armazenamento"
     }
     return render_to_response(request, "storages_view.html", d)
+
+
+def activate(request, object_id):
+    storage = Storage.objects.get(id=object_id)
+    storage.active = 1
+    storage.save()
+    
+    # messages.success(u'Armazenamento ativado com sucesso.')
+    return redirect('/storages/list')
+
+
+def deactivate(request, object_id):
+    storage = Storage.objects.get(id=object_id)
+    storage.active = 0
+    storage.save()
+
+    # messages.success(u'Armazenamento ativado com sucesso.')
+    return redirect('/storages/list')
+

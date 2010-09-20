@@ -3,6 +3,7 @@
 
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
 from nimbus.procedures.models import Procedure
 from nimbus.shared.views import render_to_response
@@ -25,3 +26,18 @@ def list_offsite(request):
         'title': u"Procedimentos com offsite ativo"
     }
     return render_to_response(request, "procedures_list.html", extra_content)
+
+
+def activate_offsite(request, object_id):
+    procedure = Procedure.objects.get(id=object_id)
+    procedure.offsite_on = True
+    procedure.save()
+    return redirect('/procedures/list')
+
+
+def deactivate_offsite(request, object_id):
+    procedure = Procedure.objects.get(id=object_id)
+    procedure.offsite_on = False
+    procedure.save()
+    return redirect('/procedures/list')
+

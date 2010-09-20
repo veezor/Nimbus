@@ -119,12 +119,13 @@
         
                 <!-- TODO: Prever um agendamento já definido. -->
                 <div class="block withsidebar" id="schedule" style="display: none">
-	
             		<div class="block_head">
             			<div class="bheadl"></div>
             			<div class="bheadr"></div>
 			
-            			<h2 style="font-size: 1.2em">Criar novo agendamento</h2>
+            			<h2 style="font-size: 1.2em">
+            			    Criar novo agendamento
+            			</h2>
             		</div>		<!-- .block_head ends -->
 		
             		<div class="block_content">
@@ -143,6 +144,10 @@
         			            $('.schedule_activate').change();
     			            });
     			        </script>
+			
+			            <div style="float: right; padding: 10px 20px 0 0">
+        			        <label>Nome do agendamento:</label> <input type="text" class="text small" name="schedule.name" value="" />
+        			    </div>
 			
             			<div class="sidebar">
             				<ul class="sidemenu">

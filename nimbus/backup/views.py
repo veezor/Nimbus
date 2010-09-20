@@ -63,6 +63,8 @@ def add(request):
         # profile.schedule_id - int
         # profile.fileset_id - int
         # 
+        # schedule.name - str
+        # 
         # schedule.monthly.active - bool
         # schedule.monthly.day - list
         # schedule.monthly.hour - str

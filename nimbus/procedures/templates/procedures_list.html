@@ -32,9 +32,20 @@
                         <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{procedure.name}}</h3>
                         <small>Computador: {{procedure.computer.name}} ({{procedure.computer.operation_system|title}})</small>
                     </div>
-                    <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p>
+                    <!-- <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p> -->
                 </div>
                 <div class="right" style="float: right; width: 600px">
+                    <div style="float: right">
+                        {% if not procedure.offsite_on %}
+                        <form action="/procedures/{{procedure.id}}/activate_offsite/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Ativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                        {% else %}
+                        <form action="/procedures/{{procedure.id}}/deactivate_offsite/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Desativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                        {% endif %}
+                    </div>
                     <h4>CONFIGURAÇÕES DO PROCEDIMENTO</h4>
                     <div class="" style="background: #FFF; -moz-border-radius: 5px; padding: 10px; border: 1px solid #CCC">
                         <p>
