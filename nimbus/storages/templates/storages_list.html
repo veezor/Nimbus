@@ -34,6 +34,7 @@
         <div class="storages">
         {% for storage in storages %}
             <div class="storage {% if not storage.active %}desativado{% endif %}" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
+                {% if not storage.active %}<p><strong>Este armazenamento está desativado.</strong></p>{% endif %}
                 <div class="left" style="float: left; width: 250px">
                     <div class="title">
                         <img src="/media/icons/storage.png" style="float: left; height: 32px; padding-right: 10px" />

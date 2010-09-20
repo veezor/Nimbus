@@ -26,6 +26,7 @@ def edit(request, object_id):
     return create_update.update_object( request, 
                                         object_id = object_id,
                                         model = Computer,
+                                        form_class = form(Computer),
                                         template_name = "base_computers.html",
                                         extra_context = extra_context,
                                         post_save_redirect = "/computers/")

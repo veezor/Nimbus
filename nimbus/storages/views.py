@@ -8,12 +8,14 @@ from nimbus.storages.models import Storage
 from nimbus.storages.models import Device
 from nimbus.storages.forms import StorageForm
 from nimbus.shared.views import render_to_response
+from nimbus.shared.forms import form
 
 
 def add(request):
     extra_context = {'title': u"Adicionar armazenamento"}
     return create_update.create_object( request, 
                                         model = Storage,
+                                        form_class = form(Storage),
                                         template_name = "base_storages.html",
                                         extra_context = extra_context,
                                         post_save_redirect = "/storages/list")
@@ -25,6 +27,7 @@ def edit(request, object_id):
     return create_update.update_object( request, 
                                         object_id = object_id,
                                         model = Storage,
+                                        form_class = form(Storage),
                                         template_name = "base_storages.html",
                                         extra_context = extra_context,
                                         post_save_redirect = "/storages/list")

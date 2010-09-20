@@ -190,6 +190,7 @@ INSTALLED_APPS = (
     'nimbus.computers',
     'nimbus.backup',
     'nimbus.system',
+    'nimbus.recovery',
 )
 
 if DEBUG:

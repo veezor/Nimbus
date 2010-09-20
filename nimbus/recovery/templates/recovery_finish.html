@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block headtags %}{% endblock %}
+
+{% block page %}
+
+<div class="block">
+
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>		<!-- .block_head ends -->
+
+    <div class="block_content">
+        
+        <p>Parabéns, seu servidor de backup foi recuperado com sucesso.</p>
+
+        <form action="/" method="get">
+            <button type="submit"><span>Ok</span></button>
+        </form>
+        
+        <p></p>
+    </div>
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+    
+</div>
+
+{% endblock %}

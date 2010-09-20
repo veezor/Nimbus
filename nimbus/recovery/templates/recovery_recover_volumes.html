@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block headtags %}{% endblock %}
+
+{% block page %}
+
+<div class="block">
+
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>		<!-- .block_head ends -->
+
+    <div class="block_content">
+        
+        <p>O sistema de recuperação irá realizar o download de todos os seus dados armazenados. Esta operação deve levar vários minutos ou horas. Para prosseguir clique no botão OK e aguarde.</p>
+
+        <form action="/recovery/recover_volumes/" method="post">
+            <br />
+            <button type="submit"><span>Ok</span></button>
+        </form>
+        
+        <p></p>
+    </div>
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+    
+</div>
+
+{% endblock %}
