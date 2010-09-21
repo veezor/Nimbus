@@ -1,9 +1,13 @@
-# Create your views here.
+# -*- coding: utf-8 -*-
+
+import simplejson
 
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
+from django.core import serializers
 
-from nimbus.computers.models import Computer
+from nimbus.computers.models import Computer, ComputerGroup
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
 
@@ -52,3 +56,31 @@ def view(request, object_id):
         'title': u"Visualizar computador"
     }
     return render_to_response(request, "computers_view.html", extra_content)
+
+
+def group_add(request):
+    if 'name' in request.POST:
+        name = request.POST['name']
+    else:
+        name = u'Criação'
+    try:
+        group = ComputerGroup(name=name)
+        group.save()
+    except Exception, e:
+        print e
+        response = dict(message='error')
+    else:
+        response = dict(message='success')
+    return HttpResponse(simplejson.dumps(response))
+
+
+def group_list(request):
+    ajax = request.POST['ajax']
+        
+    if not ajax:
+        return redirect('/')
+
+    groups = ComputerGroup.objects.all()
+    
+    response = serializers.serialize("json", groups)
+    return HttpResponse(response, mimetype="text/plain")

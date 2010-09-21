@@ -10,4 +10,6 @@ urlpatterns = patterns('nimbus.computers.views',
     (r'^(?P<object_id>\d+)/view/$', 'view'), 
     (r'^(?P<object_id>\d+)/edit/$', 'edit'), 
     (r'^delete/$', 'delete'), 
+    (r'^group/add/$', 'group_add'), 
+    (r'^group/list/$', 'group_list'), 
 )
