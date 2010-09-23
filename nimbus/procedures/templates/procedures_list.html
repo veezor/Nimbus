@@ -23,6 +23,7 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
+        <p></p>
         <div class="procedures">
         {% for procedure in procedures %}
             <div class="procedure" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
@@ -32,7 +33,7 @@
                         <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{procedure.name}}</h3>
                         <small>Computador: {{procedure.computer.name}} ({{procedure.computer.operation_system|title}})</small>
                     </div>
-                    <!-- <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p> -->
+                    <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p>
                 </div>
                 <div class="right" style="float: right; width: 600px">
                     <div style="float: right">

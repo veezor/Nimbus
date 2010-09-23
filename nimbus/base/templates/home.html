@@ -9,20 +9,15 @@
     			<div class="bheadl"></div>
     			<div class="bheadr"></div>
 			
-    			<h2>Estatísticas</h2>
+    			<h2>Armazenamento</h2>
 			
     			<ul class="tabs">
-    				<li><a href="#days">Por dia</a></li>
-    				<li><a href="#months">Por mês</a></li>
+    				<li><a href="#armazenamento-days">Por dia</a></li>
+    				<li><a href="#armazenamento-months">Por mês</a></li>
     			</ul>
     		</div>		<!-- .block_head ends -->
 		
-		
-		
-		
-		
-		
-    		<div class="block_content tab_content" id="days">
+    		<div class="block_content tab_content" id="armazenamento-days">
 
                 {% with table1 as table %}
 			        {% include "table_chart.html" %}
@@ -30,7 +25,53 @@
 			
     		</div>		<!-- .block_content ends -->
 		
-    		<div class="block_content tab_content" id="months">
+    		<div class="block_content tab_content" id="armazenamento-months">
+
+                {% with table2 as table %}
+			        {% include "table_chart.html" %}
+			    {% endwith %}
+		
+    		</div>		<!-- .block_content ends -->
+    		
+    		<div class="block_content">
+    		    <h3>Disponibilidade dos dispositivos</h3>
+    		    <div>
+    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> Armazenamento Principal <small>(indisponível para acesso local)</small></div>
+    		        <div style="padding: 5px; background: #FFF"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Armazenamento Secundário</div>
+    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Armazenamento Terciário</div>
+    		    </div>
+    		    <p></p>
+    		</div>
+		
+    		<div class="bendl"></div>
+    		<div class="bendr"></div>
+    	</div>		<!-- .block ends -->
+	
+	
+	
+	    <div class="block">
+	
+    		<div class="block_head">
+    			<div class="bheadl"></div>
+    			<div class="bheadr"></div>
+			
+    			<h2>Offsite</h2>
+			
+    			<ul class="tabs">
+    				<li><a href="#offsite-days">Por dia</a></li>
+    				<li><a href="#offsite-months">Por mês</a></li>
+    			</ul>
+    		</div>		<!-- .block_head ends -->
+		
+    		<div class="block_content tab_content" id="offsite-days">
+
+                {% with table1 as table %}
+			        {% include "table_chart.html" %}
+			    {% endwith %}
+			
+    		</div>		<!-- .block_content ends -->
+		
+    		<div class="block_content tab_content" id="offsite-months">
 
                 {% with table2 as table %}
 			        {% include "table_chart.html" %}
@@ -38,11 +79,123 @@
 		
     		</div>		<!-- .block_content ends -->
 		
+		    <div class="block_content">
+    		    <h3>Disponibilidade do offsite</h3>
+    		    <div>
+    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Backup offsite</div>
+    		    </div>
+    		    <p></p>
+    		</div>
+		
+    		<div class="bendl"></div>
+    		<div class="bendr"></div>
+    	</div>		<!-- .block ends -->
+    
+        
+        
+        <div class="block">
+	
+    		<div class="block_head">
+    			<div class="bheadl"></div>
+    			<div class="bheadr"></div>
+			
+    			<h2>Computadores</h2>
+			
+    			<ul class="tabs">
+    				<li><a href="#computadores-days">Por dia</a></li>
+    				<li><a href="#computadores-months">Por mês</a></li>
+    			</ul>
+    		</div>		<!-- .block_head ends -->
+		
+    		<div class="block_content tab_content" id="computadores-days">
+
+                {% with table1 as table %}
+			        {% include "table_chart.html" %}
+			    {% endwith %}
+			
+    		</div>		<!-- .block_content ends -->
+		
+    		<div class="block_content tab_content" id="computadores-months">
+
+                {% with table2 as table %}
+			        {% include "table_chart.html" %}
+			    {% endwith %}
+		
+    		</div>		<!-- .block_content ends -->
+		
+		    <div class="block_content">
+		        <div style="float: left; width: 49%">
+        		    <h3>Últimos backups executados</h3>
+        		    <div>
+        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>19/09/2010 10:25</small> Servidor Web <small>(13 arquivos)</small></div>
+        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>19/09/2010 10:15</small> Sala A - Comp 1 <small>(5 arquivos)</small></div>
+        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:35</small> Diretor financeiro <small>(72 arquivos)</small></div>
+        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>18/09/2010 23:00</small> Servidor de banco de dados <small>(30 arquivos)</small></div>
+        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>17/09/2010 10:00</small> Diretor comercial <small>(124 arquivos)</small></div>
+        		    </div>
+    		    </div>
+    		    <div style="float: right; width: 49%">
+        		    <h3>Backup com falha</h3>
+        		    <div>
+        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Servidor Web</div>
+        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Sala A - Comp 1</div>
+        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Diretor financeiro</div>
+        		    </div>
+    		    </div>
+    		    <div class="clear"></div>
+    		    <p></p>
+    		</div>
+		
     		<div class="bendl"></div>
     		<div class="bendr"></div>
     	</div>		<!-- .block ends -->
 	
 	
+	    
+	    <div class="block">
+	
+    		<div class="block_head">
+    			<div class="bheadl"></div>
+    			<div class="bheadr"></div>
+			
+    			<h2>Sistema e servidor</h2>
+    		</div>		<!-- .block_head ends -->
+		
+    		<div class="block_content">
+                
+                {% with table3 as table %}
+			        {% include "table_chart.html" %}
+			    {% endwith %}
+			    
+			    <div style="float: left; width: 32%">
+        		    <h3>Banco de dados</h3>
+        		    <div>
+        		        <div style="padding: 5px; background: #EEE;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
+        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
+        		    </div>
+    		    </div>
+    		    <div style="float: left; margin-left: 2%; width: 32%">
+        		    <h3>Banco de dados</h3>
+        		    <div>
+        		        <div style="padding: 5px; background: #EEE;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
+        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
+        		    </div>
+    		    </div>
+    		    <div style="float: right; width: 32%">
+        		    <h3>Banco de dados</h3>
+        		    <div>
+        		        <div style="padding: 5px; background: #EEE;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
+        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
+        		    </div>
+    		    </div>
+    		    <div class="clear"></div>
+    		    <p></p>
+		
+    		</div>		<!-- .block_content ends -->
+		
+    		<div class="bendl"></div>
+    		<div class="bendr"></div>
+    	</div>		<!-- .block ends -->
 	
 
         {% if 0 %}

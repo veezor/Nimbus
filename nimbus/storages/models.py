@@ -28,7 +28,7 @@ class Storage(BaseModel):
     password = models.CharField( max_length=255, null=False, blank=False,
                                  default=utils.random_password)
 
-    description = models.CharField(max_length=500, blank=True)
+    description = models.TextField(max_length=500, blank=True)
     active = models.BooleanField()
 
     def __unicode__(self):

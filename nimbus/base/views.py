@@ -9,7 +9,8 @@ from nimbus.shared.views import render_to_response
 def home(request):
     table1 = {}
     table1['title'] = u"Quantidade de backups executados por armazenamento"
-    table1['type'] = "bar"
+    table1['area'] = "48%"
+    table1['type'] = "area"
     table1['header'] = ["10/02/2010", "10/03/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010"]
     table1['lines'] = {
         "Principal": ["20", "22", "27", "25", "35", "21", "25", "35", "21"],
@@ -17,14 +18,24 @@ def home(request):
     
     table2 = {}
     table2['title'] = u"Bytes trafegados no backup Offsite"
+    table2['width'] = "48%"
     table2['type'] = "area"
     table2['header'] = ["10/02/2010", "10/03/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010"]
     table2['lines'] = {
         "Out": ["145", "197", "244", "37", "397", "233", "791", "981", "112"],
         "In": ["17", "20", "28", "31", "26", "20", "31", "26", "20"]}
+
+    table3 = {}
+    table3['title'] = u"Ocupação do disco"
+    table3['width'] = "48%"
+    table3['type'] = "pie"
+    table3['header'] = ["Gigabytes"]
+    table3['lines'] = {
+        "Disponível": ["320"],
+        "Ocupado": ["780"]}
     
-    extra_content = {'table1': table1, 'table2': table2}
-    return render_to_response(request, "home.html", extra_content)
+    # extra_content = {'table1': table1, 'table2': table2}
+    return render_to_response(request, "home.html", locals())
 
 def historico(request):
     table1 = {}

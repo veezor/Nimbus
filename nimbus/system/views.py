@@ -27,12 +27,14 @@ def network_tool(request, type="ping"):
 
 
 def create_or_view_network_tool(request):
+    import time
+    time.sleep(1)
+    
     type = request.POST['type']
     ip = request.POST['ip']
     
     if type == "ping":
-        output = """
-        PING [ip] ([ip]): 56 data bytes
+        output = """PING [ip] ([ip]): 56 data bytes
         64 bytes from [ip]: icmp_seq=0 ttl=64 time=3.063 ms
         64 bytes from [ip]: icmp_seq=1 ttl=64 time=1.295 ms
         64 bytes from [ip]: icmp_seq=2 ttl=64 time=3.027 ms
@@ -44,13 +46,11 @@ def create_or_view_network_tool(request):
         round-trip min/avg/max/stddev = 1.295/2.757/3.252/0.735 ms
         """
     elif type == "traceroute":
-        output = """
-        traceroute to [ip] ([ip]), 64 hops max, 52 byte packets
+        output = """traceroute to [ip] ([ip]), 64 hops max, 52 byte packets
          1  [ip]  2.984 ms  1.952 ms  0.970 ms
         """
     elif type == "nslookup":
-        output = """
-        Server:		192.168.10.2
+        output = """Server:		192.168.10.2
         Address:	192.168.10.2#53
 
         Non-authoritative answer:

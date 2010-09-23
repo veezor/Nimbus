@@ -6,6 +6,7 @@ from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.core import serializers
+from django.shortcuts import redirect
 
 from nimbus.computers.models import Computer, ComputerGroup
 from nimbus.shared.views import render_to_response
@@ -84,3 +85,22 @@ def group_list(request):
     
     response = serializers.serialize("json", groups)
     return HttpResponse(response, mimetype="text/plain")
+
+
+def activate(request, object_id):
+    computer = Computer.objects.get(id=object_id)
+    computer.active = 1
+    computer.save()
+
+    # messages.success(u'Armazenamento ativado com sucesso.')
+    return redirect('/computers/list')
+
+
+def deactivate(request, object_id):
+    computer = Computer.objects.get(id=object_id)
+    computer.active = 0
+    computer.save()
+
+    # messages.success(u'Armazenamento ativado com sucesso.')
+    return redirect('/computers/list')
+
