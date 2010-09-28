@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="block">
+
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>Detalhes do offsite</h2>
+	</div>		<!-- .block_head ends -->
+
+    <div class="block_content">
+
+        <p><a href="/offsite/list_uploadrequest">Visualizar uploads ativos</a> • <a href="/offsite/list_downloadrequest">Visualizar downloads ativos</a></p>
+
+        <div class="block-executados">
+            <h3>Ocupação do offsite</h3>
+            <div class="" style="width: 200px; border: 1px solid green" title="72% de ocupação.">
+                <div class="" style="width: 72%; background: green; height: 20px"></div>
+            </div>
+            <small>72% de ocupação</small>
+            <div class="clear"></div>
+		    <p></p>
+        </div>
+        
+        <div class="block-executados">
+		    <h3>Transferências em execução</h3>
+		    <div>
+		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>20/09/2010 10:25</small> Servidor Web <small>(20 MB)</small></div>
+		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>20/09/2010 10:15</small> Sala A - Comp 1 <small>(3 MB)</small></div>
+		    </div>
+		    <div class="clear"></div>
+		    <p></p>
+		</div>
+        
+        <div class="clear"></div>
+    </div>
+
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+
+</div>
+
+
+{% endblock %}

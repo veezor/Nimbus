@@ -15,6 +15,10 @@ from nimbus.shared.views import render_to_response
 
 
 
+def detail(request):
+    return render_to_response( request, "detail.html", {})
+
+
 @login_required
 def select_storage(request):
     return render_to_response( request, 
