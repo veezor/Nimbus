@@ -38,7 +38,7 @@
                 <div class="left" style="float: left; width: 250px">
                     <div class="title">
                         <img src="/media/icons/storage.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{storage.name}}</h3>
+                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0"><a href="/storages/{{ storage.id }}/view">{{storage.name}}</a></h3>
                         <small class="ip">{{storage.address}}</small>
                     </div>
                     <p style="font-size: 10px; margin-top: 10px; line-height: 1.4em">{{storage.description}}</p>
@@ -100,7 +100,8 @@
                 <div class="clear"></div>
             </div>
         {% endfor %}
-        </div>
+    </div>
+        
     </div>
     
     <div class="bendl"></div>
