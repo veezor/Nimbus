@@ -1183,3 +1183,31 @@ a:hover {
     padding-left: 52px;
     width: 43px;
 }
+
+.chart {
+	float:left;
+}
+
+.progressbar {
+	width:300px;
+	height:20px;
+	border:1px solid #CCCCCC;
+}
+
+.progressbar div {
+	background:#006400;
+	height:20px;
+}
+
+.block_progressbar {
+	margin-top:15px;
+}
+
+.block_progressbar .progressbar {
+	float:left;
+	margin-top:7px;
+}
+
+.progressbar, .chart {
+	margin-right:15px;
+}

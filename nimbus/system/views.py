@@ -1,4 +1,4 @@
-# Create your views here.
+# -*- coding: utf-8 -*-
 
 import simplejson
 
@@ -61,3 +61,7 @@ def create_or_view_network_tool(request):
     response = simplejson.dumps({'msg': output.replace('[ip]', ip)})
     return HttpResponse(response, mimetype="text/plain")
 
+def stat(request):
+    extra_content = {'title': u"Estatística do sistema"}
+
+    return render_to_response(request, "stat.html", extra_content)
