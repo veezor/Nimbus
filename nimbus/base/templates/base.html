@@ -46,7 +46,7 @@
 	
 	<script type="text/javascript" charset="utf-8">
         $(document).ready( function() {
-            $(':checkbox').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
+            $('input:checkbox:not(#schedule input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 
             $('.filetree').each(function(){
                 script = $(this).attr("ref");
