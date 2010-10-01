@@ -7,7 +7,7 @@ from os.path import join
 
 from django.db import models, connections
 from django.conf import settings
-from django.db.models.signals import post_save, post_delete 
+from django.db.models.signals import post_save, post_delete, pre_save 
 
 from nimbus.shared import utils, signals
 import nimbus.shared.sqlqueries as sql 
@@ -279,5 +279,15 @@ def remove_procedure_file(procedure):
    
 
 
+def create_pool(procedure):
+    try:
+        procedure.pool
+    except Pool.DoesNotExist, erro:
+        procedure.pool = Pool.objects.create(name=procedure.name,
+                                             pool_size=200)
+
+
+signals.connect_on( create_pool, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
 signals.connect_on( remove_procedure_file, Procedure, post_delete)
+
