@@ -10,12 +10,18 @@ from nimbus.filesets.models import FileSet, FilePath
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
 
+from django.contrib import messages
+
 def edit(request, object_id):
-    extra_context = {'title': u"Editar conjunto de arquivos"}
-    return create_update.update_object( request, 
-                                        object_id = object_id,
-                                        model = FileSet,
-                                        form_class = form(FileSet),
-                                        template_name = "base_filesets.html",
-                                        extra_context = extra_context,
-                                        post_save_redirect = "/filesets/")
+    if request.method == "POST":
+        # fileset_name
+        # filepath_name
+        print request.POST
+        # TODO: Adicionar a validação do formulário.
+        messages.success(request, u"Conjunto de arquivos atualizado com sucesso.")
+
+    title = u"Editar conjunto de arquivos"
+    fileset = FileSet.objects.get(id=object_id)
+    return render_to_response(request, 'base_filesets.html',
+        locals())
+

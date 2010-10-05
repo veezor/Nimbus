@@ -79,7 +79,7 @@
                                     Perfil de configuração: <strong>{{proc.profile.name}}</strong><br/>
                                     Local de armazenamento: <strong><a href="/storages/{{proc.profile.storage.id}}/view"><span title="Endereço: {{proc.profile.storage.address}} - {{proc.profile.storage.description|slice:":25"}}...">{{proc.profile.storage.name}}</span></a></strong><br/>
                                     Agendamento: <strong>{{proc.profile.schedule}}</strong><br/>
-                                    Arquivos:
+                                    Arquivos: <small>(<a href="{% url nimbus.filesets.views.edit object_id=proc.profile.fileset.id %}">editar</a>)</small>
                                     <ul>
                                         {% for file in proc.profile.fileset.files.all %}
                                         <li><strong>{{file}}</strong></li>
