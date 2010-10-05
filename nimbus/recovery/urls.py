@@ -9,6 +9,7 @@ urlpatterns = patterns('nimbus.recovery.views',
     (r'^select_storage/$', 'recovery_select_storage'), 
     (r'^select_instance_name/$', 'recovery_select_instance_name'), 
     (r'^recover_databases/$', 'recover_databases'), 
+    (r'^recover_volumes/$', 'recover_volumes'), 
     (r'^volumes/$', 'recover_volumes'), 
     (r'^finish/$', 'recovery_finish'), 
 )
