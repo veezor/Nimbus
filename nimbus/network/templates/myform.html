@@ -11,7 +11,6 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-    
         {% if messages %}
             {% for msg in messages %}
                 <!-- TODO: Criar tipos de mensagens: errormsg, success, info, warning -->
@@ -25,7 +24,7 @@
         </div>
         {% endif %}
     
-        <form method="post" action="">
+        <form method="post" action="{% url nimbus.network.views.network_conf %}" id="network_config">
             {% include "form.html" %}
             <p><input type="submit" class="submit" value="Confirm" /></p>
         </form>
