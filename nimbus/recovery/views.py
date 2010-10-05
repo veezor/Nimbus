@@ -9,6 +9,8 @@ from django.shortcuts import redirect
 
 from nimbus.shared.views import render_to_response
 from nimbus.libs import offsite
+from nimbus.libs.devicemanager import (StorageDeviceManager,
+                                       MountError, UmountError)
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 
@@ -42,7 +44,8 @@ def recovery_select_storage(request):
     if request.method == "GET":
         extra_content = {
             'title': u"Recuperação do sistema",
-            "devices" : offsite.list_disk_labels()
+            # "devices" : offsite.list_disk_labels()
+            "devices" : ['sda', 'sdb', 'sdc']
         }
         return render_to_response(request, "recovery_select_storage.html",
                                   extra_content)

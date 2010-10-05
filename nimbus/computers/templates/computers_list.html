@@ -50,10 +50,6 @@
                         <form action="/computers/{{comp.id}}/activate/" method="post" style="float: right">
                             <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
                         </form>
-                        {% else %}
-                        <form action="/computers/{{comp.id}}/deactivate/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Desativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
-                        </form>
                         {% endif %}
                         <form action="/restore/{{comp.id}}/view/" method="post" style="float: right">
                             <input type="submit" class="submit tiny" value="Restaurar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />

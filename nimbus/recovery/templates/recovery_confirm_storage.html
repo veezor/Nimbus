@@ -16,10 +16,11 @@
         
         <p>Dispositivo selecionado com sucesso. Por favor, clique em continuar.</p>
 
-        <form action="/recovery/recover_dabatases/" method="post">
+        <form action="/recovery/recover_databases/" method="post">
             <input type="hidden" name="localsource" value="{{ localsource }}"/>
             <input type="hidden" name="device" value="{{ device }}"/>
-            <button type="submit"><span>Ok</span></button>
+            
+            <input type="submit" class="submit mid" value="Continuar" />
         </form>
         
         <p></p>

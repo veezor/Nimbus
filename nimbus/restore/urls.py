@@ -10,4 +10,5 @@ urlpatterns = patterns('nimbus.restore.views',
     (r'^get_tree/$', 'get_tree'),
     (r'^get_procedures/(?P<object_id>\d+)/', 'get_procedures'),
     (r'^get_jobs/(?P<procedure_id>\d+)/(?P<data_inicio>.*?)/(?P<data_fim>.*?)/', 'get_jobs'),
+    (r'^get_tree_search_file/$', 'get_tree_search_file'),
 )

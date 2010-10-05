@@ -105,6 +105,17 @@ def get_tree(request):
     response = simplejson.dumps(files)
     return HttpResponse(response, mimetype="text/plain")
 
+
+def get_tree_search_file(request):
+    pattern = request.POST['pattern']
+    job_id = request.POST['job_id']
+
+    files = Procedure.search_files(job_id, pattern)
+
+    response = simplejson.dumps(files)
+    return HttpResponse(response, mimetype="text/plain")
+
+
 # def view(request, object_id):
 #     computers = Computer.objects.get(id=object_id)
 #     extra_content = {
