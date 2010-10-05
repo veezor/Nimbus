@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     (r'^system/', include('nimbus.system.urls')),
     (r'^recovery/', include('nimbus.recovery.urls')),
     (r'^filesets/', include('nimbus.filesets.urls')),
+    (r'^schedules/', include('nimbus.schedules.urls')),
 )
 
 if settings.SERVE_STATIC_FILES:
