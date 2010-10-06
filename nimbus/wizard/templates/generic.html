@@ -6,6 +6,16 @@
 
     $(document).ready(function() {
         $("select#id_country").bind("change", getAreaChoices);
+        
+        $('#offsite_form #id_active').change(function(){
+            input_active = $('#offsite_form #id_active');
+            ps = input_active.parents().filter('p').siblings().filter(':not(p:last)');
+            if (input_active.attr('checked')) {
+                ps.slideDown();
+            } else {
+                ps.slideUp();
+            }
+        }).change();
     });
  
     function getAreaChoices() {
@@ -36,11 +46,11 @@
 
 {% block content %}
 
-    <form action="" method="post">
+    <form action="" method="post" id="{{page_name}}_form">
         
         {% include "form.html" %}
 
-        <p>
+        <p class="input_submit">
             <input type="submit" class="submit" value="Próximo" /> &nbsp;
         </p>
                

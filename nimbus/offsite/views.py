@@ -1,4 +1,4 @@
-# Create your views here.
+# -*- coding: utf-8 -*-
 
 from os.path import join
 from threading import Thread
@@ -11,12 +11,24 @@ from django.core import serializers
 from nimbus.libs import offsite
 from nimbus.offsite.models import UploadRequest, DownloadRequest
 from nimbus.procedures.models import Procedure
-from nimbus.shared.views import render_to_response
-
+from nimbus.offsite.models import Offsite
+from nimbus.shared.views import edit_singleton_model, render_to_response
+from nimbus.offsite.forms import OffsiteForm
 
 
 def detail(request):
-    return render_to_response( request, "detail.html", {})
+    offsite = Offsite.objects.all()[0]
+    return render_to_response(request, "detail.html", locals())
+
+
+
+def edit(request):
+    title = u'Editar configurações do offsite'
+    
+    return edit_singleton_model( request, "offsite_edit.html", 
+                                 "nimbus.offsite.views.detail",
+                                 formclass = OffsiteForm,
+                                 extra_context = locals() )
 
 
 @login_required
