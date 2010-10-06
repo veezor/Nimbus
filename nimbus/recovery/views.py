@@ -7,8 +7,12 @@ from django.core.urlresolvers import reverse
 from django.core import serializers
 from django.shortcuts import redirect
 
+from nimbus.offsite.models import DownloadRequest
 from nimbus.shared.views import render_to_response
 from nimbus.libs import offsite
+from nimbus.libs.devicemanager import (StorageDeviceManager,
+                                       MountError, UmountError)
+
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 
@@ -42,7 +46,8 @@ def recovery_select_storage(request):
     if request.method == "GET":
         extra_content = {
             'title': u"Recuperação do sistema",
-            "devices" : offsite.list_disk_labels()
+            # "devices" : offsite.list_disk_labels()
+            "devices" : ['sda', 'sdb', 'sdc']
         }
         return render_to_response(request, "recovery_select_storage.html",
                                   extra_content)
@@ -109,7 +114,7 @@ def recover_databases(request):
 
     elif request.method == "POST":
         localsource = request.POST.get("localsource", None)
-
+        
         if localsource:
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
@@ -121,14 +126,14 @@ def recover_databases(request):
                    "localsource"  : True})
                 return render_to_response(request, 'recovery_mounterror.html', 
                                           extra_content)
-
+        
             manager = offsite.LocalManager(storage.mountpoint)
-
+        
         else:
             manager = offsite.RemoteManager()
-
-
-
+        
+        
+        
         manager = offsite.RecoveryManager(manager)
         try:
             manager.download_databases()
@@ -138,11 +143,12 @@ def recover_databases(request):
                "localsource"  : True})
             return render_to_response(request,
                     'recovery_instancenameerror.html', extra_content)
-
+        
         manager.recovery_databases()
         manager.generate_conf_files()
+        
         extra_content.update({"device" : device, "localsource"  : True})
-        return render(request, 'recovery_databasesok.html',  extra_content)
+        return render_to_response(request, 'recovery_database_ok.html',  extra_content)
 
     else:
         raise Http404()
@@ -156,30 +162,38 @@ def worker_thread(manager):
 
 
 def recover_volumes(request):
+    extra_content = {
+        'title': u"Recuperação do sistema",
+    }
+    
     if request.method == "GET":
-        return render(request, "recovery_recover_volumes.html", {})
+        return render_to_response(request, "recovery_recover_volumes.html", extra_content)
     elif request.method == "POST":
         localsource = request.POST.get("localsource", None)
-
+        
         if localsource:
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
             manager = offsite.LocalManager(storage.mountpoint)
-
+        
         else:
             manager = offsite.RemoteManager()
-
-
+        
+        
         worker = Thread(target=worker_thread, args=(manager,))
         worker.start()
-
+        
+        extra_content.update({ "object_list" : DownloadRequest.objects.all()})
         return render_to_response(request,
-                "recovery_recover_list_downloads.html",
-                { "object_list" : models.DownloadRequest.objects.all()})
+                "recovery_list_downloads.html",
+                extra_content)
     else:
         raise Http404()
 
 
 def recovery_finish(request):
+    extra_content = {
+        'title': u"Recuperação do sistema",
+    }
     if request.method == "GET":
-        return render(request, "recovery_finish.html", {})
+        return render_to_response(request, "recovery_finish.html", extra_content)

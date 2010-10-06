@@ -182,3 +182,13 @@ def parse_filetree(files):
     return file_tree
 
 
+def get_filesize_from_lstat(lstat):
+    b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    val = 0
+    size = lstat.split(' ')[7] # field 7
+    for i,char in enumerate(size):
+        r = (b64.find(char)) * (pow(64,(len(size)-i)-1))
+        val += r
+    return val
+
+

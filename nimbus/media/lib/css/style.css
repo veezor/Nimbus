@@ -98,7 +98,8 @@ a:hover {
 #header h1 {
 	float: left;
 	/*margin-right: 60px;*/
-	margin-right: 50px;
+	margin-right: 30px;
+	margin-left: 40px;
 	font-family: "Helvetica Neue", "Trebuchet MS", Arial, sans-serif;
 	font-size: 18px;
 	font-weight: normal;
@@ -113,6 +114,12 @@ a:hover {
 #header h1 a { color: #fff; }
 #header h1 a:hover { color: #008ee8; }
 	
+#header .ico_nimbus {
+    position: absolute;
+    top: 5px;
+    margin-left: -10px;
+}
+
 
 /* Navigation */
 #header #nav, #header #nav * { z-index: 20; }
@@ -1091,6 +1098,7 @@ a:hover {
 .tree {
     padding: 20px 0;
     padding-left: 0 !important;
+    background: #FEFCC6;
 }
 
 .tree li {

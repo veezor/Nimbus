@@ -5,9 +5,14 @@ from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
-from nimbus.procedures.models import Procedure
+from nimbus.procedures.models import Procedure, Profile
+from nimbus.storages.models import Storage
+from nimbus.schedules.models import Schedule
+from nimbus.filesets.models import FileSet
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
+
+from django.contrib import messages
 
 def add(request):
     extra_context = {'title': u"Adicionar procedimento"}
@@ -76,3 +81,23 @@ def deactivate_offsite(request, object_id):
     procedure.save()
     return redirect('/procedures/list')
 
+
+
+def profile_edit(request, object_id):
+    title = u"Editar perfil de configuração"
+    profile = Profile.objects.get(id=object_id)
+    
+    storages = Storage.objects.all()
+    schedules = Schedule.objects.all()
+    filesets = FileSet.objects.all()
+    
+    if request.method == "POST":
+        # profile_name
+        # profile_storage_id
+        # profile_schedule_id
+        # profile_fileset_id
+        print request.POST
+        messages.success(request,
+            u"Perfil de configuração atualizado com sucesso.")
+    
+    return render_to_response(request, "profile_edit.html", locals())

@@ -14,13 +14,14 @@
 
     <div class="block_content">
         
-        <p> A base de dados do nimbus foi recuperada com sucesso. Por favor, clique em prosseguir para continuar com a recuperação</p>
+        <h1>A base de dados do nimbus foi recuperada com sucesso.</h1>
+        
+        <p>Por favor, clique em prosseguir para continuar com a recuperação.</p>
 
-        <form action="/recovery/recover_volumes" method="post">
-            <br />
+        <form action="/recovery/recover_volumes/" method="post">
             <input type="hidden" name="localsource" value="{{localsource}}"/>
             <input type="hidden" name="device" value="{{device}}"/>
-            <button type="submit"><span>Prosseguir</span></button>
+            <input type="submit" class="submit mid" value="Prosseguir" />
         </form>
         
         <p></p>

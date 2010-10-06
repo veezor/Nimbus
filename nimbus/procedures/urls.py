@@ -12,4 +12,6 @@ urlpatterns = patterns('nimbus.procedures.views',
     (r'^list_offsite/$', 'list_offsite'), 
     (r'^(?P<object_id>\d+)/activate_offsite/$', 'activate_offsite'), 
     (r'^(?P<object_id>\d+)/deactivate_offsite/$', 'deactivate_offsite'), 
+    
+    (r'^profile/(?P<object_id>\d+)/edit/$', 'profile_edit'),
 )

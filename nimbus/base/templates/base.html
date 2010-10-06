@@ -16,8 +16,6 @@
 		@import url("/media/lib/css/date_input.css");
 		@import url("/media/js/iphone-style-checkboxes/style.css");
 		@import url("/media/js/progressbar/jquery.ui.all.css");
-		
-		
     </style>
 	
 	<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=7" /><![endif]-->
@@ -80,6 +78,7 @@
 				<div class="hdrl"></div>
 				<div class="hdrr"></div>
 				
+				<div class="ico_nimbus"><img src="/media/lib/images/ico_nimbus.png" /></div>
 				<h1><a href="#">Nimbus</a></h1>
 				
 				<ul id="nav">
@@ -90,27 +89,24 @@
                             <li><a href="/computers/list">Listar computador</a></li>
                             <li><a href="/computers/add">Adicionar computador</a></li>
                             <li><a href="/procedures/list">Listar procedimentos</a></li>
-                            <li><a href="/offsite/detail">Offsite</a></li>
-                            <li><a href="/offsite/list_uploadrequest">Uploads ativos</a></li>
-                            <li><a href="/offsite/list_downloadrequest">Downloads ativos</a></li>
-                            <li><a href="/procedures/list_offsite">Procedimentos do offsite</a></li>
                             <li><a href="/storages/list">Listar Armazenamento</a></li>
                             <li><a href="/storages/add">Adicionar Armazenamento</a></li>                            
                         </ul>
 					</li>
-                    <!-- <li><a href="#">Computador</a>
-                        <ul>
-                            <li><a href="/computers/list">Listar</a></li>
-                            <li><a href="/computers/add">Adicionar</a></li>
-                            <li><a href="/backup/add">Adicionar Backup</a></li>
-                            <li><a href="/procedures/list">Procedimentos</a></li>
-                        </ul>
-                    </li> -->
 					<li><a href="#">Restaurar</a>
 					    <ul>
                             <li><a href="/restore/view/">Executar restauração</a></li>
                         </ul>
 				    </li>
+				    <li class="active"><a href="#">Offsite</a>
+					    <ul>
+    					    <li><a href="/offsite/detail">Detalhes do offsite</a></li>
+    					    <li><a href="/offsite/edit">Editar configurações</a></li>
+                            <li><a href="/offsite/list_uploadrequest">Uploads ativos</a></li>
+                            <li><a href="/offsite/list_downloadrequest">Downloads ativos</a></li>
+                            <li><a href="/procedures/list_offsite">Procedimentos do offsite</a></li>
+                        </ul>
+                    </li>
 					<li><a href="#">Ferramentas</a>
 					    <ul>
                             <li><a href="/system/network_tool/ping/">Ping</a></li>
@@ -185,7 +181,7 @@
 
 			<div id="footer">
 
-				<p class="left"><a href="http://nimbus.com">Nimbus</a> Professional Backup - Um produto <a href="http://veezor.com">Veezor® Network Intelligence</a></p>
+				<p class="left"><a href="http://nimbus.com">Nimbus</a> Professional Backup - Um produto <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" style="vertical-align: middle" alt="Veezor® Network Intelligence" /></a></p>
 				<p class="right">Nimbus v1.0</p>
 
 			</div>
