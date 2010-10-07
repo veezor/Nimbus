@@ -155,7 +155,7 @@ a:hover {
 	margin: 0;
 	border: 0 none;
 	padding: 0;
-	width: 190px;
+	width: 220px;
 	list-style: none;
 	display: none;
 	position: absolute;
@@ -173,7 +173,7 @@ a:hover {
 	}
 
 #header #nav ul li {
-	width: 190px;
+	width: 220px;
 	float: left; /*For IE 7 lack of compliance*/
 	display: block !important;
 	display: inline; /*For IE*/
@@ -195,6 +195,7 @@ a:hover {
 	height: 30px;
 	/*padding: 0 10px;*/
 	padding: 0;
+	white-space: nowrap;
 	}
 	
 #header #nav li.active a { /*color: #ddd;*/ color: #FFF; }
