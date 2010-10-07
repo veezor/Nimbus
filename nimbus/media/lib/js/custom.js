@@ -42,13 +42,13 @@ $(function () {
 	
 	
 	// Messages
-	$('.block .message').hide().append('<span class="close" title="Dismiss"></span>').fadeIn('slow');
-	$('.block .message .close').hover(
+	$('.message').hide().append('<span class="close" title="Dismiss"></span>').fadeIn('slow');
+	$('.message .close').hover(
 		function() { $(this).addClass('hover'); },
 		function() { $(this).removeClass('hover'); }
 	);
 		
-	$('.block .message .close').click(function() {
+	$('.message .close').click(function() {
 		$(this).parent().fadeOut('slow', function() { $(this).remove(); });
 	});
 	

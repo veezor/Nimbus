@@ -4,12 +4,16 @@ import simplejson
 
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
+from django.contrib import messages
 
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
-
-from django.http import HttpResponse, HttpResponseRedirect
+from nimbus.libs import offsite
+from nimbus.libs.devicemanager import (StorageDeviceManager,
+                                       MountError, UmountError)
 
 
 
@@ -61,7 +65,59 @@ def create_or_view_network_tool(request):
     response = simplejson.dumps({'msg': output.replace('[ip]', ip)})
     return HttpResponse(response, mimetype="text/plain")
 
+
 def stat(request):
     extra_content = {'title': u"Estatística do sistema"}
 
     return render_to_response(request, "stat.html", extra_content)
+
+
+
+# SECURITY COPY
+
+def security_copy(request):
+    title = u"Cópia de segurança"
+    return render_to_response(request, "system_security_copy.html", locals())
+
+def select_storage(request):
+    # devices = offsite.list_disk_labels()
+    devices = ['sda', 'sdb', 'sdc']
+    title = u'Cópia de segurança'
+    return render_to_response(request, "system_select_storage.html", locals())
+
+
+def copy_files(request):
+    error = None
+    device = request.POST.get("device")
+
+    # TODO: Retirar estas duas linhas abaixo.
+    messages.success(request, u"O processo foi iniciado com sucesso.")
+    return redirect('nimbus.offsite.views.list_uploadrequest')
+    
+    if not device:
+        raise Http404()
+
+    try:
+        manager = StorageDeviceManager(device)
+        manager.mount()
+    except MountError, e:
+        error = e
+
+    sizes = [ getsize( dev) for dev in offsite.get_all_bacula_volumes() ]
+    required_size = sum( sizes )
+
+
+    if required_size <  manager.available_size:
+        thread = Thread(target=worker_thread, args=(manager,))
+        thread.start()
+        return redirect('nimbus.offsite.views.list_uploadrequest')
+    else:
+        required_size = utils.bytes_to_mb(required_size)
+        available_size = utils.bytes_to_mb(manager.available_size)
+        manager.umount()
+        error = u"Espaço necessário é de %.3fMB, somente %.3fMB disponível em %s" %\
+                (required_size, available_size, device)
+
+    if error:
+        return render_to_response(request, "bkp/offsite/mounterror.html",
+                {"error" : error } )

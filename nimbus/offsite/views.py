@@ -96,7 +96,8 @@ def list_downloadrequest(request):
     return render_to_response( request, 
                                "list_downuploadrequest.html", 
                                {"object_list": downloads_requests,
-                                "list_type": "Downloads"})
+                                "list_type": "Downloads",
+                                "title": u"Downloads ativos"})
 
 
 @login_required
@@ -127,7 +128,8 @@ def list_uploadrequest(request):
     return render_to_response( request, 
                               "list_downuploadrequest.html", 
                               {"object_list": uploads_requests,
-                               "list_type": "Uploads"})
+                               "list_type": "Uploads",
+                               "title": u"Uploads ativos"})
 
 
 @login_required
