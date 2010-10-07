@@ -683,10 +683,11 @@ a:hover {
 /* Custom form select element */
 
 .block form select.styled {
-	width: 245px;
+	/*width: 245px;*/
 	height: 18px;
 	/*margin-right: 20px;*/
 	cursor: pointer;
+	font-size: 15px;
 	}
 
 .block form select.styled[multiple=multiple] {
