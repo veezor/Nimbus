@@ -294,7 +294,7 @@
                                 } else if (ul.hasClass('closed')) {
                                     ul.removeClass('closed').addClass('open');
                                     link.removeClass('directory_closed').addClass('directory_open');
-                                    wrapper.find('ul').hide();
+                                    wrapper.find('ul').slideDown();
                                     wrapper.find('>ul').slideDown();
                                 }
                                 link.find(".wait").remove();
