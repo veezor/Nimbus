@@ -51,9 +51,11 @@
                             <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
                         </form>
                         {% endif %}
+                        {% if comp.procedure_set.count %}
                         <form action="/restore/{{comp.id}}/view/" method="post" style="float: right">
                             <input type="submit" class="submit tiny" value="Restaurar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
                         </form>
+                        {% endif %}
                         <form action="/backup/{{comp.id}}/add/" method="post" style="float: right">
                             <input type="submit" class="submit tiny" value="Criar backup" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
                         </form>
