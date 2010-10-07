@@ -12,7 +12,7 @@ SELECT_ATTRS = {"class": "styled"}
 def make_custom_fields(f, *args, **kwargs):
     # import pdb; pdb.set_trace()
     
-    if f.choices:
+    if f.choices or isinstance(f, models.ForeignKey):
         kwargs.pop('widget', None)
         return f.formfield(widget=forms.Select(attrs=SELECT_ATTRS), **kwargs)
     if isinstance(f, models.IPAddressField):

@@ -41,6 +41,12 @@ def delete(request):
     pass
 
 
+def execute(request, object_id):
+    # executar o procedimento agora.
+    messages.success(request, u"Procedimento em execução.")
+    return redirect('nimbus.procedures.views.list')
+
+
 # def view(request, object_id):
 #     procedures = Procedure.objects.get(id=object_id)
 #     extra_content = {
@@ -83,6 +89,31 @@ def deactivate_offsite(request, object_id):
 
 
 
+def profile_list(request):
+    title = u"Perfis de configuração"
+    profiles = Profile.objects.all()
+    return render_to_response(request, "profile_list.html", locals())
+
+
+def profile_add(request):
+    title = u"Adicionar perfil de configuração"
+    
+    storages = Storage.objects.all()
+    schedules = Schedule.objects.all()
+    filesets = FileSet.objects.all()
+    
+    if request.method == "POST":
+        # profile_name
+        # profile_storage_id
+        # profile_schedule_id
+        # profile_fileset_id
+        print request.POST
+        messages.success(request,
+            u"Perfil adicionado com sucesso.")
+    
+    return render_to_response(request, "profile_add.html", locals())
+
+
 def profile_edit(request, object_id):
     title = u"Editar perfil de configuração"
     profile = Profile.objects.get(id=object_id)
@@ -92,6 +123,8 @@ def profile_edit(request, object_id):
     filesets = FileSet.objects.all()
     
     if request.method == "POST":
+        # Se vier a variavel save_as_new, deve salvar como novo perfil.
+        
         # profile_name
         # profile_storage_id
         # profile_schedule_id

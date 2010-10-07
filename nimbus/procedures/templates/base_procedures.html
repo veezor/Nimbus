@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 
-{% block headtags %}{% endblock %}
+{% block headtags %}
+
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        
+        $('#id_profile').parents().filter('p').append($('<div class="clear">').html('<a href="{% url nimbus.procedures.views.profile_add %}">Adicionar novo perfil</a>'))
+        
+    });
+</script>
+{% endblock %}
 
 {% block page %}
 

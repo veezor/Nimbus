@@ -11,7 +11,7 @@
 
     <div class="block_content">
 
-        <form action="{% url nimbus.procedures.views.profile_edit object_id=profile.id %}" method="post">
+        <form action="{% url nimbus.procedures.views.profile_add %}" method="post">
             <p>
                 <label for="profile_name">Nome:</label><br/>
                 <input type="text" name="profile_name" id="profile_name" value="{{ profile.name }}" class="text small" />
@@ -44,8 +44,7 @@
                 </select>
             </p>
             <p>
-                <input type="submit" class="submit mid" value="Salvar" /> ou &nbsp;
-                <input type="submit" class="submit longer" name="save_as_new" value="Salvar como novo perfil" />
+                <input type="submit" class="submit mid" value="Adicionar" />
             </p>
         </form>
         <p></p>
