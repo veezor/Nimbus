@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block headtags %}
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $('.toggle').click(function(){
+            var target = $(this).attr('ref');
+            $(this).parent().parent().find('.' + target).slideToggle();
+            return false;
+        });
+    });
+</script>
+
+<style type="text/css" media="screen">
+    .computer.desativado {
+        background: #FFE5EB !important;
+        border: 2px solid #e7696d;
+        -moz-border-radius: 5px; 
+    }
+</style>
+{% endblock %}
+
+{% block page %}
+
+<div class="block">
+
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>		<!-- .block_head ends -->
+
+    <div class="block_content">
+        <p><a href="/computers/list">Listar computadores</a></p>
+        <p>Clique no botão ativar ao lado do computador desejado para torná-lo uma máquina ativa no Nimbus.</p>
+        <div class="computers">
+        {% for comp in computers %}
+            <div class="computer {% if not comp.active %}desativado{% endif %}" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
+                <div class="left" style="float: left; width: 250px">
+                    <div class="title">
+                        <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
+                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{comp.name}}</h3>
+                        <small class="ip">{{comp.address}} - {{comp.operation_system|title}}</small>
+                        <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/computers/{{comp.id}}/edit/">Editar</a> - <a href="/computers/{{comp.id}}/delete/">Remover</a></p>
+                    </div>
+                </div>
+                <div class="right" style="float: right; width: 600px">
+                    <div style="float: right">
+                        <form action="/computers/{{comp.id}}/activate/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        {% empty %}
+            <h2>Não existem computadores pendentes para adição.</h2>
+            <p>Para adicionar um computador você deve instalar o software cliente na máquina cliente.</p>
+        {% endfor %}
+        </div>
+    
+    </div>
+    
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+
+</div>
+
+{% endblock %}

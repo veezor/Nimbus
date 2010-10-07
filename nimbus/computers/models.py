@@ -46,7 +46,7 @@ class Computer(BaseModel):
                                  default=utils.random_password)
     groups = models.ManyToManyField(ComputerGroup, related_name="computers",
                                     blank=True, null=True)
-    active = models.BooleanField()
+    active = models.BooleanField(editable=False)
 
 
     def _get_crypt_file(self, filename):

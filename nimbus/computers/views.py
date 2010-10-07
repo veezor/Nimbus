@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.core import serializers
 from django.shortcuts import redirect
+from django.contrib import messages
 
 from nimbus.computers.models import Computer, ComputerGroup
 from nimbus.shared.views import render_to_response
@@ -16,13 +17,15 @@ from nimbus.shared.forms import form
 
 
 def add(request):
-    extra_context = {'title': u"Adicionar computador"}
-    return create_update.create_object( request, 
-                                        model = Computer,
-                                        form_class = form(Computer),
-                                        template_name = "base_computers.html",
-                                        extra_context = extra_context,
-                                        post_save_redirect = "/computers/")
+    title = u"Adicionar computador"
+    computers = Computer.objects.filter(active=False)
+    if request.method == "POST":
+        print request.POST
+        # computer_id
+        messages.success(request, u"Computador ativado com sucesso.")
+        return redirect('nimbus.computers.views.list')
+    
+    return render_to_response(request, "computers_add.html", locals())
 
 
 
@@ -42,7 +45,7 @@ def delete(request):
     pass
 
 def list(request):
-    computers = Computer.objects.all()
+    computers = Computer.objects.filter(active=True)
     extra_content = {
         'computers': computers,
         'title': u"Computadores"
