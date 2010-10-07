@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 # Create your views here.
 
+
+import os
+from glob import glob
 import simplejson
 
 from django.views.generic import create_update
@@ -15,37 +18,76 @@ from nimbus.filesets.models import FileSet
 from nimbus.backup.forms import StorageForm
 
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
+from nimbus.shared.views import render_to_response
 
 def backup_form(request, object_id=None):
-    if object_id:
-        computer = Computer.objects.get(id=object_id)
+
+    if request.method == "GET":
+
+        if object_id:
+            computer = Computer.objects.get(id=object_id)
+        else:
+            computer = None
+        
+        computers = Computer.objects.all()
+        profiles = Profile.objects.all()
+        storages = Storage.objects.all()
+        schedules = Schedule.objects.all()
+        filesets = FileSet.objects.all()
+        
+        extra_context = {
+            'title': u"Criar Backup",
+            'computer': computer,
+            'computers': computers,
+            'profiles': profiles,
+            'storages': storages,
+            'days': days,
+            'weekdays': weekdays,
+            'levels': levels,
+            'operating_systems': operating_systems,
+            'schedules': schedules,
+            'filesets': filesets,
+        }
+
+        return render_to_response(request, "backup_create.html", extra_context )
+
+    elif request.method == "POST":
+
+        print request.POST
+
+        try:
+            computer = Computer.objects.get(id=request.POST['computer_id'])
+        except Computer.DoesNotExist, error:
+            print "computador nao existe",object_id
+
+
+        try:
+            profile = Profile.objects.get(id=request.POST['profile_id'])
+        except (Profile.DoesNotExist, ValueError), error:
+            profile = Profile()
+            profile.name = request.POST['profile.name']
+            profile.storage = Storage.objects.get(id=request.POST['profile.storage_id'])
+
+        try: 
+            schedule = Schedule.objects.get(id=request.POST['profile.schedule_id'])
+        except (Schedule.DoesNotExist, ValueError), error:
+            schedule = Schedule()
+            schedule.name = request.POST['schedule.name']
     else:
-        computer = None
-    
-    computers = Computer.objects.all()
-    profiles = Profile.objects.all()
-    storages = Storage.objects.all()
-    schedules = Schedule.objects.all()
-    filesets = FileSet.objects.all()
-    
-    extra_context = {
-        'title': u"Criar Backup",
-        'computer': computer,
-        'computers': computers,
-        'profiles': profiles,
-        'storages': storages,
-        'days': days,
-        'weekdays': weekdays,
-        'levels': levels,
-        'operating_systems': operating_systems,
-        'schedules': schedules,
-        'filesets': filesets,
-    }
-    return create_update.create_object( request, 
-                                        form_class = StorageForm,
-                                        template_name = "backup_create.html",
-                                        extra_context = extra_context,
-                                        post_save_redirect = "/computers/")
+        pass
+
+
+
+
+erros = {
+        "procedure_name" : "Nome não disponível. Já existe um procedimento com esse nome.",
+        "computer_id" : "Computador inválido. Computador não existe.",
+        "profile_id" : "Perfil de configuração inválido, não existe.",
+        "profile.storage_id" : "Dispositivo de armazenamento inválido, não existe",
+        "profile.schedule_id" : "Agendamento inválido, não existe",
+        "profile.fileset_id" : "Conjunto de arquivos inválido, não existe",
+        "schedule_name" : "Nome de agendamento inválido, já existente"
+}
 
 
 def add(request):
@@ -109,13 +151,20 @@ def add(request):
         # }
 
 
-def get_tree(request):
-    path = request.POST['path']
-    computer_id = request.POST['computer_id']
-    
-    # files = Procedure.locate_files(job_id, path)
-    files = ["D:/Dados/", "D:/Pessoal/", "D:/Fotos/"]
+def is_dir(name):
+    if os.path.isdir(name):
+        return name + "/" 
+    return name
 
-    response = simplejson.dumps(files)
-    return HttpResponse(response, mimetype="text/plain")
+
+def get_tree(request):
+
+    if request.method == "POST":
+        path = request.POST['path']
+        computer_id = request.POST['computer_id']
+        files = glob(path + "*")
+        files.sort()
+        files = map(is_dir, files)
+        response = simplejson.dumps(files)
+        return HttpResponse(response, mimetype="text/plain")
     

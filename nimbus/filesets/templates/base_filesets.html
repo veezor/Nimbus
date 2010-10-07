@@ -1,5 +1,34 @@
 {% extends "base.html" %}
 
+
+{% block headtags %}
+<script type="text/javascript" charset="utf-8" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $('.toggle').click(function(){
+            var target = $(this).attr('ref');
+            $(this).parent().parent().find('.' + target).slideToggle();
+        });
+        
+        get_tree_path = "/backup/get_tree/";
+        
+        $('#update_tree').click(function()
+        {
+            update_tree('/', get_tree_path);
+            return false;
+        });
+
+        $(".tree a").click(function()
+        {
+            update_tree($(this).attr("path"), get_tree_path);
+            return false;
+        });
+    });
+</script>
+
+{% endblock %}
+
+
 {% block page %}
 
 
@@ -12,7 +41,7 @@
 	<div class="block_content">
 	    <script type="text/javascript" charset="utf-8">
             $(document).ready(function(){
-	                $('#filepath_template').clone().appendTo('.filepaths').show();
+                    // $('#filepath_template').clone().appendTo('.filepaths').show();
 	                
 	                function remover_path(obj) {
 	                    $(obj).parent().remove();
@@ -29,18 +58,18 @@
 	                    }
 	                    
 	                    
-	                    $('.filepaths .add').unbind('click').click(function(){
-    	                    adicionar_path(this);
-    	                });
+                        // $('.filepaths .add').unbind('click').click(function(){
+                        //     adicionar_path(this);
+                        // });
     	                
     	                $('.filepaths .del').unbind('click').click(function(){
     	                    remover_path(this);
     	                });
 	                }
 	                
-	                $('.filepaths .add').click(function(){
-	                    adicionar_path(this);
-	                });
+                    // $('.filepaths .add').click(function(){
+                    //     adicionar_path(this);
+                    // });
 	                
 	                $('.filepaths .del').click(function(){
 	                    remover_path(this);
@@ -62,13 +91,30 @@
             <p>
                 <label for="filepath_name">Caminhos para backup:</label><br/>
                 <ol class="filepaths">
-                    <li id="filepath_template" style="display: none"><input type="text" name="filepath_name[]" id="fileset_name" class="text medium" /> <span class="add"><img src="/media/icons/plus.png" /></span> <span class="del"><img src="/media/icons/minus.png" /></span></li>
                     {% for path in fileset.files.all %}
-                    <li id="filepath_template"><input type="text" name="fileset_name[]" id="filepath_name" class="text medium" value="{{ path }}" /> <span class="add"><img src="/media/icons/plus.png" /></span> <span class="del"><img src="/media/icons/minus.png" /></span></li>
+                    <li id="filepath_template"><input type="text" name="fileset_name[]" id="filepath_name" class="text medium" value="{{ path }}" /> <!-- <span class="add"><img src="/media/icons/plus.png" /></span> --> <span class="del"><img src="/media/icons/minus.png" /></span></li>
                     {% endfor %}
                 </ol>
             </p>
             
+            <script type="text/javascript" charset="utf-8">
+                $(document).ready(function(){
+                    $('#computer_id').change(function(){
+                        $('.tree > li ul').first().remove();
+                    });
+                });
+            </script>
+            <p>
+                <label>Adicionar arquivos:</label><br/>
+                <select class="styled" id="computer_id" name="computer_id">
+                    <option value=""> - Selecione - </option>
+                    {% for computer in computers %}
+                    <option value="{{computer.id}}">{{computer.name}}</option>
+                    {% endfor %}
+                </select>
+                <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
+            </p>
+            <p></p>
             <p>
                 <input type="submit" class="submit mid" value="Atualizar" />
             </p>

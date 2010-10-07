@@ -7,6 +7,7 @@ from django.core import serializers
 from django.shortcuts import redirect
 
 from nimbus.filesets.models import FileSet, FilePath
+from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
 
@@ -21,6 +22,7 @@ def edit(request, object_id):
         messages.success(request, u"Conjunto de arquivos atualizado com sucesso.")
 
     title = u"Editar conjunto de arquivos"
+    computers = Computer.objects.all()
     fileset = FileSet.objects.get(id=object_id)
     return render_to_response(request, 'base_filesets.html',
         locals())
