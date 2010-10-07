@@ -95,6 +95,9 @@
                 </div>
                 <div class="clear"></div>
             </div>
+        {% empty %}
+            <h2>Não existem armazenamentos ativos.</h2>
+            <p>Tente <a href="{% url nimbus.storages.views.add %}">adicionar um armazenamento</a>.</p>
         {% endfor %}
     </div>
         

@@ -11,14 +11,25 @@ from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
 
 
+# def add(request):
+#     extra_context = {'title': u"Adicionar armazenamento"}
+#     return create_update.create_object( request, 
+#                                         model = Storage,
+#                                         form_class = form(Storage),
+#                                         template_name = "base_storages.html",
+#                                         extra_context = extra_context,
+#                                         post_save_redirect = "/storages/list")
+
 def add(request):
-    extra_context = {'title': u"Adicionar armazenamento"}
-    return create_update.create_object( request, 
-                                        model = Storage,
-                                        form_class = form(Storage),
-                                        template_name = "base_storages.html",
-                                        extra_context = extra_context,
-                                        post_save_redirect = "/storages/list")
+    title = u"Adicionar armazenamento"
+    storages = Storage.objects.filter(active=False)
+    if request.method == "POST":
+        print request.POST
+        # computer_id
+        messages.success(request, u"Armazenamento ativado com sucesso.")
+        return redirect('nimbus.storages.views.list')
+
+    return render_to_response(request, "storages_add.html", locals())
 
 
 
@@ -35,7 +46,7 @@ def edit(request, object_id):
 
 def list(request):
     d = {
-        "storages" : Storage.objects.all(),
+        "storages" : Storage.objects.filter(active=True),
         "title": u"Armazenamento"
     }
     return render_to_response(request, "storages_list.html", d)

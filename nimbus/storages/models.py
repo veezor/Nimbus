@@ -29,7 +29,7 @@ class Storage(BaseModel):
                                  default=utils.random_password)
 
     description = models.TextField(max_length=500, blank=True)
-    active = models.BooleanField()
+    active = models.BooleanField(editable=False)
 
     def __unicode__(self):
         return "(%s:%s)" % (
