@@ -90,11 +90,13 @@
 
             <p>
                 <label for="filepath_name">Caminhos para backup:</label><br/>
-                <ol class="filepaths">
-                    {% for path in fileset.files.all %}
-                    <li id="filepath_template"><input type="text" name="fileset_name[]" id="filepath_name" class="text medium" value="{{ path }}" /> <!-- <span class="add"><img src="/media/icons/plus.png" /></span> --> <span class="del"><img src="/media/icons/minus.png" /></span></li>
+                {% if fileset.files.count %}
+                <ul class="tree" style="padding-left: 20px !important; margin-bottom: 20px">
+                    {% for p in fileset.files.all %}
+                    <li class="" style="padding-left: 20px"><span style="padding-left: 10px"><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
                     {% endfor %}
-                </ol>
+                </ul>
+                {% endif %}
             </p>
             
             <script type="text/javascript" charset="utf-8">

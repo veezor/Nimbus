@@ -44,7 +44,7 @@
 	
 	<script type="text/javascript" charset="utf-8">
         $(document).ready( function() {
-            $('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
+            $('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 
             $('.filetree').each(function(){
                 script = $(this).attr("ref");
