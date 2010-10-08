@@ -12,20 +12,38 @@
         
         
         
-        $('#update_tree').click(function()
-        {
-            get_tree_path = "/restore/get_tree/";
-            update_tree('/', get_tree_path);
-            return false;
-        });
+        // $('#update_tree').click(function()
+        // {
+        //     get_tree_path = "/restore/get_tree/";
+        //     update_tree('/', get_tree_path);
+        //     return false;
+        // });
 
         $(".tree a").click(function()
         {
             get_tree_path = "/restore/get_tree/";
-            update_tree($(this).attr("path"), get_tree_path);
+            update_tree($(this).attr("path"), get_tree_path, '.tree');
             return false;
         });
-        
+
+
+
+        // $('#update_tree_computer').click(function()
+        // {
+        //     get_tree_path = "/backup/get_tree/";
+        //     update_tree('/', get_tree_path, "#update_tree_computer");
+        //     return false;
+        // });
+
+        $(".tree_computer a").click(function()
+        {
+            get_tree_path = "/backup/get_tree/";
+            update_tree($(this).attr("path"), get_tree_path, ".tree_computer");
+            return false;
+        });
+
+
+
         $('#buscar_arquivos').click(function(){
             get_tree_path = "/restore/get_tree/";
             
@@ -208,10 +226,10 @@
                 </script>
                 <p>
     				<label>Data inicial:</label> 
-    				<input type="text" class="text date_picker" id="data_inicio" name="data_inicio" />
+    				<input type="text" class="text date_picker" id="data_inicio" name="data_inicio" value="{% now "d-m-Y" %}" />
     				&nbsp;&nbsp;
     				<label>Data final:</label> 
-    				<input type="text" class="text date_picker" id="data_fim" name="data_fim" />
+    				<input type="text" class="text date_picker" id="data_fim" name="data_fim" value="{% now "d-m-Y" %}" />
     				<input type="submit" class="submit submit_step_1" value="Filtrar" />
     			</p>
     		</div>
@@ -264,18 +282,20 @@
     				<input type="button" class="submit small" id="buscar_arquivos" value="Buscar" />
     			</p>
 
-                <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
                 <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
                 
                 <div class="clear"></div>
                 
                 <h2 class="titulo_step">4. Restauração</h2>
-                <p>
+                
+                <ul class="tree_computer" style="margin-bottom: 20px"><li class="directory first"><span><a href="#" path="/">Selecione o local para restauração</a></span></li></ul>
+                
+                <!-- <p>
                     <label>Selecione o local de destino:</label><br/>
                     <input type="radio" name="destino" checked="checked" class="radio" value="download" /> <label>Download</label>
-    			    <input type="radio" name="destino" class="radio" value="server" /> <label>Armazenar no servidor</label>
-    			    <input type="radio" name="destino" class="radio" value="email" /> <label>Enviar por e-mail</label><br/>
-    		    </p>
+                    <input type="radio" name="destino" class="radio" value="server" /> <label>Armazenar no servidor</label>
+                    <input type="radio" name="destino" class="radio" value="email" /> <label>Enviar por e-mail</label><br/>
+                </p> -->
     		    <p>
                     <input type="submit" class="submit mid" value="Restaurar" />
                 </p>

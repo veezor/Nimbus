@@ -1,8 +1,8 @@
-function mount_tree(data, root_path, get_tree_path) {
-    root = $("*[path="+root_path+"]");
+function mount_tree(data, root_path, get_tree_path, tree_class) {
+    root = $(tree_class + " *[path="+root_path+"]");
     root.addClass('directory_open');
     var ul = $("<ul>").addClass("open").hide();
-    ul.insertAfter($("*[path="+root_path+"]"));
+    ul.insertAfter($(tree_class + " *[path="+root_path+"]"));
     for (var item in data) {
         path = data[item];
         root_path_re = new RegExp("^" + root_path, "g");
@@ -39,16 +39,19 @@ function mount_tree(data, root_path, get_tree_path) {
         li.appendTo(ul);
     }
     ul.slideDown();
-    $(".tree a").unbind("click").click(function()
+    $(tree_class + " a").unbind("click").click(function()
     {
-        update_tree($(this).attr("path"), get_tree_path);
+        update_tree($(this).attr("path"), get_tree_path, tree_class);
         return false;
     });
     
     link.find(".wait").remove();
 }
 
-function update_tree(root_path, get_tree_path) {
+function update_tree(root_path, get_tree_path, tree_class) {
+    if (!tree_class) {
+        tree_class = '.tree';
+    }
     attributes = {path: root_path};
     
     job_id = $('#jobs_list').val();
@@ -61,7 +64,7 @@ function update_tree(root_path, get_tree_path) {
         attributes['computer_id'] = computer_id;
     }
     
-    link = $("*[path="+root_path+"]");
+    link = $(tree_class + " *[path="+root_path+"]");
     link.append($("<div class='wait'>"));
     wrapper = link.parent();
 
@@ -84,7 +87,7 @@ function update_tree(root_path, get_tree_path) {
     $.post(get_tree_path,
            attributes,
            function(data) {
-               mount_tree(data, root_path, get_tree_path);
+               mount_tree(data, root_path, get_tree_path, tree_class);
            },
            "json");
 }

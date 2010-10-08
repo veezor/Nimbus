@@ -1102,44 +1102,51 @@ a:hover {
     background: url(/media/icons/tick_circle.png) no-repeat 10px center;
 }
 
-.tree {
+.tree,
+.tree_computer {
     padding: 20px 0;
     padding-left: 0 !important;
     background: #FEFCC6;
 }
 
-.tree li {
+.tree li,
+.tree_computer li {
     padding: 0 !important;
     background: none !important;
     padding-top: 5px;
 }
 
-.tree ul {
+.tree ul,
+.tree_computer ul {
     margin-left: 9px;
     padding: 0 0 5px 10px;
     border-left: 1px solid #DDD;
     padding-bottom: 0 !important;
 }
 
-.tree li.directory a {
+.tree li.directory a,
+.tree_computer li.directory a {
     margin-left: 20px;
     padding-left: 25px;
     background: url('/media/icons/folder.png') left no-repeat;
     display: block;
 }
 
-.tree li a.directory_open {
+.tree li a.directory_open,
+.tree_computer li a.directory_open {
     background: url('/media/icons/folder-open.png') left no-repeat;
 }
 
-.tree .file span span {
+.tree .file span span,
+.tree_computer .file span span {
     margin-left: 20px;
     padding-left: 25px;
     background: url('/media/icons/file_generic.png') left no-repeat;
     display: block;
 }
 
-.tree li input {
+.tree li input,
+.tree_computer li input {
     float: left;
     margin-top: 3px;
 }
