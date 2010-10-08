@@ -688,6 +688,7 @@ a:hover {
 	/*margin-right: 20px;*/
 	cursor: pointer;
 	font-size: 15px;
+	padding-right: 10px;
 	}
 
 .block form select.styled[multiple=multiple] {
