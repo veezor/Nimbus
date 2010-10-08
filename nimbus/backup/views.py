@@ -20,8 +20,18 @@ from nimbus.backup.forms import StorageForm
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 from nimbus.shared.views import render_to_response
 
-def backup_form(request, object_id=None):
 
+erros = {
+        "procedure_name" : "Nome não disponível. Já existe um procedimento com esse nome.",
+        "computer_id" : "Computador inválido. Computador não existe.",
+        "profile_id" : "Perfil de configuração inválido, não existe.",
+        "profile_storage_id" : "Dispositivo de armazenamento inválido, não existe",
+        "profile_schedule_id" : "Agendamento inválido, não existe",
+        "profile_fileset_id" : "Conjunto de arquivos inválido, não existe",
+        "schedule_name" : "Nome de agendamento inválido, já existente"
+}
+
+def backup_form(request, object_id=None):
     if request.method == "GET":
 
         if object_id:
@@ -47,7 +57,19 @@ def backup_form(request, object_id=None):
             'operating_systems': operating_systems,
             'schedules': schedules,
             'filesets': filesets,
+            
+            'erros': erros,
+            # 'path': [
+            #     'Applications/',
+            #     'Developer/',
+            #     'Library/',
+            #     'Network/',
+            #     'System/',
+            #     'Users/',
+            #     'Volumes/'
+            # ]
         }
+        # extra_content.update(**request.POST)
 
         return render_to_response(request, "backup_create.html", extra_context )
 
@@ -75,19 +97,6 @@ def backup_form(request, object_id=None):
             schedule.name = request.POST['schedule.name']
     else:
         pass
-
-
-
-
-erros = {
-        "procedure_name" : "Nome não disponível. Já existe um procedimento com esse nome.",
-        "computer_id" : "Computador inválido. Computador não existe.",
-        "profile_id" : "Perfil de configuração inválido, não existe.",
-        "profile.storage_id" : "Dispositivo de armazenamento inválido, não existe",
-        "profile.schedule_id" : "Agendamento inválido, não existe",
-        "profile.fileset_id" : "Conjunto de arquivos inválido, não existe",
-        "schedule_name" : "Nome de agendamento inválido, já existente"
-}
 
 
 def add(request):

@@ -58,17 +58,28 @@
             </div>
             {% endif %}
             
+            {% if erros.procedure_name %}
+            <ul class="errorlist">
+                <li>{{ erros.procedure_name }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label>Nome para o procedimento de backup:</label><br/>
-                <input type="text" class="text small" name="procedure_name" />
+                <input type="text" class="text small" name="procedure_name" value="{{procedure_name}}" />
             </p>
+            
             {% if not computer %}
+            {% if erros.computer_id %}
+            <ul class="errorlist">
+                <li>{{ erros.computer_id }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label for="computer_id">Computador que será efetuado o backup:</label><br/>
                 <select class="styled" id="computer_id" name="computer_id">
                     <option value=""> - Selecione - </option>
                     {% for computer in computers %}
-                    <option value="{{computer.id}}">{{computer.name}}</option>
+                    <option value="{{computer.id}}" {% if computer_id == computer.id %}selected="selected"{% endif %}>{{computer.name}}</option>
                     {% endfor %}
                 </select>
             </p>
@@ -86,29 +97,45 @@
 		            $('.profile').change();
 	            });
 	        </script>
-            
+	        
+            {% if erros.profile_id %}
+            <ul class="errorlist">
+                <li>{{ erros.profile_id }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label>Escolha um perfil de configuração:</label><br/>
                 {% for profile in profiles %}
-                <input type="radio" name="profile_id" value="{{profile.id}}" class="radio profile" id="profile_{{profile.id}}" />
+                <input type="radio" name="profile_id" value="{{profile.id}}" class="radio profile" id="profile_{{profile.id}}" {% if profile.id == profile_id %}checked="checked"{% endif %} />
                 <label for="profile_{{profile.id}}">{{profile.name}}</label>
                 {% endfor %}
-                <input type="radio" name="profile_id" value="" class="radio profile" id="profile_0" />
+                <input type="radio" name="profile_id" value="new_profile" class="radio profile" id="profile_0" {% if profile.id == "new_profile" %}checked="checked"{% endif %} />
                 <label for="profile_0">Criar um novo perfil</label><br/>
                 <small>Um perfil de configuração é um conjunto de armazenamento, agendamento e caminhos de diretórios que serão feitos backup.</small>
             </p>
             
             <div class="novo_perfil" style="display: none; padding: 20px; background: #FFF2A7; margin-bottom: 20px">
+                {% if erros.profile_name %}
+                <ul class="errorlist">
+                    <li>{{ erros.profile_name }}</li>
+                </ul>
+                {% endif %}
                 <p>
                     <label for="profile_name">Nome do perfil de configuração:</label><br/>
-                    <input type="text" class="text" name="profile.name" id="profile_name" value="" />
+                    <input type="text" class="text" name="profile.name" id="profile_name" value="{{profile_name}}" />
                 </p>
+                
+                {% if erros.profile_storage_id %}
+                <ul class="errorlist">
+                    <li>{{ erros.profile_storage_id }}</li>
+                </ul>
+                {% endif %}
                 <p>
                     <label for="storage_id">Local de armazenamento dos arquivos:</label><br/>
                     <select class="styled" id="storage_id" name="profile.storage_id">
                         <option value=""> - Selecione - </option>
                         {% for storage in storages %}
-                        <option value="{{storage.id}}">{{storage.name}} - {{storage.address}}</option>
+                        <option value="{{storage.id}}" {% if storage.id == storage_id %}selected="selected"{% endif %}>{{storage.name}} - {{storage.address}}</option>
                         {% endfor %}
                     </select>
                 </p>
@@ -126,12 +153,17 @@
     	            });
     	        </script>
                 
+                {% if erros.profile_schedule_id %}
+                <ul class="errorlist">
+                    <li>{{ erros.profile_schedule_id }}</li>
+                </ul>
+                {% endif %}
                 <p>
                     <label for="schedule_id">Agendamento:</label><br/>
                     <select class="styled" id="schedule_id" name="profile.schedule_id">
                         <option> - Selecione - </option>
                         {% for schedule in schedules %}
-                        <option value="{{schedule.id}}">{{schedule.name}}</option>
+                        <option value="{{schedule.id}}" {% if schedule.id == schedule_id %}selected="selected"{% endif %}>{{schedule.name}}</option>
                         {% endfor %}
                         <option id="new_schedule">Criar novo agendamento</option>
                     </select>
@@ -165,8 +197,14 @@
     			            });
     			        </script>
 			
-			            <div style="float: right; padding: 10px 20px 0 0">
-        			        <label>Nome do agendamento:</label> <input type="text" class="text small" name="schedule.name" value="" />
+			            
+			            <div style="float: right; padding: 10px 20px 10px 0; clear: both">
+			                {% if erros.schedule_name %}
+                            <ul class="errorlist" style="">
+                                <li>{{ erros.schedule_name }}</li>
+                            </ul>
+                            {% endif %}
+        			        <label>Nome do agendamento:</label> <input type="text" class="text small" name="schedule.name" value="{{schedule_name}}" />
         			    </div>
 			
             			<div class="sidebar">
@@ -182,26 +220,26 @@
 			        
             			<div class="sidebar_content" id="mensal">
             			    <p>
-                                <input type="checkbox" name="schedule.monthly.active" class="schedule_activate" id="monthly" value="1" /> <label for="monthly">Ativar</label>
+                                <input type="checkbox" name="schedule.monthly.active" class="schedule_activate" id="monthly" value="1" {% if schedule_monthly_active %}checked="checked"{% endif %} /> <label for="monthly">Ativar</label>
                             </p>
                             <div class="personal_message"><p>Executa o backup em determinados dias do mês, sempre no horário especificado.</p></div>
                             <p>
                                 <label>Dias do mês:</label><br/>
                                 {% for day in days %}
-                                <input type="checkbox" id="day_{{day}}" name="schedule.monthly.day" value="{{day}}" />
+                                <input type="checkbox" id="day_{{day}}" name="schedule.monthly.day" value="{{day}}" {% if day in schedule_monthly_day %}checked="checked"{% endif %} />
                                 <label for="day_{{day}}">{{day}}º</label>
                                 {% endfor %}
                             </p>
                             <p>
                                 <label for="mothly_hour">Hora:</label><br/>
-                                <input type="text" name="schedule.monthly.hour" id="mothly_hour" class="text small" style="width: 45px" /><br/>
+                                <input type="text" name="schedule.monthly.hour" id="mothly_hour" class="text small" style="width: 45px" value="{{schedule_monthly_hour}}" /><br/>
                                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                             </p>
                             <p>
                                 <label for="level_id">Tipo de backup:</label>
                                 <select class="styled" id="level_id" name="schedule.monthly.level">
                                     {% for level in levels %}
-                                    <option value="{{level}}">{{level}}</option>
+                                    <option value="{{level}}" {% if schedule_monthly_level == level %}selected="selected"{% endif %}>{{level}}</option>
                                     {% endfor %}
                                 </select><br/>
                                 <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
@@ -210,26 +248,26 @@
 			        
             			<div class="sidebar_content" id="semanal">
             			    <p>
-                                <input type="checkbox" name="schedule.weekly.active" class="schedule_activate" id="weekly" value="1" /> <label for="weekly">Ativar</label>
+                                <input type="checkbox" name="schedule.weekly.active" class="schedule_activate" id="weekly" value="1" {% if schedule_monthly_active %}checked="checked"{% endif %} /> <label for="weekly">Ativar</label>
                             </p>
                             <div class="personal_message"><p>Executa o backup em determinados dias da semana, sempre no horário especificado.</p></div>
                             <p>
                                 <label>Dias da semana:</label><br/>
                                 {% for day in weekdays %}
-                                <input type="checkbox" id="day_{{day}}" name="schedule.weekly.day" value="{{day}}" />
+                                <input type="checkbox" id="day_{{day}}" name="schedule.weekly.day" value="{{day}}"  {% if day in schedule_weekly_day %}checked="checked"{% endif %} />
                                 <label for="day_{{day}}">{{day|title}}</label>
                                 {% endfor %}
                             </p>
                             <p>
                                 <label for="mothly_hour">Hora:</label><br/>
-                                <input type="text" name="schedule.weekly.hour" id="mothly_hour" class="text small" style="width: 45px" maxlength="5" /><br/>
+                                <input type="text" name="schedule.weekly.hour" id="mothly_hour" class="text small" style="width: 45px" maxlength="5" value="{{schedule_weekly_hour}}" /><br/>
                                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                             </p>
                             <p>
                                 <label for="level_id">Tipo de backup:</label><br/>
                                 <select class="styled" id="level_id" name="schedule.weekly.level">
                                     {% for level in levels %}
-                                    <option value="{{level}}">{{level}}</option>
+                                    <option value="{{level}}" {% if schedule_weekly_level == level %}selected="selected"{% endif %}>{{level}}</option>
                                     {% endfor %}
                                 </select>
                                 <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
@@ -238,19 +276,19 @@
 			        
             			<div class="sidebar_content" id="diario">
             			    <p>
-                                <input type="checkbox" name="schedule.dayly.active" class="schedule_activate" id="dayly" value="1" /> <label for="dayly">Ativar</label><br/>
+                                <input type="checkbox" name="schedule.dayly.active" class="schedule_activate" id="dayly" value="1" {% if schedule_monthly_active %}checked="checked"{% endif %} /> <label for="dayly">Ativar</label><br/>
                             </p>
                             <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
                             <p>
                                 <label for="dayly_hour">Hora:</label><br/>
-                                <input type="text" name="schedule.dayly.hour" id="dayly_hour" class="text small" style="width: 45px" maxlength="5" /><br/>
+                                <input type="text" name="schedule.dayly.hour" id="dayly_hour" class="text small" style="width: 45px" maxlength="5" value="{{schedule_dayly_hour}}" /><br/>
                                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                             </p>
                             <p>
                                 <label for="level_id">Tipo de backup:</label>
                                 <select class="styled" id="level_id" name="schedule.dayly.level">
                                     {% for level in levels %}
-                                    <option value="{{level}}">{{level}}</option>
+                                    <option value="{{level}}" {% if schedule_dayly_level == level %}selected="selected"{% endif %}>{{level}}</option>
                                     {% endfor %}
                                 </select>
                                 <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
@@ -259,19 +297,19 @@
                     
                         <div class="sidebar_content" id="minuto">
                             <p>
-                                <input type="checkbox" name="schedule.hourly.active" class="schedule_activate" id="hourly" value="1" /> <label for="hourly">Ativar</label>
+                                <input type="checkbox" name="schedule.hourly.active" class="schedule_activate" id="hourly" value="1" {% if schedule_monthly_active %}checked="checked"{% endif %} /> <label for="hourly">Ativar</label>
                             </p>
                             <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
                             <p>
                                 <label for="hourly_hour">Minuto:</label><br/>
-                                <input type="text" name="schedule.hourly.minute" id="hourly_hour" class="text small" style="width: 20px" maxlength="2" /><br/>
+                                <input type="text" name="schedule.hourly.minute" id="hourly_hour" class="text small" style="width: 20px" maxlength="2" value="{{schedule_hourly_minute}}" /><br/>
                                 <small>Exemplo: 20, 35 ou 08.</small>
                             </p>
                             <p>
                                 <label for="level_id">Tipo de backup:</label>
                                 <select class="styled" id="level_id" name="schedule.hourly.level">
                                     {% for level in levels %}
-                                    <option value="{{level}}">{{level}}</option>
+                                    <option value="{{level}}" {% if schedule_hourly_level == level %}selected="selected"{% endif %}>{{level}}</option>
                                     {% endfor %}
                                 </select>
                                 <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
@@ -300,14 +338,19 @@
     	            });
     	        </script>
 
+                {% if erros.profile_fileset_id %}
+                <ul class="errorlist">
+                    <li>{{ erros.profile_fileset_id }}</li>
+                </ul>
+                {% endif %}
                 <p>
                     <label for="fileset_id">Conjunto de arquivos para backup:</label><br/>
                     <select class="styled" id="fileset_id" name="profile.fileset_id">
                         <option> - Selecione - </option>
                         {% for fileset in filesets %}
-                        <option value="{{fileset.id}}">{{fileset.name}}</option>
+                        <option value="{{fileset.id}}" {% if profile_fileset_id == fileset %}selected="selected"{% endif %}>{{fileset.name}}</option>
                         {% endfor %}
-                        <option id="new_fileset">Criar novo conjunto de arquivo</option>
+                        <option id="new_fileset" value="new_fileset" {% if profile_fileset_id == "new_fileset" %}selected="selected"{% endif %}>Criar novo conjunto de arquivo</option>
                     </select>
                 </p>
                 
@@ -358,12 +401,21 @@
             		<div class="block_content">
                         <p>
                             <label for="fileset_name">Nome do conjunto de arquivos:</label><br/>
-                            <input type="text" name="fileset_name" id="fileset_name" class="text mid" />
+                            <input type="text" name="fileset_name" id="fileset_name" class="text mid" value="{{fileset_name}}" />
                         </p>
+
+                        {% if path %}
+                        <p>Arquivos selecionados:</p>
+                        <ul class="tree" style="padding-left: 20px !important; margin-bottom: 20px">
+                            {% for p in path %}
+                            <li class="" style="padding-left: 20px"><span style="padding-left: 10px"><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
+                            {% endfor %}
+                        </ul>
+                        <p>Selecionar mais arquivos:</p>
+                        {% endif %}
 
                         <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
                         <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
-                        
             		    
             		    {% if 0 %}
                         <p>
@@ -373,6 +425,7 @@
                             </ol>
                         </p>
                         {% endif %}
+                        <p></p>
             		</div>		<!-- .block_content ends -->
             		<div class="bendl"></div>
             		<div class="bendr"></div>

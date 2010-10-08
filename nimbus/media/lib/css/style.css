@@ -14,7 +14,7 @@ Author URI: http://themeforest.net/user/enstyled
 	
 body {
 	background: #fbfbfb url(../images/bg.jpg) 0 0 repeat;
-	font-family: Arial, Verdana, sans-serif;
+	font-family: "Lucida Grande", Verdana, sans-serif;
 	font-size: 12px;
 	color: #666;
 	line-height: 20px;
@@ -430,7 +430,7 @@ a:hover {
 	}
 
 .block .block_content h3 {
-	font-family: Arial, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	font-weight: bold;
 	color: #666;
@@ -438,7 +438,7 @@ a:hover {
 	}
 
 .block .block_content h4 {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande", Helvetica, sans-serif;
 	font-size: 13px;
 	font-weight: bold;
 	color: #666;
@@ -623,7 +623,7 @@ a:hover {
 	}
 
 .block form label {
-	font-family: Arial, Verdana, sans-serif;
+	font-family: "Lucida Grande", Verdana, sans-serif;
 	font-size: 12px;
 	font-weight: bold;
 	color: #555;
@@ -636,7 +636,7 @@ a:hover {
 	width: 410px;
 	background: #fefefe;
 	border: 1px solid #bbb;
-	font-family: Arial, Verdana, sans-serif;
+	font-family: "Lucida Grande", Verdana, sans-serif;
 	font-size: 14px;
 	color: #333;
 	padding: 7px;
@@ -663,7 +663,7 @@ a:hover {
 	padding: 5px;
 	background: #fefefe;
 	border: 1px solid #bbb;
-	font-family: Arial, Verdana, sans-serif;
+	font-family: "Lucida Grande", Verdana, sans-serif;
 	font-size: 14px;
 	color: #333;
 	-webkit-border-radius: 3px;
@@ -721,7 +721,7 @@ a:hover {
 
 .block form div.cmf-skinned-text {
 	padding: 5px 7px;
-	font-family: Arial, Verdana, sans-serif;
+	font-family: "Lucida Grande", Verdana, sans-serif;
 	font-size: 14px;
 	color: #333;
 	white-space: nowrap;
@@ -757,7 +757,7 @@ a:hover {
 	background: #fefefe;
 	border: 1px solid #bbb;
 	border-right: 0;
-	font-family: Arial, Verdana, sans-serif;
+	font-family: "Lucida Grande", Verdana, sans-serif;
 	font-size: 14px;
 	color: #333;
 	padding: 4px;
@@ -808,7 +808,7 @@ a:hover {
 	line-height: 20px;
 	padding-bottom: 2px;
 	vertical-align: middle;
-	font-family: Arial, Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande", Arial, Helvetica, sans-serif;
 	font-size: 10px;
 	font-weight: bold;
 	text-transform: none;
@@ -1083,6 +1083,8 @@ a:hover {
     background: #F4F4F4;
     -moz-border-radius: 3px;
     margin: 10px 0;
+    width: 97%;
+    overflow: hidden;
 }
 
 .personal_message p {
@@ -1223,4 +1225,19 @@ a:hover {
 
 .progressbar, .chart {
 	margin-right:15px;
+}
+
+
+.errorlist {
+    -moz-border-radius: 5px;
+    background: none repeat scroll 0 0 red;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 7px 5px 2px !important;
+    margin-bottom: 10px;
+}
+
+.errorlist li {
+    background: none !important;
+    padding: 0 5px !important;
 }
