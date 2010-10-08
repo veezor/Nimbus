@@ -689,6 +689,7 @@ a:hover {
 	cursor: pointer;
 	font-size: 15px;
 	padding-right: 10px;
+	
 	}
 
 .block form select.styled[multiple=multiple] {
@@ -714,6 +715,7 @@ a:hover {
 	border-radius: 3px;
 	background: url('../images/sdd.jpg') center right no-repeat;
 	float: left;
+	padding-right: 65px;
 	}
 
 .block form .cmf-skinned-select:hover {
