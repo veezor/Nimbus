@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from nimbus.storages.models import Storage
 from nimbus.storages.models import Device
 from nimbus.storages.forms import StorageForm
+from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
 
@@ -62,6 +63,17 @@ def view(request, object_id):
         "title": u"Armazenamento"
     }
     return render_to_response(request, "storages_view.html", d)
+
+
+def view_computer(request, object_id):
+    storage = Storage.objects.get(id=object_id)
+    computers = Computer.objects.filter(procedure__profile__storage=storage)
+    d = {
+        "storage" : storage,
+        "computers" : computers,
+        "title": u'Computadores do armazenamento "%s"' % storage.name
+    }
+    return render_to_response(request, "computers_list.html", d)
 
 
 def activate(request, object_id):

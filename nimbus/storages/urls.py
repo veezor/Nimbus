@@ -11,5 +11,7 @@ urlpatterns = patterns('nimbus.storages.views',
     (r'^(?P<object_id>\d+)/edit/$', 'edit'), 
     (r'^(?P<object_id>\d+)/activate/$', 'activate'), 
     (r'^(?P<object_id>\d+)/deactivate/$', 'deactivate'), 
+    
+    (r'^(?P<object_id>\d+)/view_computer/$', 'view_computer'), 
 )
 

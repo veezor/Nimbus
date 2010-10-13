@@ -1,4 +1,4 @@
-function mount_tree(data, root_path, get_tree_path, tree_class) {
+function mount_tree(data, root_path, get_tree_path, tree_class, input_type) {
     root = $(tree_class + " *[path="+root_path+"]");
     root.addClass('directory_open');
     var ul = $("<ul>").addClass("open").hide();
@@ -8,7 +8,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class) {
         root_path_re = new RegExp("^" + root_path, "g");
         path_name = path.replace(root_path_re, '');
 
-        var input = $("<input>").attr("type", "checkbox").attr("name", "path").val(path);
+        var input = $("<input>").attr("type", input_type).attr("name", "path").val(path);
         
         // If is a directory.
         if (path.match("/$") == "/" || path.match("\\$") == "\\") {
@@ -28,10 +28,12 @@ function mount_tree(data, root_path, get_tree_path, tree_class) {
 
         var file = $("<span>").html(inner);
 
-        input.change(function(){
-            checked = $(this).attr("checked") && "checked" || "";
-            $(this).parent().find('input').attr("checked", checked);
-        });
+        if (input_type != "radio") {
+            input.change(function(){
+                checked = $(this).attr("checked") && "checked" || "";
+                $(this).parent().find('input').attr("checked", checked);
+            });
+        }
         input.prependTo(file);
 
         var li = $("<li>").addClass(attr_class).addClass(mime_class);
@@ -41,16 +43,20 @@ function mount_tree(data, root_path, get_tree_path, tree_class) {
     ul.slideDown();
     $(tree_class + " a").unbind("click").click(function()
     {
-        update_tree($(this).attr("path"), get_tree_path, tree_class);
+        update_tree($(this).attr("path"), get_tree_path, tree_class, input_type);
         return false;
     });
     
     link.find(".wait").remove();
 }
 
-function update_tree(root_path, get_tree_path, tree_class) {
+function update_tree(root_path, get_tree_path, tree_class, input_type) {
     if (!tree_class) {
         tree_class = '.tree';
+    }
+    console.log(input_type);
+    if (!input_type) {
+        input_type = 'checkbox';
     }
     attributes = {path: root_path};
     
@@ -87,7 +93,7 @@ function update_tree(root_path, get_tree_path, tree_class) {
     $.post(get_tree_path,
            attributes,
            function(data) {
-               mount_tree(data, root_path, get_tree_path, tree_class);
+               mount_tree(data, root_path, get_tree_path, tree_class, input_type);
            },
            "json");
 }
