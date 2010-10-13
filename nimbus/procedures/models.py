@@ -200,9 +200,7 @@ class Procedure(BaseModel):
         
 
     def __unicode__(self):
-        return u"Procedure(profile=%s,computer=%s)" % ( self.profile,
-                                                        self.computer )
-
+        return self.name 
     
     @classmethod
     def disable_offsite(cls):

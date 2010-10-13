@@ -7,6 +7,8 @@ import string
 from random import choice
 from itertools import izip
 
+from django.conf import settings
+
 
 def pathdepth(path):
     depth = path.count("/")
@@ -15,6 +17,29 @@ def pathdepth(path):
         depth -=  1
 
     return depth
+
+
+
+def int_or_string(value):
+    try:
+        return int(value)
+    except ValueError, error:
+        return value
+
+def dict_from_querydict(querydict, lists=()):
+    d = {}
+    for key, value in querydict.items():
+        newkey = key.replace(".","_")
+
+        if not newkey in lists:
+            newvalue = int_or_string(value)
+        else:
+            newvalue = querydict.getlist(key)
+            newvalue = [ int_or_string(x) for x in newvalue ]
+        
+        d[newkey] = newvalue
+
+    return d
 
 
 def new_procedure_schedule(proc_id, request, type='Weekly', wizard=False):
