@@ -34,7 +34,8 @@ def connect_on(function, model, signal):
     def function_wrapper(sender, instance, signal, *args, **kwargs):
         value = function(instance)
         Pool = ThreadPool.get_instance()
-        Pool.add_job( call_reload_baculadir, (), {} )
+        if Pool:
+            Pool.add_job( call_reload_baculadir, (), {} )
         return value
 
     signal.connect(function_wrapper, sender=model, weak=False)
