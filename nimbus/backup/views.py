@@ -271,7 +271,7 @@ def backup_form(request, object_id=None):
                         fileset.save()
                         for filepath in paths:
                             path,created = FilePath.objects.get_or_create(path=filepath)
-                            path.fileset = fileset
+                            path.filesets.add( fileset )
                             path.full_clean()
                             path.save()
 
