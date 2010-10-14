@@ -10,7 +10,7 @@ from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
 from nimbus.filesets.models import FileSet
 from nimbus.shared.views import render_to_response
-from nimbus.shared.forms import form
+from nimbus.shared.forms import form, form_mapping
 
 from django.contrib import messages
 
@@ -103,13 +103,12 @@ def profile_add(request):
     filesets = FileSet.objects.all()
     
     if request.method == "POST":
-        # profile_name
-        # profile_storage_id
-        # profile_schedule_id
-        # profile_fileset_id
-        print request.POST
-        messages.success(request,
-            u"Perfil adicionado com sucesso.")
+        form = form_mapping(Profile, request.POST)
+        if form.is_valid():
+            profile = form.save()
+            messages.success(request,
+                u"Perfil adicionado com sucesso.")
+            return redirect('nimbus.procedures.views.profile_list')
     
     return render_to_response(request, "profile_add.html", locals())
 
@@ -123,14 +122,16 @@ def profile_edit(request, object_id):
     filesets = FileSet.objects.all()
     
     if request.method == "POST":
-        # Se vier a variavel save_as_new, deve salvar como novo perfil.
         
-        # profile_name
-        # profile_storage_id
-        # profile_schedule_id
-        # profile_fileset_id
-        print request.POST
-        messages.success(request,
-            u"Perfil de configuração atualizado com sucesso.")
+        if request.POST.get('save_as_new'):
+            object_id = None
+
+        form = form_mapping(Profile, request.POST, object_id=object_id)
+
+        if form.is_valid():
+            profile = form.save()
+            messages.success(request,
+                u"Perfil de configuração atualizado com sucesso.")
+            return redirect('nimbus.procedures.views.profile_list')
     
     return render_to_response(request, "profile_edit.html", locals())
