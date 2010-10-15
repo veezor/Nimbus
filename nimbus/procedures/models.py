@@ -19,6 +19,7 @@ from nimbus.filesets.models import FileSet
 from nimbus.schedules.models import Schedule
 from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
+from nimbus.libs.bacula import Bacula
 
 
 from nimbus.bacula.models import (Job, 
@@ -77,7 +78,7 @@ class Procedure(BaseModel):
 
     def get_job(self, id):
         """Returns job information of a given job id"""
-        return Job.objects.get(jobid=bkp_jid)
+        return Job.objects.get(jobid=id)
 
   
     @classmethod
@@ -180,7 +181,7 @@ class Procedure(BaseModel):
     def get_file_tree(self, job_id):
         """Retrieves tree with files from a job id list"""
         # build list with all job ids
-        ids = self.build_jid_list( job_ids )    
+        ids = self.build_jid_list( job_id )    
         files = File.objects.filter(job__jobid__in=ids)\
                 .distinct()
 
@@ -201,7 +202,14 @@ class Procedure(BaseModel):
 
     def __unicode__(self):
         return self.name 
-    
+
+
+    def run(self):
+        bacula = Bacula()
+        bacula.run_backup(  self.bacula_name, 
+                            client_name=self.computer.bacula_name)
+   
+
     @classmethod
     def disable_offsite(cls):
         offsite_procedures = cls.objects.filter(offsite_on=True)

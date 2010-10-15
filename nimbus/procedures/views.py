@@ -37,12 +37,20 @@ def edit(request, object_id):
 
 
 
-def delete(request):
-    pass
+def delete(request, object_id):
+
+    if request.method == "POST":
+        procedure = Procedure.objects.get(id=object_id)
+        procedure.delete()
+        messages.success(request, u"Procedimento removido com sucesso.")
+        return redirect('nimbus.procedures.views.list')
+
 
 
 def execute(request, object_id):
-    # executar o procedimento agora.
+    
+    procedure = Procedure.objects.get(id=object_id)
+    procedure.run()
     messages.success(request, u"Procedimento em execução.")
     return redirect('nimbus.procedures.views.list')
 
