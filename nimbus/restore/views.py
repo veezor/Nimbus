@@ -1,17 +1,26 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 
-import simplejson
 
+import os
+import simplejson
+from glob import glob
+from datetime import datetime
+
+
+from django.core import serializers
+from django.http import HttpResponse 
+from django.shortcuts import redirect
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
-from django.core import serializers
+from django.contrib import messages
 
 from nimbus.computers.models import Computer
 from nimbus.procedures.models import Procedure
 from nimbus.shared.views import render_to_response
+from nimbus.libs.bacula import Bacula
 
-from django.http import HttpResponse, HttpResponseRedirect
+
 
 
 def view(request, object_id=None):
@@ -31,7 +40,6 @@ def view(request, object_id=None):
 
 def restore_files(request):
     """docstring for restore_files"""
-    # TODO: Implementar o restore.
     
     ## Parametros:
     # computer_id
@@ -42,9 +50,19 @@ def restore_files(request):
     # data_fim
     # path (lista)
     
+    if request.method == "POST":
+
+        computer = Computer.objects.get(id=request.POST["computer_id"])
+        jobid = int(request.POST["job_id"])
+        target = request.POST["target"]
+        files = request.POST.getlist("path")
+
+        bacula = Bacula()
+        bacula.run_restore( computer.bacula_name, jobid, target, files)  
+
+        messages.success(request, "Recuperação iniciada com sucesso")
     
-    print request.POST
-    return HttpResponse('', mimetype="text/plain")
+        return redirect('nimbus.procedures.views.profile_list')
 
 
 
@@ -78,13 +96,11 @@ def get_jobs(request, procedure_id, data_inicio, data_fim):
     
     # response = serializers.serialize("json", jobs)
     
-    from datetime import datetime
+
     data_inicio = "%s 00:00:00" % data_inicio
-    print data_inicio
     data_inicio = datetime.strptime(data_inicio, '%d-%m-%Y %H:%M:%S')
     
     data_fim = "%s 23:59:59" % data_fim
-    print data_fim
     data_fim = datetime.strptime(data_fim, '%d-%m-%Y %H:%M:%S')
     
     procedure = Procedure.objects.get(id=procedure_id)
@@ -104,6 +120,21 @@ def get_tree(request):
 
     response = simplejson.dumps(files)
     return HttpResponse(response, mimetype="text/plain")
+
+
+def get_client_tree(request):
+
+    if request.method == "POST":
+        path = request.POST['path']
+        computer_id = request.POST['computer_id']
+        files = glob(path + "*")
+        files = [ f for f in files if os.path.isdir(f) ]
+        files.sort()
+        files = [ (f + "/") for f in files ]
+        response = simplejson.dumps(files)
+        return HttpResponse(response, mimetype="text/plain")
+
+    
 
 
 def get_tree_search_file(request):

@@ -76,108 +76,7 @@ class Procedure(BaseModel):
                                    fileset__fileset=self.fileset_bacula_name,
                                    jobstatus='T').order_by('endtime').distinct()[:15]
 
-    def get_job(self, id):
-        """Returns job information of a given job id"""
-        return Job.objects.get(jobid=id)
-
-  
-    @classmethod
-    def clean_temp(cls):
-        """Drop temp and temp1 tables"""
-        cursor = connections['bacula'].cursor()
-        cursor.execute('delete from temp')
-        cursor.execute('delete from temp1')
-        
-    
-    def load_full_bkp(self, job):
-        """
-        Loads last full job id and startime at table called temp1.
-        for more information, see CLIENT_LAST_FULL_RAW_QUERY at sql_queries.py
-        """
-        self.clean_temp()
-        if job.level == 'I':
-            load_full_query = sql.LOAD_LAST_FULL_RAW_QUERY % {
-                                    'client_id': job.client.clientid,
-                                    'start_time': job.starttime,
-                                    'fileset':self.fileset_bacula_name()
-            }
-        elif  job.level == 'F':
-            load_full_query = sql.LOAD_FULL_RAW_QUERY % {
-                'jid': job.jobid}
-        else:
-            pass
-
-        cursor = connections['bacula'].cursor()
-        cursor.execute(load_full_query)
-        cursor.commit()
-
-
-    @classmethod
-    def get_tdate(cls):
-        """Gets tdate from a 1-row-table called temp1 which
-        holds last full backup when properly loaded.
-        """
-        return Temp1.objects.all()[0]
-
-
-    @classmethod
-    def load_full_media(cls):
-        """
-        Loads media information for lasfull backup at table
-        called temp. For more information, see
-        LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
-        """
-        cursor = connections['bacula'].cursor()
-        cursor.execute(sql.LOAD_FULL_MEDIA_INFO_RAW_QUERY)
-        cursor.commit()
-
-        
-    def load_inc_media(self, job):
-        """
-        Loads media information for incremental backups at
-        table called temp. For more information, see
-        LOAD_FULL_MEDIA_INFO_RAW_QUERY at sql_queryes.py
-        """
-        tdate = self.get_tdate()
-        
-        if 'StartTime' in initial_bkp:
-            incmedia_query = sql.LOAD_INC_MEDIA_INFO_RAW_QUERY % {
-                'tdate': job.jobtdate,
-                'start_time': job.starttime,
-                'client_id': job.client.clientid,
-                'fileset': self.fileset_bacula_name()
-            }
-            
-            cursor = connections['bacula'].cursor()
-            cursor.execute(incmedia_query)
-            cursor.commit()
-
-    def load_backups_information(self, job):
-        # load full bkp general info into temp1
-        self.load_full_bkp(job)
-        # load full bkp media info into temp
-        self.load_full_media() 
-        if job.level == 'I':
-            # load inc bkps media info into temp
-            self.load_inc_media(initial_bkp) 
-            
-
-    def build_jid_list(self, jobid):
-        """
-        If temp1 and temp tables are properly feeded, will
-        build a list with all job ids included at this restore.
-        For more information, see 
-        JOBS_FOR_RESTORE_QUERY at sqlqueries.py
-        """
-        job = self.get_job(jobid)
-
-        if job:
-            # loads full bkp info and inc bkps information if exists
-            self.load_backups_information(job)
-            jobs = Temp.objects.all().distinct().order_by('starttime').values('job_id')
-            return [ job['job_id'] for job in jobs  ]  
-
-
+ 
     def get_file_tree(self, job_id):
         """Retrieves tree with files from a job id list"""
         # build list with all job ids
@@ -187,15 +86,17 @@ class Procedure(BaseModel):
 
 
     def get_backup_jobs_between(self, start, end):
-        # jobs = Job.objects.filter(realendtime__range=(start,end), 
-        #                           jobfiles__gt=0,
-        #                           type='B',
-        #                           name=self.bacula_name)\
-        #         .distinct()
+        jobs = Job.objects.filter(realendtime__range=(start,end), 
+                                  jobfiles__gt=0,
+                                  type='B',
+                                  name=self.bacula_name)\
+                 .distinct()
+
         jobs = Job.objects.filter(realendtime__range=(start,end), 
                                   jobfiles__gt=0,
                                   type='B')\
-                .distinct()
+                 .distinct()
+
         return jobs
     
         

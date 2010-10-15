@@ -3,6 +3,7 @@
 
 import logging
 import datetime
+import tempfile
 
 from django.conf import settings
 from django.db import connections
@@ -74,69 +75,37 @@ class Bacula(object):
         return utils.bytes_to_mb(r['sum'])
 
 
-    def run_restore_last(self, client_name, client_restore=None, 
-                         where=settings.RESTORE_POINT_DEFAULT):
+ 
+    def run_restore(self, client_name, jobid, where, files):
+        
+        self.logger.info("Executando run_restore_")
 
-        self.logger.info("Executando run_restore_last ")
-        client_restore = client_restore if client_restore else client_name
-        return self.cmd.restore.\
-                client[client_name].\
-                restoreclient[client_restore].\
-                select.current.all.done.yes.where[where].run()
+        filename = tempfile.mktemp()
 
-    
-    def run_restore_date(self, client_name, date, client_restore, where, fileset_name):
-        """Date Format:  YYYY-MM-DD HH:MM:SS ."""
-        self.logger.info("Executando run_restore_date ")
+        with file(filename, "w") as f:
+            f.writelines(files)
+
         return self.cmd.restore.\
                 client[client_name].\
-                restoreclient[client_restore].\
-                select.all.done.yes.where[where].before[date].\
-                fileset[fileset_name].run()
-  
-    def run_restore_jobid(self, client_name, jobid, client_restore=None, 
-                          where=settings.RESTORE_POINT_DEFAULT):
-        """JobId Format: specify a JobId or comma separated list of JobIds to be restored."""
-        self.logger.info("Executando run_restore_jobid ")
-        client_restore = client_restore if client_restore else client_name
-        return self.cmd.restore.\
-                client[client_name].\
-                restoreclient[client_restore].\
+                file[filename].\
+                restoreclient[client_name].\
                 select.all.done.yes.where[where].jobid[jobid].run()
 
 
-    def run_restore(self, client_name, jobid=None, date=None, client_restore=None, 
-                     where=settings.RESTORE_POINT_DEFAULT, fileset_name=None):
-        """Method to restore a Job"""
 
-        self.logger.info("Executando run_restore ")
-        client_restore = client_restore if client_restore else client_name
-        if fileset_name and date:
-            return self.run_restore_date(client_name, date, client_restore, where, fileset_name)
-        elif jobid:
-            return self.run_restore_jobid(client_name, jobid, client_restore, where)
-        elif not date and not jobid:
-            return self.run_restore_last( client_name, client_restore, where)
-        else:
-            raise RestoreCallError("Invalid call of run_restore")
-  
-
-    def run_backup(self, job_name, level="Full", client_name=None, date=None):
+    def run_backup(self, job_name, client_name):
         """ Date Format:  YYYY-MM-DD HH:MM:SS
             Level: Full/Incremental
         """
         self.logger.info("Executando run_backup ")
-        if not date:
-            sum_seconds = datetime.timedelta(seconds=10)
-            now = datetime.datetime.now() + sum_seconds
-            date = now.strftime("%Y-%m-%d %H:%M:%S")
+
+        sum_seconds = datetime.timedelta(seconds=10)
+        now = datetime.datetime.now() + sum_seconds
+        date = now.strftime("%Y-%m-%d %H:%M:%S")
 
         if client_name:
             return self.cmd.run.client[client_name].\
-            job[job_name].level[level].when[date].yes.run()
-        else:
-            return self.cmd.run.\
-            job[job_name].level[level].when[date].yes.run()
+            job[job_name].level["Full"].when[date].yes.run()
     
     
   

@@ -4,6 +4,7 @@
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
+from django.contrib import messages
 
 from nimbus.procedures.models import Procedure, Profile
 from nimbus.storages.models import Storage
@@ -12,7 +13,7 @@ from nimbus.filesets.models import FileSet
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
 
-from django.contrib import messages
+
 
 def add(request):
     extra_context = {'title': u"Adicionar procedimento"}
