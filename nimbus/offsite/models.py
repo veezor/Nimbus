@@ -144,6 +144,7 @@ class UploadRequest(Request):
     def finish(self):
         volume = UploadedVolume(volume=self.volume)
         volume.save()
+        UploadTransferredData.objects.create(bytes=self.transferred_bytes)
         self.delete()
 
 
@@ -156,6 +157,7 @@ class DownloadRequest(Request):
     def finish(self):
         volume = DownloadedVolume(volume=self.volume)
         volume.save()
+        DownloadTransferredData.objects.create(bytes=self.transferred_bytes)
         self.delete()
 
     def update(self, new_bytes_size, total_bytes):
@@ -163,6 +165,24 @@ class DownloadRequest(Request):
             self.volume.size = total_bytes
         super(DownloadRequest, self).update(new_bytes_size, total_bytes)
 
+
+
+
+class TransferredData(models.Model):
+    bytes = models.IntegerField(null=False)
+    date = models.DateTimeField(null=False, default=datetime.now)
+
+
+    class Meta:
+        abstract = True
+
+
+class UploadTransferredData( TransferredData ):
+    pass
+
+
+class DownloadTransferredData( TransferredData ):
+    pass
 
 
 

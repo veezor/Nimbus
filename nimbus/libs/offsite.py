@@ -10,9 +10,17 @@ from datetime import datetime
 
 import pycurl
 
-from nimbus.offsite.models import Volume, UploadRequest, DownloadRequest
+
 from nimbus.storages.models import Device
 from nimbus.config.models import Config
+
+
+from nimbus.offsite.models import ( Volume, 
+                                    UploadRequest, 
+                                    DownloadRequest,
+                                    UploadTransferredData,
+                                    DownloadTransferredData)
+
 
 from nimbusgateway import Api, File
 
@@ -52,6 +60,14 @@ def get_all_bacula_volumes():
         volumes.extend( join(arc, file) for file in files )
     return volumes
 
+
+
+def register_transferred_data(request, initialbytes):
+    bytes = request.transferred_bytes - initialbytes
+    if isinstance(request, UploadRequest):
+        UploadTransferredData.objects.create(bytes=bytes)
+    else:
+        DownloadTransferredData.objects.create(bytes=bytes)
 
 
 class BaseManager(object):
@@ -162,6 +178,12 @@ class RemoteManager(BaseManager):
             while retry < self.MAX_RETRY:
                 try:
                     req.attempts += 1
+
+                    if isinstance(req, UploadRequest): # no resume
+                        req.transferred_bytes = 0
+
+                    initialbytes = req.transferred_bytes
+
                     req.save()
                     process_function(req.volume.path, req.volume.filename,
                                      limitrate=limitrate, callback=req.update)
@@ -170,6 +192,7 @@ class RemoteManager(BaseManager):
                     retry += 1
                     break
                 except pycurl.error, e:
+                    register_transferred_data(req, initialbytes)
                     logger.error("Erro ao processar %s" % req)
                 
 
