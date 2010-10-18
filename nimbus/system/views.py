@@ -4,9 +4,11 @@ import simplejson
 
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.core import validators
 
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
@@ -14,6 +16,8 @@ from nimbus.shared.forms import form
 from nimbus.libs import offsite
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
+import networkutils 
+
 
 
 
@@ -31,39 +35,36 @@ def network_tool(request, type="ping"):
 
 
 def create_or_view_network_tool(request):
-    import time
-    time.sleep(1)
-    
-    type = request.POST['type']
-    ip = request.POST['ip']
-    
-    if type == "ping":
-        output = """PING [ip] ([ip]): 56 data bytes
-        64 bytes from [ip]: icmp_seq=0 ttl=64 time=3.063 ms
-        64 bytes from [ip]: icmp_seq=1 ttl=64 time=1.295 ms
-        64 bytes from [ip]: icmp_seq=2 ttl=64 time=3.027 ms
-        64 bytes from [ip]: icmp_seq=3 ttl=64 time=3.252 ms
-        64 bytes from [ip]: icmp_seq=4 ttl=64 time=3.150 ms
 
-        --- [ip] ping statistics ---
-        5 packets transmitted, 5 packets received, 0.0% packet loss
-        round-trip min/avg/max/stddev = 1.295/2.757/3.252/0.735 ms
-        """
-    elif type == "traceroute":
-        output = """traceroute to [ip] ([ip]), 64 hops max, 52 byte packets
-         1  [ip]  2.984 ms  1.952 ms  0.970 ms
-        """
-    elif type == "nslookup":
-        output = """Server:		192.168.10.2
-        Address:	192.168.10.2#53
 
-        Non-authoritative answer:
-        Name:	[ip]
-        Address: 89.18.179.41
-        """
+    if request.method  == "POST":
     
-    response = simplejson.dumps({'msg': output.replace('[ip]', ip)})
-    return HttpResponse(response, mimetype="text/plain")
+        type = request.POST['type']
+        ip = request.POST['ip']
+        is_url = False
+
+        try:
+            validators.validate_ipv4_address(ip) # ip format x.x.x.x
+        except ValidationError, error: # url format www.xxx.xxx
+            value = ip
+            if not '://' in value:
+                value = 'https://%s' % value
+            urlvalidator = validators.URLValidator()
+            urlvalidator(value)
+            is_url  = True
+        
+        if type == "ping":
+            rcode, output = networkutils.ping(ip)
+        elif type == "traceroute":
+            rcode, output = networkutils.traceroute(ip)
+        elif type == "nslookup":
+            if is_url:
+                output = networkutils.resolve_name(ip)
+            else:
+                output = networkutils.resolve_addr(ip)
+
+        response = simplejson.dumps({'msg': output})
+        return HttpResponse(response, mimetype="text/plain")
 
 
 def stat(request):
