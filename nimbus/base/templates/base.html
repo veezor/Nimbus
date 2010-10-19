@@ -43,6 +43,19 @@
 	
 	
 	<script type="text/javascript" charset="utf-8">
+    	function update_time(d) {
+            seconds = d.getSeconds() + 1;
+            if (seconds > 60) {
+                seconds = 1;
+            }
+            d.setSeconds(seconds);
+
+            time_string = d.toTimeString().substr(0, 8);
+            $('#actual_time').html(time_string);
+        
+            setTimeout("update_time(d)", 1000);
+        }
+        
         $(document).ready( function() {
             $('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 
@@ -54,7 +67,14 @@
             })
             $(".iPhoneCheckContainer").css("width", "85px");
             $(".sparklines").sparkline('html', {width: "300", height: "150px" })
+	        
+            actual_time = $('#actual_time').html().split(':');
+            hours = actual_time[0];
+            minutes = actual_time[1];
+            seconds = actual_time[2];
+            d = new Date(2010, 10, 10, hours, minutes, seconds);
             
+            update_time(d);
             
         });
 	</script>
@@ -155,6 +175,10 @@
 				</ul>
 				
 				<!-- <p class="user">Olá, <a href="#">Administrador</a> | <a href="index.html">Sair do sistema</a></p> -->
+				<div class="time" style="float: right; margin-left: 20px">
+			        <small>Horário</small><br/>
+			        <span id="actual_time">{% now "H:i:s" %}</span>
+			    </div>
 				<p class="user">
 				    <div class="status" style="background: url(/media/lib/images/status_bg_ok.png) left; width: 122px; height: 40px; float: right; margin-top: 5px;">
 				        <div style="margin-top: 8px; padding-left: 40px; color: #666; line-height: 1em">
