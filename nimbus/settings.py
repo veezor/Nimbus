@@ -141,7 +141,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'nimbus.shared.middlewares.LogSetup',
     'django.middleware.common.CommonMiddleware',
-    'nimbus.shared.middlewares.ThreadPool',
+    # 'nimbus.shared.middlewares.ThreadPool',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

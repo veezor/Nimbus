@@ -39,13 +39,15 @@ def edit(request, object_id):
 
 
 def delete(request, object_id):
-
     if request.method == "POST":
         procedure = Procedure.objects.get(id=object_id)
         procedure.delete()
         messages.success(request, u"Procedimento removido com sucesso.")
         return redirect('nimbus.procedures.views.list')
-
+    else:
+        procedure = Procedure.objects.get(id=object_id)
+        remove_name = procedure.name
+        return render_to_response(request, 'remove.html', locals())
 
 
 def execute(request, object_id):
@@ -144,3 +146,15 @@ def profile_edit(request, object_id):
             return redirect('nimbus.procedures.views.profile_list')
     
     return render_to_response(request, "profile_edit.html", locals())
+
+
+def profile_delete(request, object_id):
+    if request.method == "POST":
+        profile = Profile.objects.get(id=object_id)
+        profile.delete()
+        messages.success(request, u"Procedimento removido com sucesso.")
+        return redirect('nimbus.procedures.profile_list')
+    else:
+        profile = Profile.objects.get(id=object_id)
+        remove_name = profile.name
+        return render_to_response(request, 'remove.html', locals())

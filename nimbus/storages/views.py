@@ -50,6 +50,7 @@ def list(request):
         "storages" : Storage.objects.filter(active=True),
         "title": u"Armazenamento"
     }
+    
     return render_to_response(request, "storages_list.html", d)
     
     # extra_content = {"object_list": Device.objects.all()}
