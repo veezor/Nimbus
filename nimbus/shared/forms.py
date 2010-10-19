@@ -71,6 +71,10 @@ def form_mapping(modelcls, query_dict, fieldname_list=None, object_id=None):
     for field in fieldlist:
         try:
             fieldobj = meta.get_field(field)
+
+            if not fieldobj.editable:
+                modelfields.remove(field)
+
         except models.FieldDoesNotExist, error:
             modelfields.remove(field)
 
@@ -83,6 +87,7 @@ def form_mapping(modelcls, query_dict, fieldname_list=None, object_id=None):
         for user_field_name in fieldname_list:
             if field in user_field_name:
                 mapping_table[user_field_name] = field
+                break
 
 
     if len(modelfields) != len(fieldname_list):
