@@ -3,6 +3,7 @@
 
 
 import logging
+import time
 from operator import itemgetter
 from xmlrpclib import ServerProxy
 
@@ -48,13 +49,16 @@ def update_system_timezone(timezone):
         try:
             server = ServerProxy(settings.NIMBUS_MANAGER_URL)
             server.change_timezone(timezone.area)
+            time.tzset()
         except Exception, error:
             logger = logging.getLogger(__name__)
             logger.exception("Conexao com nimbus-manager falhou")
 
 
     Pool = ThreadPool.get_instance()
-    Pool.add_job( callable, (timezone,), {} )
+
+    if Pool:
+        Pool.add_job( callable, (timezone,), {} )
 
 
 
