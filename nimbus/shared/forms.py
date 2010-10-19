@@ -46,6 +46,12 @@ def form(modelcls):
 
 
 
+def form_from_model(model):
+    formclass = form(model.__class__)
+    f = formclass({}, instance=model)
+    f.data.update( f.initial )
+    return f
+
 def form_mapping(modelcls, query_dict, fieldname_list=None, object_id=None):
 
 

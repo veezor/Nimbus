@@ -11,6 +11,7 @@ path_re = re.compile('^([a-zA-Z]:)?/([a-zA-Z0-9 .@_-]+/?)*$')
 
 class FormPathField(forms.CharField):
     def clean(self, value):
+        super(FormPathField, self).clean(value)
         if not re.match(path_re, value):
             raise forms.ValidationError, u'Invalid format'
         return value
