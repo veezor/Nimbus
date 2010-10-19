@@ -85,6 +85,16 @@
             </p>
             {% endif %}
             
+            {% if errors.offsite_on %}
+            <ul class="errorlist">
+                <li>{{ errors.offsite_on }}</li>
+            </ul>
+            {% endif %}
+            <p>
+                <label for="offsite_on">Ativar backup offsite</label>
+                <input type="checkbox" name="offsite_on" {% if offsite_on %}checked="checked"{% endif %} value="1" />
+            </p>
+            
             <script type="text/javascript" charset="utf-8">
 	            $(document).ready(function(){
 		            $('.profile').change(function(){
