@@ -15,6 +15,7 @@ from nimbus.base.models import BaseModel
 from nimbus.shared import utils, signals, fields
 from nimbus.libs.template import render_to_file
 from nimbus.config.models import Config
+from nimbus.computers.models import Computer
 
 
 
@@ -35,6 +36,20 @@ class Storage(BaseModel):
         return "(%s:%s)" % (
             self.name,
             self.address)
+    
+    @property
+    def get_computers(self):
+        """Computadores que fazem backup neste storage."""
+        computers = Computer.objects.filter(procedure__profile__storage=self).\
+            order_by('name').distinct()
+        
+        # computers = []
+        # for profile in self.profile_set.all():
+        #     for procedure in profile.procedure_set.all():
+        #         computers.append(procedure.computer)
+        # 
+        # sorted(computers, key=lambda computer: computer.name)
+        return computers
 
 
 class Device(BaseModel):

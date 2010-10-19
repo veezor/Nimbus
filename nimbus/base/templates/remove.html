@@ -14,11 +14,11 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <form method="post" action="{{url}}">
+        <form method="post" action="{{action_url}}">
             <h1>Você está prestes a remover "{{remove_name}}".</h1>
             <p>Esta operação não poderá ser desfeita. Deseja prosseguir mesmo assim?</p>
             <p>
-                <input type="submit" class="submit mid" name="confirm" value="Prosseguir" /> ou <a href="#" onclick="history.back(-1);">Cancelar</a>
+                <input type="submit" class="submit mid" name="confirm" value="Prosseguir" /> ou <a href="" onclick="history.back(-1); return false;">Cancelar</a>
             </p>
         </form>
     </div>

@@ -41,8 +41,18 @@ def edit(request, object_id):
 
 
 
-def delete(request):
-    pass
+def delete(request, object_id):
+    if request.method == "POST":
+        computer = Computer.objects.get(id=object_id)
+        computer.delete()
+        messages.success(request, u"Computador removido com sucesso.")
+        return redirect('nimbus.computers.views.list')
+    else:
+        computer = Computer.objects.get(id=object_id)
+        remove_name = computer.name
+        return render_to_response(request, 'remove.html', locals())
+
+
 
 def list(request):
     computers = Computer.objects.filter(active=True)
