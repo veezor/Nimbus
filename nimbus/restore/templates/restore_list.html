@@ -119,6 +119,11 @@
                         $('#procedure_id').change();
                     });
                 </script>
+                {% if errors.procedure_id %}
+                <ul class="errorlist">
+                    <li>{{ errors.procedure_id }}</li>
+                </ul>
+                {% endif %}
                 <p>
                     <label for="procedure_id">Selecione o procedimento:</label><br/>
                     <select name="procedure_id" id="procedure_id" class="styled">
@@ -129,6 +134,11 @@
                     </select>
                 </p>
             {% else %}
+                {% if errors.computer_id %}
+                <ul class="errorlist">
+                    <li>{{ errors.computer_id }}</li>
+                </ul>
+                {% endif %}
                 <p>
                     <label for="computer_id">Computador que será restaurado:</label><br/>
                     <select class="styled" id="computer_id" name="computer_id">
@@ -172,6 +182,11 @@
                         $('#procedure_id').change();
                     });
                 </script>
+                {% if errors.procedure_id %}
+                <ul class="errorlist">
+                    <li>{{ errors.procedure_id }}</li>
+                </ul>
+                {% endif %}
                 <p class="procedure_select" style="display: none">
                     <label for="procedure_id">Selecione o procedimento:</label><br/>
                     <select name="procedure_id" id="procedure_id" class="styled">
@@ -224,6 +239,16 @@
                         $('.submit_step_1').click();
                     });
                 </script>
+                {% if errors.data_inicio %}
+                <ul class="errorlist">
+                    <li>{{ errors.data_inicio }}</li>
+                </ul>
+                {% endif %}
+                {% if errors.data_fim %}
+                <ul class="errorlist">
+                    <li>{{ errors.data_fim }}</li>
+                </ul>
+                {% endif %}
                 <p>
     				<label>Data inicial:</label> 
     				<input type="text" class="text date_picker" id="data_inicio" name="data_inicio" value="{% now "d-m-Y" %}" />
@@ -254,6 +279,11 @@
                         ).click();
                     });
                 </script>
+                {% if errors.job_id %}
+                <ul class="errorlist">
+                    <li>{{ errors.job_id }}</li>
+                </ul>
+                {% endif %}
                 <select name="job_id" class="styled" id="jobs_list" style="width: 600px">
                     <option value=""> - Selecione um Job - </option>
                 </select>
