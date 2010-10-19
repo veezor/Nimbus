@@ -78,6 +78,11 @@
         </script>
 
         <form action="" method="post">
+            {% if errors.fileset_name %}
+            <ul class="errorlist">
+                <li>{{ errors.fileset_name }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label for="fileset_name">Nome do conjunto de arquivos:</label><br/>
                 <input type="text" name="fileset_name" id="fileset_name" class="text mid" value="{{ fileset.name }}" />
@@ -87,7 +92,12 @@
             <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
             <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
             {% endif %}
-
+            
+            {% if errors.path %}
+            <ul class="errorlist">
+                <li>{{ errors.path }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label for="filepath_name">Caminhos para backup:</label><br/>
                 {% if fileset.files.count %}
@@ -106,6 +116,11 @@
                     });
                 });
             </script>
+            {% if errors.computer_id %}
+            <ul class="errorlist">
+                <li>{{ errors.computer_id }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label>Adicionar arquivos:</label><br/>
                 <select class="styled" id="computer_id" name="computer_id">
