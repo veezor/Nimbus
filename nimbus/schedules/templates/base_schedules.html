@@ -32,6 +32,22 @@
     	        </script>
 
                 <div style="float: right; padding: 10px 20px 0 0">
+                    {% if errors.schedule_name %}
+                    <ul class="errorlist" style="">
+                        <li>{{ errors.schedule_name }}</li>
+                    </ul>
+                    {% endif %}
+                    {% if errors.schedule_day %}
+                    <ul class="errorlist" style="">
+                        <li>{{ errors.schedule_day }}</li>
+                    </ul>
+                    {% endif %}
+                    {% if errors.schedule_hour %}
+                    <ul class="errorlist" style="">
+                        <li>{{ errors.schedule_hour }}</li>
+                    </ul>
+                    {% endif %}
+                    
     		        <label>Nome do agendamento:</label> <input type="text" class="text small" name="schedule.name" value="{{ schedule.name }}" />
     		    </div>
 

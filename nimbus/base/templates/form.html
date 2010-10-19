@@ -1,7 +1,7 @@
 {% for field in form %}
   {% csrf_token %} 
+  {{ field.errors }}
 <p>
-    {{ field.errors }}
     {{ field.label_tag }}<br/>{{ field }}
 </p>
 {% endfor %}
