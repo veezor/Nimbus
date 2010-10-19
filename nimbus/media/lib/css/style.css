@@ -296,6 +296,15 @@ a:hover {
 	font-size: 11px;
 	}
 
+#header .time,
+#header .time * {
+    line-height: 1em;
+}
+
+#header .time {
+    padding-top: 12px;
+}
+
 #header .user a { text-decoration: underline; }
 #header .user a:hover { text-decoration: none; }
 
