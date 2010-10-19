@@ -4,6 +4,7 @@
 
 import os
 from glob import glob
+from time import strftime, strptime
 import simplejson
 
 
@@ -18,6 +19,7 @@ from nimbus.procedures.models import Profile, Procedure
 from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
 from nimbus.filesets.models import FileSet, FilePath
+from nimbus.shared.forms import form_from_model
 from nimbus.backup.forms import StorageForm
 
 from nimbus.shared import utils
@@ -91,6 +93,7 @@ def backup_form(request, object_id=None):
 
     elif request.method == "POST":
 
+        print request.POST
         
         modeltriggers = []
         modelpaths = []
@@ -262,39 +265,47 @@ def backup_form(request, object_id=None):
                                                "schedule_hourly_day",
                                                "schedule_weekly_day")) )
 
+            print extra_context
+
             return render_to_response(request, "backup_create.html", extra_context )
         else:
             try:
                 if not profile.id:
                     if not fileset.id:
-                        fileset.full_clean()
-                        fileset.save()
-                        for filepath in paths:
-                            path,created = FilePath.objects.get_or_create(path=filepath)
-                            path.filesets.add( fileset )
-                            path.full_clean()
-                            path.save()
+                        form = form_from_model(fileset)
+                        if form.is_valid():
+                            fileset.save()
+                            for filepath in paths:
+                                path,created = FilePath.objects.get_or_create(path=filepath)
+                                path.filesets.add( fileset )
+                                form = form_from_model(path)
+                                if form.is_valid():
+                                    path.save()
 
                     if not schedule.id:
-                        schedule.full_clean()
-                        schedule.save()
-                        for trigger in modeltriggers:
-                            trigger.schedule = schedule
-                            trigger.full_clean()
-                            trigger.save()
+                        form = form_from_model(schedule)
+                        if form.is_valid():
+                            schedule.save()
+                            for trigger in modeltriggers:
+                                trigger.schedule = schedule
+                                form = form_from_model(trigger)
+                                if form.is_valid():
+                                    trigger.save()
 
 
                     profile.storage = storage
                     profile.schedule = schedule
                     profile.fileset = fileset
-                    profile.full_clean()
-                    profile.save()
+                    form = form_from_model(profile)
+                    if form.is_valid():
+                        profile.save()
 
 
                 procedure.computer = computer
                 procedure.profile = profile
-                procedure.full_clean()
-                procedure.save()
+                form = form_from_model(procedure)
+                if form.is_valid():
+                    procedure.save()
 
 
             except ValidationError, error:
