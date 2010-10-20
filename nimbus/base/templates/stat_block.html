@@ -1,0 +1,10 @@
+{% comment %}
+Tipos possíveis: ok, warn, error
+{% endcomment %}
+<h3>{{item.title}}</h3>
+<div>
+    {% for c in item.content %}
+    <div class="inner_message {% cycle "odd" "even" %}"><img src="/media/icons/{{c.type}}.png" /> {% if c.date %}<small>{{c.date}}</small> -{% endif %} {{c.label}} {% if c.message %}<small>({{c.message}})</small>{% endif %}</div>
+    {% endfor %}
+</div>
+<p></p>

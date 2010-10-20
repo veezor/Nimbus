@@ -1260,3 +1260,17 @@ a:hover {
     background: none !important;
     padding: 0 5px !important;
 }
+
+
+.stat_block .inner_message {
+    padding: 5px;
+    background: #EEE;
+}
+
+.stat_block .inner_message.even {
+    background: none;
+}
+
+.stat_block .inner_message img {
+    vertical-align: middle;
+}

@@ -69,11 +69,28 @@ def execute(request, object_id):
 
 def list(request):
     procedures = Procedure.objects.all()
-    extra_content = {
-        'procedures': procedures,
-        'title': u"Procedimentos"
+    procedures = procedures
+    title = u"Procedimentos"
+    
+    procedimentos_em_execucao = {
+        'title': u'Procedimentos em execução',
+        'content': [
+            {'type': 'ok', 'label': 'MyProcedure', 'date': '19/09/2010 10:25', 'message': '125 arquivos'},
+            {'type': 'warn', 'label': 'TestProcedure', 'date': '19/09/2010 10:15', 'message': '32 arquivos'},
+            {'type': 'warn', 'label': 'YourProcedure', 'date': '19/09/2010 07:35', 'message': '100 arquivos'},
+        ]
     }
-    return render_to_response(request, "procedures_list.html", extra_content)
+    
+    ultimos_procedimentos_executados = {
+        'title': u'Últimos procedimentos executados',
+        'content': [
+            {'type': 'ok', 'label': 'MyProcedure', 'date': '19/09/2010 10:25', 'message': '125 arquivos'},
+            {'type': 'ok', 'label': 'TestProcedure', 'date': '19/09/2010 10:15', 'message': '32 arquivos'},
+            {'type': 'ok', 'label': 'YourProcedure', 'date': '19/09/2010 07:35', 'message': '100 arquivos'},
+        ]
+    }
+    
+    return render_to_response(request, "procedures_list.html", locals())
 
 
 def list_offsite(request):

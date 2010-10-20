@@ -33,15 +33,11 @@
 		
     		</div>		<!-- .block_content ends -->
     		
-    		<div class="block_content">
-    		    <h3>Disponibilidade dos dispositivos</h3>
-    		    <div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> Armazenamento Principal <small>(indisponível para acesso local)</small></div>
-    		        <div style="padding: 5px; background: #FFF"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Armazenamento Secundário</div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Armazenamento Terciário</div>
-    		    </div>
-    		    <p></p>
-    		</div>
+    		{% with disponibilidade_dispositivos as item %}
+    		    <div class="block_content stat_block">
+                {% include "stat_block.html" %}
+                </div>
+    		{% endwith %}
 		
     		<div class="bendl"></div>
     		<div class="bendr"></div>
@@ -79,13 +75,11 @@
 		
     		</div>		<!-- .block_content ends -->
 		
-		    <div class="block_content">
-    		    <h3>Disponibilidade do offsite</h3>
-    		    <div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Backup offsite</div>
-    		    </div>
-    		    <p></p>
-    		</div>
+		    {% with disponibilidade_offsite as item %}
+    		    <div class="block_content stat_block">
+                {% include "stat_block.html" %}
+                </div>
+    		{% endwith %}
 		
     		<div class="bendl"></div>
     		<div class="bendr"></div>
@@ -125,22 +119,18 @@
 		
 		    <div class="block_content">
 		        <div style="float: left; width: 49%">
-        		    <h3>Últimos backups executados</h3>
-        		    <div>
-        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>19/09/2010 10:25</small> Servidor Web <small>(13 arquivos)</small></div>
-        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>19/09/2010 10:15</small> Sala A - Comp 1 <small>(5 arquivos)</small></div>
-        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:35</small> Diretor financeiro <small>(72 arquivos)</small></div>
-        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>18/09/2010 23:00</small> Servidor de banco de dados <small>(30 arquivos)</small></div>
-        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>17/09/2010 10:00</small> Diretor comercial <small>(124 arquivos)</small></div>
-        		    </div>
+        		    {% with ultimos_backups as item %}
+            		    <div class="stat_block">
+                        {% include "stat_block.html" %}
+                        </div>
+            		{% endwith %}
     		    </div>
     		    <div style="float: right; width: 49%">
-        		    <h3>Backup com falha</h3>
-        		    <div>
-        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Servidor Web</div>
-        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Sala A - Comp 1</div>
-        		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Diretor financeiro</div>
-        		    </div>
+        		    {% with backups_com_falhas as item %}
+            		    <div class="stat_block">
+                        {% include "stat_block.html" %}
+                        </div>
+            		{% endwith %}
     		    </div>
     		    <div class="clear"></div>
     		    <p></p>
@@ -168,25 +158,25 @@
 			    {% endwith %}
 			    
 			    <div style="float: left; width: 32%">
-        		    <h3>Banco de dados</h3>
-        		    <div>
-        		        <div style="padding: 5px; background: #EEE;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
-        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
-        		    </div>
+        		    {% with banco_de_dados as item %}
+            		    <div class="stat_block">
+                        {% include "stat_block.html" %}
+                        </div>
+            		{% endwith %}
     		    </div>
     		    <div style="float: left; margin-left: 2%; width: 32%">
-        		    <h3>Banco de dados</h3>
-        		    <div>
-        		        <div style="padding: 5px; background: #EEE;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
-        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
-        		    </div>
+        		    {% with banco_de_dados as item %}
+            		    <div class="stat_block">
+                        {% include "stat_block.html" %}
+                        </div>
+            		{% endwith %}
     		    </div>
     		    <div style="float: right; width: 32%">
-        		    <h3>Banco de dados</h3>
-        		    <div>
-        		        <div style="padding: 5px; background: #EEE;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
-        		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> Banco de dados principal</div>
-        		    </div>
+        		    {% with banco_de_dados as item %}
+            		    <div class="stat_block">
+                        {% include "stat_block.html" %}
+                        </div>
+            		{% endwith %}
     		    </div>
     		    <div class="clear"></div>
     		    <p></p>

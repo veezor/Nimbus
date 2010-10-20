@@ -25,13 +25,11 @@
             </div>
         
             <div class="block-executados">
-    		    <h3>Transferências em execução</h3>
-    		    <div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>20/09/2010 10:25</small> Servidor Web <small>(20 MB)</small></div>
-    		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>20/09/2010 10:15</small> Sala A - Comp 1 <small>(3 MB)</small></div>
-    		    </div>
-    		    <div class="clear"></div>
-    		    <p></p>
+                {% with transferencias_em_execucao as item %}
+        		    <div class="stat_block">
+                    {% include "stat_block.html" %}
+                    </div>
+        		{% endwith %}
     		</div>
         
             <div class="clear"></div>

@@ -18,6 +18,13 @@ from nimbus.offsite.forms import OffsiteForm
 
 def detail(request):
     offsite = Offsite.objects.all()[0]
+    transferencias_em_execucao = {
+        'title': u'Transferências em execução',
+        'content': [
+            {'type': 'ok', 'label': 'Servidor Web', 'date': '20/09/2010 10:25', 'message': '20 MB'},
+            {'type': 'warn', 'label': 'Sala A - Comp 1', 'date': '20/09/2010 10:15', 'message': '3 MB'},
+        ]
+    }
     return render_to_response(request, "detail.html", locals())
 
 
