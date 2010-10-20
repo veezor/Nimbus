@@ -59,9 +59,16 @@ def remove_fileset_file(fileset):
 
 
 
-def update_filepath(filepath):
-    for fileset in filepath.filesets.all():
-        update_fileset_file(fileset)
+def update_filepath(obj):
+
+    if isinstance(obj, FilePath):
+        for fileset in obj.filesets.all():
+            update_fileset_file(fileset)
+    elif isinstance(obj, FileSet):
+        update_fileset_file(obj)
+    else:
+        pass
+
 
 
 
