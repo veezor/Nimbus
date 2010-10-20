@@ -1,4 +1,4 @@
-function mount_tree(data, root_path, get_tree_path, tree_class, input_type) {
+function mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name) {
     root = $(tree_class + " *[path="+root_path+"]");
     root.addClass('directory_open');
     var ul = $("<ul>").addClass("open").hide();
@@ -8,7 +8,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type) {
         root_path_re = new RegExp("^" + root_path, "g");
         path_name = path.replace(root_path_re, '');
 
-        var input = $("<input>").attr("type", input_type).attr("name", "path").val(path);
+        var input = $("<input>").attr("type", input_type).attr("name", input_name).val(path);
         
         // If is a directory.
         if (path.match("/$") == "/" || path.match("\\$") == "\\") {
@@ -43,20 +43,23 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type) {
     ul.slideDown();
     $(tree_class + " a").unbind("click").click(function()
     {
-        update_tree($(this).attr("path"), get_tree_path, tree_class, input_type);
+        update_tree($(this).attr("path"), get_tree_path, tree_class, input_type, input_name);
         return false;
     });
     
     link.find(".wait").remove();
 }
 
-function update_tree(root_path, get_tree_path, tree_class, input_type) {
+function update_tree(root_path, get_tree_path, tree_class, input_type, input_name) {
     if (!tree_class) {
         tree_class = '.tree';
     }
-    console.log(input_type);
+    // console.log(input_type);
     if (!input_type) {
         input_type = 'checkbox';
+    }
+    if (!input_name) {
+        input_name = 'path';
     }
     attributes = {path: root_path};
     
@@ -93,7 +96,7 @@ function update_tree(root_path, get_tree_path, tree_class, input_type) {
     $.post(get_tree_path,
            attributes,
            function(data) {
-               mount_tree(data, root_path, get_tree_path, tree_class, input_type);
+               mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name);
            },
            "json");
 }
