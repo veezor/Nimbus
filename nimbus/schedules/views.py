@@ -16,6 +16,8 @@ from django.template import RequestContext
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 
 def edit(request, object_id):
+    template = 'base_schedules.html'
+    
     if request.method == "POST":
         # import pdb; pdb.set_trace()
         
@@ -73,9 +75,11 @@ def edit(request, object_id):
         # u'schedule.monthly.day[]': [u'1', u'17', u'29'],
         # u'schedule.monthly.active': [u'1']
         # }
-        print request.POST
+        
+        # print request.POST
         # TODO: Adicionar a validação do formulário.
         messages.success(request, u"Agendamento atualizado com sucesso.")
+        template = 'edit_schedules.html'
 
     title = u"Editar agendamento"
     schedule = Schedule.objects.get(id=object_id)
@@ -90,5 +94,5 @@ def edit(request, object_id):
     }
     extra_content.update(**locals());
     
-    return render_to_response(request, 'base_schedules.html', extra_content)
+    return render_to_response(request, template, extra_content)
 
