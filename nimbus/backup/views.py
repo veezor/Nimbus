@@ -8,7 +8,6 @@ from time import strftime, strptime
 import simplejson
 
 
-from django.db import transaction
 from django.http import HttpResponse
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -23,6 +22,7 @@ from nimbus.shared.forms import form_from_model
 from nimbus.backup.forms import StorageForm
 
 from nimbus.shared import utils
+from nimbus.libs.db import Session
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 from nimbus.shared.views import render_to_response
 
@@ -55,7 +55,6 @@ trigger_class = {
 
 
 
-@transaction.commit_manually
 def backup_form(request, object_id=None):
 
     errors = {}
@@ -93,7 +92,6 @@ def backup_form(request, object_id=None):
 
     elif request.method == "POST":
 
-        print request.POST
         
         modeltriggers = []
         modelpaths = []
@@ -106,7 +104,8 @@ def backup_form(request, object_id=None):
                 key = "procedure_name"
                 errors[key] = default_errors[key]
             except (Procedure.DoesNotExist), error:
-                procedure = Procedure(name=procedure_name)
+                procedure = Procedure(name=procedure_name, 
+                                      offsite_on=request.POST['offsite_on'])
         else:
             errors["procedure_name"] = "Você deve inserir o nome do procedimento"
 
@@ -265,18 +264,19 @@ def backup_form(request, object_id=None):
                                                "schedule_hourly_day",
                                                "schedule_weekly_day")) )
 
-            print extra_context
 
             return render_to_response(request, "backup_create.html", extra_context )
         else:
-            try:
+            with Session() as session:
                 if not profile.id:
                     if not fileset.id:
                         form = form_from_model(fileset)
                         if form.is_valid():
                             fileset.save()
+                            session.add(fileset)
                             for filepath in paths:
                                 path,created = FilePath.objects.get_or_create(path=filepath)
+                                session.add(path)
                                 path.filesets.add( fileset )
                                 form = form_from_model(path)
                                 if form.is_valid():
@@ -286,11 +286,13 @@ def backup_form(request, object_id=None):
                         form = form_from_model(schedule)
                         if form.is_valid():
                             schedule.save()
+                            session.add(schedule)
                             for trigger in modeltriggers:
                                 trigger.schedule = schedule
                                 form = form_from_model(trigger)
                                 if form.is_valid():
                                     trigger.save()
+                                    session.add(trigger)
 
 
                     profile.storage = storage
@@ -299,6 +301,7 @@ def backup_form(request, object_id=None):
                     form = form_from_model(profile)
                     if form.is_valid():
                         profile.save()
+                        session.add(profile)
 
 
                 procedure.computer = computer
@@ -306,12 +309,9 @@ def backup_form(request, object_id=None):
                 form = form_from_model(procedure)
                 if form.is_valid():
                     procedure.save()
+                    session.add(procedure)
 
 
-            except ValidationError, error:
-                transaction.rollback()
-            else:
-                transaction.commit()
                 messages.success(request, u"Backup adicionado com sucesso.")
                 return redirect('nimbus.procedures.views.list')
 
