@@ -1,10 +1,17 @@
+
 {% comment %}
 Tipos possíveis: ok, warn, error
 {% endcomment %}
-<h3>{{item.title}}</h3>
-<div>
-    {% for c in item.content %}
-    <div class="inner_message {% cycle "odd" "even" %}"><img src="/media/icons/{{c.type}}.png" /> {% if c.date %}<small>{{c.date}}</small> -{% endif %} {{c.label}} {% if c.message %}<small>({{c.message}})</small>{% endif %}</div>
+<div class="content_block cols_{{item|length}}">
+    {% for i in item %}
+    <div class="inner_block {% if forloop.last %}last{% endif %} {% if forloop.first %}first{% endif %}">
+        <h3>{{i.title}}</h3>
+        <div>
+            {% for c in i.content %}
+            <div class="inner_message {% cycle "odd" "even" %}"><img src="/media/icons/{{c.type}}.png" /> {% if c.date %}<small>{{c.date}}</small> -{% endif %} {{c.label}} {% if c.message %}<small>({{c.message}})</small>{% endif %}</div>
+            {% endfor %}
+        </div>
+        <p></p>
+    </div>
     {% endfor %}
 </div>
-<p></p>

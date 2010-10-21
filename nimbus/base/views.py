@@ -42,23 +42,23 @@ def home(request):
     # - date
     # - message
     
-    disponibilidade_dispositivos = {
+    disponibilidade_dispositivos = [{
         'title': u'Disponibilidade dos dispositivos',
         'content': [
             {'type': 'error', 'label': u'Armazenamento Principal', 'date': None, 'message': u'Indisponibilidade para acesso local'},
             {'type': 'ok', 'label': u'Armazenamento Secundário', 'date': None, 'message': None},
             {'type': 'warn', 'label': u'Armazenamento Terciário', 'date': None, 'message': u'Acesso temporáriamente indisponível'},
         ]
-    }
+    }]
     
-    disponibilidade_offsite = {
+    disponibilidade_offsite = [{
         'title': u'Disponibilidade do offsite',
         'content': [
             {'type': 'ok', 'label': 'Backup offsite', 'date': None}
         ]
-    }
+    }]
     
-    ultimos_backups = {
+    backups_com_falhas = [{
         'title': u'Últimos backups executados',
         'content': [
             {'type': 'ok', 'label': 'Servidor Web', 'date': '19/09/2010 10:25', 'message': '13 arquivos'},
@@ -67,24 +67,36 @@ def home(request):
             {'type': 'ok', 'label': 'Servidor de banco de dados', 'date': '19/09/2010 10:25', 'message': '13 arquivos'},
             {'type': 'warn', 'label': 'Diretor comercial', 'date': '19/09/2010 10:15', 'message': '5 arquivos'},
         ]
-    }
-    
-    backups_com_falhas = {
+    }, {
         'title': u'Backups com falha',
         'content': [
             {'type': 'error', 'label': 'Servidor Web', 'date': '19/09/2010 10:25', 'message': ''},
             {'type': 'warn', 'label': 'Sala A - Comp 1', 'date': '19/09/2010 10:15', 'message': ''},
             {'type': 'warn', 'label': 'Diretor financeiro', 'date': '19/09/2010 07:35', 'message': ''},
         ]
-    }
+    }]
     
-    banco_de_dados = {
+    banco_de_dados = [{
         'title': u'Banco de dados',
         'content': [
             {'type': 'ok', 'label': u'Banco de dados principal', 'date': None, 'message': ''},
             {'type': 'ok', 'label': u'Banco de dados secundário', 'date': None, 'message': ''},
         ]
-    }
+    },
+    {
+        'title': u'Banco de dados',
+        'content': [
+            {'type': 'ok', 'label': u'Banco de dados principal', 'date': None, 'message': ''},
+            {'type': 'ok', 'label': u'Banco de dados secundário', 'date': None, 'message': ''},
+        ]
+    },
+    {
+        'title': u'Banco de dados',
+        'content': [
+            {'type': 'ok', 'label': u'Banco de dados principal', 'date': None, 'message': ''},
+            {'type': 'ok', 'label': u'Banco de dados secundário', 'date': None, 'message': ''},
+        ]
+    }]
     
     # extra_content = {'table1': table1, 'table2': table2}
     return render_to_response(request, "home.html", locals())
