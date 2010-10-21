@@ -724,7 +724,7 @@ a:hover {
 	border-radius: 3px;
 	background: url('../images/sdd.jpg') center right no-repeat;
 	float: left;
-	padding-right: 65px;
+/*  padding-right: 65px;*/
 	}
 
 .block form .cmf-skinned-select:hover {
@@ -1274,3 +1274,13 @@ a:hover {
 .stat_block .inner_message img {
     vertical-align: middle;
 }
+
+.cols_1 .inner_block { width: 100%; }
+.cols_2 .inner_block { width: 49%; }
+.cols_3 .inner_block { width: 32%; margin-left: 20px; }
+.cols_4 .inner_block { width: 49%; }
+.cols_5 .inner_block { width: 49%; }
+
+.inner_block { float: left; }
+.inner_block.first { margin: 0; }
+.inner_block.last { float: right; margin: 0; }

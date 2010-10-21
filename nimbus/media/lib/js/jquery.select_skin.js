@@ -20,10 +20,14 @@
 
             if (!s.attr('multiple')) {
                 // create the container
+                s.children().each(function(){
+                    $(this).html($(this).html() + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+                });
+                
                 s.wrap('<div class="cmf-skinned-select"></div>');
                 c = s.parent();
                 c.children().before('<div class="cmf-skinned-text">&nbsp;</div>').each(function() {
-                    if (this.selectedIndex >= 0) $(this).prev().text(this.options[this.selectedIndex].innerHTML)
+                    if (this.selectedIndex >= 0) $(this).prev().text(this.options[this.selectedIndex].innerHTML.replace(new RegExp('&nbsp;', 'gm'), '', 'g'))
                 });
                 c.width(s.outerWidth()-2);
                 c.height(s.outerHeight()-2);
@@ -47,10 +51,10 @@
 
                 // add events
                 c.children().click(function() {
-                    t.text( (this.options.length > 0 && this.selectedIndex >= 0 ? this.options[this.selectedIndex].innerHTML : '') );
+                    t.text( (this.options.length > 0 && this.selectedIndex >= 0 ? this.options[this.selectedIndex].innerHTML.replace(new RegExp('&nbsp;', 'gm'), '', 'g') : '') );
                 });
                 c.children().change(function() {
-                    t.text( (this.options.length > 0 && this.selectedIndex >= 0 ? this.options[this.selectedIndex].innerHTML : '') );
+                    t.text( (this.options.length > 0 && this.selectedIndex >= 0 ? this.options[this.selectedIndex].innerHTML.replace(new RegExp('&nbsp;', 'gm'), '', 'g') : '') );
                 });
              }
         });

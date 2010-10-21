@@ -116,24 +116,13 @@
 			    {% endwith %}
 		
     		</div>		<!-- .block_content ends -->
-		
-		    <div class="block_content">
-		        <div style="float: left; width: 49%">
-        		    {% with ultimos_backups as item %}
-            		    <div class="stat_block">
-                        {% include "stat_block.html" %}
-                        </div>
-            		{% endwith %}
-    		    </div>
-    		    <div style="float: right; width: 49%">
-        		    {% with backups_com_falhas as item %}
-            		    <div class="stat_block">
-                        {% include "stat_block.html" %}
-                        </div>
-            		{% endwith %}
-    		    </div>
-    		    <div class="clear"></div>
-    		    <p></p>
+
+            <div class="block_content">
+		    {% with backups_com_falhas as item %}
+    		    <div class="stat_block">
+                {% include "stat_block.html" %}
+                </div>
+    		{% endwith %}
     		</div>
 		
     		<div class="bendl"></div>
@@ -157,27 +146,12 @@
 			        {% include "table_chart.html" %}
 			    {% endwith %}
 			    
-			    <div style="float: left; width: 32%">
-        		    {% with banco_de_dados as item %}
-            		    <div class="stat_block">
-                        {% include "stat_block.html" %}
-                        </div>
-            		{% endwith %}
-    		    </div>
-    		    <div style="float: left; margin-left: 2%; width: 32%">
-        		    {% with banco_de_dados as item %}
-            		    <div class="stat_block">
-                        {% include "stat_block.html" %}
-                        </div>
-            		{% endwith %}
-    		    </div>
-    		    <div style="float: right; width: 32%">
-        		    {% with banco_de_dados as item %}
-            		    <div class="stat_block">
-                        {% include "stat_block.html" %}
-                        </div>
-            		{% endwith %}
-    		    </div>
+    		    {% with banco_de_dados as item %}
+        		    <div class="stat_block">
+                    {% include "stat_block.html" %}
+                    </div>
+        		{% endwith %}
+
     		    <div class="clear"></div>
     		    <p></p>
 		

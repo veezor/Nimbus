@@ -72,23 +72,21 @@ def list(request):
     procedures = procedures
     title = u"Procedimentos"
     
-    procedimentos_em_execucao = {
+    procedimentos_em_execucao_executados = [{
         'title': u'Procedimentos em execução',
         'content': [
             {'type': 'ok', 'label': 'MyProcedure', 'date': '19/09/2010 10:25', 'message': '125 arquivos'},
             {'type': 'warn', 'label': 'TestProcedure', 'date': '19/09/2010 10:15', 'message': '32 arquivos'},
             {'type': 'warn', 'label': 'YourProcedure', 'date': '19/09/2010 07:35', 'message': '100 arquivos'},
         ]
-    }
-    
-    ultimos_procedimentos_executados = {
+    }, {
         'title': u'Últimos procedimentos executados',
         'content': [
             {'type': 'ok', 'label': 'MyProcedure', 'date': '19/09/2010 10:25', 'message': '125 arquivos'},
             {'type': 'ok', 'label': 'TestProcedure', 'date': '19/09/2010 10:15', 'message': '32 arquivos'},
             {'type': 'ok', 'label': 'YourProcedure', 'date': '19/09/2010 07:35', 'message': '100 arquivos'},
         ]
-    }
+    }]
     
     return render_to_response(request, "procedures_list.html", locals())
 
