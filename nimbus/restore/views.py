@@ -54,7 +54,7 @@ def restore_files(request):
 
         computer = Computer.objects.get(id=request.POST["computer_id"])
         jobid = int(request.POST["job_id"])
-        target = request.POST["target"]
+        target = request.POST["path_restore"]
         files = request.POST.getlist("path")
 
         bacula = Bacula()
