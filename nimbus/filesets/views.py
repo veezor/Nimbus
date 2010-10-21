@@ -28,6 +28,8 @@ def edit(request, object_id):
 
         with Session() as session:
             filesetform = form_mapping(FileSet, request.POST, object_id=object_id)
+            # TODO: Corrigir a indentação, o fileset está sendo criado dentro
+            # do path.
             if filesetform.is_valid():
                 fileset = filesetform.save()
                 session.add(fileset)
