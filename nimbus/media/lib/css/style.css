@@ -724,7 +724,7 @@ a:hover {
 	border-radius: 3px;
 	background: url('../images/sdd.jpg') center right no-repeat;
 	float: left;
-	padding-right: 65px;
+/*  padding-right: 65px;*/
 	}
 
 .block form .cmf-skinned-select:hover {
