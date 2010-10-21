@@ -952,12 +952,16 @@ a:hover {
 	background: #fdfdfd;
 	border-right: 1px solid #ccc;
 	}
-	
+
 .block.withsidebar .block_content .sidebar ul.sidemenu li.active a,
 .block.withsidebar .block_content .sidebar ul.sidemenu li.active a:hover {
 	background: #fff;
 	border: 0;
 	}
+
+.block.withsidebar .block_content .sidebar ul.sidemenu li.active {
+    background: #fff;
+    }
 
 .block.withsidebar .block_content .sidebar_content {
 	padding: 15px 20px 15px 210px;
