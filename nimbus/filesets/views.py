@@ -21,15 +21,8 @@ from nimbus.libs.db import Session
 
 
 def edit(request, object_id):
-
-    if request.method == "GET":
-        title = u"Editar conjunto de arquivos"
-        computers = Computer.objects.all()
-        fileset = FileSet.objects.get(id=object_id)
-        return render_to_response(request, 'base_filesets.html',
-                                            locals())
-
-
+    fileset = FileSet.objects.get(id=object_id)
+    
     if request.method == "POST":
 
 
@@ -62,4 +55,8 @@ def edit(request, object_id):
                 messages.success(request, u"Conjunto de arquivos atualizado com sucesso.")
                 return redirect('nimbus.filesets.views.edit', object_id)
 
-
+    title = u"Editar conjunto de arquivos"
+    computers = Computer.objects.all()
+    
+    return render_to_response(request, 'base_filesets.html',
+                                        locals())
