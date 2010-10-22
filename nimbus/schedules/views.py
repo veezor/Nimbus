@@ -1,90 +1,34 @@
 # -*- coding: utf-8 -*-
 
+from time import strftime, strptime
+
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.core import serializers
 from django.shortcuts import redirect
 
-from nimbus.schedules.models import Schedule
+from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
+from nimbus.schedules.shared import trigger_class, trigger_map
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
+from nimbus.shared import utils
+from nimbus.libs.db import Session
 
 from django.contrib import messages
 from django.template import RequestContext
 
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 
-def edit(request, object_id):
-    template = 'base_schedules.html'
-    
-    if request.method == "POST":
-        # import pdb; pdb.set_trace()
-        
-        ### Campos que serão recebidos nesta função:
-        
-        # procedure_name - str
-        # computer_id - int
-        # profile_id - int
-        # 
-        # profile.storage_id - int
-        # profile.schedule_id - int
-        # profile.fileset_id - int
-        # 
-        # schedule.name - str
-        # 
-        # schedule.monthly.active - bool
-        # schedule.monthly.day - list
-        # schedule.monthly.hour - str
-        # schedule.monthly.level - int
-        # 
-        # schedule.weekly.active - bool
-        # schedule.weekly.day - list
-        # schedule.weekly.hour - str
-        # schedule.weekly.level - int
-        # 
-        # schedule.dayly.active - bool
-        # schedule.dayly.day - list
-        # schedule.dayly.hour - str
-        # schedule.dayly.level - int
-        # 
-        # schedule.hourly.active - bool
-        # schedule.hourly.day - list
-        # schedule.hourly.hour - str
-        # schedule.hourly.level - int
-        
-        ## Exemplo do objeto.
-        # {
-        # u'schedule.monthly.level': [u'Full'],
-        # u'procedure_name': [u'asdasdas'],
-        # u'schedule.dayly.level': [u'Full'],
-        # u'profile.schedule_id': [u'Criar novo agendamento'],
-        # u'schedule.weekly.active': [u'1'],
-        # u'schedule.dayly.hour': [u''],
-        # u'computer_id': [u'1'],
-        # u'schedule.weekly.level': [u'Full'],
-        # u'profile_id': [u''],
-        # u'profile.fileset_id': [u'2'],
-        # u'schedule.hourly.minute': [u''],
-        # u'fileset_name': [u'', u'', u''],
-        # u'schedule.monthly.hour': [u'13:00'],
-        # u'profile.storage_id': [u'1'],
-        # u'schedule.weekly.day[]': [u'mon', u'wed'],
-        # u'schedule.hourly.level': [u'Full'],
-        # u'schedule.weekly.hour': [u'21:00'],
-        # u'schedule.monthly.day[]': [u'1', u'17', u'29'],
-        # u'schedule.monthly.active': [u'1']
-        # }
-        
-        # print request.POST
-        # TODO: Adicionar a validação do formulário.
-        messages.success(request, u"Agendamento atualizado com sucesso.")
-        template = 'edit_schedules.html'
 
-    title = u"Editar agendamento"
-    schedule = Schedule.objects.get(id=object_id)
+
+
+def edit(request, object_id):
     
-    # import pdb; pdb.set_trace()
+    schedule = Schedule.objects.get(id=object_id)
+    title = u"Editar agendamento"
+    template = 'base_schedules.html'
+
     
     extra_content = {
         'days': days,
@@ -92,7 +36,133 @@ def edit(request, object_id):
         'levels': levels,
         'operating_systems': operating_systems,
     }
-    extra_content.update(**locals());
-    
-    return render_to_response(request, template, extra_content)
+    extra_content.update(**locals())
+
+    if request.method == "GET":
+        return render_to_response(request, template, extra_content)
+
+
+    if request.method == "POST":
+
+        
+        errors = {}
+        extra_content["errors"] =  errors
+        
+        schedule = Schedule.objects.get(id=object_id)
+        
+        template = 'edit_schedules.html'
+        schedule_name = request.POST.get('schedule.name')
+
+        try:
+            old_schedule = Schedule.objects.get(name=schedule_name)
+        except Schedule.DoesNotExist, notexist:
+            old_schedule = None
+
+        if (not old_schedule is None) and old_schedule != schedule:
+            errors["schedule_name"] = "Nome não disponível. Já existe um agendamento com este nome"
+
+
+        with Session() as session:
+
+            if schedule_name:
+
+                schedule.name = schedule_name
+
+
+                selected_a_trigger = False
+                triggers = ["schedule.monthly", "schedule.dayly", "schedule.weekly", "schedule.hourly"]
+
+
+                for trigger in triggers:
+
+                    selected_a_trigger = True
+                    is_trigger_edit = False
+
+                    trigger_name = trigger[len("schedule."):]
+                    Trigger = trigger_class[trigger_name]
+
+                    old_triggers = [ t for t in schedule.get_triggers() if isinstance(t, Trigger) ]
+
+                    if old_triggers:
+                        is_trigger_edit = True
+
+                    if not request.POST.get(trigger + '.active'):
+
+                        for t in old_triggers:
+                            t.delete()
+                            session.delete(t)
+
+                    else: # active
+
+                        hour = request.POST.get(trigger + '.hour')
+                        if not hour:
+                            errors['schedule_hour'] = "Você deve informar a hora de execução do agendamento %s" % trigger_map[trigger_name]
+                        else:
+                            if Trigger is Hourly:
+                                hour = strftime("%H:%M", strptime(hour, "%M"))
+
+                            level = request.POST.get(trigger + '.level')
+
+                            if not trigger_name in ["dayly", "hourly"]:
+                                post_days = set(request.POST.getlist(trigger + '.day'))
+
+                                if not post_days and not is_trigger_edit:
+                                    errors['schedule_day'] = "Você deve selecionar um dia para a execução do agendamento %s"  % trigger_map[trigger_name]
+                                else:
+                                    old_days = set([ unicode(t.day) for t in old_triggers ])
+
+                                    if len(old_days) != len(post_days):
+                                        new_days = post_days - old_days
+                                        remove_days =  old_days - post_days 
+
+                                        for d in remove_days:
+                                            t = Trigger.objects.get(day=d,schedule=schedule)
+                                            t.delete()
+                                            session.delete(t)
+
+                                        for d  in new_days:
+                                            Trigger.objects.create(day=d, 
+                                                                   hour=hour,
+                                                                   level=level, 
+                                                                   schedule=schedule)
+                            else:
+                                try:
+                                    trigger = Trigger.objects.get(schedule=schedule)
+                                except Trigger.DoesNotExist, error:
+                                    trigger = Trigger()
+                                    trigger.schedule = schedule
+
+                                trigger.hour = hour
+                                trigger.level = level
+                                session.add(trigger)
+                                trigger.save()
+
+
+
+                            is_trigger_edit = False
+
+                if not selected_a_trigger:
+                    errors['schedule_name'] = "Você deve ativar pelo menos um tipo de agendamento"
+
+            else:
+                errors['schedule_name'] = "Você deve inserir um nome na configuração do agendamento"
+
+            if not errors:
+                schedule.save()
+                session.add(schedule)
+                messages.success(request, u"Agendamento atualizado com sucesso.")
+                return redirect('nimbus.schedules.views.edit', object_id)
+            else:
+                session.rollback()
+                extra_content.update(**locals())
+                extra_content.update( utils.dict_from_querydict(
+                                            request.POST,
+                                            lists=("schedule_monthly_day",
+                                                   "schedule_dayly_day",
+                                                   "schedule_hourly_day",
+                                                   "schedule_weekly_day")) )
+
+                return render_to_response(request, template, extra_content )
+     
+
 

@@ -78,7 +78,7 @@
                     </p>
                     <p>
                         <label for="mothly_hour">Hora:</label><br/>
-                        <input type="text" name="schedule.monthly.hour" id="mothly_hour" class="text small" style="width: 65px" value="{% for i in schedule.monthly_set.all %}{{ i.hour }}{% endfor %}" /><br/>
+                        <input type="text" name="schedule.monthly.hour" id="mothly_hour" class="text small" style="width: 65px" value="{% if schedule.get_monthly_hour %}{{ schedule.get_monthly_hour }}{% endif %}" /><br/>
                         <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                     </p>
                     <p>
@@ -109,7 +109,7 @@
                     </p>
                     <p>
                         <label for="mothly_hour">Hora:</label><br/>
-                        <input type="text" name="schedule.weekly.hour" id="mothly_hour" class="text small" style="width: 65px" maxlength="5" value="{% for i in schedule.weekly_set.all %}{{ i.hour }}{% endfor %}" /><br/>
+                        <input type="text" name="schedule.weekly.hour" id="mothly_hour" class="text small" style="width: 65px" maxlength="5" value="{% if schedule.get_weekly_hour %}{{ schedule.get_weekly_hour }}{% endif %}" /><br/>
                         <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                     </p>
                     <p>
@@ -157,7 +157,7 @@
                     <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
                     <p>
                         <label for="hourly_hour">Minuto:</label><br/>
-                        <input type="text" name="schedule.hourly.minute" id="hourly_hour" class="text small" style="width: 45px" maxlength="2" value="{% for i in schedule.hourly_set.all %}{{ i.hour|slice:'3:' }}{% endfor %}" /><br/>
+                        <input type="text" name="schedule.hourly.hour" id="hourly_hour" class="text small" style="width: 45px" maxlength="2" value="{% for i in schedule.hourly_set.all %}{{ i.hour|slice:'3:' }}{% endfor %}" /><br/>
                         <small>Exemplo: 20, 35 ou 08.</small>
                     </p>
                     <p>

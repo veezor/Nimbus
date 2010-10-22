@@ -17,41 +17,20 @@ from nimbus.computers.models import Computer
 from nimbus.procedures.models import Profile, Procedure
 from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
+from nimbus.schedules.shared import trigger_class, trigger_map
 from nimbus.filesets.models import FileSet, FilePath
 from nimbus.shared.forms import form_from_model
 from nimbus.backup.forms import StorageForm
 
 from nimbus.shared import utils
+from nimbus.shared.msgerrors import default_errors
 from nimbus.libs.db import Session
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 from nimbus.shared.views import render_to_response
 
 
-default_errors = {
-        "procedure_name" : "Nome não disponível. Já existe um procedimento com esse nome.",
-        "computer_name" : "Computador inválido. Computador não existe.",
-        "computer_id" : "Você deve selecionar um computador.",
-        "profile_id" : "Perfil de configuração inválido, não existe.",
-        "profile_storage_id" : "Você deve selecionar um dispositivo de armazenamento.",
-        "profile_schedule_id" : "Agendamento inválido, não existe.",
-        "profile_fileset_id" : "Conjunto de arquivos inválido, não existe.",
-        "schedule_name" : "Nome de agendamento inválido, já existente."
-}
 
 
-trigger_map = {
-        "monthly" : "mensal",
-        "dayly" : "diário",
-        "hourly" : "minuto",
-        "weekly" : "semanal",
-}
-
-trigger_class = {
-        "monthly" : Monthly,
-        "dayly" : Daily,
-        "hourly" : Hourly,
-        "weekly" : Weekly,
-}
 
 
 
@@ -184,37 +163,34 @@ def backup_form(request, object_id=None):
                                         trigger_name = trigger[len("schedule."):]
                                         Trigger = trigger_class[trigger_name]
 
-                                        modeltrigger = Trigger()
-
-
-
-                                        if not trigger_name in ["dayly", "hourly"]:
-                                            day = request.POST.getlist(trigger + '.day')
-
-                                            if not day:
-                                                errors['schedule_day'] = "Você deve selecionar um dia para a execução do agendamento %s"  % trigger_map[trigger_name]
-                                            else:
-                                                modeltrigger.day = day
 
                                         hour = request.POST.get(trigger + '.hour')
-
                                         if not hour:
                                             errors['schedule_hour'] = "Você deve informar a hora de execução do agendamento %s" % trigger_map[trigger_name]
                                         else:
-                                            if isinstance(modeltrigger, Hourly):
+                                            if Trigger is Hourly:
                                                 hour = strftime("%H:%M", strptime(hour, "%M"))
 
-                                            modeltrigger.hour = hour
+                                            level = request.POST.get(trigger + '.level')
 
-                                        level = request.POST.get(trigger + '.level')
+                                            if not trigger_name in ["dayly", "hourly"]:
+                                                post_days = set(request.POST.getlist(trigger + '.day'))
 
-                                        modeltrigger.level = level
+                                                if not post_days and not is_trigger_edit:
+                                                    errors['schedule_day'] = "Você deve selecionar um dia para a execução do agendamento %s"  % trigger_map[trigger_name]
+                                                else:
+                                                    for d  in post_days:
+                                                        trigger = Trigger(day=d, hour=hour,
+                                                                          level=level)
+                                                        modeltriggers.append(trigger)
+                                            else:
+                                                trigger = Trigger.objects.create(hour=hour,level=level)
+                                                modeltriggers.append(trigger)
 
-                                        modeltriggers.append(modeltrigger)
+
 
                                 if not selected_a_trigger:
                                     errors['schedule_name'] = "Você deve ativar pelo menos um tipo de agendamento"
-
                             else:
                                 errors['schedule_name'] = "Você deve inserir um nome na configuração do agendamento"
                     else:

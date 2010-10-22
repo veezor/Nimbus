@@ -21,14 +21,24 @@ MONTHDAYS = tuple( (d,d) for d in enums.days )
 class Schedule(BaseModel):
     name = models.CharField(max_length=255, unique=True, null=False)
 
-    def _get_triggers(self):
+    def get_triggers(self):
         return list(self.hourly_set.get_query_set()) +\
                 list(self.daily_set.get_query_set()) +\
                 list(self.monthly_set.get_query_set()) +\
                 list(self.weekly_set.get_query_set())
 
+
+    def get_monthly_hour(self): #FIX: remove this
+        if self.monthly_set.count():
+            return self.monthly_set.all()[0].hour
+
+    def get_weekly_hour(self): #FIX: remove this
+        if self.weekly_set.count():
+            return self.weekly_set.all()[0].hour
+
+
     def get_runs(self):
-        return [ trigger.get_run() for trigger in self._get_triggers() ]
+        return [ trigger.get_run() for trigger in self.get_triggers() ]
 
 
     def __unicode__(self):
