@@ -8,7 +8,8 @@ class Session(object):
     def __init__(self, rollback_on_exception=True, 
                        commit_on_exit = True, db=None):
 
-        self.models = set()
+        self.models_to_delete_on_rollback = set()
+        self.models_to_save_on_rollback = set()
         self.rollback_on_exception = rollback_on_exception
         self.db = db
         self.commit_on_exit = commit_on_exit
@@ -16,28 +17,38 @@ class Session(object):
     def add(self, model):
         if not isinstance(model, models.Model):
             raise TypeError("models.Model is required")
-        self.models.add(model)
+        self.models_to_delete_on_rollback.add(model)
 
-    def remove(self, model):
+    def cancel(self, model):
         if not isinstance(model, models.Model):
             raise TypeError("models.Model is required")
-        return self.models.remove(model)
+        self.models_to_delete_on_rollback.discard(model)
+        self.models_to_save_on_rollback.discard(model)
 
+    def delete(self, model):
+        if not isinstance(model, models.Model):
+            raise TypeError("models.Model is required")
+        return self.models_to_save_on_rollback.add(model)
 
     def __len__(self):
-        return len(self.models)
+        return len(self.models_to_delete_on_rollback.\
+                    union( self.models_to_save_on_rollback ))
 
     def __iter__(self):
-        return iter(self.models)
+        return iter(self.models_to_delete_on_rollback.\
+                    union( self.models_to_save_on_rollback ))
 
     def __contains__(self, model):
-        return model in self.models
+        return model in self.models_to_delete_on_rollback.\
+                    union( self.models_to_save_on_rollback )
 
     def clear(self):
-        self.models.clear()
+        self.models_to_delete_on_rollback.clear()
+        self.models_to_save_on_rollback.clear()
 
     def as_list(self):
-        return list(self.models)
+        return list(self.models_to_delete_on_rollback.\
+                    union( self.models_to_save_on_rollback ))
 
     def commit(self):
         transaction.commit()
@@ -45,8 +56,11 @@ class Session(object):
 
     def rollback(self):
 
-        for model in self.models:
+        for model in self.models_to_delete_on_rollback:
             model.delete()
+
+        for model in self.models_to_save_on_rollback:
+            model.save()
 
         transaction.rollback()
         self.commit_on_exit = False
@@ -58,9 +72,11 @@ class Session(object):
     def close(self):
         transaction.leave_transaction_management(using=self.db)
 
+
     def __enter__(self):
         self.open()
         return self
+
 
     def __exit__(self, exc_type, exc_val, exc_tb):
 

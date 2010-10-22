@@ -78,9 +78,9 @@
         </script>
 
         <form action="" method="post">
-            {% if errors.fileset_name %}
+            {% if errors.name %}
             <ul class="errorlist">
-                <li>{{ errors.fileset_name }}</li>
+                <li>{{ errors.name }}</li>
             </ul>
             {% endif %}
             <p>
@@ -100,9 +100,9 @@
             {% endif %}
             <p>
                 <label for="filepath_name">Caminhos para backup:</label><br/>
-                {% if fileset_files %}
+                {% if path %}
                 <ul class="tree" style="padding-left: 20px !important; margin-bottom: 20px">
-                    {% for p in fileset_files %}
+                    {% for p in path %}
                     <li class="" style="padding-left: 20px"><span style="padding-left: 10px"><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
                     {% endfor %}
                 </ul>
