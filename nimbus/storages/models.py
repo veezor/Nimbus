@@ -32,8 +32,15 @@ class Storage(BaseModel):
     description = models.TextField(max_length=500, blank=True)
     active = models.BooleanField(editable=False)
 
+    @property
+    def is_local(self):
+        if self.address == "127.0.0.1":
+            return True
+        return False
+        
+
     def __unicode__(self):
-        return "(%s:%s)" % (
+        return u"(%s:%s)" % (
             self.name,
             self.address)
     
@@ -55,7 +62,11 @@ class Storage(BaseModel):
 class Device(BaseModel):
     name = models.CharField(max_length=255, null=False)
     archive = fields.ModelPathField(max_length=255, null=False, unique=True)
-    storage = models.ForeignKey(Storage, null=False)
+    storage = models.ForeignKey(Storage, null=False, related_name="devices")
+
+    @property
+    def is_local(self):
+        return self.storage.is_local
 
 
     def __unicode__(self):
@@ -68,7 +79,7 @@ def update_storage_file(storage):
 
     filename = settings.BACULASD_CONF 
 
-    if storage.address == "127.0.0.1":
+    if storage.is_local:
         try:
             logger = logging.getLogger(__name__)
 
@@ -88,7 +99,15 @@ def update_storage_file(storage):
             logger.info("Config does not exist")
 
 
-signals.connect_on( update_storage_file, Storage, post_save)
+
+
+def create_default_device(storage):
+
+    if storage.devices.count() == 0:
+        device = Device.objects.create(name="device default",
+                                       archive="/var/bacula/archives/",
+                                       storage=storage)
+        storage.devices.add(device)
 
 
 def update_device_file(device):
@@ -128,5 +147,7 @@ def remove_device_file(instance):
 
 
 
+signals.connect_on( update_storage_file, Storage, post_save)
+signals.connect_on( create_default_device, Storage, post_save)
 signals.connect_on( update_device_file, Device, post_save)
 signals.connect_on( remove_device_file, Device, post_delete)

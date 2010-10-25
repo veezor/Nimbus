@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+
+from threading import Thread
+
 import simplejson
 
 from django.views.generic import create_update
@@ -17,6 +20,14 @@ from nimbus.libs import offsite
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
 import networkutils 
+
+
+
+def worker_thread(storage_manager):
+    manager = offsite.LocalManager(origin=None,
+                                  destination=storage_manager.mountpoint)
+    manager.upload_all_volumes()
+    storage_manager.umount()
 
 
 
@@ -76,49 +87,49 @@ def stat(request):
 
 # SECURITY COPY
 
+
 def security_copy(request):
     title = u"Cópia de segurança"
     return render_to_response(request, "system_security_copy.html", locals())
 
+
 def select_storage(request):
-    # devices = offsite.list_disk_labels()
-    devices = ['sda', 'sdb', 'sdc']
+    devices = offsite.list_disk_labels()
     title = u'Cópia de segurança'
     return render_to_response(request, "system_select_storage.html", locals())
 
 
 def copy_files(request):
-    error = None
-    device = request.POST.get("device")
 
-    # TODO: Retirar estas duas linhas abaixo.
-    messages.success(request, u"O processo foi iniciado com sucesso.")
-    return redirect('nimbus.offsite.views.list_uploadrequest')
-    
-    if not device:
-        raise Http404()
+    if request.method == "POST":
+        error = None
+        device = request.POST.get("device")
 
-    try:
-        manager = StorageDeviceManager(device)
-        manager.mount()
-    except MountError, e:
-        error = e
+        if not device:
+            raise Http404()
 
-    sizes = [ getsize( dev) for dev in offsite.get_all_bacula_volumes() ]
-    required_size = sum( sizes )
+        try:
+            manager = StorageDeviceManager(device)
+            manager.mount()
+        except MountError, e:
+            error = e
+
+        sizes = [ getsize( dev) for dev in offsite.get_all_bacula_volumes() ]
+        required_size = sum( sizes )
 
 
-    if required_size <  manager.available_size:
-        thread = Thread(target=worker_thread, args=(manager,))
-        thread.start()
-        return redirect('nimbus.offsite.views.list_uploadrequest')
-    else:
-        required_size = utils.bytes_to_mb(required_size)
-        available_size = utils.bytes_to_mb(manager.available_size)
-        manager.umount()
-        error = u"Espaço necessário é de %.3fMB, somente %.3fMB disponível em %s" %\
-                (required_size, available_size, device)
+        if required_size <  manager.available_size:
+            thread = Thread(target=worker_thread, args=(manager,))
+            thread.start()
+            messages.success(request, u"O processo foi iniciado com sucesso.")
+            return redirect('nimbus.offsite.views.list_uploadrequest')
+        else:
+            required_size = utils.bytes_to_mb(required_size)
+            available_size = utils.bytes_to_mb(manager.available_size)
+            manager.umount()
+            error = u"Espaço necessário é de %.3fMB, somente %.3fMB disponível em %s" %\
+                    (required_size, available_size, device)
 
-    if error:
-        return render_to_response(request, "bkp/offsite/mounterror.html",
-                {"error" : error } )
+        if error:
+            return render_to_response(request, "bkp/offsite/mounterror.html",
+                    {"error" : error } )
