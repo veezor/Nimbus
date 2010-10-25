@@ -17,14 +17,14 @@ from nimbus.libs.devicemanager import (StorageDeviceManager,
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 
-def recovery_start(request):
+def start(request):
     extra_content = {
         'title': u"Recuperação do sistema"
     }
     return render_to_response(request, "recovery_start.html", extra_content)
 
 
-def recovery_select_source(request):
+def select_source(request):
     extra_content = {
         'title': u"Recuperação do sistema"
     }
@@ -35,19 +35,18 @@ def recovery_select_source(request):
     elif request.method == "POST":
         source = request.POST['source']
         if source == "offsite":
-            return redirect( '/recovery/recover_databases' )
+            return redirect( 'nimbus.recovery.views.select_instance_name' )
         else:
-            return redirect( '/recovery/select_storage' )
+            return redirect( 'nimbus.recovery.views.select_storage' )
     else:
         raise Http404()
 
 
-def recovery_select_storage(request):
+def select_storage(request):
     if request.method == "GET":
         extra_content = {
             'title': u"Recuperação do sistema",
-            # "devices" : offsite.list_disk_labels()
-            "devices" : ['sda', 'sdb', 'sdc']
+             "devices" : offsite.list_disk_labels()
         }
         return render_to_response(request, "recovery_select_storage.html",
                                   extra_content)
@@ -66,7 +65,7 @@ def recovery_select_storage(request):
 
 
 
-def recovery_select_instance_name(request):
+def select_instance_name(request):
     if request.method == "GET":
 
         localsource = request.GET.get("localsource", None)
@@ -85,14 +84,14 @@ def recovery_select_instance_name(request):
         manager.finish()
 
 
-        return render(request, "recovery_select_instance_name.html",
+        return render_to_response(request, "recovery_select_instance_name.html",
                      { "localsource" : localsource, "device" : device, 
                        "instance_names" : instance_names })
 
     elif request.method == "POST":
         localsource = request.POST.get("localsource", None)
         device = request.POST.get("device", None)
-        return render(request, "recovery_change_instance_name.html",
+        return render_to_response(request, "recovery_change_instance_name.html",
                      { "localsource" : localsource, "device" : device})
     else:
         raise Http404()
@@ -191,7 +190,7 @@ def recover_volumes(request):
         raise Http404()
 
 
-def recovery_finish(request):
+def finish(request):
     extra_content = {
         'title': u"Recuperação do sistema",
     }
