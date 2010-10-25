@@ -20,6 +20,7 @@ from nimbus.libs import offsite
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
 import networkutils 
+import systeminfo
 
 
 
@@ -79,7 +80,11 @@ def create_or_view_network_tool(request):
 
 
 def stat(request):
-    extra_content = {'title': u"Estatística do sistema"}
+    extra_content = { 
+            'title': u"Estatística do sistema",
+            'cpu' : systeminfo.get_cpu_usage(),
+            'memory' : systeminfo.get_memory_usage()
+    }
 
     return render_to_response(request, "stat.html", extra_content)
 
