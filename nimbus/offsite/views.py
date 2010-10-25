@@ -12,19 +12,29 @@ from nimbus.libs import offsite
 from nimbus.offsite.models import UploadRequest, DownloadRequest
 from nimbus.procedures.models import Procedure
 from nimbus.offsite.models import Offsite
+from nimbus.shared import utils
 from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.offsite.forms import OffsiteForm
 
 
 def detail(request):
     offsite = Offsite.objects.all()[0]
+    uploads = UploadRequest.objects.all()
+
+    content = []
+    for upload in uploads:
+        content.append( {
+            "type" : 'ok',
+            'date' : upload.last_attempt,
+            "label" : upload.volume.filename,
+            'message' : "%d MB" % utils.bytes_to_mb(upload.volume.size)
+            } )
+
+
     transferencias_em_execucao = [{
         'title': u'Transferências em execução',
-        'content': [
-            {'type': 'ok', 'label': 'Servidor Web', 'date': '20/09/2010 10:25', 'message': '20 MB'},
-            {'type': 'warn', 'label': 'Sala A - Comp 1', 'date': '20/09/2010 10:15', 'message': '3 MB'},
-        ]
-    }]
+        'content': content  
+        }]
     return render_to_response(request, "detail.html", locals())
 
 
