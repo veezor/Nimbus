@@ -81,9 +81,10 @@ def create_or_view_network_tool(request):
 
 def stat(request):
     extra_content = { 
-            'title': u"Estatística do sistema",
-            'cpu' : systeminfo.get_cpu_usage(),
-            'memory' : systeminfo.get_memory_usage()
+        'title': u"Estatística do sistema",
+        'cpu' : systeminfo.get_cpu_usage(),
+        'memory' : systeminfo.get_memory_usage(),
+        'memory_free' : 100 - systeminfo.get_memory_usage()
     }
 
     return render_to_response(request, "stat.html", extra_content)
