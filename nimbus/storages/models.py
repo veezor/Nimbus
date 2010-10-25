@@ -25,12 +25,15 @@ from nimbus.computers.models import Computer
 
 class Storage(BaseModel):
     name = models.CharField(max_length=255, null=False, blank=False)
-    address = models.IPAddressField(default="127.0.0.1", null=False, blank=False)
-    password = models.CharField( max_length=255, null=False, blank=False,
+    address = models.IPAddressField(default="127.0.0.1", editable=False, 
+                                    null=False, blank=False)
+    password = models.CharField( max_length=255, null=False, 
+                                 blank=False, editable=False,
                                  default=utils.random_password)
 
     description = models.TextField(max_length=500, blank=True)
     active = models.BooleanField(editable=False)
+
 
     @property
     def is_local(self):
