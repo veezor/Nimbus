@@ -6,7 +6,10 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.contrib import messages
 
+
+from nimbus.bacula.models import Job
 from nimbus.procedures.models import Procedure, Profile
+from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
 from nimbus.filesets.models import FileSet
@@ -67,26 +70,69 @@ def execute(request, object_id):
 #     return render_to_response(request, "procedures_view.html", extra_content)
 
 
+
+def _get_friendly_job_status(job):
+    if job.jobstatus in ('T', 'W'):
+        return 'ok'
+    else:
+        return 'warn'
+
+def _get_computer_from_job(job):
+    client_name = job.client.name.split('_')[0]
+    return Computer.objects.get(uuid__uuid_hex=client_name)
+
+
+def _get_procedure_from_job(job):
+    procedure_name = job.name.split('_')[0]
+    return Procedure.objects.get(uuid__uuid_hex=procedure_name)
+
+
+
 def list(request):
     procedures = Procedure.objects.all()
-    procedures = procedures
     title = u"Procedimentos"
+    running_status = ('R','p','j','c','d','s','M','m','s','F','B')
+    running_jobs = Job.objects.filter( jobstatus__in=running_status)\
+                                            .order_by('starttime').distinct()[:5]
+
+
+    last_jobs = Job.objects.all()\
+                    .order_by('endtime').distinct()[:5]
+
+    running_procedures_content = []
+    try:
+        for job in running_jobs:
+            running_procedures_content.append({
+                'type' : 'ok',
+                'label' : _get_procedure_from_job(job).name,
+                'date' : job.starttime,
+                'message' : u'Computador : %s' % _get_computer_from_job(job).name
+            })
+    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
+        pass
+
+
+    last_procedures_content = []
+    try:
+        for job in last_jobs:
+            last_procedures_content.append({
+                'type' : _get_friendly_job_status(job),
+                'label' : _get_procedure_from_job(job).name,
+                'date' : job.endtime,
+                'message' : u'Computador : %s' % _get_computer_from_job(job).name
+            })
+    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
+        pass
+
+
     
     procedimentos_em_execucao_executados = [{
         'title': u'Procedimentos em execução',
-        'content': [
-            {'type': 'ok', 'label': 'MyProcedure', 'date': '19/09/2010 10:25', 'message': '125 arquivos'},
-            {'type': 'warn', 'label': 'TestProcedure', 'date': '19/09/2010 10:15', 'message': '32 arquivos'},
-            {'type': 'warn', 'label': 'YourProcedure', 'date': '19/09/2010 07:35', 'message': '100 arquivos'},
-        ]
-    }, {
+        'content': running_procedures_content
+        }, {
         'title': u'Últimos procedimentos executados',
-        'content': [
-            {'type': 'ok', 'label': 'MyProcedure', 'date': '19/09/2010 10:25', 'message': '125 arquivos'},
-            {'type': 'ok', 'label': 'TestProcedure', 'date': '19/09/2010 10:15', 'message': '32 arquivos'},
-            {'type': 'ok', 'label': 'YourProcedure', 'date': '19/09/2010 07:35', 'message': '100 arquivos'},
-        ]
-    }]
+        'content': last_procedures_content   
+        }]
     
     return render_to_response(request, "procedures_list.html", locals())
 
