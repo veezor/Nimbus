@@ -5,6 +5,29 @@ import os
 
 INTERVAL = 2
 
+
+class DiskInfo(object):
+
+    def __init__(self, path):
+        self.path = path
+
+
+    def get_data(self):
+        info = os.statvfs(self.path)
+        total = info.f_bsize * info.f_blocks
+        free = info.f_bsize * info.f_bfree
+        used = total - free
+        return total, used, free
+
+
+    def get_usage(self):
+        total, used, free = self.get_data()
+        usage = 100 *( float(used) / total)
+        return usage
+
+
+
+
 class CPUInfo(object):
 
     def get_data(self):
@@ -65,6 +88,8 @@ class MemoryInfo(object):
 
 
 
+def get_partition_usage(path):
+    return DiskInfo(path).get_usage()
 
 
 def get_cpu_usage():
