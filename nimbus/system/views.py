@@ -93,6 +93,26 @@ def stat(request):
 
 
 
+def umount(request):
+    if request.method == "GET":
+        devices = offsite.list_disk_labels()
+        title = u'Remover dispositivo externo com segurança'
+        return render_to_response(request, "umount_storage.html", locals())
+
+    if request.method == "POST":
+        device = request.POST.get("device")
+
+        try:
+            manager = StorageDeviceManager(device)
+            manager.umount()
+        except UMountError, e:
+            error = e
+            messages.error(request, u"Erro ao remover unidade")
+
+        messages.success(request, u"Unidade removida corretamente.")
+        return redirect('nimbus.base.views.home')
+
+
 # SECURITY COPY
 
 
