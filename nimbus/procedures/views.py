@@ -71,21 +71,6 @@ def execute(request, object_id):
 
 
 
-def _get_friendly_job_status(job):
-    if job.jobstatus in ('T', 'W'):
-        return 'ok'
-    else:
-        return 'warn'
-
-def _get_computer_from_job(job):
-    client_name = job.client.name.split('_')[0]
-    return Computer.objects.get(uuid__uuid_hex=client_name)
-
-
-def _get_procedure_from_job(job):
-    procedure_name = job.name.split('_')[0]
-    return Procedure.objects.get(uuid__uuid_hex=procedure_name)
-
 
 
 def list(request):
@@ -104,9 +89,9 @@ def list(request):
         for job in running_jobs:
             running_procedures_content.append({
                 'type' : 'ok',
-                'label' : _get_procedure_from_job(job).name,
+                'label' : job.procedure.name,
                 'date' : job.starttime,
-                'message' : u'Computador : %s' % _get_computer_from_job(job).name
+                'message' : u'Computador : %s' % job.client.computer.name
             })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
         pass
@@ -116,10 +101,10 @@ def list(request):
     try:
         for job in last_jobs:
             last_procedures_content.append({
-                'type' : _get_friendly_job_status(job),
-                'label' : _get_procedure_from_job(job).name,
+                'type' : job.status_friendly,
+                'label' : job.procedure.name,
                 'date' : job.endtime,
-                'message' : u'Computador : %s' % _get_computer_from_job(job).name
+                'message' : u'Computador : %s' % job.client.computer.name
             })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
         pass

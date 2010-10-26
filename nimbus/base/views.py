@@ -1,34 +1,46 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 
+import operator
 
 import systeminfo
 
 from django.contrib.auth.decorators import login_required
 
 from nimbus.shared.views import render_to_response
+from nimbus.bacula.models import Job
+
+from nimbus.procedures.models import Procedure
+from nimbus.computers.models import Computer
+
 
 @login_required
 def home(request):
+
+    job_bytes = Job.get_bytes_from_last_jobs()
+    job_files = Job.get_files_from_last_jobs()
+
     table1 = {}
-    table1['title'] = u"Quantidade de backups executados por armazenamento"
+    table1['title'] = u"Dados armazenados por dia"
     table1['area'] = "48%"
     table1['type'] = "area"
-    table1['header'] = ["10/02/2010", "10/03/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010"]
+    table1['header'] = sorted(job_bytes)
     table1['lines'] = {
-        "Principal": ["20", "22", "27", "25", "35", "21", "25", "35", "21"],
-        "Secundário": ["17", "20", "28", "31", "26", "20", "31", "26", "20"]}
-    
+        "Bytes": map( operator.itemgetter(1), sorted(job_bytes.items())),
+        "Arquivos" : map( operator.itemgetter(1), sorted(job_files.items()))}
+
+
+    job_files = Job.get_files_from_last_jobs()
     table2 = {}
-    table2['title'] = u"Bytes trafegados no backup Offsite"
-    table2['width'] = "48%"
+    table2['title'] = u"Quantidade de arquivos realizados backup"
+    table2['area'] = "48%"
     table2['type'] = "area"
-    table2['header'] = ["10/02/2010", "10/03/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010", "10/02/2010"]
+    table2['header'] = sorted(job_files)
     table2['lines'] = {
-        "Out": ["145", "197", "244", "37", "397", "233", "791", "981", "112"],
-        "In": ["17", "20", "28", "31", "26", "20", "31", "26", "20"]}
+        "Bytes": map( operator.itemgetter(1), sorted(job_files.items())) }
 
 
+    
     diskinfo = systeminfo.DiskInfo("/")
     diskusage = diskinfo.get_usage()
     diskfree = 100 - diskinfo.get_usage()
@@ -42,8 +54,49 @@ def home(request):
     table3['lines'] = {
         "Disponível": [diskfree],
         "Ocupado": [diskusage]}
+
+
+    memory = systeminfo.get_memory_usage()
+    memory_free = 100 - memory
+
     
+    table4 = {}
+    table4['title'] = u"Uso da memória"
+    table4['width'] = "48%"
+    table4['type'] = "pie"
+    table4['header'] = ["Gigabytes"]
+    table4['lines'] = {
+        "Disponível": [memory_free],
+        "Ocupado": [memory]}
+
+
+    cpu = systeminfo.get_cpu_usage()
+    cpu_free = 100 - memory
+
     
+    table5 = {}
+    table5['title'] = u"Uso da CPU"
+    table5['width'] = "48%"
+    table5['type'] = "pie"
+    table5['header'] = ["Clocks"]
+    table5['lines'] = {
+        "Disponível": [cpu_free],
+        "Em uso": [cpu]}
+
+    offsite_usage = 55 #TODO
+    offsite_free = 45
+
+    
+    table6 = {}
+    table6['title'] = u"Uso do Offsite"
+    table6['width'] = "48%"
+    table6['type'] = "pie"
+    table6['header'] = ["GB"]
+    table6['lines'] = {
+        "Disponível": [offsite_free],
+        "Em uso": [offsite_usage]}
+
+   
     
     # Dados de content:
     # - type
@@ -51,64 +104,56 @@ def home(request):
     # - date
     # - message
     
-    disponibilidade_dispositivos = [{
-        'title': u'Disponibilidade dos dispositivos',
-        'content': [
-            {'type': 'error', 'label': u'Armazenamento Principal', 'date': None, 'message': u'Indisponibilidade para acesso local'},
-            {'type': 'ok', 'label': u'Armazenamento Secundário', 'date': None, 'message': None},
-            {'type': 'warn', 'label': u'Armazenamento Terciário', 'date': None, 'message': u'Acesso temporáriamente indisponível'},
-        ]
-    }]
-    
-    disponibilidade_offsite = [{
-        'title': u'Disponibilidade do offsite',
-        'content': [
-            {'type': 'ok', 'label': 'Backup offsite', 'date': None}
-        ]
-    }]
-    
+
+
+    last_jobs = Job.objects.all()\
+                    .order_by('endtime').distinct()[:5]
+
+
+    last_procedures_content = []
+    try:
+        for job in last_jobs:
+            last_procedures_content.append({
+                'type' : job.status_friendly,
+                'label' : job.procedure.name,
+                'date' : job.endtime,
+                'message' : u'Computador : %s' % job.client.computer.name
+            })
+    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
+        pass
+
+
+    errors_jobs = Job.objects.filter(jobstatus__in=('e','E','f'))\
+                    .order_by('endtime').distinct()[:5]
+
+
+    errors_procedures_content = []
+    try:
+        for job in errors_jobs:
+            errors_procedures_content.append({
+                'type' : job.status_friendly,
+                'label' : job.procedure.name,
+                'date' : job.endtime,
+                'message' : u'Computador : %s' % job.client.computer.name
+            })
+    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
+        pass
+
+
+   
     backups_com_falhas = [{
         'title': u'Últimos backups executados',
-        'content': [
-            {'type': 'ok', 'label': 'Servidor Web', 'date': '19/09/2010 10:25', 'message': '13 arquivos'},
-            {'type': 'ok', 'label': 'Sala A - Comp 1', 'date': '19/09/2010 10:15', 'message': '5 arquivos'},
-            {'type': 'warn', 'label': 'Diretor financeiro', 'date': '19/09/2010 07:35', 'message': '72 arquivos'},
-            {'type': 'ok', 'label': 'Servidor de banco de dados', 'date': '19/09/2010 10:25', 'message': '13 arquivos'},
-            {'type': 'warn', 'label': 'Diretor comercial', 'date': '19/09/2010 10:15', 'message': '5 arquivos'},
-        ]
-    }, {
+        'content': last_procedures_content  }, {
         'title': u'Backups com falha',
-        'content': [
-            {'type': 'error', 'label': 'Servidor Web', 'date': '19/09/2010 10:25', 'message': ''},
-            {'type': 'warn', 'label': 'Sala A - Comp 1', 'date': '19/09/2010 10:15', 'message': ''},
-            {'type': 'warn', 'label': 'Diretor financeiro', 'date': '19/09/2010 07:35', 'message': ''},
-        ]
+        'content': errors_procedures_content   
     }]
     
-    banco_de_dados = [{
-        'title': u'Banco de dados',
-        'content': [
-            {'type': 'ok', 'label': u'Banco de dados principal', 'date': None, 'message': ''},
-            {'type': 'ok', 'label': u'Banco de dados secundário', 'date': None, 'message': ''},
-        ]
-    },
-    {
-        'title': u'Banco de dados',
-        'content': [
-            {'type': 'ok', 'label': u'Banco de dados principal', 'date': None, 'message': ''},
-            {'type': 'ok', 'label': u'Banco de dados secundário', 'date': None, 'message': ''},
-        ]
-    },
-    {
-        'title': u'Banco de dados',
-        'content': [
-            {'type': 'ok', 'label': u'Banco de dados principal', 'date': None, 'message': ''},
-            {'type': 'ok', 'label': u'Banco de dados secundário', 'date': None, 'message': ''},
-        ]
-    }]
-    
+      
     # extra_content = {'table1': table1, 'table2': table2}
     return render_to_response(request, "home.html", locals())
+
+
+
 
 def historico(request):
     table1 = {}

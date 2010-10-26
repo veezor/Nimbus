@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from django.db import models
 
 
+
+
+
 class Client(models.Model):
     clientid = models.IntegerField(primary_key=True, db_column='ClientId') # Field name made lowercase.
     name = models.TextField(unique=True, db_column='Name') # Field name made lowercase.
@@ -15,6 +18,14 @@ class Client(models.Model):
     jobretention = models.BigIntegerField(null=True, db_column='JobRetention', blank=True) # Field name made lowercase.
     class Meta:
         db_table = u'Client'
+
+
+    @property
+    def computer(self):
+        from nimbus.computers.models import Computer
+        client_name = self.name.split('_')[0]
+        return Computer.objects.get(uuid__uuid_hex=client_name)
+
 
 
 
@@ -131,6 +142,23 @@ class Job(models.Model):
         return result
 
 
+
+    @property
+    def procedure(self):
+        from nimbus.procedures.models import Procedure
+        procedure_name = self.name.split('_')[0]
+        return Procedure.objects.get(uuid__uuid_hex=procedure_name)
+
+
+    @property
+    def status_friendly(self):
+        if self.jobstatus in ('T', 'W'):
+            return 'ok'
+
+        if self.jobstatus in ('e', 'E', 'f'):
+            return 'error'
+
+        return 'warn'
 
 
 
