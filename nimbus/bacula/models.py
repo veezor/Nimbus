@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import models
 
@@ -69,6 +69,72 @@ class Job(models.Model):
     priorjobid = models.IntegerField(null=True, db_column='PriorJobId', blank=True) # Field name made lowercase.
     purgedfiles = models.IntegerField(null=True, db_column='PurgedFiles', blank=True) # Field name made lowercase.
     hasbase = models.IntegerField(null=True, db_column='HasBase', blank=True) # Field name made lowercase.
+
+
+    @classmethod
+    def get_jobs_by_day(cls, date):
+        return cls.objects.filter(realendtime__day = date.day,
+                                  realendtime__month = date.month,
+                                  realendtime__year = date.year,
+                                  type='B')
+
+    @classmethod
+    def get_jobs_by_day_between(cls, start, end):
+        diff = end - start
+        days = diff.days
+        oneday = timedelta(1)
+        day = start
+        count = 0
+
+        result = []
+
+        while count < days:
+            result.append( (day, cls.get_jobs_by_day(day)) )
+            day = day + oneday
+            count += 1
+
+        return result
+
+
+    @classmethod
+    def get_jobs_from_last_seven_days(cls):
+
+        now = datetime.now()
+        start = now - timedelta(6)
+        start = datetime(now.year, now.month, now.day)
+        return cls.get_jobs_by_day_between(start, now)
+
+
+    @classmethod
+    def get_files_from_last_jobs(cls):
+        jobs_by_day = cls.get_jobs_from_last_seven_days()
+        result = {}
+
+        for day, jobs in jobs_by_day:
+            files = jobs.aggregate(total=models.Sum('jobfiles'))
+            nfiles = files['total'] or 0
+            result[day] = nfiles
+
+        return result
+
+
+    @classmethod
+    def get_bytes_from_last_jobs(cls):
+        jobs_by_day = cls.get_jobs_from_last_seven_days()
+        result = {}
+
+        for day, jobs in jobs_by_day:
+            files = jobs.aggregate(total=models.Sum('jobbytes'))
+            nfiles = files['total'] or 0
+            result[day] = nfiles
+
+        return result
+
+
+
+
+
+
 
     @property
     def duration(self):
