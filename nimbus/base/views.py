@@ -2,7 +2,10 @@
 # Create your views here.
 
 
+import systeminfo
+
 from django.contrib.auth.decorators import login_required
+
 from nimbus.shared.views import render_to_response
 
 @login_required
@@ -25,14 +28,22 @@ def home(request):
         "Out": ["145", "197", "244", "37", "397", "233", "791", "981", "112"],
         "In": ["17", "20", "28", "31", "26", "20", "31", "26", "20"]}
 
+
+    diskinfo = systeminfo.DiskInfo("/")
+    diskusage = diskinfo.get_usage()
+    diskfree = 100 - diskinfo.get_usage()
+
+    print diskusage
+    print diskfree
+
     table3 = {}
     table3['title'] = u"Ocupação do disco"
     table3['width'] = "48%"
     table3['type'] = "pie"
     table3['header'] = ["Gigabytes"]
     table3['lines'] = {
-        "Disponível": ["320"],
-        "Ocupado": ["780"]}
+        "Disponível": [diskfree],
+        "Ocupado": [diskusage]}
     
     
     
