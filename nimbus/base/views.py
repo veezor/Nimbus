@@ -33,8 +33,6 @@ def home(request):
     diskusage = diskinfo.get_usage()
     diskfree = 100 - diskinfo.get_usage()
 
-    print diskusage
-    print diskfree
 
     table3 = {}
     table3['title'] = u"Ocupação do disco"
