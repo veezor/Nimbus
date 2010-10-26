@@ -108,7 +108,7 @@ def create_default_device(storage):
 
     if storage.devices.count() == 0:
         device = Device.objects.create(name="device default",
-                                       archive="/var/bacula/archives/",
+                                       archive="/bacula/",
                                        storage=storage)
         storage.devices.add(device)
 
