@@ -5,13 +5,16 @@ from os import path
 
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_save
 
 from nimbus.bacula.models import Job, Client
 from nimbus.base.models import BaseModel
 from nimbus.config.models import Config
 from nimbus.shared import utils, enums, signals
 from nimbus.libs.template import render_to_file, render_to_string
+
+
+import keymanager
 
 
 OS = ( (os,os) for os in enums.operating_systems)
@@ -31,6 +34,16 @@ class ComputerGroup(models.Model):
         return self.name
 
 
+class CryptoInfo(models.Model):
+    key = models.CharField( max_length=2048, unique=True, 
+                             blank=False, null=False)
+    certificate = models.CharField( max_length=2048, unique=True, 
+                             blank=False, null=False)
+    pem = models.CharField( max_length=4096, unique=True, 
+                             blank=False, null=False)
+
+
+
 class Computer(BaseModel):
 
     name = models.CharField( max_length=255, unique=True, 
@@ -47,6 +60,8 @@ class Computer(BaseModel):
     groups = models.ManyToManyField(ComputerGroup, related_name="computers",
                                     blank=True, null=True)
     active = models.BooleanField(editable=False)
+    crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False, 
+                                    unique=True, editable=False)
 
 
     def _get_crypt_file(self, filename):
@@ -102,7 +117,7 @@ class Computer(BaseModel):
                                 .order_by('endtime').distinct()[:15]
 
     def __unicode__(self):
-       return "%s (%s)" % (self.name, self.address)
+        return "%s (%s)" % (self.name, self.address)
 
 
 
@@ -131,6 +146,17 @@ def remove_computer_file(computer):
     utils.remove_or_leave(filename)
 
 
+def generate_keys(computer):
 
+    try:
+        computer.crypto_info
+    except CryptoInfo.DoesNotExist, error:
+        key, cert, pem = keymanager.generate_all_keys(settings.NIMBUS_SSLCONFIG)
+        info = CryptoInfo.objects.create(key=key, certificate=cert, pem=pem)
+        computer.crypto_info = info
+
+
+
+signals.connect_on( generate_keys, Computer, pre_save)
 signals.connect_on( update_computer_file, Computer, post_save)
 signals.connect_on( remove_computer_file, Computer, post_delete)

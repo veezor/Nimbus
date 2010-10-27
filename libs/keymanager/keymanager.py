@@ -6,53 +6,64 @@
 import os
 from os.path import join
 import subprocess
+import tempfile
 
 import encryptdevicemanager as EncDeviceManager
 
 
 ENCRYPT_DEVICE = "/var/nimbus/strongbox.crypto"
 MOUNTPOINT = "/media/strongbox"
-OPENSSLCONFIG = "/etc/nimbus/ssl.conf"
 
 
 
-def generate_pem(prefix, keyfile, certfile):
-    f = file(keyfile)
-    keycontent = f.read()
-    f.close()
-
-    f = file(certfile)
-    certcontent = f.read()
-    f.close()
-
-
-    filepem = file( join( prefix, "client.pem"), "w")
-    filepem.write( keycontent)
-    filepem.write( certcontent)
-    filepem.close()
+def generate_pem(key, certificate):
+    return key + certificate
 
 
 
-
-def generate_and_save_keys(prefix):
-
-    keyfilename = join(prefix,  "client.key")
-    cmd = subprocess.Popen(["openssl", "genrsa", "-out", keyfilename, "2048"],
+def generate_key(filename):
+    cmd = subprocess.Popen(["openssl", "genrsa", "-out", filename, "2048"],
                            stdout=subprocess.PIPE)
     cmd.communicate()
 
+    with file(filename) as f:
+        content = f.read()
 
-    certfilename = join(prefix,  "client.cert")
+    return content
+
+
+
+def generate_certificate(keyfilename, filename, sslconfig):
     cmd = subprocess.Popen(["openssl", "req", "-new", 
                             "-key", keyfilename, "-x509",
-                            "-config", OPENSSLCONFIG,
-                            "-out",certfilename],
+                            "-config", sslconfig,
+                            "-out", filename],
                             stdout=subprocess.PIPE)
     cmd.communicate()
 
+    with file(filename) as f:
+        content = f.read()
 
-    generate_pem( prefix, keyfilename, certfilename)
-    return True
+    return content
+
+
+
+def generate_all_keys(sslconfig, prefix=None):
+
+    if prefix:
+        keyfilename = join(prefix,  "client.key")
+        certfilename = join(prefix,  "client.cert")
+    else:
+        keyfilename = tempfile.mktemp()
+        certfilename = tempfile.mktemp()
+
+    key = generate_key(keyfilename)
+    cert = generate_certificate(keyfilename, certfilename, sslconfig)
+    pem = generate_pem(key, cert)
+
+    return key, cert, pem
+
+
 
 
 class KeyManager(object):

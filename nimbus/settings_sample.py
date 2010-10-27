@@ -39,8 +39,14 @@ NIMBUS_MANAGER_URL = "http://localhost:8888"
 ROOT_PATH = "/"
 
 
-NIMBUS_ETC_DIR = join(ROOT_PATH, "etc/nimbus")
-NIMBUS_HOME_DIR = join(ROOT_PATH, "var/nimbus/")
+
+NIMBUS_ETC_DIR = join(ROOT_PATH, "etc", "nimbus")
+NIMBUS_HOME_DIR = join(ROOT_PATH, "var", "nimbus")
+
+NIMBUS_SSLCONFIG = join(NIMBUS_ETC_DIR, "ssl.conf")
+
+
+
 NIMBUS_DEPLOY_PATH = "/var/www"
 
 

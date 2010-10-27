@@ -31,10 +31,12 @@ def new(request):
             if name == '':
                 name = u"Auto adição"
 
-            computer = Computer.objects.create(name = name,
-                                               address = request.META['REMOTE_ADDR'],
-                                               operation_system=os,
-                                               description="Computador identificado automaticamente")
+            computer = Computer(name = name,
+                                 address = request.META['REMOTE_ADDR'],
+                                 operation_system=os,
+                                 description="Computador identificado automaticamente")
+            computer.save()
+
             return HttpResponse(status=200)
         except (KeyError, IntegrityError), e:
             return HttpResponse(status=400)
@@ -102,7 +104,6 @@ def group_add(request):
         group = ComputerGroup(name=name)
         group.save()
     except Exception, e:
-        print e
         response = dict(message='error')
     else:
         response = dict(message='success')
