@@ -24,7 +24,7 @@
         </div>
         {% endif %}
     
-        <form method="post" action="{% url nimbus.network.views.redirect_after_update %}" id="network_config">
+        <form method="post" action="{% url nimbus.network.views.network_conf %}" id="network_config">
             {% include "form.html" %}
             <p><input type="submit" class="submit" value="Confirm" /></p>
         </form>
