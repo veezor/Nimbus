@@ -1,8 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+
 # Create your views here.
 
+from django.http import Http404, HttpResponse
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
+from django.db import IntegrityError
 
 from nimbus.storages.models import Storage
 from nimbus.storages.models import Device
@@ -21,15 +27,32 @@ from nimbus.shared.forms import form
 #                                         extra_context = extra_context,
 #                                         post_save_redirect = "/storages/list")
 
+
+def new(request):
+
+    if request.method == "POST":
+        try:
+            password = request.POST['password']
+            
+            name = request.META['REMOTE_HOST']
+            if name == '':
+                name = u"Auto adição"
+
+            storage =  Storage(name = name,
+                                address = request.META['REMOTE_ADDR'],
+                                password= request.POST['password'],
+                                description="Armazenamento identificado automaticamente")
+            storage.save()
+
+            return HttpResponse(status=200)
+        except (KeyError, IntegrityError), e:
+            return HttpResponse(status=400)
+
+
+
 def add(request):
     title = u"Adicionar armazenamento"
     storages = Storage.objects.filter(active=False)
-    if request.method == "POST":
-        print request.POST
-        # computer_id
-        messages.success(request, u"Armazenamento ativado com sucesso.")
-        return redirect('nimbus.storages.views.list')
-
     return render_to_response(request, "storages_add.html", locals())
 
 
@@ -79,18 +102,17 @@ def view_computer(request, object_id):
 
 def activate(request, object_id):
     storage = Storage.objects.get(id=object_id)
-    storage.active = 1
+    storage.active = True
     storage.save()
     
-    # messages.success(u'Armazenamento ativado com sucesso.')
+    messages.success(request, u'Armazenamento ativado com sucesso.')
     return redirect('/storages/list')
 
 
 def deactivate(request, object_id):
     storage = Storage.objects.get(id=object_id)
-    storage.active = 0
+    storage.active = False
     storage.save()
 
-    # messages.success(u'Armazenamento ativado com sucesso.')
     return redirect('/storages/list')
 

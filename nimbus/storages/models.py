@@ -82,7 +82,7 @@ def update_storage_file(storage):
 
     filename = settings.BACULASD_CONF 
 
-    if storage.is_local:
+    if storage.is_local and storage.active:
         try:
             logger = logging.getLogger(__name__)
 
@@ -115,38 +115,42 @@ def create_default_device(storage):
 
 def update_device_file(device):
 
-    name = device.bacula_name
+    if device.storage.active:
 
-    filename = path.join( settings.NIMBUS_DEVICES_DIR, 
-                          name)
-    
-    storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
-                          name)
+        name = device.bacula_name
 
-    render_to_file( filename,
-                    "device",
-                    name=name,
-                    archive_device=device.archive)
+        filename = path.join( settings.NIMBUS_DEVICES_DIR, 
+                              name)
+        
+        storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
+                              name)
 
-    render_to_file( storagefile,
-                    "storages",
-                    devices=Device.objects.all())
+        render_to_file( filename,
+                        "device",
+                        name=name,
+                        archive_device=device.archive)
 
-
-
-
+        render_to_file( storagefile,
+                        "storages",
+                        devices=Device.objects.all())
 
 
-def remove_device_file(instance):
-    name = device.bacula_name
 
-    filename = path.join( settings.NIMBUS_DEVICES_DIR, 
-                          name)
-    storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
-                          name)
 
-    utils.remove_or_leave(filename)
-    utils.remove_or_leave(storagefile)
+
+
+def remove_device_file(device):
+
+    if device.storage.active:
+        name = device.bacula_name
+
+        filename = path.join( settings.NIMBUS_DEVICES_DIR, 
+                              name)
+        storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
+                              name)
+
+        utils.remove_or_leave(filename)
+        utils.remove_or_leave(storagefile)
 
 
 
