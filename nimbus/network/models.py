@@ -94,7 +94,8 @@ def update_networks_file(interface):
 
 
     Pool = ThreadPool.get_instance()
-    Pool.add_job( callable, (interface,), {} )
+    if Pool:
+        Pool.add_job( callable, (interface,), {} )
 
 
 signals.connect_on( update_networks_file, NetworkInterface, post_save )
