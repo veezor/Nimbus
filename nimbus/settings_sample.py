@@ -77,6 +77,7 @@ LOG_DEBUG = True
 SERVE_STATIC_FILES = True
 
 
+NIMBUS_CLIENT_PORT = 11110
 # END NIMBUS
 
 # Local time zone for this installation. Choices can be found here:

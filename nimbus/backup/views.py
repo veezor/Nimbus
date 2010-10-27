@@ -6,8 +6,9 @@ import os
 from glob import glob
 from time import strftime, strptime
 import simplejson
+import xmlrpclib
 
-
+from django.conf import settings
 from django.http import HttpResponse
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -359,10 +360,6 @@ def add(request):
         # }
 
 
-def is_dir(name):
-    if os.path.isdir(name):
-        return name + "/" 
-    return name
 
 
 def get_tree(request):
@@ -370,9 +367,13 @@ def get_tree(request):
     if request.method == "POST":
         path = request.POST['path']
         computer_id = request.POST['computer_id']
-        files = glob(path + "*")
+
+        computer = Computer.objects.get(id=computer_id)
+
+        url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
+        proxy = xmlrpclib.ServerProxy(url)
+        files = proxy.list_dir(path)
         files.sort()
-        files = map(is_dir, files)
         response = simplejson.dumps(files)
         return HttpResponse(response, mimetype="text/plain")
     

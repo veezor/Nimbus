@@ -4,10 +4,12 @@
 
 import os
 import simplejson
+import xmlrpclib
 from glob import glob
 from datetime import datetime
 
 
+from django.conf import settings
 from django.core import serializers
 from django.http import HttpResponse 
 from django.shortcuts import redirect
@@ -125,16 +127,20 @@ def get_tree(request):
 def get_client_tree(request):
 
     if request.method == "POST":
+
         path = request.POST['path']
         computer_id = request.POST['computer_id']
-        files = glob(path + "*")
-        files = [ f for f in files if os.path.isdir(f) ]
+
+        computer = Computer.objects.get(id=computer_id)
+
+        url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
+        proxy = xmlrpclib.ServerProxy(url)
+        files = proxy.list_dir(path)
         files.sort()
-        files = [ (f + "/") for f in files ]
         response = simplejson.dumps(files)
         return HttpResponse(response, mimetype="text/plain")
 
-    
+           
 
 
 def get_tree_search_file(request):
