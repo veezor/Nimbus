@@ -192,7 +192,10 @@ INSTALLED_APPS = (
     'nimbus.timezone',
     'nimbus.offsite',
     'nimbus.wizard',
-    'nimbus.computers'
+    'nimbus.computers',
+    'nimbus.backup',
+    'nimbus.restore',
+    'nimbus.system'
 )
 
 if DEBUG:
