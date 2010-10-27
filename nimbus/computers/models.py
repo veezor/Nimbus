@@ -124,26 +124,31 @@ class Computer(BaseModel):
 def update_computer_file(computer):
     """Computer update file"""
 
-    name = computer.bacula_name
+
+    if computer.active:
+
+        name = computer.bacula_name
 
 
-    filename = path.join( settings.NIMBUS_COMPUTERS_DIR, 
-                          name)
+        filename = path.join( settings.NIMBUS_COMPUTERS_DIR, 
+                              name)
 
-    render_to_file( filename,
-                    "client",
-                    name=name,
-                    ip=computer.address,
-                    password=computer.password)
+        render_to_file( filename,
+                        "client",
+                        name=name,
+                        ip=computer.address,
+                        password=computer.password)
 
 
 
 def remove_computer_file(computer):
     """Computer remove file"""
 
-    filename = path.join( settings.NIMBUS_COMPUTERS_DIR, 
-                          computer.bacula_name)
-    utils.remove_or_leave(filename)
+    if computer.active:
+
+        filename = path.join( settings.NIMBUS_COMPUTERS_DIR, 
+                              computer.bacula_name)
+        utils.remove_or_leave(filename)
 
 
 def generate_keys(computer):
