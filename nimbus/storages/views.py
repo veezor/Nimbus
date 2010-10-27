@@ -34,8 +34,8 @@ def new(request):
         try:
             password = request.POST['password']
             
-            name = request.META['REMOTE_HOST']
-            if name == '':
+            name = request.META.get('REMOTE_HOST')
+            if not name:
                 name = u"Auto adição"
 
             storage =  Storage(name = name,

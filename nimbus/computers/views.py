@@ -27,8 +27,8 @@ def new(request):
             if os not in enums.operating_systems:
                 return HttpResponse(status=400)
             
-            name = request.META['REMOTE_HOST']
-            if name == '':
+            name = request.META.get('REMOTE_HOST')
+            if not name:
                 name = u"Auto adição"
 
             computer = Computer(name = name,
