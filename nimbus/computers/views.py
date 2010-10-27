@@ -2,16 +2,42 @@
 
 import simplejson
 
+from django.http import Http404, HttpResponse
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.core import serializers
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.db import IntegrityError
 
 from nimbus.computers.models import Computer, ComputerGroup
 from nimbus.shared.views import render_to_response
+from nimbus.shared import enums
 from nimbus.shared.forms import form
+
+
+
+
+def new(request):
+
+    if request.method == "POST":
+        try:
+            os = request.POST['os']
+            if os not in enums.operating_systems:
+                return HttpResponse(status=400)
+            
+            name = request.META['REMOTE_HOST']
+            if name == '':
+                name = u"Auto adição"
+
+            computer = Computer.objects.create(name = name,
+                                               address = request.META['REMOTE_ADDR'],
+                                               operation_system=os,
+                                               description="Computador identificado automaticamente")
+            return HttpResponse(status=200)
+        except (KeyError, IntegrityError), e:
+            return HttpResponse(status=400)
 
 
 
@@ -19,11 +45,6 @@ from nimbus.shared.forms import form
 def add(request):
     title = u"Adicionar computador"
     computers = Computer.objects.filter(active=False)
-    if request.method == "POST":
-        print request.POST
-        # computer_id
-        messages.success(request, u"Computador ativado com sucesso.")
-        return redirect('nimbus.computers.views.list')
     
     return render_to_response(request, "computers_add.html", locals())
 
@@ -102,11 +123,11 @@ def group_list(request):
 
 def activate(request, object_id):
     computer = Computer.objects.get(id=object_id)
-    computer.active = 1
+    computer.active = True
     computer.save()
 
-    # messages.success(u'Armazenamento ativado com sucesso.')
-    return redirect('/computers/list')
+    messages.success(request, u'Computador ativado com sucesso.')
+    return redirect('nimbus.computers.views.list')
 
 
 def deactivate(request, object_id):
