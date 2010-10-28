@@ -7,3 +7,4 @@ webservices/manager/binary
 deb/var/nimbus/custom
 deb/etc/
 *.deb
+nimbus/settings.py
