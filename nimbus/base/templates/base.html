@@ -133,7 +133,7 @@
                             <li><a href="/system/network_tool/ping/">Ping</a></li>
                             <li><a href="/system/network_tool/traceroute/">Traceroute</a></li>
                             <li><a href="/system/network_tool/nslookup/">NSLookup</a></li>
-                            <li><a href="/system/stat/">Estado do sistema</a></li>
+                            <!-- <li><a href="/system/stat/">Estado do sistema</a></li> -->
                             <li><a href="/system/security_copy/">Cópia de segurança</a></li>
                             <li><a href="/recovery/start">Recuperação do sistema</a></li>
                             <li><a href="/system/umount">Remover dispositivo externo</a></li>
@@ -180,14 +180,7 @@
 			        <small>Horário</small><br/>
 			        <span id="actual_time">{% now "H:i:s" %}</span>
 			    </div>
-				<p class="user">
-				    <div class="status" style="background: url(/media/lib/images/status_bg_ok.png) left; width: 122px; height: 40px; float: right; margin-top: 5px;">
-				        <div style="margin-top: 8px; padding-left: 40px; color: #666; line-height: 1em">
-				            Normal<br/>
-				            <small><a href="/base/home" style="color: blue">Histórico</a></small>
-				        </div>
-				    </div>
-				</p>
+			    {% include "status_header.html" %}
 			</div>		<!-- #header ends -->
 			
             {% if messages %}

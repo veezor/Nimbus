@@ -1288,3 +1288,27 @@ a:hover {
 .inner_block { float: left; }
 .inner_block.first { margin: 0; }
 .inner_block.last { float: right; margin: 0; }
+
+
+.status_header {
+    background: url(/media/lib/images/status_bg.png) left;
+    width: 122px;
+    height: 40px;
+    float: right;
+    margin-top: 5px;
+}
+
+.status_header.error {
+    background: url(/media/lib/images/status_bg_erro.png) left;
+}
+
+.status_header.ok {
+    background: url(/media/lib/images/status_bg_ok.png) left;
+}
+
+.inner_status_header {
+    margin-top: 8px;
+    padding-left: 40px;
+    color: #666;
+    line-height: 1em;
+}
