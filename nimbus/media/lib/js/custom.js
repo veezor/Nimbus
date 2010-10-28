@@ -18,9 +18,18 @@ $(function () {
 		if($(this).attr('rel')) { statsType = $(this).attr('rel'); }
 		else { statsType = 'area'; }
 		
-		$(this).hide().visualize({		
+		console.log($(this).css('width'));
+		if ($(this).css('width') && parseInt($(this).css('width')) < 880) {
+		    width = (parseFloat($(this).css('width')) / 100) * 880 + 'px';
+		} else {
+		    width = '880px';
+		}
+		
+		console.log(width);
+		
+		$(this).hide().visualize({
 			type: statsType,	// 'bar', 'area', 'pie', 'line'
-			width: '880px',
+			width: width,
 			height: '240px',
 			colors: ['#6fb9e8', '#ec8526', '#9dc453', '#ddd74c']
 		});

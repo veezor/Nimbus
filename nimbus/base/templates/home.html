@@ -37,23 +37,29 @@
     		</div>		<!-- .block_head ends -->
 		
     		<div class="block_content">
-                
+                <div class="left">
                 {% with table3 as table %}
 			        {% include "table_chart.html" %}
                 {% endwith %}
+                </div>
 
-             
+                <div class="right">
                 {% with table4 as table %}
 			        {% include "table_chart.html" %}
 			    {% endwith %}
+			    </div>
 
+                <div class="left">
 	            {% with table5 as table %}
 			        {% include "table_chart.html" %}
 			    {% endwith %}
+			    </div>
 
+                <div class="right">
                 {% with table6 as table %}
 			        {% include "table_chart.html" %}
 			    {% endwith %}
+			    </div>
 
        		    <div class="clear"></div>
     		    <p></p>
