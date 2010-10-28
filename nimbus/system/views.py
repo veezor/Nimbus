@@ -54,29 +54,34 @@ def create_or_view_network_tool(request):
 
     if request.method  == "POST":
     
-        type = request.POST['type']
+        rtype = request.POST['type']
         ip = request.POST['ip']
         is_url = False
 
         try:
-            validators.validate_ipv4_address(ip) # ip format x.x.x.x
-        except ValidationError, error: # url format www.xxx.xxx
-            value = ip
-            if not '://' in value:
-                value = 'https://%s' % value
-            urlvalidator = validators.URLValidator()
-            urlvalidator(value)
-            is_url  = True
+            try:
+                validators.validate_ipv4_address(ip) # ip format x.x.x.x
+            except ValidationError, error: # url format www.xxx.xxx
+                value = ip
+                if not '://' in value:
+                    value = 'https://%s' % value
+                urlvalidator = validators.URLValidator()
+                urlvalidator(value)
+                is_url  = True
+
+            if rtype == "ping":
+                rcode, output = networkutils.ping(ip)
+            elif rtype == "traceroute":
+                rcode, output = networkutils.traceroute(ip)
+            elif rtype == "nslookup":
+                if is_url:
+                    output = networkutils.resolve_name(ip)
+                else:
+                    output = networkutils.resolve_addr(ip)
+
+        except ValidationError, error:
+            output = "\n".join(error.messages)
         
-        if type == "ping":
-            rcode, output = networkutils.ping(ip)
-        elif type == "traceroute":
-            rcode, output = networkutils.traceroute(ip)
-        elif type == "nslookup":
-            if is_url:
-                output = networkutils.resolve_name(ip)
-            else:
-                output = networkutils.resolve_addr(ip)
 
         response = simplejson.dumps({'msg': output})
         return HttpResponse(response, mimetype="text/plain")
