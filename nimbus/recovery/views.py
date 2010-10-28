@@ -2,6 +2,7 @@
 
 import simplejson
 
+from django.contrib.auth.decorators import login_required
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.core import serializers
@@ -17,6 +18,7 @@ from nimbus.libs.devicemanager import (StorageDeviceManager,
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 
+@login_required
 def start(request):
     extra_content = {
         'title': u"Recuperação do sistema"
@@ -24,6 +26,7 @@ def start(request):
     return render_to_response(request, "recovery_start.html", extra_content)
 
 
+@login_required
 def select_source(request):
     extra_content = {
         'title': u"Recuperação do sistema"
@@ -42,6 +45,7 @@ def select_source(request):
         raise Http404()
 
 
+@login_required
 def select_storage(request):
     if request.method == "GET":
         extra_content = {
@@ -65,6 +69,7 @@ def select_storage(request):
 
 
 
+@login_required
 def select_instance_name(request):
     if request.method == "GET":
 
@@ -98,6 +103,7 @@ def select_instance_name(request):
 
 
 
+@login_required
 def recover_databases(request):
     extra_content = {
         'title': u"Recuperação do sistema",
@@ -160,6 +166,7 @@ def worker_thread(manager):
     manager.finish()
 
 
+@login_required
 def recover_volumes(request):
     extra_content = {
         'title': u"Recuperação do sistema",
@@ -190,6 +197,7 @@ def recover_volumes(request):
         raise Http404()
 
 
+@login_required
 def finish(request):
     extra_content = {
         'title': u"Recuperação do sistema",

@@ -21,6 +21,7 @@ def timezone_conf(request):
                                  formclass = TimezoneForm )
 
 
+@login_required
 def area_request(request):
     
     if request.is_ajax() and request.method == 'POST':

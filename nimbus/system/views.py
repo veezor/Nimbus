@@ -9,6 +9,7 @@ from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.core import validators
@@ -33,6 +34,7 @@ def worker_thread(storage_manager):
 
 
 
+@login_required
 def network_tool(request, type="ping"):
     if type == "ping":
         title = u"Teste de ping"
@@ -46,6 +48,7 @@ def network_tool(request, type="ping"):
     return render_to_response(request, "system_network_tool.html", extra_content)
 
 
+@login_required
 def create_or_view_network_tool(request):
 
 
@@ -79,6 +82,7 @@ def create_or_view_network_tool(request):
         return HttpResponse(response, mimetype="text/plain")
 
 
+@login_required
 def stat(request):
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
@@ -93,6 +97,7 @@ def stat(request):
 
 
 
+@login_required
 def umount(request):
     if request.method == "GET":
         devices = offsite.list_disk_labels()
@@ -116,17 +121,20 @@ def umount(request):
 # SECURITY COPY
 
 
+@login_required
 def security_copy(request):
     title = u"Cópia de segurança"
     return render_to_response(request, "system_security_copy.html", locals())
 
 
+@login_required
 def select_storage(request):
     devices = offsite.list_disk_labels()
     title = u'Cópia de segurança'
     return render_to_response(request, "system_select_storage.html", locals())
 
 
+@login_required
 def copy_files(request):
 
     if request.method == "POST":

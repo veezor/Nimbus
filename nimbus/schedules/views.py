@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.core import serializers
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 
 from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
 from nimbus.schedules.shared import trigger_class, trigger_map
@@ -23,6 +24,7 @@ from nimbus.shared.enums import days, weekdays, levels, operating_systems
 
 
 
+@login_required
 def edit(request, object_id):
     
     schedule = Schedule.objects.get(id=object_id)

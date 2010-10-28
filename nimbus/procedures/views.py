@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 
+from django.contrib.auth.decorators import login_required
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
@@ -18,6 +19,7 @@ from nimbus.shared.forms import form, form_mapping
 
 
 
+@login_required
 def add(request):
     extra_context = {'title': u"Adicionar procedimento"}
     return create_update.create_object( request, 
@@ -29,6 +31,7 @@ def add(request):
 
 
 
+@login_required
 def edit(request, object_id):
     extra_context = {'title': u"Editar procedimento"}
     return create_update.update_object( request, 
@@ -41,6 +44,7 @@ def edit(request, object_id):
 
 
 
+@login_required
 def delete(request, object_id):
     if request.method == "POST":
         procedure = Procedure.objects.get(id=object_id)
@@ -53,6 +57,7 @@ def delete(request, object_id):
         return render_to_response(request, 'remove.html', locals())
 
 
+@login_required
 def execute(request, object_id):
     
     procedure = Procedure.objects.get(id=object_id)
@@ -61,18 +66,9 @@ def execute(request, object_id):
     return redirect('nimbus.procedures.views.list')
 
 
-# def view(request, object_id):
-#     procedures = Procedure.objects.get(id=object_id)
-#     extra_content = {
-#         'procedure': procedures,
-#         'title': u"Visualizar computador"
-#     }
-#     return render_to_response(request, "procedures_view.html", extra_content)
 
 
-
-
-
+@login_required
 def list(request):
     procedures = Procedure.objects.all()
     title = u"Procedimentos"
@@ -122,6 +118,8 @@ def list(request):
     return render_to_response(request, "procedures_list.html", locals())
 
 
+
+@login_required
 def list_offsite(request):
     procedures = Procedure.objects.filter(offsite_on=True)
     extra_content = {
@@ -131,6 +129,7 @@ def list_offsite(request):
     return render_to_response(request, "procedures_list.html", extra_content)
 
 
+@login_required
 def activate_offsite(request, object_id):
     procedure = Procedure.objects.get(id=object_id)
     procedure.offsite_on = True
@@ -138,6 +137,7 @@ def activate_offsite(request, object_id):
     return redirect('/procedures/list')
 
 
+@login_required
 def deactivate_offsite(request, object_id):
     procedure = Procedure.objects.get(id=object_id)
     procedure.offsite_on = False
@@ -146,12 +146,14 @@ def deactivate_offsite(request, object_id):
 
 
 
+@login_required
 def profile_list(request):
     title = u"Perfis de configuração"
     profiles = Profile.objects.all()
     return render_to_response(request, "profile_list.html", locals())
 
 
+@login_required
 def profile_add(request):
     title = u"Adicionar perfil de configuração"
     
@@ -170,6 +172,7 @@ def profile_add(request):
     return render_to_response(request, "profile_add.html", locals())
 
 
+@login_required
 def profile_edit(request, object_id):
     title = u"Editar perfil de configuração"
     profile = Profile.objects.get(id=object_id)
@@ -194,6 +197,7 @@ def profile_edit(request, object_id):
     return render_to_response(request, "profile_edit.html", locals())
 
 
+@login_required
 def profile_delete(request, object_id):
     if request.method == "POST":
         profile = Profile.objects.get(id=object_id)

@@ -3,6 +3,10 @@
 from os.path import join
 from threading import Thread
 
+
+from datetime import datetime
+import simplejson
+
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -17,6 +21,7 @@ from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.offsite.forms import OffsiteForm
 
 
+@login_required
 def detail(request):
     offsite = Offsite.objects.all()[0]
     uploads = UploadRequest.objects.all()
@@ -39,6 +44,7 @@ def detail(request):
 
 
 
+@login_required
 def edit(request):
     title = u'Editar configurações do offsite'
     
@@ -87,8 +93,6 @@ def copy_files_to_storage(request):
 
 @login_required
 def list_downloadrequest(request):
-    from datetime import datetime
-    import simplejson
     downloads_requests = DownloadRequest.objects.all()
     
     if 'ajax' in request.POST:
@@ -119,8 +123,7 @@ def list_downloadrequest(request):
 
 @login_required
 def list_uploadrequest(request):
-    from datetime import datetime
-    import simplejson
+
     uploads_requests = UploadRequest.objects.all()
     
     if 'ajax' in request.POST:
