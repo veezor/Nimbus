@@ -9,6 +9,7 @@ from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
 
 from nimbus.storages.models import Storage
 from nimbus.storages.models import Device
@@ -28,6 +29,7 @@ from nimbus.shared.forms import form
 #                                         post_save_redirect = "/storages/list")
 
 
+@login_required
 def new(request):
 
     if request.method == "POST":
@@ -50,6 +52,7 @@ def new(request):
 
 
 
+@login_required
 def add(request):
     title = u"Adicionar armazenamento"
     storages = Storage.objects.filter(active=False)
@@ -57,6 +60,7 @@ def add(request):
 
 
 
+@login_required
 def edit(request, object_id):
     extra_context = {'title': u"Editar armazenamento"}
     return create_update.update_object( request, 
@@ -68,6 +72,7 @@ def edit(request, object_id):
                                         post_save_redirect = "/storages/list")
 
 
+@login_required
 def list(request):
     d = {
         "storages" : Storage.objects.filter(active=True),
@@ -80,6 +85,7 @@ def list(request):
     # return render_to_response(request, "list_storages.html", extra_content)
 
 
+@login_required
 def view(request, object_id):
     storage = Storage.objects.get(id=object_id)
     d = {
@@ -89,6 +95,7 @@ def view(request, object_id):
     return render_to_response(request, "storages_view.html", d)
 
 
+@login_required
 def view_computer(request, object_id):
     storage = Storage.objects.get(id=object_id)
     computers = Computer.objects.filter(procedure__profile__storage=storage)
@@ -100,6 +107,7 @@ def view_computer(request, object_id):
     return render_to_response(request, "computers_list.html", d)
 
 
+@login_required
 def activate(request, object_id):
     storage = Storage.objects.get(id=object_id)
     storage.active = True
@@ -109,6 +117,7 @@ def activate(request, object_id):
     return redirect('/storages/list')
 
 
+@login_required
 def deactivate(request, object_id):
     storage = Storage.objects.get(id=object_id)
     storage.active = False

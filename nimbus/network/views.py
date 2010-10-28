@@ -6,6 +6,8 @@ from django.shortcuts import render_to_response
 from nimbus.network.models import NetworkInterface
 from nimbus.shared.views import edit_singleton_model 
 
+
+
 @login_required
 def network_conf(request):
     return edit_singleton_model( request, "myform.html", 
@@ -13,6 +15,7 @@ def network_conf(request):
                                  model = NetworkInterface )
 
 
+@login_required
 def redirect_after_update(request):
     ni = NetworkInterface.objects.all()[0]
     ip_address = ni.address

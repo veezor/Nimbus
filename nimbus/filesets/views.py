@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.core import serializers
 from django.shortcuts import redirect
 
+from django.contrib.auth.decorators import login_required
 from nimbus.filesets.models import FileSet, FilePath
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
@@ -21,6 +22,7 @@ from nimbus.shared import utils
 
 
 
+@login_required
 def edit(request, object_id):
 
 

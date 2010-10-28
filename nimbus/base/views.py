@@ -155,6 +155,7 @@ def home(request):
 
 
 
+@login_required
 def historico(request):
     table1 = {}
     table1['title'] = u"CPU"

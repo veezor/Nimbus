@@ -2,6 +2,8 @@
 
 import simplejson
 
+
+from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
@@ -19,6 +21,7 @@ from nimbus.shared.forms import form
 
 
 
+@login_required
 def new(request):
 
     if request.method == "POST":
@@ -39,11 +42,13 @@ def new(request):
 
             return HttpResponse(status=200)
         except (KeyError, IntegrityError), e:
+            print "ERROR",e
             return HttpResponse(status=400)
 
 
 
 
+@login_required
 def add(request):
     title = u"Adicionar computador"
     computers = Computer.objects.filter(active=False)
@@ -52,6 +57,7 @@ def add(request):
 
 
 
+@login_required
 def edit(request, object_id):
     extra_context = {'title': u"Editar computador"}
     return create_update.update_object( request, 
@@ -64,6 +70,7 @@ def edit(request, object_id):
 
 
 
+@login_required
 def delete(request, object_id):
     if request.method == "POST":
         computer = Computer.objects.get(id=object_id)
@@ -77,6 +84,7 @@ def delete(request, object_id):
 
 
 
+@login_required
 def list(request):
     computers = Computer.objects.filter(active=True)
     extra_content = {
@@ -86,6 +94,7 @@ def list(request):
     return render_to_response(request, "computers_list.html", extra_content)
 
 
+@login_required
 def view(request, object_id):
     computers = Computer.objects.get(id=object_id)
     extra_content = {
@@ -95,6 +104,7 @@ def view(request, object_id):
     return render_to_response(request, "computers_view.html", extra_content)
 
 
+@login_required
 def group_add(request):
     if 'name' in request.POST:
         name = request.POST['name']
@@ -110,6 +120,7 @@ def group_add(request):
     return HttpResponse(simplejson.dumps(response))
 
 
+@login_required
 def group_list(request):
     ajax = request.POST['ajax']
         
@@ -122,6 +133,7 @@ def group_list(request):
     return HttpResponse(response, mimetype="text/plain")
 
 
+@login_required
 def activate(request, object_id):
     computer = Computer.objects.get(id=object_id)
     computer.active = True
@@ -131,6 +143,7 @@ def activate(request, object_id):
     return redirect('nimbus.computers.views.list')
 
 
+@login_required
 def deactivate(request, object_id):
     computer = Computer.objects.get(id=object_id)
     computer.active = 0

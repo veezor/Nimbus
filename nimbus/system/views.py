@@ -9,6 +9,7 @@ from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.core import validators
@@ -33,6 +34,7 @@ def worker_thread(storage_manager):
 
 
 
+@login_required
 def network_tool(request, type="ping"):
     if type == "ping":
         title = u"Teste de ping"
@@ -46,39 +48,46 @@ def network_tool(request, type="ping"):
     return render_to_response(request, "system_network_tool.html", extra_content)
 
 
+@login_required
 def create_or_view_network_tool(request):
 
 
     if request.method  == "POST":
     
-        type = request.POST['type']
+        rtype = request.POST['type']
         ip = request.POST['ip']
         is_url = False
 
         try:
-            validators.validate_ipv4_address(ip) # ip format x.x.x.x
-        except ValidationError, error: # url format www.xxx.xxx
-            value = ip
-            if not '://' in value:
-                value = 'https://%s' % value
-            urlvalidator = validators.URLValidator()
-            urlvalidator(value)
-            is_url  = True
+            try:
+                validators.validate_ipv4_address(ip) # ip format x.x.x.x
+            except ValidationError, error: # url format www.xxx.xxx
+                value = ip
+                if not '://' in value:
+                    value = 'https://%s' % value
+                urlvalidator = validators.URLValidator()
+                urlvalidator(value)
+                is_url  = True
+
+            if rtype == "ping":
+                rcode, output = networkutils.ping(ip)
+            elif rtype == "traceroute":
+                rcode, output = networkutils.traceroute(ip)
+            elif rtype == "nslookup":
+                if is_url:
+                    output = networkutils.resolve_name(ip)
+                else:
+                    output = networkutils.resolve_addr(ip)
+
+        except ValidationError, error:
+            output = "\n".join(error.messages)
         
-        if type == "ping":
-            rcode, output = networkutils.ping(ip)
-        elif type == "traceroute":
-            rcode, output = networkutils.traceroute(ip)
-        elif type == "nslookup":
-            if is_url:
-                output = networkutils.resolve_name(ip)
-            else:
-                output = networkutils.resolve_addr(ip)
 
         response = simplejson.dumps({'msg': output})
         return HttpResponse(response, mimetype="text/plain")
 
 
+@login_required
 def stat(request):
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
@@ -93,6 +102,7 @@ def stat(request):
 
 
 
+@login_required
 def umount(request):
     if request.method == "GET":
         devices = offsite.list_disk_labels()
@@ -116,17 +126,20 @@ def umount(request):
 # SECURITY COPY
 
 
+@login_required
 def security_copy(request):
     title = u"Cópia de segurança"
     return render_to_response(request, "system_security_copy.html", locals())
 
 
+@login_required
 def select_storage(request):
     devices = offsite.list_disk_labels()
     title = u'Cópia de segurança'
     return render_to_response(request, "system_select_storage.html", locals())
 
 
+@login_required
 def copy_files(request):
 
     if request.method == "POST":

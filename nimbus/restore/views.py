@@ -16,6 +16,7 @@ from django.shortcuts import redirect
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from nimbus.computers.models import Computer
 from nimbus.procedures.models import Procedure
@@ -25,6 +26,8 @@ from nimbus.libs.bacula import Bacula
 
 
 
+
+@login_required
 def view(request, object_id=None):
     if object_id:
         computer = Computer.objects.get(id=object_id)
@@ -40,6 +43,7 @@ def view(request, object_id=None):
 
 
 
+@login_required
 def restore_files(request):
     """docstring for restore_files"""
     
@@ -68,6 +72,7 @@ def restore_files(request):
 
 
 
+@login_required
 def get_procedures(request, object_id=None):
     if not object_id:
         message = {'error': 'Erro ao tentar selecionar o computador.'}
@@ -88,6 +93,7 @@ def get_procedures(request, object_id=None):
     
 
 
+@login_required
 def get_jobs(request, procedure_id, data_inicio, data_fim):
     """Return all jobs that match computer, procedure and date."""
     # TODO: Get the jobs...
@@ -114,6 +120,7 @@ def get_jobs(request, procedure_id, data_inicio, data_fim):
 
 
 
+@login_required
 def get_tree(request):
     path = request.POST['path']
     job_id = request.POST['job_id']
@@ -124,6 +131,7 @@ def get_tree(request):
     return HttpResponse(response, mimetype="text/plain")
 
 
+@login_required
 def get_client_tree(request):
 
     if request.method == "POST":
