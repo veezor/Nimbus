@@ -45,13 +45,6 @@
 
     <div class="block_content">
     
-        {% if messages %}
-            {% for msg in messages %}
-                <!-- TODO: Criar tipos de mensagens: errormsg, success, info, warning -->
-                <div class="message success"><p>{{ msg }}</p></div>
-            {% endfor %}
-        {% endif %}
-    
         <form method="post" action="">
             {% include "form.html" %}
             <p><input type="submit" class="submit" value="Confirm" /></p>

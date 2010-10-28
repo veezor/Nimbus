@@ -1,4 +1,4 @@
-function mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name) {
+function mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name, depends) {
     root = $(tree_class + " *[path="+root_path+"]");
     root.addClass('directory_open');
     var ul = $("<ul>").addClass("open").hide();
@@ -43,14 +43,14 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
     ul.slideDown();
     $(tree_class + " a").unbind("click").click(function()
     {
-        update_tree($(this).attr("path"), get_tree_path, tree_class, input_type, input_name);
+        update_tree($(this).attr("path"), get_tree_path, tree_class, input_type, input_name, depends);
         return false;
     });
     
     link.find(".wait").remove();
 }
 
-function update_tree(root_path, get_tree_path, tree_class, input_type, input_name) {
+function update_tree(root_path, get_tree_path, tree_class, input_type, input_name, depends) {
     if (!tree_class) {
         tree_class = '.tree';
     }
@@ -71,6 +71,14 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     computer_id = $('#computer_id').val();
     if (computer_id) {
         attributes['computer_id'] = computer_id;
+    }
+    
+    if (depends == '#computer_id' && !computer_id) {
+        alert('Um computador deve ser selecionado antes.');
+        return False;
+    } else if (depends == '#job_id' && !job_id) {
+        alert('Um job deve ser selecionado antes.');
+        return False;
     }
     
     link = $(tree_class + " *[path="+root_path+"]");
@@ -96,7 +104,8 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     $.post(get_tree_path,
            attributes,
            function(data) {
-               mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name);
+               mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name, depends);
            },
            "json");
+
 }

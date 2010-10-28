@@ -13,13 +13,13 @@
         
         $('#update_tree').click(function()
         {
-            update_tree('/', get_tree_path);
+            update_tree('/', get_tree_path, undefined, undefined, undefined, '#computer_id');
             return false;
         });
 
         $(".tree a").click(function()
         {
-            update_tree($(this).attr("path"), get_tree_path);
+            update_tree($(this).attr("path"), get_tree_path, undefined, undefined, undefined, '#computer_id');
             return false;
         });
     });
