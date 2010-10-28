@@ -176,11 +176,12 @@
 				</ul>
 				
 				<!-- <p class="user">Olá, <a href="#">Administrador</a> | <a href="index.html">Sair do sistema</a></p> -->
-				<div class="time" style="float: right; margin-left: 20px">
+				{% include "status_header.html" %}
+				<div class="align_right" style="float: right; margin-left: 10px; padding-left: 10px"><a href="/session/logout">Logout</a></div>
+				<div class="time align_right" style="float: right; margin-left: 10px; padding-left: 10px; padding-bottom: 17px">
 			        <small>Horário</small><br/>
 			        <span id="actual_time">{% now "H:i:s" %}</span>
 			    </div>
-			    {% include "status_header.html" %}
 			</div>		<!-- #header ends -->
 			
             {% if messages %}

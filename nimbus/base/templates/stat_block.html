@@ -9,6 +9,8 @@ Tipos possíveis: ok, warn, error
         <div>
             {% for c in i.content %}
             <div class="inner_message {% cycle "odd" "even" %}"><img src="/media/icons/{{c.type}}.png" /> {% if c.date %}<small>{{c.date}}</small> -{% endif %} {{c.label}} {% if c.message %}<small>({{c.message}})</small>{% endif %}</div>
+            {% empty %}
+            <div>Não há dado para ser exibido.</div>
             {% endfor %}
         </div>
         <p></p>
