@@ -4,6 +4,7 @@
 import sys
 import urllib
 import urllib2
+import cookielib
 import socket
 
 
@@ -12,41 +13,78 @@ socket.setdefaulttimeout(10)
 
 
 class Notifier(object):
-    URL_FORMAT = "http://%s:%d/management/computers/addrequest"
+    ADD_COMPUTER_URL = "http://%s:%d/computers/new/"
+    LOGIN_URL = "http://%s:%d/session/login/"
 
-    def __init__(self, address, port=80):
+    def __init__(self, username, password, address, port=80):
+        self.username = username
+        self.password = password
         self.ip = address
         self.port = int(port)
+        self.cookie = cookielib.CookieJar()
+        self.cookie_processor = urllib2.HTTPCookieProcessor(self.cookie)
+        self.urlopener = urllib2.build_opener(self.cookie_processor)
+
+
+    def get_url(self, baseurl):
+        return baseurl % ( self.ip, self.port )
+
+
+    def get_computer_data(self):
+        args = { "os" :  self.get_os() }
+        return urllib.urlencode( args.items() )
 
 
     @property
-    def url(self):
-        return self.URL_FORMAT % ( self.ip,
-                                   self.port )
+    def csrftoken(self):
+        handle = self.urlopener.open( self.get_url(self.LOGIN_URL) )
+        content = handle.read()
+        handle.close()
 
-    def get_url_data(self):
-        args = { "os" :  self.get_os() } 
+        for data in self.cookie:
+            if data.name == "csrftoken":
+                return data.value
+
+
+    def get_login_data(self):
+        args = { "csrfmiddlewaretoken" :  self.csrftoken,
+                 "username" : self.username,
+                 "password" : self.password } 
         return urllib.urlencode( args.items() )
+
+
 
     def get_os(self):
         if sys.platform in "win32":
-            return "WIN"
+            return "windows"
         else:
-            return "UNIX"
+            return "unix"
 
-    def run(self):
-        url = urllib2.urlopen( self.url, self.get_url_data())
-        data = url.read()
-        url.close()
+
+    def login(self):
+        handle = self.urlopener.open( self.get_url(self.LOGIN_URL), 
+                                      self.get_login_data() )
+        data = handle.read()
+        handle.close()
+
+
+    def notify_new_computer(self):
+        self.login()
+        handle = self.urlopener.open( self.get_url(self.ADD_COMPUTER_URL), 
+                                      self.get_computer_data() )
+        data = handle.read()
+        handle.close()
 
 
 if __name__ == "__main__":
     try:
         size = len(sys.argv)
-        if size == 2:
-            Notifier(sys.argv[1]).run()
-        elif size == 3:
-            Notifier(sys.argv[1], sys.argv[2]).run()
+        if size == 4:
+            username, password, url = sys.argv[1:]
+            Notifier(username, password, url).notify_new_computer()
+        elif size == 5:
+            username, password, url, port = sys.argv[1:]
+            Notifier(username, password, url, port).notify_new_computer()
         else:
             sys.exit(1)
         sys.exit(0)
