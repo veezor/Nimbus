@@ -8,9 +8,14 @@ from django import forms
 
 
 class OffsiteForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'text'})) 
-    hour = forms.CharField(widget=forms.TextInput(attrs={'class': 'text'})) 
-    upload_rate = forms.CharField(widget=forms.TextInput(attrs={'class': 'text'})) 
+    password = forms.CharField(required=False, initial='none',
+                     widget=forms.PasswordInput(attrs={'class': 'text'})) 
+
+    hour = forms.CharField(required=False, initial='00:00',
+                     widget=forms.TextInput(attrs={'class': 'text'})) 
+
+    upload_rate = forms.CharField(required=False, initial=-1,
+                    widget=forms.TextInput(attrs={'class': 'text'})) 
 
     formfield_callback = make_custom_fields
 
