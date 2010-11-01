@@ -21,11 +21,10 @@ def timezone_conf(request):
                                  formclass = TimezoneForm )
 
 
-@login_required
 def area_request(request):
-    
     if request.is_ajax() and request.method == 'POST':
         country = request.POST.get('country', {})
         areas = sorted(country_timezones.get(country, []))
         response = json.dumps(areas)
+
         return HttpResponse(response, mimetype="application/json")
