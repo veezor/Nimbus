@@ -10,7 +10,7 @@ source initenv.sh;
 makedir "deb/var"
 makedir "deb/etc/init.d"
 makedir "deb/etc/nimbus"
-makedir "deb/etc/nginx/sites-available"
+makedir "deb/etc/cron.daily"
 makedir "deb/etc/nginx/sites-enabled"
 makedir "deb/var/log/nimbus"
 makedir "deb/var/nimbus/deps"
@@ -34,9 +34,9 @@ cd ../..;
 
 
 cp nimbus/confs/nginx-nimbus.site deb/etc/nginx/sites-enabled/default
-cp nimbus/confs/nimbus/cron deb/etc/cron.daily
-cp nimbus/confs/logging.conf deb/etc/nimbus
-cp nimbus/confs/nimbus.initd deb/etc/init.d
+cp nimbus/confs/nimbus.cron deb/etc/cron.daily/nimbus
+cp nimbus/confs/logging.conf deb/etc/nimbus/
+cp nimbus/confs/nimbus.initd deb/etc/init.d/nimbus
 cp webservices/manager/nimbus_manager.conf deb/etc/nimbus
 cp libs/keymanager/conf/ssl.conf deb/etc/nimbus
 cp webservices/manager/init.d/nimbusmanager deb/etc/init.d
@@ -44,5 +44,6 @@ cp webservices/manager/init.d/nimbusmanager deb/etc/init.d
 dpkg-deb -b deb nimbus.deb
 
 rm -rf deb/var/www
+rm -rf deb/etc
 rm -rf deb/var/nimbus/custom
 rm -rf deb/var/nimbusmanager/
