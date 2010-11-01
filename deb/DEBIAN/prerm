@@ -2,5 +2,6 @@
 
 /usr/sbin/userdel nimbus;
 /usr/sbin/update-rc.d -f nimbusmanager remove;
-/usr/bin/truecrypt -t -d -f;
+/usr/sbin/update-rc.d -f nimbus remove;
 /etc/init.d/nimbusmanager stop || echo;
+/etc/init.d/nimbus stop || echo;
