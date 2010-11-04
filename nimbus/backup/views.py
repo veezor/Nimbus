@@ -86,8 +86,9 @@ def backup_form(request, object_id=None):
                 key = "procedure_name"
                 errors[key] = default_errors[key]
             except (Procedure.DoesNotExist), error:
+                offsite_on = request.POST.get('offsite_on')
                 procedure = Procedure(name=procedure_name, 
-                                      offsite_on=request.POST['offsite_on'])
+                                      offsite_on=offsite_on)
         else:
             errors["procedure_name"] = "Você deve inserir o nome do procedimento"
 
@@ -187,7 +188,7 @@ def backup_form(request, object_id=None):
                                                                           level=level)
                                                         modeltriggers.append(trigger)
                                             else:
-                                                trigger = Trigger.objects.create(hour=hour,level=level)
+                                                trigger = Trigger(hour=hour,level=level)
                                                 modeltriggers.append(trigger)
 
 
