@@ -23,6 +23,7 @@ find deb -iname "*~" -exec rm {} \;
 cd nimbus
 cp settings_executable.py settings.py;
 python setup.py build_exe ;
+chmod +x binary/nimbus;
 cp -a binary ../deb/var/www;
 cd ..;
 

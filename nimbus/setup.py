@@ -43,7 +43,7 @@ setup(
         name = "Nimbus",
         version = "1.0",
         description = "Nimbus Cloud Backup",
-        executables = [ Executable("main.py", targetName="nimbus.sh")],
+        executables = [ Executable("main.py", targetName="nimbus")],
         options = { "build_exe": 
                       { "compressed" :  True,
                         "build_exe" : "binary",
