@@ -12,8 +12,8 @@ if [ $(uname) = "Darwin" ] ; then
     STARTDAEMON="sudo launchctl load -w $DAEMON"
 else
     SYSTEM_OS=linux
-    DAEMON=/var/nimbusmanager/nimbus-manager
-    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/log/nimbus/gunicorn.pid "
+    DAEMON=/var/www/nimbus
+    STOPDAEMON="start-stop-daemon --stop --quiet --exec $DAEMON"
     STARTDAEMON="start-stop-daemon --start --exec $DAEMON -b"
 fi
 
