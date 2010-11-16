@@ -53,7 +53,7 @@ setup(
                         "include_in_shared_zip" : False,   
                         "append_script_to_exe" :  True,
                         "packages": packages,
-                        "excludes" : ["email","PIL","flup","django", "gunicorn", "xml", "pytz", "distutils"],
+                        "excludes" : ["email","PIL","django", "xml", "pytz", "gunicorn", "distutils"],
                         "zip_includes" : templates_dir,
                         "include_files" : [ ("media", "media" )],
                       }
