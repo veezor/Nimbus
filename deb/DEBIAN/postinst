@@ -27,8 +27,8 @@ case $1 in
     chmod -R 0775 /etc/nimbus/;
     /etc/init.d/bacula-ctl-dir restart;
     /etc/init.d/bacula-ctl-sd restart;
-    /etc/init.d/nginx restart;
     /etc/init.d/nimbus restart;
-	/etc/init.d/nimbusmanager restart ;;
+	/etc/init.d/nimbusmanager restart ;
+    /etc/init.d/nginx restart;;
 esac
 
