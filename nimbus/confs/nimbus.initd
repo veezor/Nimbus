@@ -13,7 +13,7 @@ if [ $(uname) = "Darwin" ] ; then
 else
     SYSTEM_OS=linux
     DAEMON=/var/www/nimbus
-    STOPDAEMON="start-stop-daemon --stop --quiet --exec $DAEMON"
+    STOPDAEMON="start-stop-daemon --stop --quiet --exec $DAEMON -s KILL"
     STARTDAEMON="start-stop-daemon --start --exec $DAEMON -b"
 fi
 
