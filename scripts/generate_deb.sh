@@ -7,6 +7,7 @@ function makedir(){
 
 source initenv.sh;
 
+makedir "deb/usr/bin"
 makedir "deb/var"
 makedir "deb/etc/init.d"
 makedir "deb/etc/nimbus"
@@ -34,7 +35,8 @@ python setup.py build_exe;
 cp -a binary ../../deb/var/nimbusmanager;
 cd ../..;
 
-
+cp -a apps/unix/client/nimbusclientservice deb/usr/bin
+cp -a apps/unix/client/nimbusclient deb/etc/init.d
 cp nimbus/confs/nginx-nimbus.site deb/etc/nginx/sites-enabled/default
 cp nimbus/confs/nimbus.cron deb/etc/cron.daily/nimbus
 cp nimbus/confs/nimbus.initd deb/etc/init.d/nimbus
