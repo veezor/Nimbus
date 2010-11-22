@@ -3,6 +3,7 @@
 
 
 import os
+import codecs
 import subprocess
 import SocketServer, socket
 from time import sleep
@@ -48,13 +49,15 @@ class NimbusService(object):
         
 
     def save_config(self, config):
-        with file(FDCONF, "w") as f:
+        with codecs.open(FDCONF, "w", "utf-8") as f:
             f.write(config)
         return True
 
 
     def restart_bacula(self):
-        cmd = subprocess.Popen([BACULAFD, "restart"])
+        cmd = subprocess.Popen( [BACULAFD, "restart"], 
+                                stderr=subprocess.PIPE,
+                                stdout=subprocess.PIPE )
         cmd.communicate()
         return True
 

@@ -30,8 +30,8 @@ FileDaemon {
     PKI Keypair = "{{ certificates }}/client.pem"    
     PKI Master Key = "{{ certificates }}/master.cert"   
    {% else %}
-    PKI Keypair = "/etc/bacula/client.pem"    
-    PKI Master Key = "/etc/bacula/master.cert"   
+    PKI Keypair = "/etc/nimbus/client.pem"    
+    PKI Master Key = "/etc/nimbus/master.key"   
    {% endif %}
   
   {% endifequal %}
