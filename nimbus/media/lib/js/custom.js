@@ -18,14 +18,14 @@ $(function () {
 		if($(this).attr('rel')) { statsType = $(this).attr('rel'); }
 		else { statsType = 'area'; }
 		
-		console.log($(this).css('width'));
+        // console.log($(this).css('width'));
 		if ($(this).css('width') && parseInt($(this).css('width')) < 880) {
 		    width = (parseFloat($(this).css('width')) / 100) * 880 + 'px';
 		} else {
 		    width = '880px';
 		}
 		
-		console.log(width);
+        // console.log(width);
 		
 		$(this).hide().visualize({
 			type: statsType,	// 'bar', 'area', 'pie', 'line'
