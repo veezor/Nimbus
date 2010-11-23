@@ -3,6 +3,7 @@
 
 from os import path
 import logging
+import xmlrpclib
 
 from django.db import models
 from django.db.models.signals import post_save, post_delete
@@ -154,7 +155,20 @@ def remove_device_file(device):
 
 
 
+def restart_bacula_storage(model):
+    try:
+        logger = logging.getLogger(__name__)
+        manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
+        stdout = manager.storage_restart()
+        logger.info(stdout)
+    except Exception, error:
+        logger.error("Reload bacula-sd error")
+
+
+
 signals.connect_on( update_storage_file, Storage, post_save)
+signals.connect_on( restart_bacula_storage, Storage, post_save)
 signals.connect_on( create_default_device, Storage, post_save)
 signals.connect_on( update_device_file, Device, post_save)
+signals.connect_on( restart_bacula_storage, Device, post_save)
 signals.connect_on( remove_device_file, Device, post_delete)
