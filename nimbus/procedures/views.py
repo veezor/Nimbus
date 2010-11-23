@@ -16,6 +16,7 @@ from nimbus.schedules.models import Schedule
 from nimbus.filesets.models import FileSet
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
+from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
 
 
 
@@ -160,6 +161,10 @@ def profile_add(request):
     storages = Storage.objects.all()
     schedules = Schedule.objects.all()
     filesets = FileSet.objects.all()
+    
+    days = days_enum
+    weekdays = weekdays_enum
+    levels = levels_enum
     
     if request.method == "POST":
         form = form_mapping(Profile, request.POST)

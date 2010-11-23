@@ -39,6 +39,7 @@
 	<script src="/media/js/progressbar/jquery.ui.core.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/media/js/progressbar/jquery.ui.widget.min.js" type="text/javascript" charset="utf-8"></script>	
 	<script src="/media/js/progressbar/jquery.ui.progressbar.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/media/js/jquery.maskedinput-1.2.2.min.js" type="text/javascript" charset="utf-8"></script>
 
 	
 	
@@ -76,6 +77,8 @@
             
             update_time(d);
             
+            $('.mascara_hora').mask('99:99');
+            $('.mascara_minuto').mask('99');
         });
 	</script>
 	
