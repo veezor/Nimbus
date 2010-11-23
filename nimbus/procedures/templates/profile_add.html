@@ -1,5 +1,32 @@
 {% extends "base.html" %}
 
+
+{% block headtags %}
+<script type="text/javascript" charset="utf-8" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $('.toggle').click(function(){
+            var target = $(this).attr('ref');
+            $(this).parent().parent().find('.' + target).slideToggle();
+        });
+        
+        get_tree_path = "/backup/get_tree/";
+        
+        $('#update_tree').click(function()
+        {
+            update_tree('/', get_tree_path, undefined, undefined, undefined, '#computer_id');
+            return false;
+        });
+
+        $(".tree a").click(function()
+        {
+            update_tree($(this).attr("path"), get_tree_path, undefined, undefined, undefined, '#computer_id');
+            return false;
+        });
+    });
+</script>
+{% endblock %}
+
 {% block page %}
 <div class="block">
 
@@ -287,6 +314,21 @@
         			<h2>Criar novo conjunto de arquivos</h2>
         		</div>		<!-- .block_head ends -->
         		<div class="block_content">
+        		    {% if errors.computer_id %}
+        		    <ul class="errorlist">
+                        <li>{{ errors.computer_id }}</li>
+                    </ul>
+                    {% endif %}
+                    <p>
+                        <label for="computer_id">Computador que será efetuado o backup:</label><br/>
+                        <select class="styled" id="computer_id" name="computer_id">
+                            <option value=""> - Selecione - </option>
+                            {% for computer in computers %}
+                            <option value="{{computer.id}}" {% if computer_id == computer.id %}selected="selected"{% endif %}>{{computer.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
+        		    
                     <p>
                         {% if errors.fileset_name %}
                         <ul class="errorlist" style="">
@@ -318,17 +360,11 @@
                     <p>Selecionar mais arquivos:</p>
                     {% endif %}
 
+                    <div id="mensagem_erro_computador_selecionado" style="display: none"></div>
+
                     <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
                     <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
         		    
-        		    {% if 0 %}
-                    <p>
-                        <label for="fileset_name">Caminhos para backup:</label><br/>
-                        <ol class="filepaths">
-                            <li id="filepath_template" style="display: none"><input type="text" name="fileset_name" id="fileset_name" class="text medium" /> <span class="add"><img src="/media/icons/plus.png" /></span> <span class="del"><img src="/media/icons/minus.png" /></span></li>
-                        </ol>
-                    </p>
-                    {% endif %}
                     <p></p>
         		</div>		<!-- .block_content ends -->
         		<div class="bendl"></div>

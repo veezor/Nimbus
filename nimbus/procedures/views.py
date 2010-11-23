@@ -161,6 +161,7 @@ def profile_add(request):
     storages = Storage.objects.all()
     schedules = Schedule.objects.all()
     filesets = FileSet.objects.all()
+    computers = Computer.objects.all()
     
     days = days_enum
     weekdays = weekdays_enum

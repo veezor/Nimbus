@@ -74,11 +74,13 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     }
     
     if (depends == '#computer_id' && !computer_id) {
-        alert('Um computador deve ser selecionado antes.');
-        return False;
+        $('#mensagem_erro_computador_selecionado').html('Um computador deve ser selecionado antes.').show();
+        return false;
     } else if (depends == '#job_id' && !job_id) {
-        alert('Um job deve ser selecionado antes.');
-        return False;
+        $('#mensagem_erro_computador_selecionado').html('Um job deve ser selecionado antes.').show();
+        return false;
+    } else {
+        $('#mensagem_erro_computador_selecionado').html('').hide();
     }
     
     link = $(tree_class + " *[path="+root_path+"]");

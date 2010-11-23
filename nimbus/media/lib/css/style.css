@@ -1265,6 +1265,15 @@ a:hover {
     padding: 0 5px !important;
 }
 
+#mensagem_erro_computador_selecionado {
+    -moz-border-radius: 5px;
+    background: none repeat scroll 0 0 red;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 7px 5px 2px !important;
+    margin-bottom: 10px;
+}
+
 
 .stat_block .inner_message {
     padding: 5px;
