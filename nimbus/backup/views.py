@@ -318,6 +318,7 @@ def get_tree(request):
         proxy = xmlrpclib.ServerProxy(url)
         files = proxy.list_dir(path)
         files.sort()
+        
         response = simplejson.dumps(files)
         return HttpResponse(response, mimetype="text/plain")
     

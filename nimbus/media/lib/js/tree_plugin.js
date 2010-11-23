@@ -1,4 +1,11 @@
 function mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name, depends) {
+    if (data.type = 'error' && data.message) {
+        $('#mensagem_erro_fileset').html(data.message).show();
+        return false;
+    } else {
+        $('#mensagem_erro_fileset').html('').hide();
+    }
+    
     root = $(tree_class + " *[path="+root_path+"]");
     root.addClass('directory_open');
     var ul = $("<ul>").addClass("open").hide();
@@ -74,13 +81,13 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     }
     
     if (depends == '#computer_id' && !computer_id) {
-        $('#mensagem_erro_computador_selecionado').html('Um computador deve ser selecionado antes.').show();
+        $('#mensagem_erro_fileset').html('Um computador deve ser selecionado antes.').show();
         return false;
     } else if (depends == '#job_id' && !job_id) {
-        $('#mensagem_erro_computador_selecionado').html('Um job deve ser selecionado antes.').show();
+        $('#mensagem_erro_fileset').html('Um job deve ser selecionado antes.').show();
         return false;
     } else {
-        $('#mensagem_erro_computador_selecionado').html('').hide();
+        $('#mensagem_erro_fileset').html('').hide();
     }
     
     link = $(tree_class + " *[path="+root_path+"]");
