@@ -23,8 +23,8 @@ if [ $(uname) = "Darwin" ] ; then
 else
     SYSTEM_OS=linux
     DAEMON=/usr/bin/nimbusclientservice
-    STOPDAEMON="start-stop-daemon --stop --quiet --exec $DAEMON -s KILL"
-    STARTDAEMON="start-stop-daemon --start --exec $DAEMON -b"
+    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/run/nimbusclient.pid"
+    STARTDAEMON="start-stop-daemon --start --exec $DAEMON -b -m --pidfile /var/run/nimbusclient.pid"
 fi
 
 
