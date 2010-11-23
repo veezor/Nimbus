@@ -24,7 +24,7 @@ class FileSet(BaseModel):
 
 
 class FilePath(models.Model):
-    path = fields.ModelPathField(max_length=255, null=False, unique=True)
+    path = fields.ModelPathField(max_length=2048, null=False)
     filesets = models.ManyToManyField(FileSet, related_name="files", null=True, blank=True)
 
     def __unicode__(self):

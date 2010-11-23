@@ -35,11 +35,11 @@ class ComputerGroup(models.Model):
 
 
 class CryptoInfo(models.Model):
-    key = models.CharField( max_length=2048, unique=True, 
+    key = models.CharField( max_length=2048, 
                              blank=False, null=False)
-    certificate = models.CharField( max_length=2048, unique=True, 
+    certificate = models.CharField( max_length=2048, 
                              blank=False, null=False)
-    pem = models.CharField( max_length=4096, unique=True, 
+    pem = models.CharField( max_length=4096, 
                              blank=False, null=False)
 
 

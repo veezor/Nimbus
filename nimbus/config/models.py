@@ -79,34 +79,5 @@ def update_console_file(config):
     logger.info("Arquivo de configuracao do bconsole gerado com sucesso")
 
 
-
-def update_client_file(config):
-
-    filename = path.join( settings.NIMBUS_COMPUTERS_DIR, 
-                          config.director_name)
-
-    render_to_file( filename,
-                    "client",
-                    name=config.director_name,
-                    ip=config.director_address,
-                    password=config.director_password)
-
-
-
-def update_baculafd_file(config):
-
-    render_to_file( settings.BACULAFD_CONF,
-                    "bacula-fd",
-                    director_name=config.director_name,
-                    password=config.director_password,
-                    name=config.director_name,
-                    os="unix",
-                    nimbus=True,
-                    certificates=settings.NIMBUS_CERTIFICATES_DIR)
-
-
-
 signals.connect_on( update_director_file, Config, post_save)
-signals.connect_on( update_baculafd_file, Config, post_save)
-signals.connect_on( update_client_file, Config, post_save)
 signals.connect_on( update_console_file, Config, post_save)

@@ -43,7 +43,8 @@ class Bacula(object):
     def reload(self):
         self.logger.info("Executando reload no bacula")
         try:
-            configcheck.check_baculadir(settings.BCONSOLE_CONF)
+            configcheck.check_baculadir(settings.BACULADIR_CONF)
+            configcheck.check_bconsole(settings.BCONSOLE_CONF)
             output = self.cmd.reload.run()
             return output
         except configcheck.ConfigFileError, error:

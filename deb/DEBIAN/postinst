@@ -10,38 +10,15 @@ case $1 in
 		mkdir /var/log/nimbus;
 	fi;
 
-	if [ ! -e /var/nimbus/custom/config/bacula-sd.conf ];
-	then
-        echo mv /var/nimbus/custom/config/bacula-sd.conf.default /var/nimbus/custom/config/bacula-sd.conf;
-		mv /var/nimbus/custom/config/bacula-sd.conf.default /var/nimbus/custom/config/bacula-sd.conf;
-	fi;
-
-	if [ ! -e /var/nimbus/custom/config/bacula-dir.conf ];
-	then
-        echo mv /var/nimbus/custom/config/bacula-dir.conf.default /var/nimbus/custom/config/bacula-dir.conf;
-		mv /var/nimbus/custom/config/bacula-dir.conf.default /var/nimbus/custom/config/bacula-dir.conf;
-	fi;
-
-	if [ ! -e /var/nimbus/custom/config/bconsole.conf ];
-	then
-        echo mv /var/nimbus/custom/config/bconsole.conf.default /var/nimbus/custom/config/bconsole.conf;
-		mv /var/nimbus/custom/config/bconsole.conf.default /var/nimbus/custom/config/bconsole.conf;
-	fi;
-
-
-
 	echo "/opt/bacula/lib" > /etc/ld.so.conf.d/bacula.conf;
 	/sbin/ldconfig;
 	/usr/sbin/update-rc.d nimbusmanager defaults; 
+	/usr/sbin/update-rc.d nimbus defaults; 
+	/usr/sbin/update-rc.d nimbusclient defaults; 
 	/etc/init.d/mysql start;
 	/usr/bin/mysql -uroot -pn1mbus < /var/nimbus/create.sql 2> /dev/null || echo;
 
-    usermod -G fuse www-data || echo;
-    mkdir /media/strongbox || echo;
-    chown root.fuse /media/strongbox/ || echo;
-    chmod 770 /media/strongbox || echo;
-
-    /var/www/nimbus.fcgi --create-database;
+    /var/www/nimbus --create-database;
     chown -R www-data:www-data /etc/nimbus/;
     chown -R www-data:www-data /var/log/nimbus/;
     chown -R www-data:www-data /var/nimbus/;
@@ -51,9 +28,9 @@ case $1 in
     chmod -R 0775 /etc/nimbus/;
     /etc/init.d/bacula-ctl-dir restart;
     /etc/init.d/bacula-ctl-sd restart;
-    /usr/sbin/a2enmod rewrite;
-    killall -9 nimbus.fcgi||echo;
-    /etc/init.d/apache2 restart;
-	/etc/init.d/nimbusmanager restart ;;
+    /etc/init.d/nimbus restart;
+	/etc/init.d/nimbusmanager restart ;
+	/etc/init.d/nimbusclient restart ;
+    /etc/init.d/nginx restart;;
 esac
 

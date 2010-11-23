@@ -4,15 +4,26 @@
 import os
 import shutil
 from django.conf import settings
-from django.core.management.base import NoArgsCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError
 
-class Command(NoArgsCommand):                                                                                                                                
+class Command(BaseCommand):                                                                                                                                
+    args = "prefix"
     help = "Generate and test nimbus directories."
 
     requires_model_validation = False
 
-    def handle_noargs(self, **options):
-        
+    def handle(self, *args, **options):
+
+        prefix = ""
+
+        if len(args) == 0:
+            pass
+        elif len(args) == 1:
+            prefix = args[0]
+        else:
+            raise CommandError("makeenviron requires just one argument")
+
+
         members = dir(settings)
         directories = [ member for member in members if member.endswith("_DIR") ]
         directories = [ getattr(settings, dr) for dr in directories ]
@@ -20,6 +31,7 @@ class Command(NoArgsCommand):
         
         for d in directories:
             try:
+                d = os.path.sep.join([prefix, d])
                 os.makedirs(d)
             except OSError, error:
                 if (error.strerror == "FileExists" and\
@@ -28,4 +40,4 @@ class Command(NoArgsCommand):
                     raise CommandError("%s is not writable" % d)
 
         shutil.copy( settings.NIMBUS_UNDEPLOYED_LOG_CONF, 
-                     settings.NIMBUS_ETC_DIR)
+                     os.path.sep.join([prefix, settings.NIMBUS_ETC_DIR]))
