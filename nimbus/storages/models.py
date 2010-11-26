@@ -95,7 +95,7 @@ def update_storage_file(storage):
                             port=9102,
                             max_cur_jobs=100,
                             director_name=config.director_name,
-                            director_password=config.director_password,
+                            director_password=storage.password,
                             devices_dir=settings.NIMBUS_DEVICES_DIR)
 
             logger.info("Arquivo de configuracao do storage gerado com sucesso")
@@ -137,6 +137,9 @@ def update_device_file(device):
 
 
 
+def update_storage_devices(storage):
+    for device in storage.devices.all():
+        update_device_file(device)
 
 
 
@@ -167,6 +170,7 @@ def restart_bacula_storage(model):
 
 
 signals.connect_on( update_storage_file, Storage, post_save)
+signals.connect_on( update_storage_devices, Storage, post_save)
 signals.connect_on( restart_bacula_storage, Storage, post_save)
 signals.connect_on( create_default_device, Storage, post_save)
 signals.connect_on( update_device_file, Device, post_save)
