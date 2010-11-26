@@ -1,5 +1,5 @@
 Job {
-    Write Bootstrap = "/var/lib/bacula/{{name}}.bsr"
+    Write Bootstrap = "/bacula/bootstraps/{{name}}.bsr"
     Name = "{{name}}"
     Schedule = "{{schedule}}"
     Messages = "Standard"
