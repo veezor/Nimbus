@@ -16,8 +16,8 @@ class BaculaCommandLine(object):
     backend = None
     
     def __init__(self, config="./bconsole.conf"):
-        BaculaCommandLine.backend = get_active_backend()() # get and instantiates
         if not self.connected:
+            BaculaCommandLine.backend = get_active_backend()() # get and instantiates
             self.backend.set_configfile(config)
             try: 
                 self.backend.connect()
@@ -58,7 +58,7 @@ class Command(object):
         return  " ".join(self.content)
 
     def run(self):
-        if not self.connected:
+        if not BaculaCommandLine.connected:
             return False
         txt = self.get_content()
         txt = txt.encode("utf-8")

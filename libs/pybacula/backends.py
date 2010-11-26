@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import logging
 from subprocess import Popen, PIPE
 
 try:
@@ -76,9 +77,12 @@ class SubprocessConsole(IConsole):
         self.connection = Popen( [executable, "-c", self.configfile], 
                                  bufsize=0, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
+        output, error = self.connection.communicate(command)
         if self.connection.returncode != 0:
+            logging.error("Error on bconsole connection")
+            logging.error(output)
+            logging.error(error)
             raise BConsoleInitError("Communication failed")
-        output = self.connection.communicate(command)[0]
         return output
 
     def connect(self):
