@@ -125,7 +125,7 @@ class Computer(BaseModel):
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
         proxy = xmlrpclib.ServerProxy(url)
         proxy.save_keys( self.crypto_info.pem, 
-                         nimbuscomputer.crypto_info.key)
+                         nimbuscomputer.crypto_info.certificate)
 
         config = Config.get_instance()
         fdconfig = render_to_string( "bacula-fd",
