@@ -1,5 +1,5 @@
 Job {
-    Write Bootstrap = "/bacula/bootstraps/{{name}}.bsr"
+    Write Bootstrap = "/bacula/{{name}}.bsr"
     Name = "{{name}}"
     Schedule = "{{schedule}}"
     Messages = "Standard"
@@ -10,6 +10,6 @@ Job {
     Type = "Backup"
     Pool = "{{pool}}"
     {% if offsite %}
-    Run After Job = "/usr/bin/nimbus-upload {{offsite_param}}"
+    Run After Job = "/var/www/nimbus {{offsite_param}}"
     {% endif %}
 }
