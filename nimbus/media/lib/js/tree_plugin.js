@@ -12,6 +12,9 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
     ul.insertAfter($(tree_class + " *[path="+root_path+"]"));
     for (var item in data) {
         path = data[item];
+        if (!path) {
+            continue;
+        }
         root_path_re = new RegExp("^" + root_path, "g");
         path_name = path.replace(root_path_re, '');
 
