@@ -186,15 +186,24 @@ def update_procedure_file(procedure):
                     priority="10",
                     offsite=procedure.offsite_on,
                     offsite_param="--upload-requests %v",
-                    pool=procedure.pool_bacula_name(),
                     client=procedure.computer.bacula_name,
-                    poll=procedure.pool_bacula_name() )
+                    pool=procedure.pool_bacula_name() )
 
+    render_to_file( filename + "restore",
+                    "restore",
+                    name=name + "restore",
+                    storage=procedure.storage_bacula_name(),
+                    fileset=procedure.fileset_bacula_name(),
+                    client=procedure.computer.bacula_name,
+                    pool=procedure.pool_bacula_name() )
 
 
 def remove_procedure_file(procedure):
     """remove procedure file"""
     base_dir,filepath = utils.mount_path( procedure.bacula_name,
+                                          settings.NIMBUS_JOBS_DIR)
+
+    base_dir,filepath = utils.mount_path( procedure.bacula_name + "restore",
                                           settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
    
