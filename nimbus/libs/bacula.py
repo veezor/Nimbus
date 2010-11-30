@@ -84,7 +84,8 @@ class Bacula(object):
         filename = tempfile.mktemp()
 
         with file(filename, "w") as f:
-            f.writelines(files)
+            for fname in files:
+                f.write( fname + "\n" )
 
         return self.cmd.restore.\
                 client[client_name].\
