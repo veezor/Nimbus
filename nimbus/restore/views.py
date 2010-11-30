@@ -68,7 +68,7 @@ def restore_files(request):
 
         messages.success(request, "Recuperação iniciada com sucesso")
     
-        return redirect('nimbus.procedures.views.profile_list')
+        return redirect('nimbus.restore.views.view')
 
 
 
