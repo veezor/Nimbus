@@ -69,13 +69,13 @@ class Procedure(BaseModel):
 
     def last_success_date(self):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
-                .order_by('endtime')[0]
+                .order_by('-endtime')[0]
 
 
     def restore_jobs(self):
         return Job.objects.filter( client__name=self.computer.bacula_name,
                                    fileset__fileset=self.fileset_bacula_name,
-                                   jobstatus='T').order_by('endtime').distinct()[:15]
+                                   jobstatus='T').order_by('-endtime').distinct()[:15]
 
  
     def get_file_tree(self, job_id):

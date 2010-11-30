@@ -75,11 +75,11 @@ def list(request):
     title = u"Procedimentos"
     running_status = ('R','p','j','c','d','s','M','m','s','F','B')
     running_jobs = Job.objects.filter( jobstatus__in=running_status)\
-                                            .order_by('starttime').distinct()[:5]
+                                            .order_by('-starttime').distinct()[:5]
 
 
     last_jobs = Job.objects.all()\
-                    .order_by('endtime').distinct()[:5]
+                    .order_by('-endtime').distinct()[:5]
 
     running_procedures_content = []
     try:

@@ -99,23 +99,23 @@ class Computer(BaseModel):
     def successful_jobs(self):
         return Job.objects.filter( jobstatus__in=('T','W'), 
                              client__name=self.bacula_name)\
-                                     .order_by('endtime').distinct()[:15]
+                                     .order_by('-endtime').distinct()[:15]
 
     def unsuccessful_jobs(self):
         return Job.objects.filter( jobstatus__in=('E','e','f','I'), 
                              client__name=self.bacula_name)\
-                                     .order_by('endtime').distinct()[:15]
+                                     .order_by('-endtime').distinct()[:15]
 
     def running_jobs(self):
         status = ('R','p','j','c','d','s','M','m','s','F','B')
         return Job.objects.filter( jobstatus__in=status, 
                              client__name=self.bacula_name)\
-                                     .order_by('starttime').distinct()[:5]
+                                     .order_by('-starttime').distinct()[:5]
 
 
     def last_jobs(self):
         return Job.objects.filter(client__name=self.bacula_name)\
-                                .order_by('endtime').distinct()[:15]
+                                .order_by('-endtime').distinct()[:15]
 
 
     def activate(self):
