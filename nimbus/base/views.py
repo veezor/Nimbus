@@ -107,7 +107,7 @@ def home(request):
 
 
     last_jobs = Job.objects.all()\
-                    .order_by('endtime').distinct()[:5]
+                    .order_by('-endtime').distinct()[:5]
 
 
     last_procedures_content = []
@@ -124,7 +124,7 @@ def home(request):
 
 
     errors_jobs = Job.objects.filter(jobstatus__in=('e','E','f'))\
-                    .order_by('endtime').distinct()[:5]
+                    .order_by('-endtime').distinct()[:5]
 
 
     errors_procedures_content = []

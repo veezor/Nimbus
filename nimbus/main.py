@@ -23,8 +23,13 @@ from gunicorn.app.base import Application
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.management import call_command
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from nimbus.libs import offsite
+from nimbus.shared import utils
+from nimbus.config.models import Config
+from nimbus.storages.models import Storage
+from nimbus.computers.models import Computer
 
 
 
@@ -52,6 +57,20 @@ class App(object):
                      email = "suporte@linconet.com.br")
             u.set_password("teste")
             u.save()
+
+            call_command('loaddata', settings.INITIALDATA_FILE)
+
+            config = Config.get_instance()
+            config.director_password = utils.random_password()
+            config.save()
+
+            storage = Storage.objects.get(id=1)
+            storage.password =  utils.random_password()
+            storage.save()
+
+            computer = Computer.objects.get(id=1)
+            computer.activate()
+
 
 
     def shell(self):

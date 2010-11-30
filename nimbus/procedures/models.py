@@ -20,6 +20,7 @@ from nimbus.schedules.models import Schedule
 from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
+from nimbus.offsite.models import Offsite
 
 
 from nimbus.bacula.models import (Job, 
@@ -68,13 +69,13 @@ class Procedure(BaseModel):
 
     def last_success_date(self):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
-                .order_by('endtime')[0]
+                .order_by('-endtime')[0]
 
 
     def restore_jobs(self):
         return Job.objects.filter( client__name=self.computer.bacula_name,
                                    fileset__fileset=self.fileset_bacula_name,
-                                   jobstatus='T').order_by('endtime').distinct()[:15]
+                                   jobstatus='T').order_by('-endtime').distinct()[:15]
 
  
     def get_file_tree(self, job_id):
@@ -113,10 +114,7 @@ class Procedure(BaseModel):
 
     @classmethod
     def disable_offsite(cls):
-        offsite_procedures = cls.objects.filter(offsite_on=True)
-        for procedure in offsite_procedures:
-            procedure.offsite_on = False
-            procedure.save()
+        cls.objects.filter(offsite_on=True).update(offsite_on=False)
 
 
     @staticmethod
@@ -173,7 +171,7 @@ def update_procedure_file(procedure):
                     fileset=procedure.fileset_bacula_name(),
                     priority="10",
                     offsite=procedure.offsite_on,
-                    offsite_param="-m %v",
+                    offsite_param="--upload-requests %v",
                     pool=procedure.pool_bacula_name(),
                     client=procedure.computer.bacula_name,
                     poll=procedure.pool_bacula_name() )
@@ -196,7 +194,15 @@ def create_pool(procedure):
                                              pool_size=200)
 
 
+def offsiteconf_check(procedure):
+    offsite = Offsite.get_instance()
+    if not offsite.active:
+        procedure.offsite_on = False
+
+
+
 signals.connect_on( create_pool, Procedure, pre_save)
+signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
 signals.connect_on( remove_procedure_file, Procedure, post_delete)
 

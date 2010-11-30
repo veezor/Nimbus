@@ -21,7 +21,7 @@ socket.setdefaulttimeout(TIMEOUT)
 KEYPAR = "/etc/nimbus/client.pem"
 MASTERKEY = "/etc/nimbus/master.key"
 FDCONF = "/etc/bacula/bacula-fd.conf"
-BACULAFD = "/etc/init.d/bacula-fd"
+BACULAFD = "/etc/init.d/bacula-ctl-fd"
 
 
 

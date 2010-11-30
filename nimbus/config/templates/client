@@ -3,6 +3,6 @@ Client {
     Catalog = MyCatalog
     AutoPrune = yes
     Address = {{ip}}
-    FDPort = 9102
+    FDPort = 9101
     password = "{{password}}"
 }

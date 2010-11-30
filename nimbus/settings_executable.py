@@ -65,7 +65,8 @@ BACULADIR_CONF = join(NIMBUS_CONFIG_DIR, "bacula-dir.conf")
 BACULAFD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-fd.conf")
 BACULASD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-sd.conf")
 LOGGING_CONF = join(NIMBUS_ETC_DIR, "logging.conf")
-PYBACULA_TEST = True
+INITIALDATA_FILE = join(NIMBUS_HOME_DIR, "initial_data.json")
+PYBACULA_TEST = False
 
 
 NIMBUS_UNDEPLOYED_CONF_FILES = join( dirname(__file__), 'confs')

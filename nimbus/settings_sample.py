@@ -47,7 +47,7 @@ NIMBUS_SSLCONFIG = join(NIMBUS_ETC_DIR, "ssl.conf")
 
 
 
-NIMBUS_DEPLOY_PATH = "/var/www"
+NIMBUS_DEPLOY_PATH = join(ROOT_PATH, "var", "www")
 
 
 NIMBUS_CUSTOM_DIR = join(NIMBUS_HOME_DIR, "custom" )
@@ -66,6 +66,7 @@ BACULADIR_CONF = join(NIMBUS_CONFIG_DIR, "bacula-dir.conf")
 BACULAFD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-fd.conf")
 BACULASD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-sd.conf")
 LOGGING_CONF = join(NIMBUS_ETC_DIR, "logging.conf")
+INITIALDATA_FILE = join(NIMBUS_HOME_DIR, "initial_data.json")
 PYBACULA_TEST = True
 
 
