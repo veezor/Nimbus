@@ -78,6 +78,9 @@ class SubprocessConsole(IConsole):
                                  bufsize=0, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
         output, error = self.connection.communicate(command)
+        logging.info("Bacula command is %s", command)
+        logging.info("Stdout is %s", output)
+        logging.info("Stderr is %s", error)
         if self.connection.returncode != 0:
             logging.error("Error on bconsole connection")
             logging.error(output)
