@@ -107,7 +107,7 @@ class Job(models.Model):
         result = []
 
 
-        while count < days:
+        while count <= days:
             result.append( (day, cls.get_jobs_by_day(day)) )
             day = day + oneday
             count += 1
