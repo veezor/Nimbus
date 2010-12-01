@@ -41,6 +41,12 @@ class File(models.Model):
     class Meta:
         db_table = u'File'
 
+    @property
+    def fullname(self):
+        return self.path.path + self.filename.name
+
+
+
 class Fileset(models.Model):
     filesetid = models.IntegerField(primary_key=True, db_column='FileSetId') # Field name made lowercase.
     fileset = models.TextField(db_column='FileSet') # Field name made lowercase.

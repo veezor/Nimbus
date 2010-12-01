@@ -83,13 +83,21 @@ class Bacula(object):
 
         filename = tempfile.mktemp()
 
+        for fname in list(files):
+            if utils.isdir(fname):
+                subfiles = models.File.objects\
+                        .select_related()\
+                        .filter(path__path__startswith=fname)
+                files.extend( s.fullname for s in subfiles  )
+
+
         with file(filename, "w") as f:
             for fname in files:
                 f.write( fname + "\n" )
 
         return self.cmd.restore.\
                 client[client_name].\
-                file[filename].\
+                file["<" + filename].\
                 restoreclient[client_name].\
                 select.all.done.yes.where[where].jobid[jobid].run()
 
