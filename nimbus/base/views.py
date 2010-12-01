@@ -7,6 +7,7 @@ import systeminfo
 
 from django.contrib.auth.decorators import login_required
 
+from nimbus.shared import utils
 from nimbus.shared.views import render_to_response
 from nimbus.bacula.models import Job
 
@@ -18,26 +19,27 @@ from nimbus.computers.models import Computer
 def home(request):
 
     job_bytes = Job.get_bytes_from_last_jobs()
-    job_files = Job.get_files_from_last_jobs()
+
+
 
     table1 = {}
-    table1['title'] = u"Dados armazenados por dia"
+    table1['title'] = u"Quantidade de megabytes realizados backup"
     table1['area'] = "48%"
     table1['type'] = "area"
-    table1['header'] = sorted(job_bytes)
+    table1['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_bytes)  ]
     table1['lines'] = {
-        "Bytes": map( operator.itemgetter(1), sorted(job_bytes.items())),
-        "Arquivos" : map( operator.itemgetter(1), sorted(job_files.items()))}
-
+        "Mega bytes": utils.ordered_dict_value_to_formatted_float(job_bytes)
+    }
 
     job_files = Job.get_files_from_last_jobs()
     table2 = {}
     table2['title'] = u"Quantidade de arquivos realizados backup"
     table2['area'] = "48%"
     table2['type'] = "area"
-    table2['header'] = sorted(job_files)
+    table2['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_files) ]
     table2['lines'] = {
-        "Bytes": map( operator.itemgetter(1), sorted(job_files.items())) }
+        "Arquivos": utils.ordered_dict_value_to_formatted_float(job_files) 
+    }
 
 
     
@@ -150,6 +152,8 @@ def home(request):
     
       
     # extra_content = {'table1': table1, 'table2': table2}
+
+
     return render_to_response(request, "home.html", locals())
 
 
