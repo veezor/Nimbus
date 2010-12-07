@@ -416,6 +416,21 @@ SELECT_FILES_FROM_JOB_PATH_DEPTH = """\
 
     """
 
+
+SELECT_MORE_FILES_FROM_JOB_PATH_DEPTH = """\
+    SELECT DISTINCT Concat(Path.Path, Filename.Name) fullpath
+    from File, Path, Filename 
+    where File.PathId  = Path.PathId and 
+    File.FilenameId = Filename.FilenameId and
+    File.JobId = %s
+    HAVING fullpath NOT LIKE %s and
+    PathDepth(fullpath) = %s;
+    """
+
+
+
+
+
 SELECT_FILES_FROM_PATTERN = """\
     SELECT DISTINCT Concat(Path.Path, Filename.Name) fullpath
     from File, Path, Filename 
@@ -440,5 +455,16 @@ SELECT_NEXT_FILES_DEPTH = """\
             from File, Path, Filename 
             where File.PathId  = Path.PathId and 
             File.FilenameId = Filename.FilenameId and 
+            File.JobId = %s having depth > %s) AS S;
+    """
+
+
+SELECT_NEXT_FILES_ON_DEPTH = """\
+    SELECT MIN(S.depth) FROM 
+        (SELECT PathDepth(Concat(Path.Path, Filename.Name)) depth 
+            from File, Path, Filename 
+            where File.PathId  = Path.PathId and 
+            File.FilenameId = Filename.FilenameId and 
+            Concat(Path.Path, Filename.Name) NOT LIKE %s and
             File.JobId = %s having depth > %s) AS S;
     """

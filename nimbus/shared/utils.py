@@ -59,6 +59,10 @@ def schedule_inverse(type):
 
 
 
+def ordered_dict_value_to_formatted_float(dictionary):
+    return [ ("%.2f" % v) for k,v in sorted( dictionary.items() ) ]
+
+
 def bytes_to_mb(size):
     return size/1024.0/1024
 

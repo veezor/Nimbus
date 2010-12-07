@@ -11,16 +11,32 @@
 			
     			<h2>Backups</h2>
 			
-    		</div>		<!-- .block_head ends -->
+
+
+             <ul class="tabs">
+                 <li><a href="#backup-bytes">Mega bytes</a></li>
+                 <li><a href="#backup-files">Quantidade de Arquivos</a></li>
+            </ul>
+
+            </div>		<!-- .block_head ends -->
 		
-    		<div class="block_content tab_content">
+    		<div class="block_content tab_content" id="backup-bytes" >
 
                 {% with table1 as table %}
 			        {% include "table_chart.html" %}
 			    {% endwith %}
 			
     		</div>		<!-- .block_content ends -->
-		
+
+    		<div class="block_content tab_content" id="backup-files" >
+
+                {% with table2 as table %}
+			        {% include "table_chart.html" %}
+			    {% endwith %}
+			
+    		</div>		<!-- .block_content ends -->
+	
+
 	
     		<div class="bendl"></div>
     		<div class="bendr"></div>

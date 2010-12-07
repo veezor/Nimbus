@@ -89,14 +89,10 @@ class Procedure(BaseModel):
     def get_backup_jobs_between(self, start, end):
         jobs = Job.objects.filter(realendtime__range=(start,end), 
                                   jobfiles__gt=0,
+                                  jobstatus='T',
                                   type='B',
                                   name=self.bacula_name)\
-                 .distinct()
-
-        jobs = Job.objects.filter(realendtime__range=(start,end), 
-                                  jobfiles__gt=0,
-                                  type='B')\
-                 .distinct()
+                 .order_by('-endtime').distinct()
 
         return jobs
     
@@ -125,19 +121,37 @@ class Procedure(BaseModel):
 
         regex = r"^([a-zA-Z]:)?%s.*$" % path
 
+
         if path == "/": # get min depth files
             cursor.execute(sql.SELECT_MIN_FILES_DEPTH, params=(jobid,))
             depth = cursor.fetchone()[0]
+
+            cursor.execute(sql.SELECT_FILES_FROM_JOB_PATH_DEPTH, 
+                              params=(jobid, regex, depth))
+
+
+            files = [ row[0] for row in cursor.fetchall() ]
+
+            for filename in list(files):
+                like = "%s%%"  % filename
+                cursor.execute(sql.SELECT_NEXT_FILES_ON_DEPTH, params=(like, jobid,depth))
+                nextdepth = cursor.fetchone()[0]
+
+                cursor.execute(sql.SELECT_MORE_FILES_FROM_JOB_PATH_DEPTH, 
+                                          params=(jobid, like, nextdepth))
+
+                files.extend(  [ row[0] for row in cursor.fetchall() ]  )
+
         else:
             cursor.execute(sql.SELECT_NEXT_FILES_DEPTH, params=(jobid,depth))
             depth = cursor.fetchone()[0]
 
-        cursor.execute(sql.SELECT_FILES_FROM_JOB_PATH_DEPTH, 
-                              params=(jobid, regex, depth))
+            cursor.execute(sql.SELECT_FILES_FROM_JOB_PATH_DEPTH, 
+                                  params=(jobid, regex, depth))
 
-        files = [ row[0] for row in cursor.fetchall() ]
-        # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
-        #             for row in cursor.fetchall() ]
+            files = [ row[0] for row in cursor.fetchall() ]
+            # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
+            #             for row in cursor.fetchall() ]
         return files
 
 
@@ -172,15 +186,24 @@ def update_procedure_file(procedure):
                     priority="10",
                     offsite=procedure.offsite_on,
                     offsite_param="--upload-requests %v",
-                    pool=procedure.pool_bacula_name(),
                     client=procedure.computer.bacula_name,
-                    poll=procedure.pool_bacula_name() )
+                    pool=procedure.pool_bacula_name() )
 
+    render_to_file( filename + "restore",
+                    "restore",
+                    name=name + "restore",
+                    storage=procedure.storage_bacula_name(),
+                    fileset=procedure.fileset_bacula_name(),
+                    client=procedure.computer.bacula_name,
+                    pool=procedure.pool_bacula_name() )
 
 
 def remove_procedure_file(procedure):
     """remove procedure file"""
     base_dir,filepath = utils.mount_path( procedure.bacula_name,
+                                          settings.NIMBUS_JOBS_DIR)
+
+    base_dir,filepath = utils.mount_path( procedure.bacula_name + "restore",
                                           settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
    

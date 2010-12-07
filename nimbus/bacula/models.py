@@ -4,7 +4,7 @@
 from datetime import datetime, timedelta
 
 from django.db import models
-
+from nimbus.shared import utils
 
 
 
@@ -40,6 +40,12 @@ class File(models.Model):
     md5 = models.TextField(db_column='MD5', blank=True) # Field name made lowercase.
     class Meta:
         db_table = u'File'
+
+    @property
+    def fullname(self):
+        return self.path.path + self.filename.name
+
+
 
 class Fileset(models.Model):
     filesetid = models.IntegerField(primary_key=True, db_column='FileSetId') # Field name made lowercase.
@@ -91,6 +97,7 @@ class Job(models.Model):
 
     @classmethod
     def get_jobs_by_day_between(cls, start, end):
+
         diff = end - start
         days = diff.days
         oneday = timedelta(1)
@@ -99,7 +106,8 @@ class Job(models.Model):
 
         result = []
 
-        while count < days:
+
+        while count <= days:
             result.append( (day, cls.get_jobs_by_day(day)) )
             day = day + oneday
             count += 1
@@ -112,7 +120,7 @@ class Job(models.Model):
 
         now = datetime.now()
         start = now - timedelta(6)
-        start = datetime(now.year, now.month, now.day)
+        start = datetime(start.year, start.month, start.day)
         return cls.get_jobs_by_day_between(start, now)
 
 
@@ -132,12 +140,14 @@ class Job(models.Model):
     @classmethod
     def get_bytes_from_last_jobs(cls):
         jobs_by_day = cls.get_jobs_from_last_seven_days()
+
         result = {}
 
         for day, jobs in jobs_by_day:
-            files = jobs.aggregate(total=models.Sum('jobbytes'))
-            nfiles = files['total'] or 0
-            result[day] = nfiles
+            bytes = jobs.aggregate(total=models.Sum('jobbytes'))
+            nbytes =  utils.bytes_to_mb( bytes['total']  or 0 )
+            result[day] = nbytes
+
 
         return result
 

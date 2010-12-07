@@ -30,6 +30,7 @@ from nimbus.shared import utils
 from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
+from nimbus.shared.middlewares import LogSetup
 
 
 
@@ -110,6 +111,7 @@ class App(object):
 
 
 def main():
+    LogSetup()
     App().run()
 
 if __name__ == "__main__":
