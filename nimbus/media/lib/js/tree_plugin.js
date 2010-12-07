@@ -42,6 +42,14 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
             input.change(function(){
                 checked = $(this).attr("checked") && "checked" || "";
                 $(this).parent().find('input').attr("checked", checked);
+                
+                if (!checked) {
+                    atual = $(this).parent().parent().parent().parent();
+                    for (var i = 0; i < $(this).val().split('/').length - 2; i++) {
+                        atual.find('input').eq(0).attr('checked', '');
+                        atual = atual.parent().parent().parent().parent();
+                    }
+                }
             });
         }
         input.prependTo(file);
