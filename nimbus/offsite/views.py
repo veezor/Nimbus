@@ -134,9 +134,9 @@ def list_uploadrequest(request):
             # d['model'] = up.model
             d['fields'] = {}
             d['fields']['filename'] = up.volume.filename
-            d['fields']['created_at'] = datetime.strftime(up.created_at, "%d/%m/%Y %H:%M")
+            d['fields']['created_at'] = up.created_at.strftime("%d/%m/%Y %H:%M")
             d['fields']['attempts'] = up.attempts
-            d['fields']['last_attempt'] = up.last_attempt
+            d['fields']['last_attempt'] = up.last_attempt.strftime("%d/%m/%Y %H:%M")
             d['fields']['friendly_rate'] = up.friendly_rate
             d['fields']['estimated_transfer_time'] = up.estimated_transfer_time
             d['fields']['finished_percent'] = up.finished_percent

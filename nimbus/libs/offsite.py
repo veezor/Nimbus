@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
-from os.path import join, exists
+from os.path import join, exists, isfile
 import logging
 from django.conf import settings
 from datetime import datetime
@@ -43,7 +43,7 @@ def find_archive_devices():
 def get_volume_abspath(volume, archives):
     for archive in archives:
         abspath = join( archive, volume )
-        if exists( abspath ):
+        if exists( abspath ) and isfile( abspath ):
             return abspath
 
 
@@ -56,8 +56,16 @@ def get_all_bacula_volumes():
     archives = find_archive_devices()
     volumes = []
     for arc in archives:
+
         files = os.listdir(arc)
-        volumes.extend( join(arc, file) for file in files )
+
+        for filename in files:
+
+            fullpath = join(arc, filename)
+
+            if isfile( fullpath ):
+                volumes.append( fullpath )
+
     return volumes
 
 
