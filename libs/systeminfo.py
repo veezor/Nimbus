@@ -54,7 +54,7 @@ class CPUInfo(object):
     def get_usage(self):
         diff = self.get_data_diff(INTERVAL)
         usage = sum(diff[:3])
-        usage = (100.0 * usage) / sum(diff)
+        usage = (100.0 * usage) / (sum(diff) or 1)
         return usage
 
 

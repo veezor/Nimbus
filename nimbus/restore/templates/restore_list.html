@@ -164,7 +164,9 @@
                                 $('<option>').attr('value', '').text(' - Selecione - ').appendTo('#procedure_id');
                                 for (proc in data) {
                                     proc = data[proc];
-                                    $('<option>').attr('value', proc['pk']).text(proc['fields']['name']).appendTo("#procedure_id");
+                                    if (proc['fields'] && proc['fields']['name']) {
+                                        $('<option>').attr('value', proc['pk']).text(proc['fields']['name']).appendTo("#procedure_id");
+                                    }
                                 }
                                 $('.procedure_select').slideDown();
                             });
@@ -224,7 +226,9 @@
                                             $("<option>").val("").text(" - " + data.length + " jobs, selecione um  - ").attr("selected", "selected").appendTo("#jobs_list");
                                             for (var i in data) {
                                                 job = data[i];
-                                                $("<option>").val(job.pk).text(job.fields.realendtime + ' - ' + job.fields.jobfiles + ' arquivos').appendTo("#jobs_list");
+                                                if (job.fields && job.fields.realendtime) {
+                                                    $("<option>").val(job.pk).text(job.fields.realendtime + ' - ' + job.fields.jobfiles + ' arquivos').appendTo("#jobs_list");
+                                                }
                                             }
                                             $("#jobs_list").change();
                                             $('.restore_step_2').slideDown();

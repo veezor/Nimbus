@@ -10,11 +10,21 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
     root.addClass('directory_open');
     var ul = $("<ul>").addClass("open").hide();
     ul.insertAfter($(tree_class + " *[path="+root_path+"]"));
+    
+    total = data.length;
+    contador = 0;
     for (var item in data) {
+        contador = contador + 1;
+        if (contador > total) {
+            break;
+        }
+        
         path = data[item];
         if (!path) {
             continue;
         }
+
+        path = new String(path);
         root_path_re = new RegExp("^" + root_path, "g");
         path_name = path.replace(root_path_re, '');
 
