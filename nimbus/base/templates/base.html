@@ -23,7 +23,7 @@
 	<!--[if IE]><script type="text/javascript" src="/media/lib/js/excanvas.js"></script><![endif]-->
 	
 	<script type="text/javascript" src="/media/lib/js/jquery.js"></script>
-	<script type="text/javascript" src="/media/lib/js/jquery.img.preload.js"></script>
+	<!--<script type="text/javascript" src="/media/lib/js/jquery.img.preload.js"></script>-->
 	<script type="text/javascript" src="/media/lib/js/jquery.filestyle.mini.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.wysiwyg.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.date_input.pack.js"></script>
@@ -44,38 +44,39 @@
 	
 	
 	<script type="text/javascript" charset="utf-8">
-    	function update_time(d) {
-            seconds = d.getSeconds() + 1;
+	    var data_hora = undefined;
+	    
+    	function update_time() {
+            seconds = data_hora.getSeconds() + 1;
             if (seconds > 60) {
                 seconds = 1;
             }
-            d.setSeconds(seconds);
+            data_hora.setSeconds(seconds);
 
-            time_string = d.toTimeString().substr(0, 8);
+            time_string = data_hora.toTimeString().substr(0, 8);
             $('#actual_time').html(time_string);
         
-            setTimeout("update_time(d)", 1000);
+            setTimeout("update_time()", 1000);
         }
         
         $(document).ready( function() {
             $('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 
             $('.filetree').each(function(){
-                script = $(this).attr("ref");
+                var script = $(this).attr("ref");
                 $(this).fileTree({ root: '/media/lib/demo/', script: script }, function(file) { 
                     alert(file);
                 });
             })
             $(".iPhoneCheckContainer").css("width", "85px");
-            $(".sparklines").sparkline('html', {width: "300", height: "150px" })
+            $(".sparklines").sparkline('html', {width: "300", height: "150px" });
 	        
-            actual_time = $('#actual_time').html().split(':');
-            hours = actual_time[0];
-            minutes = actual_time[1];
-            seconds = actual_time[2];
-            d = new Date(2010, 10, 10, hours, minutes, seconds);
-            
-            update_time(d);
+            var actual_time = $('#actual_time').html().split(':');
+            var hours = actual_time[0];
+            var minutes = actual_time[1];
+            var seconds = actual_time[2];
+            data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
+            update_time();
             
             $('.mascara_hora').mask('99:99');
             $('.mascara_minuto').mask('99');
