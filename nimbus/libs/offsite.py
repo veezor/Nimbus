@@ -12,7 +12,7 @@ import pycurl
 
 
 from nimbus.storages.models import Device
-from nimbus.config.models import Config
+from nimbus.offsite.models import Offsite
 
 
 from nimbus.offsite.models import ( Volume, 
@@ -147,14 +147,14 @@ class RemoteManager(BaseManager):
 
 
     def __init__(self):
-        settings = Config.get_instance()
+        settings = Offsite.get_instance()
 
         self.api = Api(username=settings.username,
                        password=settings.password,
                        gateway_url=settings.gateway_url)
 
-        if settings.UPLOAD_RATE > 0:
-            self.upload_rate = settings.offsite_upload_rate
+        if settings.upload_rate > 0:
+            self.upload_rate = settings.upload_rate
         else:
             self.upload_rate = None
 
@@ -175,7 +175,7 @@ class RemoteManager(BaseManager):
 
 
     def process_requests( self, requests, process_function, 
-                          limitrate=None):
+                          ratelimit=None):
         
         logger = logging.getLogger(__name__)
 
@@ -194,7 +194,7 @@ class RemoteManager(BaseManager):
 
                     req.save()
                     process_function(req.volume.path, req.volume.filename,
-                                     limitrate=limitrate, callback=req.update)
+                                     ratelimit=ratelimit, callback=req.update)
                     req.finish()
                     logger.info("%s processado com sucesso" % req)
                     retry += 1

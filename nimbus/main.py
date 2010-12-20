@@ -82,10 +82,12 @@ class App(object):
 
 
     def create_upload_requests(self, args):
-        volumes = offsite.get_volumes_abspath( args )
+        volumes = args.split('|')
+        volumes = offsite.get_volumes_abspath( volumes )
         manager = offsite.RemoteManager()
         for volume in volumes:
             manager.create_upload_request( volume )
+        manager.process_pending_upload_requests()
         
 
     def upload_volumes(self):
@@ -101,7 +103,10 @@ class App(object):
         if command == "--create-database":
             self.create_database()
         elif command == "--upload-requests":
-            self.create_upload_requests(sys.argv[1:])
+            try:
+                self.create_upload_requests(sys.argv[2])
+            except IndexError, error:
+                pass
         elif command == "--upload-now":
             self.upload_volumes()
         elif command == "--shell":
