@@ -61,5 +61,23 @@ def update_system_timezone(timezone):
         Pool.add_job( callable, (timezone,), {} )
 
 
+def update_ntp_cron_file(timezone):
+
+    def callable(timezone):
+        try:
+            server = ServerProxy(settings.NIMBUS_MANAGER_URL)
+            server.generate_ntpdate_file_on_cron(timezone.ntp_server)
+        except Exception, error:
+            logger = logging.getLogger(__name__)
+            logger.exception("Conexao com nimbus-manager falhou")
+
+    Pool = ThreadPool.get_instance()
+
+    if Pool:
+        Pool.add_job( callable, (timezone,), {} )
+
+
+
 
 signals.connect_on( update_system_timezone, Timezone, post_save )
+signals.connect_on( update_ntp_cron_file, Timezone, post_save )
