@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import time
 from os.path import join, exists, isfile
 import logging
 from django.conf import settings
@@ -108,7 +109,7 @@ class BaseManager(object):
 
 
     def get_upload_requests(self):
-        return UploadRequest.objects.all()
+        return UploadRequest.objects.all().order_by('-created_at')
 
 
     def get_download_requests(self):
@@ -186,6 +187,7 @@ class RemoteManager(BaseManager):
             while retry < self.MAX_RETRY:
                 try:
                     req.attempts += 1
+                    req.last_update = time.time()
 
                     if isinstance(req, UploadRequest): # no resume
                         req.transferred_bytes = 0

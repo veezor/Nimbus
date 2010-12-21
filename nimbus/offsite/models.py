@@ -38,15 +38,11 @@ class Volume(models.Model):
     size = models.IntegerField(null=False, editable=False, default=0)
 
     def __init__(self, *args, **kwargs):
-        path = kwargs.get("path", None)
-        if path:
-            try:
-                size = os.path.getsize(path)
-            except OSError, e:
-                size = 0
-            super(Volume, self).__init__( size=size, *args, **kwargs)
-        else:
-            super(Volume, self).__init__(*args, **kwargs)
+        super(Volume, self).__init__( *args, **kwargs)
+        if self.path:
+            self.size = os.path.getsize(self.path)
+
+
 
     @property
     def filename(self):
@@ -74,7 +70,7 @@ class DownloadedVolume(OffSiteVolume):
     pass
 
 class Request(models.Model):
-    UPDATE_DIFF_SIZE_256_KB = 268435456
+    UPDATE_DIFF_SIZE_256_KB = 102400
     KB = 1024
     MB = KB * 1024
     MINUTES = 60
@@ -90,11 +86,16 @@ class Request(models.Model):
 
 
     def update(self, new_bytes_size, total_bytes):
+        
         bytesdiff = new_bytes_size - self.transferred_bytes
         if bytesdiff >= self.UPDATE_DIFF_SIZE_256_KB:
-            timediff = int(time() - self.last_update)
-            self.rate = bytesdiff / timediff
-            self.transferred_bytes = bytes
+
+            if self.last_update:
+                timediff = int(time() - self.last_update)
+                self.rate = bytesdiff / timediff
+
+            self.last_update = time()
+            self.transferred_bytes = new_bytes_size
             self.save()
 
     @property

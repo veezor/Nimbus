@@ -30,9 +30,9 @@ def detail(request):
     for upload in uploads:
         content.append( {
             "type" : 'ok',
-            'date' : upload.last_attempt,
+            'date' : upload.last_attempt or upload.created_at,
             "label" : upload.volume.filename,
-            'message' : "%d MB" % utils.bytes_to_mb(upload.volume.size)
+            'message' : "%.2f MB" % utils.bytes_to_mb(upload.volume.size)
             } )
 
 
