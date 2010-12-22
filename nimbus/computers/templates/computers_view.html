@@ -91,46 +91,25 @@
 
         <div class="block-executados">
             <h3>Ocupação do backup</h3>
-            <div class="" style="width: 200px; border: 1px solid green" title="72% de ocupação.">
-                <div class="" style="width: 72%; background: green; height: 20px"></div>
+            <div class="" style="width: 200px; border: 1px solid green" title="{{espaco_em_disco}} de ocupação.">
+                <div class="" style="width: {{espaco_em_disco}}; background: green; height: 20px"></div>
             </div>
-            <small>72% de ocupação</small>
+            <small>{{espaco_em_disco}} de ocupação</small>
             <div class="clear"></div>
 		    <p></p>
         </div>
         
-        <div class="block-executados">
-		    <h3>Backups em execução</h3>
-		    <div>
-		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>20/09/2010 10:25</small> Servidor Web <small>(13 arquivos)</small></div>
-		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>20/09/2010 10:15</small> Sala A - Comp 1 <small>(5 arquivos)</small></div>
-		    </div>
-		    <div class="clear"></div>
-		    <p></p>
-		</div>
-        
-        <div class="block-executados">
-	        <div style="float: left; width: 49%">
-    		    <h3>Últimos backups executados</h3>
-    		    <div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>19/09/2010 10:25</small> Servidor Web <small>(13 arquivos)</small></div>
-    		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>19/09/2010 10:15</small> Sala A - Comp 1 <small>(5 arquivos)</small></div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:35</small> Diretor financeiro <small>(72 arquivos)</small></div>
-    		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>18/09/2010 23:00</small> Servidor de banco de dados <small>(30 arquivos)</small></div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>17/09/2010 10:00</small> Diretor comercial <small>(124 arquivos)</small></div>
-    		    </div>
-		    </div>
-		    <div style="float: right; width: 49%">
-    		    <h3>Backup com falha</h3>
-    		    <div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Servidor Web</div>
-    		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Sala A - Comp 1</div>
-    		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/exclamation.png" /> <small>19/09/2010 07:00</small> Diretor financeiro</div>
-    		    </div>
-		    </div>
-		    <div class="clear"></div>
-		    <p></p>
-		</div>    
+        {% with backups_em_execucao as item %}
+		    <div class="stat_block">
+            {% include "stat_block.html" %}
+            </div>
+		{% endwith %}
+		
+		{% with backups_executados_e_com_falhas as item %}
+		    <div class="stat_block">
+            {% include "stat_block.html" %}
+            </div>
+		{% endwith %}
 		
     </div>
     

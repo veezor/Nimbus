@@ -98,9 +98,40 @@ def list(request):
 @login_required
 def view(request, object_id):
     computers = Computer.objects.get(id=object_id)
+    
+    backups_em_execucao = [{
+        'title': u'Backups em Execução',
+        'content': [{
+            'type' : 'ok',
+            'label' : 'aaa',
+            'date' : '20/12/2010 10:00',
+            'message' : u'Computador : %s' % 'Computer'
+    }]}]
+    
+    
+    backups_executados_e_com_falhas = [{
+        'title': u'Últimos backups executados',
+        'content': [{
+            'type' : 'ok',
+            'label' : 'aaa',
+            'date' : '20/12/2010 10:00',
+            'message' : u'Computador : %s' % 'Computer'
+    }]},
+    {
+        'title': u'Backups com falha',
+        'content': [{
+            'type' : 'warn',
+            'label' : 'aaa',
+            'date' : '20/12/2010 10:00',
+            'message' : u'Computador : %s' % 'Computer'
+    }]}]
+    
     extra_content = {
         'computer': computers,
-        'title': u"Visualizar computador"
+        'title': u"Visualizar computador",
+        'backups_em_execucao': backups_em_execucao,
+        'backups_executados_e_com_falhas': backups_executados_e_com_falhas,
+        "espaco_em_disco": '70%',
     }
     return render_to_response(request, "computers_view.html", extra_content)
 

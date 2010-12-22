@@ -88,10 +88,21 @@ def list(request):
 @login_required
 def view(request, object_id):
     storage = Storage.objects.get(id=object_id)
+    backups_em_execucao = [{
+        'title': u'Backups em Execução',
+        'content': [{
+            'type' : 'ok',
+            'label' : 'aaa',
+            'date' : '20/12/2010 10:00',
+            'message' : u'Computador : %s' % 'Computer'
+    }]}]
     d = {
         "storage" : storage,
-        "title": u"Armazenamento"
+        "title": u"Armazenamento",
+        "backups_em_execucao": backups_em_execucao,
+        "espaco_em_disco": '70%'
     }
+    
     return render_to_response(request, "storages_view.html", d)
 
 

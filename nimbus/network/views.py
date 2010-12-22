@@ -18,5 +18,6 @@ def network_conf(request):
 @login_required
 def redirect_after_update(request):
     ni = NetworkInterface.objects.all()[0]
-    ip_address = ni.address
+    port = (':%s' % request.META['SERVER_PORT']) if request.META['SERVER_PORT'] else ''
+    ip_address = ni.address + port
     return render_to_response('redirect.html', locals())

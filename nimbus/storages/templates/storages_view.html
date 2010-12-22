@@ -44,13 +44,35 @@
                         <h4>COMPUTADORES RELACIONADOS</h4>
                         
                         <div style="background: #FFF; border: 1px solid #DDD; -moz-border-radius: 5px; padding: 10px">
+                        {% for computer in storage.get_computers %}
+                            <div class="computers">
+                                <div class="title">
+                                    <a href="#" class="toggle" ref="computer_detail">
+                                        <img src="/media/icons/computer.png" style="float: left; padding-right: 10px" />
+                                        <h4 style="display: inline">{{computer.name}}</h4>
+                                    </a>
+                                </div>
+                                <div class="computer_detail" style="display: none">
+                                    {% for proc in computer.procedure_set.all %}
+                                        <h4 class="name">{{proc.name}} <small><a href="{% url nimbus.procedures.views.edit object_id=proc.id %}">(editar)</a></small></h4>
+                                        Offsite ativado: {% if proc.offsite_on %}Sim{% else %}Não{% endif %}<br/>
+                                        Perfil de configuração: <a href="{% url nimbus.procedures.views.profile_edit object_id=proc.profile.id %}">{{proc.profile.name}}</a><br/>
+                                        Agendamento: <a href="{% url nimbus.schedules.views.edit object_id=proc.profile.schedule.id %}">{{proc.profile.schedule}}</a><br/>
+                                        Conjunto de arquivos: <a href="{% url nimbus.filesets.views.edit object_id=proc.profile.fileset.id %}">{{proc.profile.fileset}}</a>
+                                        <p></p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% if 0 %}
                         {% for profile in storage.profile_set.all %}
                             {% for proc in profile.procedure_set.all %}
                             <div class="computers">
                                 <div class="title">
                                     <a href="#" class="toggle" ref="computer_detail">
-                                    <img src="/media/icons/computer.png" style="float: left; padding-right: 10px" />
-                                    <h4>{{proc.computer.name}}</h4>
+                                        <img src="/media/icons/computer.png" style="float: left; padding-right: 10px" />
+                                        <h4 style="display: inline">{{proc.computer.name}} - </h4>
+                                        <h4 style="display: inline">{{proc.name}}</h4>
                                     </a>
                                 </div>
                                 <div class="computer_detail" style="display: none">
@@ -73,6 +95,7 @@
                             </div>
                             {% endfor %}
                         {% endfor %}
+                        {% endif %}
                         </div>
                     {% endif %}
                 </div>
@@ -82,22 +105,19 @@
         
         <div class="block-executados">
             <h3>Espaço em disco</h3>
-            <div class="" style="width: 200px; border: 1px solid green" title="72% de ocupação.">
-                <div class="" style="width: 72%; background: green; height: 20px"></div>
+            <div class="" style="width: 200px; border: 1px solid green" title="{{espaco_em_disco}} de ocupação.">
+                <div class="" style="width: {{espaco_em_disco}}; background: green; height: 20px"></div>
             </div>
-            <small>72% de ocupação (180 GB / 250 GB)</small>
+            <small>{{espaco_em_disco}} de ocupação</small>
             <div class="clear"></div>
 		    <p></p>
         </div>
         
-        <div class="block-executados">
-		    <h3>Backups em execução</h3>
-		    <div>
-		        <div style="padding: 5px; background: #EEE"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>20/09/2010 10:25</small> Servidor Web <small>(13 arquivos)</small></div>
-		        <div style="padding: 5px;"><img style="vertical-align: middle" src="/media/icons/tick_circle.png" /> <small>20/09/2010 10:15</small> Sala A - Comp 1 <small>(5 arquivos)</small></div>
-		    </div>
-		    <div class="clear"></div>
-		</div>
+	    {% with backups_em_execucao as item %}
+		    <div class="stat_block">
+            {% include "stat_block.html" %}
+            </div>
+		{% endwith %}
         
         <p></p>
     </div>
