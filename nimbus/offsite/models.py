@@ -39,7 +39,7 @@ class Volume(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Volume, self).__init__( *args, **kwargs)
-        if self.path:
+        if self.path and os.path.exists(self.path):
             self.size = os.path.getsize(self.path)
 
 
