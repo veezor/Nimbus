@@ -105,7 +105,7 @@ def list_downloadrequest(request):
             d['fields']['filename'] = down.volume.filename
             d['fields']['created_at'] = datetime.strftime(down.created_at, "%d/%m/%Y %H:%M")
             d['fields']['attempts'] = down.attempts
-            d['fields']['last_attempt'] = down.last_attempt
+            d['fields']['last_attempt'] = datetime.strftime(down.last_attempt, "%d/%m/%Y %H:%M")
             d['fields']['friendly_rate'] = down.friendly_rate
             d['fields']['estimated_transfer_time'] = down.estimated_transfer_time
             d['fields']['finished_percent'] = down.finished_percent
@@ -136,7 +136,7 @@ def list_uploadrequest(request):
             d['fields']['filename'] = up.volume.filename
             d['fields']['created_at'] = datetime.strftime(up.created_at, "%d/%m/%Y %H:%M")
             d['fields']['attempts'] = up.attempts
-            d['fields']['last_attempt'] = up.last_attempt
+            d['fields']['last_attempt'] = datetime.strftime(up.last_attempt, "%d/%m/%Y %H:%M")
             d['fields']['friendly_rate'] = up.friendly_rate
             d['fields']['estimated_transfer_time'] = up.estimated_transfer_time
             d['fields']['finished_percent'] = up.finished_percent

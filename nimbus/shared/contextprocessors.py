@@ -12,7 +12,7 @@ def status_header(request):
     # d = [{'status_header': {'status_name': 'ok', 'status_message': 'Normal'}},
     #      {'status_header': {'status_name': 'error', 'status_message': 'Erro'}}]
     # return choice(d)
-    d = {'status_header': {'status_name': 'ok', 'status_message': 'Normal'}}
+    d = {'status_header': {'status_name': 'ok', 'status_message': 'Funcionamento Normal'}}
     return d
 
 
