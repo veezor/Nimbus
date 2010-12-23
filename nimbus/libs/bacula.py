@@ -48,7 +48,7 @@ class Bacula(object):
             output = self.cmd.reload.run()
             return output
         except configcheck.ConfigFileError, error:
-            logging.exception("Erro ao executar o reload")
+            logging.exception("Arquivo de configuracao do bacula-sd gerado com erros")
 
 
 

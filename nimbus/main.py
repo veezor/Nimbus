@@ -87,6 +87,8 @@ class App(object):
         manager = offsite.RemoteManager()
         for volume in volumes:
             manager.create_upload_request( volume )
+
+        manager.generate_database_dump_upload_request()
         manager.process_pending_upload_requests()
         
 
