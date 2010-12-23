@@ -2,16 +2,26 @@
 # -*- coding: UTF-8 -*-
 
 import logging
+import xmlrpclib
 from functools import wraps
 from pybacula import BConsoleInitError
 
+
+from django.conf import settings
 
 from nimbus.libs.bacula import Bacula
 from nimbus.shared.middlewares import ThreadPool
 
 
 
-
+def force_baculadir_restart():
+    try:
+        logger = logging.getLogger(__name__)
+        manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
+        stdout = manager.director_restart()
+        logger.info(stdout)
+    except Exception, error:
+        logger.error("Reload bacula-dir error")
 
 
 
@@ -24,6 +34,7 @@ def call_reload_baculadir():
         logger.info("Reload no bacula executado com sucesso")
         del bacula
     except BConsoleInitError, e:
+        force_baculadir_restart()
         logger.error("Comunicação com o bacula falhou")
 
 
