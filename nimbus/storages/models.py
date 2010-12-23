@@ -11,13 +11,13 @@ from django.conf import settings
 
 
 import networkutils
+from pybacula import configcheck
 
 from nimbus.base.models import BaseModel
 from nimbus.shared import utils, signals, fields
 from nimbus.libs.template import render_to_file
 from nimbus.config.models import Config
 from nimbus.computers.models import Computer
-
 
 
 
@@ -160,10 +160,13 @@ def remove_device_file(device):
 
 def restart_bacula_storage(model):
     try:
+        configcheck.check_baculasd(settings.BACULASD_CONF)
         logger = logging.getLogger(__name__)
         manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
         stdout = manager.storage_restart()
         logger.info(stdout)
+    except configcheck.ConfigFileError, error:
+        logger.error('Bacula-sd error, not reloading')
     except Exception, error:
         logger.error("Reload bacula-sd error")
 
