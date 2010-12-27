@@ -14,12 +14,10 @@
 
     <div class="block_content">
         
-        <p><b>Erro, infelizmente não foi possível recuperar a base de dados. Isto pode ocorrer quando o nome da instância atual não é idêntico ao instalado anteriormente. Para corrigir esse erro, por favor altere o nome da instância em Sistema > Configurações > Nome da Instância.</p></b>
-        <p><b>Em caso de desconhecimento do nome original da instância clique no botão consultar nomes. Esta operação pode demorar alguns minutos.</p></b>
+        <p><b>Erro, infelizmente não foi possível recuperar a base de dados. </p></b>
+        <p>{{error}}</p>
 
-        <form action="/recovery/select_instance_name" method="get">
-            <input type="hidden" name="localsource" value="{{ localsource }}"/>
-            <input type="hidden" name="device" value="{{ device }}"/>
+        <form action="/recovery/start" method="get">
             <button type="submit"><span>Ok</span></button>
         </form>
         

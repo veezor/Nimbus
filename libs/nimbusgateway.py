@@ -152,14 +152,14 @@ class Api(object):
         return self._fetch_json_url(url, **options)
 
     def download_file( self, filename, dest, 
-                       limitrate=None, callback=None, overwrite=False):
+                       ratelimit=None, callback=None, overwrite=False):
 
         url = self.get_file_url(filename)['url']
-        self._download_file( url, dest, limitrate, callback, overwrite ) 
+        self._download_file( url, dest, ratelimit, callback, overwrite ) 
 
 
     def _download_file( self, url, dest, 
-                       limitrate=None, callback=None, overwrite=False):
+                       ratelimit=None, callback=None, overwrite=False):
         mode = "wb"
         resume = False
 
@@ -184,8 +184,8 @@ class Api(object):
             curl.setopt(pycurl.RESUME_FROM_LARGE, resume_index)
 
 
-        if limitrate:
-            curl.setopt(pycurl.MAX_RECV_SPEED_LARGE, limitrate)
+        if ratelimit:
+            curl.setopt(pycurl.MAX_RECV_SPEED_LARGE, ratelimit)
 
         try:
             curl.perform()
@@ -216,7 +216,7 @@ class Api(object):
 
 
     def upload_file(self, filename, dest, sent_md5=True,
-                    limitrate=None, callback=None):
+                    ratelimit=None, callback=None):
 
         if sent_md5:
             filemd5 = _md5_for_file(filename)
@@ -243,8 +243,8 @@ class Api(object):
 
         curl.setopt(pycurl.NOSIGNAL, 1)
 
-        if limitrate:
-            curl.setopt(pycurl.MAX_SEND_SPEED_LARGE, limitrate)
+        if ratelimit:
+            curl.setopt(pycurl.MAX_SEND_SPEED_LARGE, ratelimit)
 
         curl.perform()
         curl.close()

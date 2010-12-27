@@ -6,6 +6,7 @@ import logging
 from xmlrpclib import ServerProxy
 
 import iplib
+import time
 import networkutils
 
 from django.db import models
@@ -88,6 +89,8 @@ def update_networks_file(interface):
 
             server.generate_dns( interface.dns1, 
                                  interface.dns2)
+            time.sleep(2) # for redirect page
+            server.network_restart()
         except Exception, error:
             logger = logging.getLogger(__name__)
             logger.exception("Conexao com nimbus-manager falhou")

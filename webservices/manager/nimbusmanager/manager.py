@@ -9,6 +9,7 @@ from SocketServer import ThreadingMixIn
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 import os
+import stat
 import shutil
 import socket
 import tempfile
@@ -21,6 +22,13 @@ import logging
 import util
 import _templates
 
+
+
+NTP_CRON_FILE="/etc/cron.hourly/ntp"
+NTP_TEMPLATE = """
+#!/bin/bash
+/usr/sbin/ntpdate %s
+"""
 
 
 class ThreadedXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer): 
@@ -87,6 +95,13 @@ class Manager(object):
         local_time = util.current_time()
         self.logger.info("Successfully changed timezone to %s!" % timezone)
         self.logger.info("UCT is %s and localtime is %s." % (uct_time, local_time))
+
+
+    def generate_ntpdate_file_on_cron(self, server):
+        with file(NTP_CRON_FILE, "w") as f:
+            f.write(NTP_TEMPLATE % server)
+        os.chmod(NTP_CRON_FILE, stat.S_IEXEC)
+        subprocess.check_call([NTP_CRON_FILE], shell=True)
 
     def _change_paths(self):
         tempdir = tempfile.mkdtemp(prefix='nimbusmanager-')

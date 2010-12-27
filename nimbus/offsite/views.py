@@ -30,9 +30,9 @@ def detail(request):
     for upload in uploads:
         content.append( {
             "type" : 'ok',
-            'date' : upload.last_attempt,
+            'date' : upload.last_attempt or upload.created_at,
             "label" : upload.volume.filename,
-            'message' : "%d MB" % utils.bytes_to_mb(upload.volume.size)
+            'message' : "%.2f MB" % utils.bytes_to_mb(upload.volume.size)
             } )
 
 
@@ -105,7 +105,10 @@ def list_downloadrequest(request):
             d['fields']['filename'] = down.volume.filename
             d['fields']['created_at'] = datetime.strftime(down.created_at, "%d/%m/%Y %H:%M")
             d['fields']['attempts'] = down.attempts
-            d['fields']['last_attempt'] = datetime.strftime(down.last_attempt, "%d/%m/%Y %H:%M")
+            if down.last_attempt:
+                d['fields']['last_attempt'] = down.last_attempt.strftime("%d/%m/%Y %H:%M")
+            else:
+                d['fields']['last_attempt'] = None
             d['fields']['friendly_rate'] = down.friendly_rate
             d['fields']['estimated_transfer_time'] = down.estimated_transfer_time
             d['fields']['finished_percent'] = down.finished_percent
@@ -134,9 +137,12 @@ def list_uploadrequest(request):
             # d['model'] = up.model
             d['fields'] = {}
             d['fields']['filename'] = up.volume.filename
-            d['fields']['created_at'] = datetime.strftime(up.created_at, "%d/%m/%Y %H:%M")
+            d['fields']['created_at'] = up.created_at.strftime("%d/%m/%Y %H:%M")
             d['fields']['attempts'] = up.attempts
-            d['fields']['last_attempt'] = datetime.strftime(up.last_attempt, "%d/%m/%Y %H:%M")
+            if up.last_attempt:
+                d['fields']['last_attempt'] = up.last_attempt.strftime("%d/%m/%Y %H:%M")
+            else:
+                d['fields']['last_attempt'] = None
             d['fields']['friendly_rate'] = up.friendly_rate
             d['fields']['estimated_transfer_time'] = up.estimated_transfer_time
             d['fields']['finished_percent'] = up.finished_percent

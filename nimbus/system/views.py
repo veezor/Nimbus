@@ -4,11 +4,12 @@
 from threading import Thread
 
 import simplejson
+from os.path import getsize
 
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -16,6 +17,7 @@ from django.core import validators
 
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
+from nimbus.shared import utils
 from nimbus.shared.forms import form
 from nimbus.libs import offsite
 from nimbus.libs.devicemanager import (StorageDeviceManager,
@@ -115,7 +117,7 @@ def umount(request):
         try:
             manager = StorageDeviceManager(device)
             manager.umount()
-        except UMountError, e:
+        except UmountError, e:
             error = e
             messages.error(request, u"Erro ao remover unidade")
 

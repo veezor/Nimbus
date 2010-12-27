@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import simplejson
+import pycurl
+
+from threading import Thread
 
 from django.contrib.auth.decorators import login_required
 from django.views.generic import create_update
@@ -38,7 +41,7 @@ def select_source(request):
     elif request.method == "POST":
         source = request.POST['source']
         if source == "offsite":
-            return redirect( 'nimbus.recovery.views.select_instance_name' )
+            return redirect( 'nimbus.recovery.views.recover_databases' )
         else:
             return redirect( 'nimbus.recovery.views.select_storage' )
     else:
@@ -70,40 +73,6 @@ def select_storage(request):
 
 
 @login_required
-def select_instance_name(request):
-    if request.method == "GET":
-
-        localsource = request.GET.get("localsource", None)
-        device = request.GET.get("device", None)
-
-        if localsource:
-            storage = StorageDeviceManager(device)
-            manager = offsite.LocalManager(storage.mountpoint)
-            storage.mount()
-        else:
-            manager = offsite.RemoteManager()
-
-        manager = offsite.RecoveryManager()
-
-        instance_names = manager.get_instance_names()
-        manager.finish()
-
-
-        return render_to_response(request, "recovery_select_instance_name.html",
-                     { "localsource" : localsource, "device" : device, 
-                       "instance_names" : instance_names })
-
-    elif request.method == "POST":
-        localsource = request.POST.get("localsource", None)
-        device = request.POST.get("device", None)
-        return render_to_response(request, "recovery_change_instance_name.html",
-                     { "localsource" : localsource, "device" : device})
-    else:
-        raise Http404()
-
-
-
-@login_required
 def recover_databases(request):
     extra_content = {
         'title': u"Recuperação do sistema",
@@ -111,16 +80,16 @@ def recover_databases(request):
     
     if request.method == "GET":
 
-        localsource = request.GET.get("localsource", None)
+        localsource = request.GET.get("localsource", "offsite")
         device = request.GET.get("device", None)
         extra_content.update({ "localsource" : localsource, "device" : device})
         return render_to_response(request, "recovery_recover_databases.html",
                                   extra_content)
 
     elif request.method == "POST":
-        localsource = request.POST.get("localsource", None)
+        localsource = request.POST.get("localsource", "offsite")
         
-        if localsource:
+        if localsource != "offsite":
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
             try:
@@ -136,6 +105,8 @@ def recover_databases(request):
         
         else:
             manager = offsite.RemoteManager()
+            device = None
+            localsource = "offsite"
         
         
         
@@ -143,16 +114,14 @@ def recover_databases(request):
         try:
             manager.download_databases()
         except (IOError, pycurl.error), error:
-            extra_content.update({ "error": error, 
-               "device" : device, 
-               "localsource"  : True})
+            extra_content.update({ "error": error }) 
             return render_to_response(request,
                     'recovery_instancenameerror.html', extra_content)
         
         manager.recovery_databases()
         manager.generate_conf_files()
         
-        extra_content.update({"device" : device, "localsource"  : True})
+        extra_content.update({"device" : device, "localsource"  : localsource})
         return render_to_response(request, 'recovery_database_ok.html',  extra_content)
 
     else:
@@ -175,9 +144,9 @@ def recover_volumes(request):
     if request.method == "GET":
         return render_to_response(request, "recovery_recover_volumes.html", extra_content)
     elif request.method == "POST":
-        localsource = request.POST.get("localsource", None)
+        localsource = request.POST.get("localsource", "offsite")
         
-        if localsource:
+        if localsource != "offsite":
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
             manager = offsite.LocalManager(storage.mountpoint)

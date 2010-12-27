@@ -38,15 +38,11 @@ class Volume(models.Model):
     size = models.IntegerField(null=False, editable=False, default=0)
 
     def __init__(self, *args, **kwargs):
-        path = kwargs.get("path", None)
-        if path:
-            try:
-                size = os.path.getsize(path)
-            except OSError, e:
-                size = 0
-            super(Volume, self).__init__( size=size, *args, **kwargs)
-        else:
-            super(Volume, self).__init__(*args, **kwargs)
+        super(Volume, self).__init__( *args, **kwargs)
+        if self.path and os.path.exists(self.path):
+            self.size = os.path.getsize(self.path)
+
+
 
     @property
     def filename(self):
@@ -74,7 +70,7 @@ class DownloadedVolume(OffSiteVolume):
     pass
 
 class Request(models.Model):
-    UPDATE_DIFF_SIZE_256_KB = 268435456
+    UPDATE_DIFF_SIZE_256_KB = 102400
     KB = 1024
     MB = KB * 1024
     MINUTES = 60
@@ -90,11 +86,16 @@ class Request(models.Model):
 
 
     def update(self, new_bytes_size, total_bytes):
+        
         bytesdiff = new_bytes_size - self.transferred_bytes
         if bytesdiff >= self.UPDATE_DIFF_SIZE_256_KB:
-            timediff = int(time() - self.last_update)
-            self.rate = bytesdiff / timediff
-            self.transferred_bytes = bytes
+
+            if self.last_update:
+                timediff = int(time() - self.last_update)
+                self.rate = bytesdiff / timediff
+
+            self.last_update = time()
+            self.transferred_bytes = new_bytes_size
             self.save()
 
     @property
@@ -184,54 +185,6 @@ class UploadTransferredData( TransferredData ):
 class DownloadTransferredData( TransferredData ):
     pass
 
-
-
-
-def update_offsite_file(offsite):
-
-    if offsite.active:
-        generate_offsite_file(offsite.hour)
-    else:
-        job = os.path.join( settings.NIMBUS_JOBS_DIR, "offsite" )
-        schedule = os.path.join( settings.NIMBUS_SCHEDULES_DIR, "offsite" )
-        utils.remove_or_leave(job)
-        utils.remove_or_leave(schedule)
-
-
-signals.connect_on( update_offsite_file, Offsite, post_save)
-
-def generate_offsite_file(hour):
-
-    job = os.path.join( settings.NIMBUS_JOBS_DIR, "offsite" )
-    schedule = os.path.join( settings.NIMBUS_SCHEDULES_DIR, "offsite" )
-
-    try:
-        storage = Storage.objects.get(address="127.0.0.1")
-    except Storage.DoesNotExist, error:
-        logger = logging.getLogger(__name__)
-        logger.error("Impossivel gerar job do offsite. Storage local nao existe")
-        return 
-
-    render_to_file( job,
-                    "job",
-                    name="Upload offsite",
-                    schedule="offsite_schedule",
-                    level="Incremental",
-                    storage=storage.bacula_name,
-                    fileset="empty fileset",
-                    priority=10,
-                    client="empty client",
-                    pool="empty pool",
-                    offsite=True,
-                    offsite_param="-u")
-
-
-    render_to_file( schedule,
-                    "schedule",
-                    name="offsite_schedule",
-                    runs=["daily at %s:%s" % (hour.hour, 
-                                              hour.minute)])
-    
 
 
 

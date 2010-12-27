@@ -2,7 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 import os
-from os.path import join, exists
+import bz2
+import subprocess
+import time
+from os.path import join, exists, isfile
 import logging
 from django.conf import settings
 from datetime import datetime
@@ -10,9 +13,10 @@ from datetime import datetime
 
 import pycurl
 
+from devicemanager import StorageDeviceManager
 
 from nimbus.storages.models import Device
-from nimbus.config.models import Config
+from nimbus.offsite.models import Offsite
 
 
 from nimbus.offsite.models import ( Volume, 
@@ -23,9 +27,12 @@ from nimbus.offsite.models import ( Volume,
 
 
 from nimbusgateway import Api, File
+from django.contrib.contenttypes.models import ContentType
 
 
 DISK_LABELS_PATH = "/dev/disk/by-label/"
+NIMBUS_DUMP = "/var/nimbus/nimbus-sql.bz2"
+BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
 
 
 def list_disk_labels():
@@ -43,7 +50,7 @@ def find_archive_devices():
 def get_volume_abspath(volume, archives):
     for archive in archives:
         abspath = join( archive, volume )
-        if exists( abspath ):
+        if exists( abspath ) and isfile( abspath ):
             return abspath
 
 
@@ -56,8 +63,16 @@ def get_all_bacula_volumes():
     archives = find_archive_devices()
     volumes = []
     for arc in archives:
+
         files = os.listdir(arc)
-        volumes.extend( join(arc, file) for file in files )
+
+        for filename in files:
+
+            fullpath = join(arc, filename)
+
+            if isfile( fullpath ):
+                volumes.append( fullpath )
+
     return volumes
 
 
@@ -100,7 +115,7 @@ class BaseManager(object):
 
 
     def get_upload_requests(self):
-        return UploadRequest.objects.all()
+        return UploadRequest.objects.all().order_by('-created_at')
 
 
     def get_download_requests(self):
@@ -116,7 +131,15 @@ class BaseManager(object):
         volumes = get_volumes_abspath(volumes)
         for vol in volumes:
             self.create_upload_request(vol)
+        
+        self.generate_database_dump_upload_request()
         self.process_pending_upload_requests()
+
+    def generate_database_dump_upload_request(self):
+        if exists(NIMBUS_DUMP):
+            self.create_upload_request(NIMBUS_DUMP)
+        if exists(BACULA_DUMP):
+            self.create_upload_request(BACULA_DUMP)
 
 
     def download_all_volumes(self):
@@ -139,14 +162,14 @@ class RemoteManager(BaseManager):
 
 
     def __init__(self):
-        settings = Config.get_instance()
+        settings = Offsite.get_instance()
 
         self.api = Api(username=settings.username,
                        password=settings.password,
                        gateway_url=settings.gateway_url)
 
-        if settings.UPLOAD_RATE > 0:
-            self.upload_rate = settings.offsite_upload_rate
+        if settings.upload_rate > 0:
+            self.upload_rate = settings.upload_rate
         else:
             self.upload_rate = None
 
@@ -167,7 +190,7 @@ class RemoteManager(BaseManager):
 
 
     def process_requests( self, requests, process_function, 
-                          limitrate=None):
+                          ratelimit=None):
         
         logger = logging.getLogger(__name__)
 
@@ -178,6 +201,7 @@ class RemoteManager(BaseManager):
             while retry < self.MAX_RETRY:
                 try:
                     req.attempts += 1
+                    req.last_update = time.time()
 
                     if isinstance(req, UploadRequest): # no resume
                         req.transferred_bytes = 0
@@ -186,12 +210,12 @@ class RemoteManager(BaseManager):
 
                     req.save()
                     process_function(req.volume.path, req.volume.filename,
-                                     limitrate=limitrate, callback=req.update)
+                                     ratelimit=ratelimit, callback=req.update)
                     req.finish()
                     logger.info("%s processado com sucesso" % req)
-                    retry += 1
                     break
                 except pycurl.error, e:
+                    retry += 1
                     register_transferred_data(req, initialbytes)
                     logger.error("Erro ao processar %s" % req)
                 
@@ -262,6 +286,92 @@ class LocalManager(BaseManager):
         ori.close()
         dest.close()
 
+
+
+
+class RecoveryManager(object):
+
+
+    def __init__(self, manager):
+        self.manager = manager
+
+
+
+    def upload_databases(self):
+        self.manager.create_upload_request(NIMBUS_DUMP)
+        self.manager.create_upload_request(BACULA_DUMP)
+        self.manager.process_pending_upload_requests()
+
+    def download_databases(self):
+        nimbus_db = os.path.split(NIMBUS_DUMP)[-1]
+        bacula_db = os.path.split(BACULA_DUMP)[-1]
+        self.manager.create_download_request(nimbus_db)
+        self.manager.create_download_request(bacula_db)
+        self.manager.process_pending_download_requests()
+
+
+    def recovery_database(self, dumpfile, name, user, password):
+
+        fileobj = bz2.BZ2File(dumpfile)
+        content = fileobj.read()
+        fileobj.close()
+
+        cmd = subprocess.Popen(["/usr/bin/mysql",
+                                "-u" + user,
+                                "-p" + password,
+                                "-D" + name ],
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE)
+        cmd.communicate(content)
+
+
+    def recovery_nimbus_dabatase(self):
+        nimbus_file = NIMBUS_DUMP
+        db_data = settings.DATABASES['default']
+        self.recovery_database( nimbus_file,
+                                db_data['NAME'],
+                                db_data['USER'],
+                                db_data['PASSWORD'])
+
+    def recovery_bacula_dabatase(self):
+        bacula_file = BACULA_DUMP
+        db_data = settings.DATABASES['bacula']
+        self.recovery_database( bacula_file,
+                                db_data['NAME'],
+                                db_data['USER'],
+                                db_data['PASSWORD'])
+
+
+
+    def recovery_databases(self):
+        self.recovery_bacula_dabatase()
+        self.recovery_nimbus_dabatase()
+
+
+    def generate_conf_files(self):
+        app_labels = [ name.split('.')[-1]\
+                       for name in settings.INSTALLED_APPS\
+                           if name.startswith('nimbus')]
+
+
+        app_labels.remove('bacula')
+        app_labels.remove('base')
+
+        nimbus_models = [ c.model_class() for c in ContentType.objects.filter(app_label__in=app_labels) ]
+
+        for model in nimbus_models:
+            for instance in model.objects.all():
+                instance.save()
+
+
+    def download_volumes(self):
+        self.manager.download_all_volumes()
+
+    def finish(self):
+        if isinstance(self.manager, LocalManager):
+            storage = StorageDeviceManager( self.manager.device )
+            storage.umount()
+ 
                 
 
 
