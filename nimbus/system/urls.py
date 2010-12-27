@@ -12,4 +12,5 @@ urlpatterns = patterns('nimbus.system.views',
     (r'^security_copy/$', 'security_copy'), 
     (r'^select_storage/$', 'select_storage'), 
     (r'^copy_files/$', 'copy_files'), 
+    (r'^pid_history/$', 'pid_history'),
 )

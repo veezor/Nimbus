@@ -176,3 +176,48 @@ def copy_files(request):
         if error:
             return render_to_response(request, "bkp/offsite/mounterror.html",
                     {"error" : error } )
+
+
+@login_required
+def pid_history(request):
+    from nimbus.offsite.models import UploadRequest, DownloadRequest
+    from datetime import datetime
+    
+    #downloads_requests = DownloadRequest.objects.all()
+    class Pid(object):
+        pass
+    
+    pid1 = Pid()
+    pid1.pid = 123
+    pid1.status = 'Inativo'
+    pid1.name = 'Upload de arquivos'
+    pid1.created_at = datetime.now()
+    
+    pid2 = Pid()
+    pid2.pid = 183
+    pid2.status = 'Ativo'
+    pid2.name = u'Cópia de Segurança'
+    pid2.created_at = datetime.now()
+    
+    pid_requests = [pid1, pid2]
+
+    if 'ajax' in request.POST:
+        l = []
+        for down in pid_requests:
+            d = {}
+            d['pk'] = down.pid
+            d['fields'] = {}
+            d['fields']['pid'] = down.pid
+            d['fields']['created_at'] = datetime.strftime(down.created_at, "%d/%m/%Y %H:%M")
+            d['fields']['name'] = down.name
+            d['fields']['status'] = down.status
+            l.append(d)
+        # response = serializers.serialize("json", downloads_requests)
+        response = simplejson.dumps(l)
+        return HttpResponse(response, mimetype="text/plain")
+
+    return render_to_response( request, 
+                               "pid_history.html", 
+                               {"object_list": pid_requests,
+                                "list_type": "Downloads",
+                                "title": u"Processos"})
