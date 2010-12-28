@@ -17,7 +17,7 @@ from django.core.exceptions import ValidationError
 
 
 from nimbus.shared import signals
-from nimbus.shared.middlewares import ThreadPool
+from nimbus.libs import systemprocesses
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 
@@ -66,10 +66,8 @@ def update_system_timezone(timezone):
             logger.exception("Conexao com nimbus-manager falhou")
 
 
-    Pool = ThreadPool.get_instance()
-
-    if Pool:
-        Pool.add_job( callable, (timezone,), {} )
+    systemprocesses.norm_priority_job( "Set system timezone", 
+                                        callable, timezone)
 
 
 def update_ntp_cron_file(timezone):
@@ -82,10 +80,9 @@ def update_ntp_cron_file(timezone):
             logger = logging.getLogger(__name__)
             logger.exception("Conexao com nimbus-manager falhou")
 
-    Pool = ThreadPool.get_instance()
 
-    if Pool:
-        Pool.add_job( callable, (timezone,), {} )
+    systemprocesses.norm_priority_job( "Generate ntpdate cron file", 
+                                        callable, timezone)
 
 
 

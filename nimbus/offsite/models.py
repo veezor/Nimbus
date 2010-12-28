@@ -70,7 +70,7 @@ class DownloadedVolume(OffSiteVolume):
     pass
 
 class Request(models.Model):
-    UPDATE_DIFF_SIZE_256_KB = 102400
+    UPDATE_DIFF_SIZE_100_KB = 102400
     KB = 1024
     MB = KB * 1024
     MINUTES = 60
@@ -88,10 +88,10 @@ class Request(models.Model):
     def update(self, new_bytes_size, total_bytes):
         
         bytesdiff = new_bytes_size - self.transferred_bytes
-        if bytesdiff >= self.UPDATE_DIFF_SIZE_256_KB:
+        if bytesdiff >= self.UPDATE_DIFF_SIZE_100_KB:
 
             if self.last_update:
-                timediff = int(time() - self.last_update)
+                timediff = int(time() - self.last_update) or 1
                 self.rate = bytesdiff / timediff
 
             self.last_update = time()
@@ -139,8 +139,8 @@ class Request(models.Model):
 class UploadRequest(Request):
 
 
-    def __str__(self):
-        return "UploadRequest(path=%s)" % self.volume.path
+    def __unicode__(self):
+        return u"UploadRequest(path=%s)" % self.volume.path
 
     def finish(self):
         volume = UploadedVolume(volume=self.volume)
@@ -149,11 +149,31 @@ class UploadRequest(Request):
         self.delete()
 
 
+    class Meta:
+        abstract = True
+
+
+
+class RemoteUploadRequest(UploadRequest):
+    
+    def __unicode__(self):
+        return u"RemoteUploadRequest(path=%s)" % self.volume.path
+
+class LocalUploadRequest(UploadRequest):
+
+    def __unicode__(self):
+        return u"LocalUploadRequest(path=%s)" % self.volume.path
+
+
+
+    def update(self, new_bytes_size, total_bytes):
+        pass
+
 
 class DownloadRequest(Request):
 
-    def __str__(self):
-        return "DownloadRequest(path=%s)" % self.volume.path
+    def __unicode__(self):
+        return u"DownloadRequest(path=%s)" % self.volume.path
 
     def finish(self):
         volume = DownloadedVolume(volume=self.volume)

@@ -8,9 +8,8 @@ from pybacula import BConsoleInitError
 
 
 from django.conf import settings
-
+from nimbus.libs import systemprocesses
 from nimbus.libs.bacula import Bacula
-from nimbus.shared.middlewares import ThreadPool
 
 
 
@@ -44,9 +43,8 @@ def connect_on(function, model, signal):
     @wraps(function)
     def function_wrapper(sender, instance, signal, *args, **kwargs):
         value = function(instance)
-        Pool = ThreadPool.get_instance()
-        if Pool:
-            Pool.add_job( call_reload_baculadir, (), {} )
+        systemprocesses.max_priority_job("bacula-dir reload",
+                                       call_reload_baculadir )
         return value
 
     signal.connect(function_wrapper, sender=model, weak=False)

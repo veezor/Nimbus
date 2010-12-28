@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from os.path import join
-from threading import Thread
-
 
 from datetime import datetime
 import simplejson
@@ -12,8 +10,10 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 
-from nimbus.libs import offsite
-from nimbus.offsite.models import UploadRequest, DownloadRequest
+from nimbus.libs import offsite, systemprocesses
+from nimbus.offsite.models import (LocalUploadRequest, 
+                                   RemoteUploadRequest, 
+                                   DownloadRequest)
 from nimbus.procedures.models import Procedure
 from nimbus.offsite.models import Offsite
 from nimbus.shared import utils
@@ -24,7 +24,7 @@ from nimbus.offsite.forms import OffsiteForm
 @login_required
 def detail(request):
     offsite = Offsite.objects.all()[0]
-    uploads = UploadRequest.objects.all()
+    uploads = list(LocalUploadRequest.objects.all()) + list(RemoteUploadRequest.objects.all())
 
     content = []
     for upload in uploads:
@@ -64,7 +64,7 @@ def select_storage(request):
 
 
 
-def worker_thread(storage):
+def copy_files_worker(storage):
     archive_devices = offsite.find_archive_devices()
     for arc_dev in archive_devices:
         dest = join( "/media" , storage )
@@ -83,8 +83,8 @@ def copy_files_to_storage(request):
         if not device:
             raise Http404()
 
-        thread = Thread(target=worker_thread, args=(device,))
-        thread.start()
+        systemprocesses.min_priority_job("Nimbus volumes copy to disk", 
+                                          copy_files_worker, device)
 
         return redirect('nimbus.offsite.views.list_uploadrequest')
     else:
@@ -127,7 +127,7 @@ def list_downloadrequest(request):
 @login_required
 def list_uploadrequest(request):
 
-    uploads_requests = UploadRequest.objects.all()
+    uploads_requests = list(LocalUploadRequest.objects.all()) + list(RemoteUploadRequest.objects.all())
     
     if 'ajax' in request.POST:
         l = []

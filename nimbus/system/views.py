@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-from threading import Thread
 
 import simplejson
 from os.path import getsize
@@ -17,9 +16,9 @@ from django.core import validators
 
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
-from nimbus.shared import utils
+from nimbus.shared import utils, middlewares
 from nimbus.shared.forms import form
-from nimbus.libs import offsite
+from nimbus.libs import offsite, systemprocesses
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
 import networkutils 
@@ -27,7 +26,7 @@ import systeminfo
 
 
 
-def worker_thread(storage_manager):
+def upload_volumes_worker(storage_manager):
     manager = offsite.LocalManager(origin=None,
                                   destination=storage_manager.mountpoint)
     manager.upload_all_volumes()
@@ -162,8 +161,8 @@ def copy_files(request):
 
 
         if required_size <  manager.available_size:
-            thread = Thread(target=worker_thread, args=(manager,))
-            thread.start()
+            systemprocesses.min_priority_job("Nimbus upload volumes",
+                                             upload_volumes_worker, manager)
             messages.success(request, u"O processo foi iniciado com sucesso.")
             return redirect('nimbus.offsite.views.list_uploadrequest')
         else:
@@ -180,44 +179,26 @@ def copy_files(request):
 
 @login_required
 def pid_history(request):
-    from nimbus.offsite.models import UploadRequest, DownloadRequest
-    from datetime import datetime
-    
-    #downloads_requests = DownloadRequest.objects.all()
-    class Pid(object):
-        pass
-    
-    pid1 = Pid()
-    pid1.pid = 123
-    pid1.status = 'Inativo'
-    pid1.name = 'Upload de arquivos'
-    pid1.created_at = datetime.now()
-    
-    pid2 = Pid()
-    pid2.pid = 183
-    pid2.status = 'Ativo'
-    pid2.name = u'Cópia de Segurança'
-    pid2.created_at = datetime.now()
-    
-    pid_requests = [pid1, pid2]
+
+    threadpool = middlewares.ThreadPool.get_instance()
+    jobs = threadpool.list_jobs_pending()
 
     if 'ajax' in request.POST:
         l = []
-        for down in pid_requests:
+        for job in jobs:
             d = {}
-            d['pk'] = down.pid
+            d['pk'] = job.id
             d['fields'] = {}
-            d['fields']['pid'] = down.pid
-            d['fields']['created_at'] = datetime.strftime(down.created_at, "%d/%m/%Y %H:%M")
-            d['fields']['name'] = down.name
-            d['fields']['status'] = down.status
+            d['fields']['pid'] = job.id
+            d['fields']['created_at'] = job.created_at.strftime("%d/%m/%Y %H:%M")
+            d['fields']['name'] = job.description
+            d['fields']['status'] = job.status
             l.append(d)
-        # response = serializers.serialize("json", downloads_requests)
         response = simplejson.dumps(l)
         return HttpResponse(response, mimetype="text/plain")
 
     return render_to_response( request, 
                                "pid_history.html", 
-                               {"object_list": pid_requests,
+                               {"object_list": jobs,
                                 "list_type": "Downloads",
                                 "title": u"Processos"})

@@ -8,8 +8,7 @@ import traceback
 import logging.config
 
 from django.conf import settings
-
-from workerthread import WorkerThread
+from backgroundjobs import ThreadPool as BJThreadPool
 
 
 
@@ -29,8 +28,7 @@ class ThreadPool(object):
 
     def __init__(self):
         if not self.instance:
-            self.__class__.instance = WorkerThread()
-        self.instance.start()
+            self.__class__.instance = BJThreadPool()
 
 
     @classmethod

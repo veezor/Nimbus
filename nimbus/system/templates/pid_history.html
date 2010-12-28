@@ -105,8 +105,8 @@
                 <tbody>
                 {% for object in object_list %}
                     <tr>
-                        <td>{{ object.pid }}</td>
-                        <td>{{ object.name }}</td>
+                        <td>{{ object.id }}</td>
+                        <td>{{ object.description }}</td>
                         <td>{{ object.created_at|date:"d/m/Y H:i" }}</td>
                         <td align="right">{{ object.status }}</td>
                     </tr>

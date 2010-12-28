@@ -160,8 +160,8 @@ def remove_device_file(device):
 
 def restart_bacula_storage(model):
     try:
-        configcheck.check_baculasd(settings.BACULASD_CONF)
         logger = logging.getLogger(__name__)
+        configcheck.check_baculasd(settings.BACULASD_CONF)
         manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
         stdout = manager.storage_restart()
         logger.info(stdout)

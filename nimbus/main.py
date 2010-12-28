@@ -41,6 +41,7 @@ class NimbusApplication(Application):
         self.project_path = 'nimbus'
         self.settings_modname = "nimbus.settings"
         self.cfg.set("default_proc_name", self.settings_modname)
+        self.cfg.set("timeout", 2592000)
 
         
     def load(self):

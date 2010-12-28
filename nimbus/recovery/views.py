@@ -3,7 +3,6 @@
 import simplejson
 import pycurl
 
-from threading import Thread
 
 from django.contrib.auth.decorators import login_required
 from django.views.generic import create_update
@@ -13,7 +12,7 @@ from django.shortcuts import redirect
 
 from nimbus.offsite.models import DownloadRequest
 from nimbus.shared.views import render_to_response
-from nimbus.libs import offsite
+from nimbus.libs import offsite, systemprocesses
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
 
@@ -129,7 +128,7 @@ def recover_databases(request):
 
 
 
-def worker_thread(manager):
+def recover_volumes_worker(manager):
     manager = offsite.RecoveryManager(manager)
     manager.download_volumes()
     manager.finish()
@@ -154,9 +153,9 @@ def recover_volumes(request):
         else:
             manager = offsite.RemoteManager()
         
-        
-        worker = Thread(target=worker_thread, args=(manager,))
-        worker.start()
+       
+        systemprocesses.min_priority_job("Recovery nimbus volumes", 
+                                         recover_volumes_worker, manager)
         
         extra_content.update({ "object_list" : DownloadRequest.objects.all()})
         return render_to_response(request,

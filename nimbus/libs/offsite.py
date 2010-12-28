@@ -20,7 +20,8 @@ from nimbus.offsite.models import Offsite
 
 
 from nimbus.offsite.models import ( Volume, 
-                                    UploadRequest, 
+                                    RemoteUploadRequest,
+                                    LocalUploadRequest,
                                     DownloadRequest,
                                     UploadTransferredData,
                                     DownloadTransferredData)
@@ -79,13 +80,16 @@ def get_all_bacula_volumes():
 
 def register_transferred_data(request, initialbytes):
     bytes = request.transferred_bytes - initialbytes
-    if isinstance(request, UploadRequest):
+    if isinstance(request, (RemoteUploadRequest, LocalUploadRequest)):
         UploadTransferredData.objects.create(bytes=bytes)
     else:
         DownloadTransferredData.objects.create(bytes=bytes)
 
 
 class BaseManager(object):
+
+    UploadRequestClass = RemoteUploadRequest
+    DownloadRequestClass = DownloadRequest
     
     def get_volume(self, volume_path ):
         volume, created = Volume.objects.get_or_create(path=volume_path)
@@ -102,24 +106,24 @@ class BaseManager(object):
 
     def create_upload_request(self, volume_path ):
         volume = self.get_volume(volume_path=volume_path)
-        request, created = UploadRequest\
+        request, created = self.UploadRequestClass\
                             .objects.get_or_create(volume=volume)
         return request
 
 
     def create_download_request(self, volume_path ):
         volume = self.get_volume(volume_path=volume_path)
-        request, created = DownloadRequest\
+        request, created = self.DownloadRequestClass\
                             .objects.get_or_create(volume=volume)
         return request
 
 
     def get_upload_requests(self):
-        return UploadRequest.objects.all().order_by('-created_at')
+        return self.UploadRequestClass.objects.all().order_by('-created_at')
 
 
     def get_download_requests(self):
-        return DownloadRequest.objects.all()
+        return self.DownloadRequestClass.objects.all()
 
 
     def upload_all_volumes(self):
@@ -203,7 +207,7 @@ class RemoteManager(BaseManager):
                     req.attempts += 1
                     req.last_update = time.time()
 
-                    if isinstance(req, UploadRequest): # no resume
+                    if isinstance(req, self.UploadRequestClass): # no resume
                         req.transferred_bytes = 0
 
                     initialbytes = req.transferred_bytes
@@ -227,6 +231,8 @@ class RemoteManager(BaseManager):
 
 class LocalManager(BaseManager):
     SIZE_512KB = 512 * 1024
+
+    UploadRequestClass = LocalUploadRequest
 
     def __init__(self, origin, destination):
         self.origin = origin
@@ -373,6 +379,3 @@ class RecoveryManager(object):
             storage.umount()
  
                 
-
-
-

@@ -15,7 +15,7 @@ from django.conf import settings
 
 
 from nimbus.shared import signals
-from nimbus.shared.middlewares import ThreadPool
+from nimbus.libs import systemprocesses
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 # Create your models here.
@@ -96,9 +96,8 @@ def update_networks_file(interface):
             logger.exception("Conexao com nimbus-manager falhou")
 
 
-    Pool = ThreadPool.get_instance()
-    if Pool:
-        Pool.add_job( callable, (interface,), {} )
+    systemprocesses.norm_priority_job("Generate network conf files and restart networking", 
+                                     callable, interface)
 
 
 signals.connect_on( update_networks_file, NetworkInterface, post_save )
