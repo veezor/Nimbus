@@ -180,7 +180,7 @@ def backup_form(request, object_id=None):
                                             if not trigger_name in ["dayly", "hourly"]:
                                                 post_days = set(request.POST.getlist(trigger + '.day'))
 
-                                                if not post_days and not is_trigger_edit:
+                                                if not post_days:
                                                     errors['schedule_day'] = "Você deve selecionar um dia para a execução do agendamento %s"  % trigger_map[trigger_name]
                                                 else:
                                                     for d  in post_days:
