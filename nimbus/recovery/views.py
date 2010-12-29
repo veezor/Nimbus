@@ -3,16 +3,19 @@
 import simplejson
 import pycurl
 
+import os
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.core import serializers
 from django.shortcuts import redirect
+from django.conf import settings
 
 from nimbus.offsite.models import DownloadRequest
 from nimbus.shared.views import render_to_response
-from nimbus.libs import offsite, systemprocesses
+from nimbus.libs import offsite, systemprocesses, bacula
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
 
@@ -73,6 +76,8 @@ def select_storage(request):
 
 @login_required
 def recover_databases(request):
+
+    logger = logging.getLogger(__name__)
     extra_content = {
         'title': u"Recuperação do sistema",
     }
@@ -113,12 +118,16 @@ def recover_databases(request):
         try:
             manager.download_databases()
         except (IOError, pycurl.error), error:
+            logger.error('download databases')
             extra_content.update({ "error": error }) 
             return render_to_response(request,
                     'recovery_instancenameerror.html', extra_content)
-        
-        manager.recovery_databases()
-        manager.generate_conf_files()
+       
+        with bacula.BaculaLock() as lock:
+            logger.info('Starting database recovery')
+            manager.recovery_databases()
+            manager.generate_conf_files()
+            logger.info('Stoping database recovery')
         
         extra_content.update({"device" : device, "localsource"  : localsource})
         return render_to_response(request, 'recovery_database_ok.html',  extra_content)
@@ -127,11 +136,11 @@ def recover_databases(request):
         raise Http404()
 
 
-
 def recover_volumes_worker(manager):
-    manager = offsite.RecoveryManager(manager)
-    manager.download_volumes()
-    manager.finish()
+    with bacula.BaculaLock() as lock:
+        manager = offsite.RecoveryManager(manager)
+        manager.download_volumes()
+        manager.finish()
 
 
 @login_required

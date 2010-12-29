@@ -1,9 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
 import logging
 import datetime
 import tempfile
+import xmlrpclib
 
 from django.conf import settings
 from django.db import connections
@@ -41,14 +43,15 @@ class Bacula(object):
 
 
     def reload(self):
-        self.logger.info("Executando reload no bacula")
-        try:
-            configcheck.check_baculadir(settings.BACULADIR_CONF)
-            configcheck.check_bconsole(settings.BCONSOLE_CONF)
-            output = self.cmd.reload.run()
-            return output
-        except configcheck.ConfigFileError, error:
-            logging.exception("Arquivo de configuracao do bacula-sd gerado com erros")
+
+        if not bacula_is_locked():
+            try:
+                configcheck.check_baculadir(settings.BACULADIR_CONF)
+                configcheck.check_bconsole(settings.BCONSOLE_CONF)
+                output = self.cmd.reload.run()
+                return output
+            except configcheck.ConfigFileError, error:
+                logging.exception("Arquivo de configuracao do bacula-sd gerado com erros")
 
 
 
@@ -120,4 +123,57 @@ class Bacula(object):
     
   
 
+def bacula_is_locked():
+    return os.path.exists(settings.BACULA_LOCK_FILE)
+
+
+
+
+def unlock_bacula_and_start():
+
+    if bacula_is_locked():
+        os.remove(settings.BACULA_LOCK_FILE)
+
+        try:
+            logger = logging.getLogger(__name__)
+            manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
+            stdout = manager.director_start()
+            logger.info("bacula-dir started and unlocked")
+            logger.info(stdout)
+        except Exception, error:
+            logger.exception("start bacula-dir error")
+
+
+
+
+
+def lock_and_stop_bacula():
+
+    if not bacula_is_locked():
+
+        with file(settings.BACULA_LOCK_FILE, "w"):
+            pass
+        
+        logger = logging.getLogger(__name__)
+        try:
+
+            manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
+            stdout = manager.director_stop()
+            logger.info("bacula-dir stopped and locked")
+            logger.info(stdout)
+        except Exception, error:
+            logger.exception("stop bacula-dir error")
+
+
+
+class BaculaLock(object):
+
+
+    def __enter__(self):
+        lock_and_stop_bacula()
+        return self
+
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        unlock_bacula_and_start()
 

@@ -18,7 +18,7 @@ from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
 from nimbus.shared import utils, middlewares
 from nimbus.shared.forms import form
-from nimbus.libs import offsite, systemprocesses
+from nimbus.libs import offsite, systemprocesses, bacula
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
 import networkutils 
@@ -27,12 +27,11 @@ import systeminfo
 
 
 def upload_volumes_worker(storage_manager):
-    manager = offsite.LocalManager(origin=None,
-                                  destination=storage_manager.mountpoint)
-    manager.upload_all_volumes()
-    storage_manager.umount()
-
-
+    with bacula.BaculaLock() as lock:
+        manager = offsite.LocalManager(origin=None,
+                                      destination=storage_manager.mountpoint)
+        manager.upload_all_volumes()
+        storage_manager.umount()
 
 
 @login_required

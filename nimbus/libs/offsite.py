@@ -17,6 +17,7 @@ from devicemanager import StorageDeviceManager
 
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
+from nimbus.pools.models import Pool
 
 
 from nimbus.offsite.models import ( Volume, 
@@ -84,6 +85,23 @@ def register_transferred_data(request, initialbytes):
         UploadTransferredData.objects.create(bytes=bytes)
     else:
         DownloadTransferredData.objects.create(bytes=bytes)
+
+
+def filename_is_volumename(filename):
+    parts = filename.split("_")
+
+    if len(parts) == 1:
+        return False
+
+    pool_name = parts[0]
+    
+    try:
+        pool = Pool.objects.get(uuid__uuid_hex=pool_name)
+        name = pool.uuid.uuid_hex + "_pool-vol-"
+        return filename.startswith(name)
+    except Pool.DoesNotExist, error:
+        return False
+
 
 
 class BaseManager(object):
@@ -188,9 +206,16 @@ class RemoteManager(BaseManager):
         return [ f[0] for f in self.api.list_all_files() ]
 
 
+    def _download_file(self, filename, dest, 
+                       ratelimit=None, callback=None):
+        device = Device.objects.all()[0]
+        return self.api.download_file( filename, join(device.archive, filename),
+                                       ratelimit, callback, True)
+
+
     def process_pending_download_requests(self):
         requests = self.get_download_requests()
-        self.process_requests( requests, self.api.download_file) 
+        self.process_requests( requests, self._download_file) 
 
 
     def process_requests( self, requests, process_function, 
@@ -240,7 +265,9 @@ class LocalManager(BaseManager):
 
 
     def get_remote_volumes_list(self):
-        files = [ join(self.origin, f) for f in os.listdir(self.origin) ]
+        allfiles = os.listdir(self.origin)
+        volume_files = [ f for f in allfiles if filename_is_volumename(f) ]
+        files = [ join(self.origin, f) for f in volume_files ]
         return filter( os.path.isfile, files)
 
     def process_pending_upload_requests(self):
