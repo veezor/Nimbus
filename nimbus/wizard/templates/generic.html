@@ -51,7 +51,10 @@
         {% include "form.html" %}
 
         <p class="input_submit">
-            <input type="submit" class="submit" value="Próximo" /> &nbsp;
+            {% if previous %}
+            <a href="{{ previous }}" class="submit left"><span>Anterior</span></a> &nbsp;
+            {% endif %}
+            <input type="submit" class="submit right no_margin" value="Próximo" />
         </p>
                
         <input type="hidden" name="next" value="{{ next }}" />
