@@ -54,10 +54,10 @@ class App(object):
     def create_database(self):
         call_command('syncdb',verbosity=0,interactive=False)
         if len(User.objects.all()) == 0:
-            u = User(username = "teste", 
+            u = User(username = "admin", 
                      is_superuser=True,
-                     email = "suporte@linconet.com.br")
-            u.set_password("teste")
+                     email = "suporte@veezor.com")
+            u.set_password("admin")
             u.save()
 
             call_command('loaddata', settings.INITIALDATA_FILE)
