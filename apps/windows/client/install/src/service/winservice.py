@@ -12,6 +12,14 @@ import win32evtlogutil
 import servicemanager
 import subprocess
 
+import win32com.client
+
+
+if win32com.client.gencache.is_readonly == True:
+    win32com.client.gencache.is_readonly = False
+    win32com.client.gencache.Rebuild()
+
+
 import SocketServer, socket
 from glob import glob
 from time import sleep
@@ -104,6 +112,8 @@ class XMLRPCservice(win32serviceutil.ServiceFramework):
         self.server = AsyncXMLRPCServer( ('0.0.0.0', 11110),
                                          SimpleXMLRPCRequestHandler)
 
+                                        
+    
     def SvcStop(self):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
@@ -125,6 +135,40 @@ class XMLRPCservice(win32serviceutil.ServiceFramework):
                                      0,
                                     servicemanager.EVENTLOG_INFORMATION_TYPE,
                                     (self._svc_name_,""))
+
+                                    
+                                    
+
+    
+
+    
+def check_firewall_conf():
+    check_firewall_app_conf("Nimbus Service for Windows Client", 
+                            'C:\\Nimbus\\pkgs\\winservice.exe')
+    check_firewall_app_conf("Nimbus Notifier for Windows Client", 
+                            'C:\\Nimbus\\pkgs\\windowsnotifier.exe')
+        
+def check_firewall_app_conf(name, imagefile):
+
+    firewall = win32com.client.gencache.EnsureDispatch('HNetCfg.FwMgr',0)
+    allowed_apps = firewall.LocalPolicy.CurrentProfile.AuthorizedApplications
+    
+    nimbus_service_allowed = False
+    
+    for app in allowed_apps:
+        if app.Name == name:
+            nimbus_service_allowed = True
+        
+    if not nimbus_service_allowed:
+        newapp = win32com.client.Dispatch('HNetCfg.FwAuthorizedApplication')
+        newapp.Name = name
+        newapp.ProcessImageFileName = imagefile
+        newapp.Enabled = True
+        allowed_apps.Add(newapp)
+
+
+check_firewall_conf()
+
 
 if __name__ == '__main__':
     win32serviceutil.HandleCommandLine(XMLRPCservice)
