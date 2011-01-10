@@ -125,6 +125,9 @@ ADMIN_MEDIA_PREFIX = '/adminmedia/'
 SECRET_KEY = '7qj040(6uwuuzx+y&ety-bs5i$*q$0tag02q+sx8th_%1w$h9%'
 
 
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/session/login"
 
@@ -195,7 +198,8 @@ INSTALLED_APPS = (
     'nimbus.backup',
     'nimbus.restore',
     'nimbus.recovery',
-    'nimbus.system'
+    'nimbus.system',
+    'nimbus.security'
 )
 
 if DEBUG:

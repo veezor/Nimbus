@@ -45,7 +45,7 @@ def start(request):
 @only_wizard
 def timezone(request):
     extra_context = {
-        'wizard_title': u'2 de 5 - Configuração de Hora',
+        'wizard_title': u'1 de 4 - Configuração de Hora',
         'page_name': u'timezone'
     }
     return edit_singleton_model( request, "generic.html", 
@@ -56,7 +56,7 @@ def timezone(request):
 @only_wizard
 def offsite(request):
     extra_context = {
-        'wizard_title': u'3 de 5 -Configuração do Offsite',
+        'wizard_title': u'2 de 4 -Configuração do Offsite',
         'page_name': u'offsite'
     }
     return edit_singleton_model( request, "generic.html", 
@@ -67,7 +67,7 @@ def offsite(request):
 @only_wizard
 def network(request):
     extra_context = {
-        'wizard_title': u'4 de 5 - Configuração de Rede',
+        'wizard_title': u'3 de 4 - Configuração de Rede',
         'page_name': u'network'
     }
     if request.method == "GET":
@@ -84,7 +84,7 @@ def network(request):
 @only_wizard
 def password(request):
     extra_context = {
-        'wizard_title': u'5 de 5 - Configuração de Senha',
+        'wizard_title': u'4 de 4 - Configuração de Senha do usuário admin',
         'page_name': u'network'
     }
     user = User.objects.get(id=1)

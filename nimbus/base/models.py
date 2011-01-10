@@ -98,8 +98,8 @@ class UUIDSingletonModel(UUIDBaseModel, SingletonBaseModel):
         abstract = True
 
    def save(self, *args, **kwargs):
-       UUIDBaseModel.save(self, *args, **kwargs)
-       SingletonBaseModel.save(self, *args, **kwargs)
+       super(UUIDSingletonModel, self).save(*args, **kwargs)
+
 
 
 

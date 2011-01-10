@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import simplejson
+import socket
 
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
@@ -167,11 +168,14 @@ def group_list(request):
 
 @login_required
 def activate(request, object_id):
-    computer = Computer.objects.get(id=object_id)
-    computer.activate()
+    try:
+        computer = Computer.objects.get(id=object_id)
+        computer.activate()
 
-    messages.success(request, u'Computador ativado com sucesso.')
-    return redirect('nimbus.computers.views.list')
+        messages.success(request, u'Computador ativado com sucesso.')
+        return redirect('nimbus.computers.views.list')
+    except socket.error, error:
+        messages.error(request, u'Impossível ativar computador, verifique a conexão')
 
 
 @login_required
