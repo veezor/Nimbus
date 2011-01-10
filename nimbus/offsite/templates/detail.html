@@ -16,10 +16,9 @@
 
             <div class="block-executados">
                 <h3>Ocupação do offsite</h3>
-                <div class="" style="width: 200px; border: 1px solid green" title="72% de ocupação.">
-                    <div class="" style="width: 72%; background: green; height: 20px"></div>
-                </div>
-                <small>72% de ocupação</small>
+                {% with ocupacao_offsite as value %}
+    		        {% include "bar_chart.html" %}
+    		    {% endwith %}
                 <div class="clear"></div>
     		    <p></p>
             </div>

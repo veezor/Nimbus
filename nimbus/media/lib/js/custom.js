@@ -27,12 +27,12 @@ jQuery(function () {
 		
         // console.log(width);
 		
-		jQuery(this).hide().visualize({
-			type: statsType,	// 'bar', 'area', 'pie', 'line'
-			width: width,
-			height: '240px',
-			colors: ['#6fb9e8', '#ec8526', '#9dc453', '#ddd74c']
-		});
+        // jQuery(this).hide().visualize({
+        //  type: statsType,    // 'bar', 'area', 'pie', 'line'
+        //  width: width,
+        //  height: '240px',
+        //  colors: ['#6fb9e8', '#ec8526', '#9dc453', '#ddd74c']
+        // });
 	});
 	
 	

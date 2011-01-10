@@ -40,6 +40,9 @@ def detail(request):
         'title': u'Transferências em execução',
         'content': content  
         }]
+    
+    #TODO: Isto não deve ser fixo.
+    ocupacao_offsite = '70'
     return render_to_response(request, "detail.html", locals())
 
 

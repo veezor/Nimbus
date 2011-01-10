@@ -10,30 +10,21 @@
     			<div class="bheadr"></div>
 			
     			<h2>Backups</h2>
-			
-
-
-             <ul class="tabs">
-                 <li><a href="#backup-bytes">Mega bytes</a></li>
-                 <li><a href="#backup-files">Quantidade de Arquivos</a></li>
-            </ul>
 
             </div>		<!-- .block_head ends -->
-		
-    		<div class="block_content tab_content" id="backup-bytes" >
+		    
+    		<div class="block_content">
 
+                <div style="float: left; width: 48%">
                 {% with table1 as table %}
 			        {% include "table_chart.html" %}
 			    {% endwith %}
-			
-    		</div>		<!-- .block_content ends -->
-
-    		<div class="block_content tab_content" id="backup-files" >
-
-                {% with table2 as table %}
+			    </div>
+			    <div style="float: right; width: 48%">
+			    {% with table2 as table %}
 			        {% include "table_chart.html" %}
 			    {% endwith %}
-			
+			    </div>
     		</div>		<!-- .block_content ends -->
 	
 
@@ -54,29 +45,30 @@
 		
     		<div class="block_content">
                 <div class="left">
-                {% with table3 as table %}
-			        {% include "table_chart.html" %}
-                {% endwith %}
+                    <h4>Ocupação do disco</h4>
+                    {% with table3.lines.Ocupado.0 as value %}
+    			        {% include "bar_chart.html" %}
+    			    {% endwith %}
                 </div>
-
-                <div class="right">
-                {% with table4 as table %}
-			        {% include "table_chart.html" %}
-			    {% endwith %}
-			    </div>
-
-                <div class="left">
-	            {% with table5 as table %}
-			        {% include "table_chart.html" %}
-			    {% endwith %}
-			    </div>
-
-                <div class="right">
-                {% with table6 as table %}
-			        {% include "table_chart.html" %}
-			    {% endwith %}
-			    </div>
-
+                <div class="left" style="margin-left: 20px">
+                    <h4>Uso da Memória</h4>
+                    {% with table4.lines.Ocupado.0 as value %}
+    			        {% include "bar_chart.html" %}
+    			    {% endwith %}
+                </div>
+                <div class="left" style="margin-left: 20px">
+                    <h4>Uso do CPU</h4>
+                    {% with table5.lines.Ocupado.0 as value %}
+    			        {% include "bar_chart.html" %}
+    			    {% endwith %}
+                </div>
+                <div class="left" style="margin-left: 20px">
+                    <h4>Uso do Offsite</h4>
+                    {% with table6.lines.Ocupado.0 as value %}
+    			        {% include "bar_chart.html" %}
+    			    {% endwith %}
+                </div>
+                
        		    <div class="clear"></div>
     		    <p></p>
 		

@@ -1356,3 +1356,21 @@ a.submit:hover {
 #header .align_right {
     background: url(../images/nsp.gif) center left no-repeat;
 }
+
+.grafico_uma_barra {}
+.grafico_uma_barra .grafico_uma_barra_wrapper {
+    -moz-border-radius: 3px;
+    background-color: #AAA;
+    height: 20px;
+    width: 210px;
+}
+.grafico_uma_barra .grafico_uma_barra_wrapper .grafico_uma_barra_inner {
+    -moz-border-radius: 3px;
+    background-color: #00CC00 !important;
+    height: 20px;
+}
+
+.grafico_uma_barra span {
+    font-size: 10px;
+    text-align: center;
+}
