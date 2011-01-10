@@ -11,7 +11,7 @@
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 
 !insertmacro MUI_PAGE_WELCOME
-LangString NIMBUSIP_TITLE ${LANG_ENGLISH} "Enter your nimbus server IP address."
+LangString NIMBUSIP_TITLE ${LANG_ENGLISH} "Configuração"
 LangString NIMBUSIP_SUBTITLE ${LANG_ENGLISH} " "
 Page custom NimbusIPPage 
 !insertmacro MUI_PAGE_INSTFILES
@@ -30,15 +30,17 @@ Function .onInit
 FunctionEnd
 
 Var NimbusIP
+Var Password
 
 Function NimbusIPPage
    !insertmacro MUI_HEADER_TEXT "$(NIMBUSIP_TITLE)" "$(NIMBUSIP_SUBTITLE)"
    !insertmacro MUI_INSTALLOPTIONS_DISPLAY "NimbusIP"
    !insertmacro MUI_INSTALLOPTIONS_READ $NimbusIP "NimbusIP" "Field 2" "State"
+   !insertmacro MUI_INSTALLOPTIONS_READ $Password "NimbusIP" "Field 5" "State"
 FunctionEnd
 
 Function SendNotify
-   ExecWait '"$INSTDIR\pkgs\windowsnotifier.exe" $NimbusIP 8000' $0
+   ExecWait '"$INSTDIR\pkgs\windowsnotifier.exe" admin $Password $NimbusIP' $0
    IntCmp $0 1 NOTOK DONE DONE
    NOTOK:
       MessageBox MB_Ok "Não foi possível notificar o nimbus. Avise ao administrador."
