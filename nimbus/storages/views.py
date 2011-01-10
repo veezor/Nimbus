@@ -100,7 +100,8 @@ def view(request, object_id):
         "storage" : storage,
         "title": u"Armazenamento",
         "backups_em_execucao": backups_em_execucao,
-        "espaco_em_disco": '70%'
+        # TODO: Isso não é para ficar fixo.
+        "espaco_em_disco": '70'
     }
     
     return render_to_response(request, "storages_view.html", d)

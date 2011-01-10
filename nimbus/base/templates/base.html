@@ -12,10 +12,11 @@
 		@import url("/media/lib/css/jquery.wysiwyg.css");
 		@import url("/media/lib/css/jquery.filetree.css");
 		@import url("/media/lib/css/facebox.css");
-		@import url("/media/lib/css/visualize.css");
+/*      @import url("/media/lib/css/visualize.css");*/
 		@import url("/media/lib/css/date_input.css");
 		@import url("/media/js/iphone-style-checkboxes/style.css");
 		@import url("/media/js/progressbar/jquery.ui.all.css");
+		@import url("/media/lib/css/jquery.jqplot.css");
     </style>
 	
 	<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=7" /><![endif]-->
@@ -23,24 +24,33 @@
 	<!--[if IE]><script type="text/javascript" src="/media/lib/js/excanvas.js"></script><![endif]-->
 	
 	<script type="text/javascript" src="/media/lib/js/jquery.js"></script>
+	
+	
+	<script type="text/javascript" src="/media/lib/js/jquery.jqplot.js"></script>
+	<script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.barRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pieRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.categoryAxisRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.highlighter.js"></script>
+    <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
+    
+	
 	<!--<script type="text/javascript" src="/media/lib/js/jquery.img.preload.js"></script>-->
 	<script type="text/javascript" src="/media/lib/js/jquery.filestyle.mini.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.wysiwyg.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.date_input.pack.js"></script>
 	<script type="text/javascript" src="/media/lib/js/facebox.js"></script>
-	<script type="text/javascript" src="/media/lib/js/jquery.visualize.js"></script>
+	<!--<script type="text/javascript" src="/media/lib/js/jquery.visualize.js"></script>-->
 	<script type="text/javascript" src="/media/lib/js/jquery.select_skin.js"></script>
 	<script type="text/javascript" src="/media/lib/js/ajaxupload.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.pngfix.js"></script>
 	<script type="text/javascript" src="/media/lib/js/custom.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.filetree.js"></script>
 	<script type="text/javascript" src="/media/js/iphone-style-checkboxes/jquery/iphone-style-checkboxes.js"></script>
-	<script src="/media/js/jquery.sparkline.min.js" type="text/javascript"></script>
+	<!--<script src="/media/js/jquery.sparkline.min.js" type="text/javascript"></script>-->
 	<script src="/media/js/progressbar/jquery.ui.core.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/media/js/progressbar/jquery.ui.widget.min.js" type="text/javascript" charset="utf-8"></script>	
 	<script src="/media/js/progressbar/jquery.ui.progressbar.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/media/js/jquery.maskedinput-1.2.2.min.js" type="text/javascript" charset="utf-8"></script>
-
 	
 	
 	<script type="text/javascript" charset="utf-8">
@@ -59,6 +69,28 @@
             setTimeout("update_time()", 1000);
         }
         
+        function create_chart(obj_id, data, ticks, chart_type) {
+            if (chart_type == 'bar') {
+                var render = $.jqplot.BarRenderer;
+            } else {
+                var render = $.jqplot.PieRenderer;
+            }
+            
+            var bla = $.jqplot(obj_id, [data], {
+                seriesDefaults: {
+                    renderer: render,
+                    pointLabels: { show: true }
+                },
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.CategoryAxisRenderer,
+                        ticks: ticks
+                    },
+                },
+                highlighter: { show: false }
+            });
+        };
+        
         $(document).ready( function() {
             $('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 
@@ -69,7 +101,7 @@
                 });
             })
             $(".iPhoneCheckContainer").css("width", "85px");
-            $(".sparklines").sparkline('html', {width: "300", height: "150px" });
+            // $(".sparklines").sparkline('html', {width: "300", height: "150px" });
 	        
             var actual_time = $('#actual_time').html().split(':');
             var hours = actual_time[0];
@@ -80,6 +112,20 @@
             
             $('.mascara_hora').mask('99:99');
             $('.mascara_minuto').mask('99');
+
+            
+            $('.jqplotchart').each(function(){
+                var chart_id = $(this).attr('id');
+                var data = $(this).children().filter('chartdata').text().split(',');
+                data = $.map(data, function(e){
+                    return parseFloat(e);
+                });
+                var header = $(this).children().filter('chartheader').text().split(',');
+                var chart_type = $(this).attr('charttype');
+                $(this).text('');
+                
+                create_chart(chart_id, data, header, chart_type);
+            });
         });
 	</script>
 	

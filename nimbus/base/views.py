@@ -24,8 +24,9 @@ def home(request):
 
     table1 = {}
     table1['title'] = u"Quantidade de megabytes realizados backup"
-    table1['area'] = "48%"
-    table1['type'] = "area"
+    table1['width'] = "100%"
+    table1['type'] = "bar"
+    table1['cid'] = "chart1"
     table1['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_bytes)  ]
     table1['lines'] = {
         "Mega bytes": utils.ordered_dict_value_to_formatted_float(job_bytes)
@@ -34,8 +35,9 @@ def home(request):
     job_files = Job.get_files_from_last_jobs()
     table2 = {}
     table2['title'] = u"Quantidade de arquivos realizados backup"
-    table2['area'] = "48%"
-    table2['type'] = "area"
+    table2['width'] = "100%"
+    table2['type'] = "bar"
+    table2['cid'] = "chart2"
     table2['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_files) ]
     table2['lines'] = {
         "Arquivos": utils.ordered_dict_value_to_formatted_float(job_files) 
@@ -51,7 +53,8 @@ def home(request):
     table3 = {}
     table3['title'] = u"Ocupação do disco"
     table3['width'] = "48%"
-    table3['type'] = "pie"
+    table3['type'] = "bar"
+    table3['cid'] = "chart3"
     table3['header'] = ["Gigabytes"]
     table3['lines'] = {
         "Disponível": [diskfree],
@@ -66,6 +69,7 @@ def home(request):
     table4['title'] = u"Uso da memória"
     table4['width'] = "48%"
     table4['type'] = "pie"
+    table4['cid'] = "chart4"
     table4['header'] = ["Gigabytes"]
     table4['lines'] = {
         "Disponível": [memory_free],
@@ -80,10 +84,11 @@ def home(request):
     table5['title'] = u"Uso da CPU"
     table5['width'] = "48%"
     table5['type'] = "pie"
+    table5['cid'] = "chart5"
     table5['header'] = ["Clocks"]
     table5['lines'] = {
         "Disponível": [cpu_free],
-        "Em uso": [cpu]}
+        "Ocupado": [cpu]}
 
     offsite_usage = 55 #TODO
     offsite_free = 45
@@ -93,10 +98,11 @@ def home(request):
     table6['title'] = u"Uso do Offsite"
     table6['width'] = "48%"
     table6['type'] = "pie"
+    table6['cid'] = "chart6"
     table6['header'] = ["GB"]
     table6['lines'] = {
         "Disponível": [offsite_free],
-        "Em uso": [offsite_usage]}
+        "Ocupado": [offsite_usage]}
 
    
     

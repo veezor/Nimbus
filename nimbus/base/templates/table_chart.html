@@ -1,24 +1,9 @@
-<h3>{{table.title}}</h3>
-<table class="stats" rel="{{table.type}}" cellpadding="0" cellspacing="0"
-       style="width: {{table.width}}"
-       width="{% if table.width %}{{table.width}}{% else %}100%{% endif %}">
-	<thead>
-		<tr>
-		    <td>&nbsp;</td>
-            {% for item in table.header %}
-            <th scope="col">{{item}}</th>
-            {% endfor %}
-		</tr>
-	</thead>
-
-	<tbody>
-	    {% for key, line in table.lines.items %}
-		<tr>
-			<th scope="row">{{key}}</th>
-			{% for item in line %}
-			<td>{{item}}</td>
-			{% endfor %}
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
+<div style="width: {% if table.width %}{{table.width}}{% else %}100%{% endif %};">
+    <h2>{{table.title}}</h2>
+    <div id="{{table.cid}}" charttype="{{table.type}}" class="jqplotchart" style="height:150px;">
+        {% for key, line in table.lines.items %}
+        <chartdata>{{line|join:","}}</chartdata>
+        {% endfor %}
+        <chartheader>{{table.header|join:","}}</chartheader>
+    </div>
+</div>
