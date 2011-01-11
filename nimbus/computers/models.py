@@ -132,7 +132,7 @@ class Computer(BaseModel):
                         director_name=config.director_name,
                         password=self.password,
                         name=self.name,
-                        os="unix")
+                        os=self.operation_system)
 
         proxy.save_config( unicode(fdconfig) )
         proxy.restart_bacula()
