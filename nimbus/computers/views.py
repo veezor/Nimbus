@@ -16,6 +16,7 @@ from django.db import IntegrityError
 from django.conf import settings
 
 from nimbus.computers.models import Computer, ComputerGroup
+from nimbus.bacula.models import Job
 from nimbus.shared.views import render_to_response
 from nimbus.shared import enums
 from nimbus.shared.forms import form
@@ -111,41 +112,83 @@ def list(request):
 
 @login_required
 def view(request, object_id):
-    computers = Computer.objects.get(id=object_id)
-    
+    computer = Computer.objects.get(id=object_id)
+
+    running_status = ('R','p','j','c','d','s','M','m','s','F','B')
+    running_jobs = Job.objects.filter( jobstatus__in=running_status,
+                                       client__name=computer.bacula_name)\
+                                            .order_by('-starttime').distinct()[:5]
+
+
+    running_procedures_content = []
+    try:
+        for job in running_jobs:
+            running_procedures_content.append({
+                'type' : 'ok',
+                'label' : job.procedure.name,
+                'date' : job.starttime,
+                'message' : u'Computador : %s' % job.client.computer.name
+            })
+    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
+        pass
+
+
+
+    last_jobs = Job.objects.filter(client__name=computer.bacula_name)\
+                    .order_by('-endtime').distinct()[:5]
+
+
+    last_procedures_content = []
+    try:
+        for job in last_jobs:
+            last_procedures_content.append({
+                'type' : job.status_friendly,
+                'label' : job.procedure.name,
+                'date' : job.endtime,
+                'message' : u'Computador : %s' % job.client.computer.name
+            })
+    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
+        pass
+
+
+    errors_jobs = Job.objects.filter(jobstatus__in=('e','E','f'),
+                                     client__name=computer.bacula_name)\
+                                    .order_by('-endtime').distinct()[:5]
+
+
+    errors_procedures_content = []
+    try:
+        for job in errors_jobs:
+            errors_procedures_content.append({
+                'type' : job.status_friendly,
+                'label' : job.procedure.name,
+                'date' : job.endtime,
+                'message' : u'Computador : %s' % job.client.computer.name
+            })
+    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
+        pass
+
+
+  
     backups_em_execucao = [{
         'title': u'Backups em Execução',
-        'content': [{
-            'type' : 'ok',
-            'label' : 'aaa',
-            'date' : '20/12/2010 10:00',
-            'message' : u'Computador : %s' % 'Computer'
-    }]}]
-    
-    
-    backups_executados_e_com_falhas = [{
+        'content': running_procedures_content 
+    }]
+
+
+    backups_com_falhas = [{
         'title': u'Últimos backups executados',
-        'content': [{
-            'type' : 'ok',
-            'label' : 'aaa',
-            'date' : '20/12/2010 10:00',
-            'message' : u'Computador : %s' % 'Computer'
-    }]},
-    {
+        'content': last_procedures_content  }, {
         'title': u'Backups com falha',
-        'content': [{
-            'type' : 'warn',
-            'label' : 'aaa',
-            'date' : '20/12/2010 10:00',
-            'message' : u'Computador : %s' % 'Computer'
-    }]}]
+        'content': errors_procedures_content   
+    }]
+ 
     
     extra_content = {
-        'computer': computers,
+        'computer': computer,
         'title': u"Visualizar computador",
         'backups_em_execucao': backups_em_execucao,
-        'backups_executados_e_com_falhas': backups_executados_e_com_falhas,
-        "espaco_em_disco": '70%',
+        'backups_executados_e_com_falhas': backups_com_falhas,
     }
     return render_to_response(request, "computers_view.html", extra_content)
 
