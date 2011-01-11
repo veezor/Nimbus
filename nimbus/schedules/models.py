@@ -9,7 +9,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, post_delete
 
 from nimbus.base.models import BaseModel
-from nimbus.shared import signals, utils, enums
+from nimbus.shared import signals, utils, enums, fields
 from nimbus.libs.template import render_to_file
 
 
@@ -19,7 +19,8 @@ MONTHDAYS = tuple( (d,d) for d in enums.days )
 
 
 class Schedule(BaseModel):
-    name = models.CharField(max_length=255, unique=True, null=False)
+    name = models.CharField(max_length=255, unique=True, null=False,
+                             validators=[fields.check_model_name])
 
     def get_triggers(self):
         return list(self.hourly_set.get_query_set()) +\

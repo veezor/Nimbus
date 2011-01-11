@@ -5,9 +5,18 @@ import re
 
 from django import forms
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 path_re = re.compile('^([a-zA-Z]:)?/([a-zA-Z0-9 .@_-]+/?)*$')
+NAME_RE = re.compile("^[\w\s]{4,255}$")
+
+
+def check_model_name(value):
+    if not NAME_RE.match(value):
+        raise ValidationError("Campo não pode conter acentos. Limite mínimo de caracteres é 4")
+
+
 
 class FormPathField(forms.CharField):
     def clean(self, value):

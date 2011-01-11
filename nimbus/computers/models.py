@@ -11,7 +11,7 @@ from django.db.models.signals import post_save, post_delete, pre_save
 from nimbus.bacula.models import Job, Client
 from nimbus.base.models import BaseModel
 from nimbus.config.models import Config
-from nimbus.shared import utils, enums, signals
+from nimbus.shared import utils, enums, signals, fields
 from nimbus.libs.template import render_to_file, render_to_string
 
 
@@ -48,7 +48,8 @@ class CryptoInfo(models.Model):
 class Computer(BaseModel):
 
     name = models.CharField( max_length=255, unique=True, 
-                             blank=False, null=False)
+                             blank=False, null=False,
+                             validators=[fields.check_model_name])
     address = models.IPAddressField(blank=False, null=False)
     operation_system = models.CharField( max_length=255,
                                          blank=False, null=False,

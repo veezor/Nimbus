@@ -36,7 +36,7 @@ def new(request):
             
             name = request.META.get('REMOTE_HOST')
             if not name:
-                name = u"Auto adição"
+                name = u"Adicionado automaticamente"
 
             computer = Computer(name = name,
                                  address = request.META['REMOTE_ADDR'],

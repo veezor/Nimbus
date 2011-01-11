@@ -9,7 +9,7 @@ from django.db import models, connections
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
 
-from nimbus.shared import utils, signals
+from nimbus.shared import utils, signals, fields
 import nimbus.shared.sqlqueries as sql 
 
 from nimbus.base.models import BaseModel
@@ -45,7 +45,8 @@ class Profile(models.Model):
 
 class Procedure(BaseModel):
 
-    name = models.CharField(max_length=255, blank=False, null=False)
+    name = models.CharField(max_length=255, blank=False, null=False,
+                            validators=[fields.check_model_name])
     computer = models.ForeignKey(Computer, blank=False, null=False)
     profile = models.ForeignKey(Profile, blank=False, null=False)
     pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)

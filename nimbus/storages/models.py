@@ -25,7 +25,8 @@ from nimbus.computers.models import Computer
 
 
 class Storage(BaseModel):
-    name = models.CharField(max_length=255, null=False, blank=False)
+    name = models.CharField(max_length=255, null=False, blank=False,
+                            validators=[fields.check_model_name])
     address = models.IPAddressField(default="127.0.0.1", editable=False, 
                                     null=False, blank=False)
     password = models.CharField( max_length=255, null=False, 
@@ -64,7 +65,8 @@ class Storage(BaseModel):
 
 
 class Device(BaseModel):
-    name = models.CharField(max_length=255, null=False)
+    name = models.CharField(max_length=255, null=False,
+                            validators=[fields.check_model_name])
     archive = fields.ModelPathField(max_length=2048, null=False)
     storage = models.ForeignKey(Storage, null=False, related_name="devices")
 

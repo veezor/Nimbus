@@ -17,7 +17,8 @@ from nimbus.libs.template import render_to_file
 
 
 class FileSet(BaseModel):
-    name = models.CharField(max_length=255, unique=True, null=False)
+    name = models.CharField(max_length=255, unique=True, null=False,
+                            validators=[fields.check_model_name])
 
     def __unicode__(self):
         return self.name
