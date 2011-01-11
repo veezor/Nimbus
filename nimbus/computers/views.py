@@ -2,6 +2,7 @@
 
 import simplejson
 import socket
+import xmlrpclib
 
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
@@ -44,7 +45,6 @@ def new(request):
 
             return HttpResponse(status=200)
         except (KeyError, IntegrityError), e:
-            print "ERROR",e
             return HttpResponse(status=400)
 
 
@@ -69,6 +69,19 @@ def edit(request, object_id):
                                         template_name = "base_computers.html",
                                         extra_context = extra_context,
                                         post_save_redirect = "/computers/")
+
+
+@login_required
+def edit_no_active(request, object_id):
+    extra_context = {'title': u"Editar computador"}
+    messages.warning(request, u"O computador ainda não foi ativado.")
+    return create_update.update_object( request, 
+                                        object_id = object_id,
+                                        model = Computer,
+                                        form_class = form(Computer),
+                                        template_name = "base_computers.html",
+                                        extra_context = extra_context,
+                                        post_save_redirect = reverse("nimbus.computers.views.add"))
 
 
 
@@ -174,7 +187,7 @@ def activate(request, object_id):
 
         messages.success(request, u'Computador ativado com sucesso.')
         return redirect('nimbus.computers.views.list')
-    except socket.error, error:
+    except (socket.error, xmlrpclib.Fault), error:
         messages.error(request, u'Impossível ativar computador, verifique a conexão')
 
 
