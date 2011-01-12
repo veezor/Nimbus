@@ -3,6 +3,7 @@
 
 from functools import wraps
 
+from django.core.urlresolvers import reverse
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
@@ -46,7 +47,8 @@ def start(request):
 def timezone(request):
     extra_context = {
         'wizard_title': u'1 de 4 - Configuração de Hora',
-        'page_name': u'timezone'
+        'page_name': u'timezone',
+        'previous': reverse('nimbus.wizard.views.start')
     }
     return edit_singleton_model( request, "generic.html", 
                                  "nimbus.wizard.views.offsite",
@@ -57,7 +59,8 @@ def timezone(request):
 def offsite(request):
     extra_context = {
         'wizard_title': u'2 de 4 -Configuração do Offsite',
-        'page_name': u'offsite'
+        'page_name': u'offsite',
+        'previous': reverse('nimbus.wizard.views.timezone')
     }
     return edit_singleton_model( request, "generic.html", 
                                  "nimbus.wizard.views.network",
@@ -68,7 +71,8 @@ def offsite(request):
 def network(request):
     extra_context = {
         'wizard_title': u'3 de 4 - Configuração de Rede',
-        'page_name': u'network'
+        'page_name': u'network',
+        'previous': reverse('nimbus.wizard.views.offsite')
     }
     if request.method == "GET":
         interface = NetworkInterface()
@@ -84,8 +88,9 @@ def network(request):
 @only_wizard
 def password(request):
     extra_context = {
-        'wizard_title': u'4 de 4 - Configuração de Senha do usuário admin',
-        'page_name': u'network'
+        'wizard_title': u'4 de 4 - Configuração de Senha admin',
+        'page_name': u'network',
+        'previous': reverse('nimbus.wizard.views.network')
     }
     user = User.objects.get(id=1)
     if request.method == "GET":
