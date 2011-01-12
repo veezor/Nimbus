@@ -62,6 +62,7 @@ class App(object):
 
             call_command('loaddata', settings.INITIALDATA_FILE)
 
+
             config = Config.get_instance()
             config.director_password = utils.random_password()
             config.save()
@@ -73,6 +74,9 @@ class App(object):
             computer = Computer.objects.get(id=1)
             computer.activate()
 
+
+            call_command('loaddata', 
+                          settings.ADMINISTRATIVE_MODELS_DATA_FILE)
 
 
     def shell(self):
