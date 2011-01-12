@@ -20,11 +20,11 @@
         <form action="/recovery/select_storage/" method="post">
             <input type="hidden" name="localsource" value="True"/>
             <input type="hidden" name="device" value="{{ device }}"/>
-            <button type="submit"><span>Selecionar outro dispositivo</span></button>
+            <input type="submit" class="submit long" value="Selecionar outro dispositivo" />
         </form>
 
         <form action="/recovery/start/" method="get">
-            <button type="submit"><span>Desistir</span></button>
+            <input type="submit" class="submit mid" value="Desistir" />
         </form>
         
         <p></p>
