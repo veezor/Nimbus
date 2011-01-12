@@ -22,6 +22,9 @@ import logging
 import util
 import _templates
 
+from threading import Thread
+from time import sleep
+
 
 
 NTP_CRON_FILE="/etc/cron.hourly/ntp"
@@ -40,6 +43,9 @@ class DaemonOperationError(Exception):
 class InvalidTimeZoneError(Exception):
     pass
 
+class PackageNotUpgradalble(Exception):
+    pass
+
 
 
 
@@ -49,6 +55,10 @@ class Manager(object):
 
     ALLOWED_DAEMON = (  "director", "client", 
                         "storage", "network"  )
+
+    ALLOWED_PACKAGES = [ "nimbus", 
+                         "bacula-nimbus",
+                         "nimbus-dependencies" ]
 
     DAEMON_MAP = { "director" : "bacula-ctl-dir",
                    "storage" : "bacula-ctl-sd", 
@@ -147,6 +157,42 @@ class Manager(object):
     def get_interfaces(self):
     	return networkutils.get_interfaces()
 
+
+    def update_packages(self, packages):
+
+        for pkg in packages:
+            if pkg not in self.ALLOWED_PACKAGES:
+                raise PackageNotUpgradalble(pkg)
+
+
+        thread = Thread(target=self._update_packages_worker, args=(packages,))
+        thread.start()
+
+        return True
+
+
+    def _update_packages_worker(self, packages):
+        sleep(5)
+        self.logger.info('starting updates')
+        cmdlinepackages = " ".join(packages)
+        self.logger.info('packages to update are ' + cmdlinepackages)
+        popen = subprocess.Popen( ["/usr/bin/apt-get", 
+                                   "install",
+                                   "--upgrade",
+                                   cmdlinepackages],
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+        popen.communicate()
+        if popen.returncode == 0:
+            self.logger.info('packages updates is finished')
+        else:
+            self.logger.error('packages updates error')
+            self.logger.error(popen.stdout.read())
+            self.logger.error(popen.stderr.read())
+
+
+
+
     def _control_daemon(self, daemonname, operation):
         self.logger.info("Manager command: /etc/init.d/%s %s" % (daemonname,operation))
         if operation in self.DAEMON_OPERATIONS:
@@ -201,7 +247,7 @@ class Manager(object):
         try:
             self.server = ThreadedXMLRPCServer((  self.ip, int(self.port) ), allow_none=True)
             self.server.register_instance(self)
-            self.logger.info( "Inicializing NimbusManager version %s by Linconet" % VERSION )
+            self.logger.info( "Initializing NimbusManager version %s by Linconet" % VERSION )
             self.server.serve_forever()
         except socket.error, e:
             self.logger.error( "nimbusmanager not initialized." )
