@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_wizard.html" %}
 
 {% block headtags %}
 
@@ -7,7 +7,7 @@
         ip_address = '{{ ip_address }}';
         
         setTimeout(function() {
-            document.location.href = 'http://{{ ip_address }}/';
+            document.location.href = 'http://{{ ip_address }}/{{ url }}';
         }, 10000);
     });
 </script>
@@ -16,23 +16,7 @@
 
 {% block page %}
 
-<div class="block">
-
-	<div class="block_head">
-		<div class="bheadl"></div>
-		<div class="bheadr"></div>
-		<h2>Configuração de Rede</h2>
-	</div>		<!-- .block_head ends -->
-
-    <div class="block_content">
-        <h1>Você está sendo redirecionado para o novo ip. &nbsp;<img src="/media/icons/loading_bar.gif" /></h1>
-        <p>Se em até 10 segundos você não for redirecionado para o novo endereço, acesse <a href="http://{{ ip_address }}/">http://{{ ip_address }}/</a>.</p>
-    
-    </div>
-    
-    <div class="bendl"></div>
-	<div class="bendr"></div>
-
-</div>
+<h1>Você está sendo redirecionado para o novo ip. &nbsp;<img src="/media/icons/loading_bar.gif" /></h1>
+<p>Se em até 10 segundos você não for redirecionado para o novo endereço, acesse <a href="http://{{ ip_address }}/{{ url }}">http://{{ ip_address }}/{{ url }}</a>.</p>
 
 {% endblock %}

@@ -16,6 +16,7 @@ from nimbus.timezone.forms import TimezoneForm
 from nimbus.offsite.forms import OffsiteForm
 from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.shared.forms import form
+from nimbus.shared.utils import project_port
 from nimbus.wizard import models
 
 
@@ -74,12 +75,26 @@ def network(request):
         'page_name': u'network',
         'previous': reverse('nimbus.wizard.views.offsite')
     }
+    
+    interface = NetworkInterface()
+    
     if request.method == "GET":
-        interface = NetworkInterface()
         Form = form(NetworkInterface)
         extra_context['form'] = Form(instance=interface)
         return render_to_response( request, "generic.html", extra_context)
     else:
+        if interface.address != request.POST['address']:
+            #TODO: Atualizar o endereço.
+            
+            port = project_port(request)
+            extra_context['wizard_title'] = u'Redirecionamento'
+            extra_context['wizard'] = True
+            
+            extra_context['ip_address'] = request.POST['address'] + port
+            extra_context['url'] = 'wizard/password'
+            
+            return render_to_response(request, "redirect.html", extra_context)
+        
         return edit_singleton_model( request, "generic.html", 
                                      "nimbus.wizard.views.password",
                                      model = NetworkInterface,
