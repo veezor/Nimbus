@@ -580,8 +580,8 @@ a:hover {
 	float: left;
 	}
 
-.wrapper .message.errormsg.	
-.block .message.errormsg {
+.wrapper .message.error,
+.block .message.error {
 	border: 1px solid #e9c59b;
 	background: #ffecce url(../images/error.gif) 12px 12px no-repeat;
 	color: #e3302c;
