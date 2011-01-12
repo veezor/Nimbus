@@ -316,7 +316,12 @@ def get_tree(request):
 
         url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
         proxy = xmlrpclib.ServerProxy(url)
-        files = proxy.list_dir(path)
+
+        if computer.operation_system == "windows" and path == "/":
+            files = proxy.get_available_drives()
+            files = [ fname[:-1] + '/' for fname in files ]
+        else:
+            files = proxy.list_dir(path)
         files.sort()
         
         response = simplejson.dumps(files)
