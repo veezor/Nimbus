@@ -221,3 +221,6 @@ def get_filesize_from_lstat(lstat):
     return val
 
 
+def project_port(request):
+    return (':%s' % request.META['SERVER_PORT']) if request.META['SERVER_PORT'] else ''
+

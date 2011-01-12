@@ -580,8 +580,8 @@ a:hover {
 	float: left;
 	}
 
-.wrapper .message.errormsg.	
-.block .message.errormsg {
+.wrapper .message.error,
+.block .message.error {
 	border: 1px solid #e9c59b;
 	background: #ffecce url(../images/error.gif) 12px 12px no-repeat;
 	color: #e3302c;
@@ -1329,7 +1329,7 @@ a.submit:hover {
 
 .status_header {
     background: url(/media/lib/images/status_bg.png) left;
-    width: 122px;
+    width: 40px;
     height: 40px;
     float: right;
     margin-top: 5px;
@@ -1351,6 +1351,8 @@ a.submit:hover {
     line-height: 1.2em;
     margin-top: 7px;
     padding-left: 37px;
+    text-indent: -9999em;
+    overflow: hidden;
 }
 
 #header .align_right {

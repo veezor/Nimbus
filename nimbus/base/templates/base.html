@@ -238,7 +238,7 @@
             {% if messages %}
                 {% for msg in messages %}
                     <!-- TODO: Criar tipos de mensagens: errormsg, success, info, warning -->
-                    <div class="message success">
+                    <div class="message {{ msg.tags }}">
                         <p>{{ msg }}</p>
                     </div>
                 {% endfor %}
