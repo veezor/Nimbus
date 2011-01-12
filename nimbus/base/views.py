@@ -6,6 +6,7 @@ import operator
 import systeminfo
 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from nimbus.shared import utils
 from nimbus.shared.views import render_to_response
@@ -45,9 +46,14 @@ def home(request):
 
 
     
-    diskinfo = systeminfo.DiskInfo("/")
-    diskusage = diskinfo.get_usage()
-    diskfree = 100 - diskinfo.get_usage()
+    diskinfo = systeminfo.DiskInfo("/bacula")
+    try:
+        diskusage = diskinfo.get_usage()
+    except OSError, error:
+        messages.error(request, "Partição /bacula não encontrada")
+        diskusage = 0
+
+    diskfree = 100 - diskusage
 
 
     table3 = {}
