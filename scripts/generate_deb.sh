@@ -41,6 +41,7 @@ cp nimbus/confs/nginx-nimbus.site deb/etc/nginx/sites-enabled/default
 cp nimbus/confs/nimbus.cron deb/etc/cron.daily/nimbus
 cp nimbus/confs/nimbus.initd deb/etc/init.d/nimbus
 cp webservices/manager/nimbus_manager.conf deb/etc/nimbus
+cp webservices/manager/nimbus_manager_log.conf deb/etc/nimbus
 cp libs/keymanager/conf/ssl.conf deb/etc/nimbus
 cp webservices/manager/init.d/nimbusmanager deb/etc/init.d
 

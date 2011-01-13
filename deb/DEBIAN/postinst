@@ -19,11 +19,11 @@ case $1 in
 	/usr/bin/mysql -uroot -pn1mbus < /var/nimbus/create.sql 2> /dev/null || echo;
 	/etc/init.d/nimbusmanager restart ;
 	/etc/init.d/nimbusclient restart ;
-    /var/www/nimbus --create-database;
-    chown -R www-data:www-data /etc/nimbus/;
-    chown -R www-data:www-data /var/log/nimbus/;
-    chown -R www-data:www-data /var/nimbus/;
-    chown -R www-data:www-data /var/www/;
+    su - nimbus -c '/var/www/nimbus --create-database';
+    chown -R nimbus:nimbus /etc/nimbus/;
+    chown -R nimbus:nimbus /var/log/nimbus/;
+    chown -R nimbus:nimbus /var/nimbus/;
+    chown -R nimbus:nimbus /var/www/;
     chmod -R 0775 /var/log/nimbus/;
     chmod -R 0775 /var/nimbus/;
     chmod -R 0775 /etc/nimbus/;

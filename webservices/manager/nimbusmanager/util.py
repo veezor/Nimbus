@@ -11,7 +11,7 @@ import ConfigParser
 import signal
 
 NIMBUS_MANAGER_CONF = "/etc/nimbus/nimbus_manager.conf"
-NIMBUS_LOGGING_CONF = "/etc/nimbus/logging.conf"
+NIMBUS_LOGGING_CONF = "/etc/nimbus/nimbus_manager_log.conf"
 
 class FileNotFound(Exception):
     pass
