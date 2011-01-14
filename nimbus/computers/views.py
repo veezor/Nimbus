@@ -102,7 +102,7 @@ def delete(request, object_id):
 
 @login_required
 def list(request):
-    computers = Computer.objects.filter(active=True)
+    computers = Computer.objects.filter(active=True).order_by('groups__name')
     extra_content = {
         'computers': computers,
         'title': u"Computadores"
