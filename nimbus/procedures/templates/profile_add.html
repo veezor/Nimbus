@@ -39,10 +39,21 @@
     <div class="block_content">
 
         <form action="{% url nimbus.procedures.views.profile_add %}" method="post">
+            {% if errors.profile_name %}
+            <ul class="errorlist">
+                <li>{{ errors.profile_name }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label for="profile_name">Nome:</label><br/>
                 <input type="text" name="profile_name" id="profile_name" value="{{ profile.name }}" class="text small" />
             </p>
+            
+            {% if errors.profile_storage_id %}
+            <ul class="errorlist">
+                <li>{{ errors.profile_storage_id }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label for="storage_id">Local de armazenamento dos arquivos:</label><br/>
                 <select class="styled" id="storage_id" name="profile_storage_id">
@@ -66,6 +77,11 @@
 	            });
 	        </script>
             
+            {% if errors.profile_schedule_id %}
+            <ul class="errorlist">
+                <li>{{ errors.profile_schedule_id }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label for="schedule_id">Agendamento:</label><br/>
                 <select class="styled" id="schedule_id" name="profile_schedule_id">
@@ -258,6 +274,11 @@
 	            });
 	        </script>
             
+            {% if errors.profile_fileset_id %}
+            <ul class="errorlist">
+                <li>{{ errors.profile_fileset_id }}</li>
+            </ul>
+            {% endif %}
             <p>
                 <label for="fileset_id">Conjunto de arquivos para backup:</label><br/>
                 <select class="styled" id="fileset_id" name="profile_fileset_id">
