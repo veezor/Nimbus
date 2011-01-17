@@ -17,9 +17,6 @@ case $1 in
 	/usr/sbin/update-rc.d nimbusclient defaults; 
 	/etc/init.d/mysql start;
 	/usr/bin/mysql -uroot -pn1mbus < /var/nimbus/create.sql 2> /dev/null || echo;
-	/etc/init.d/nimbusmanager restart ;
-	/etc/init.d/nimbusclient restart ;
-    su - nimbus -c '/var/www/nimbus --create-database';
     chown -R nimbus:nimbus /etc/nimbus/;
     chown -R nimbus:nimbus /var/log/nimbus/;
     chown -R nimbus:nimbus /var/nimbus/;
@@ -27,6 +24,9 @@ case $1 in
     chmod -R 0775 /var/log/nimbus/;
     chmod -R 0775 /var/nimbus/;
     chmod -R 0775 /etc/nimbus/;
+	/etc/init.d/nimbusmanager restart ;
+	/etc/init.d/nimbusclient restart ;
+    su - nimbus -c '/var/www/nimbus --create-database';
     /etc/init.d/bacula-ctl-dir restart;
     /etc/init.d/bacula-ctl-sd restart;
     /etc/init.d/bacula-ctl-fd restart;
