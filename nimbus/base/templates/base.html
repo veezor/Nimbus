@@ -24,15 +24,55 @@
 	<!--[if IE]><script type="text/javascript" src="/media/lib/js/excanvas.js"></script><![endif]-->
 	
 	<script type="text/javascript" src="/media/lib/js/jquery.js"></script>
-	
-	
-	<script type="text/javascript" src="/media/lib/js/jquery.jqplot.js"></script>
+    
+    <script type="text/javascript" src="/media/lib/js/jquery.jqplot.js"></script>
 	<script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.barRenderer.js"></script>
     <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pieRenderer.js"></script>
     <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.categoryAxisRenderer.js"></script>
     <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.highlighter.js"></script>
     <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
     
+    <script type="text/javascript" charset="utf-8">
+        function create_chart(obj_id, data, ticks, chart_type) {
+            if (chart_type == 'bar') {
+                var render = $.jqplot.BarRenderer;
+            } else {
+                var render = $.jqplot.PieRenderer;
+            }
+            
+            $.jqplot(obj_id, [data], {
+                seriesDefaults: {
+                    renderer: render,
+                    pointLabels: { show: true }
+                },
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.CategoryAxisRenderer,
+                        ticks: ticks
+                    },
+                    yaxis: {
+                        min: 0
+                    }
+                },
+                highlighter: { show: false }
+            });
+        };
+        
+        $(document).ready(function(){
+            $('.jqplotchart').each(function(){
+                var chart_id = $(this).attr('id');
+                var data = $(this).children().filter('chartdata').text().split(',');
+                data = $.map(data, function(e){
+                    return parseFloat(e);
+                });
+                var header = $(this).children().filter('chartheader').text().split(',');
+                var chart_type = $(this).attr('charttype');
+                $(this).text('');
+                
+                create_chart(chart_id, data, header, chart_type);
+            });
+        });
+    </script>
 	
 	<!--<script type="text/javascript" src="/media/lib/js/jquery.img.preload.js"></script>-->
 	<script type="text/javascript" src="/media/lib/js/jquery.filestyle.mini.js"></script>
@@ -69,28 +109,6 @@
             setTimeout("update_time()", 1000);
         }
         
-        function create_chart(obj_id, data, ticks, chart_type) {
-            if (chart_type == 'bar') {
-                var render = $.jqplot.BarRenderer;
-            } else {
-                var render = $.jqplot.PieRenderer;
-            }
-            
-            var bla = $.jqplot(obj_id, [data], {
-                seriesDefaults: {
-                    renderer: render,
-                    pointLabels: { show: true }
-                },
-                axes: {
-                    xaxis: {
-                        renderer: $.jqplot.CategoryAxisRenderer,
-                        ticks: ticks
-                    },
-                },
-                highlighter: { show: false }
-            });
-        };
-        
         $(document).ready( function() {
             $('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 
@@ -113,22 +131,8 @@
             $('.mascara_hora').mask('99:99');
             $('.mascara_minuto').mask('99');
 
-            
-            $('.jqplotchart').each(function(){
-                var chart_id = $(this).attr('id');
-                var data = $(this).children().filter('chartdata').text().split(',');
-                data = $.map(data, function(e){
-                    return parseFloat(e);
-                });
-                var header = $(this).children().filter('chartheader').text().split(',');
-                var chart_type = $(this).attr('charttype');
-                $(this).text('');
-                
-                create_chart(chart_id, data, header, chart_type);
-            });
         });
 	</script>
-	
 	
 	{% block headtags %}{% endblock %}
 
