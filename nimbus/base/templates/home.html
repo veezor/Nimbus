@@ -46,27 +46,24 @@
 		
     		<div class="block_content">
                 <div class="left">
-                    <h4>Ocupação do disco</h4>
-                    {% with table3.lines.Ocupado.0 as value %}
-    			        {% include "bar_chart.html" %}
-    			    {% endwith %}
-                </div>
-                <div class="left" style="margin-left: 20px">
                     <h4>Uso da Memória</h4>
                     {% with table4.lines.Ocupado.0 as value %}
     			        {% include "bar_chart.html" %}
     			    {% endwith %}
-                </div>
-                <div class="left" style="margin-left: 20px">
+                    <br/>
                     <h4>Uso do CPU</h4>
                     {% with table5.lines.Ocupado.0 as value %}
     			        {% include "bar_chart.html" %}
     			    {% endwith %}
                 </div>
-                <div class="left" style="margin-left: 20px">
-                    <h4>Uso do Offsite</h4>
-                    {% with table6.lines.Ocupado.0 as value %}
-    			        {% include "bar_chart.html" %}
+                <div class="left" style="margin-left: 30px; width: 35%">
+    			    {% with table3 as table %}
+    			        {% include "table_chart.html" %}
+    			    {% endwith %}
+                </div>
+                <div class="left" style="margin-left: 30px; width: 35%">
+                    {% with table6 as table %}
+    			        {% include "table_chart.html" %}
     			    {% endwith %}
                 </div>
                 

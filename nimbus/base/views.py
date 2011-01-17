@@ -54,22 +54,23 @@ def home(request):
         diskusage = 0
 
     diskfree = 100 - diskusage
-
+    
+    # TODO: O diskfree deve ser calculado como gráfico de história.
+    diskfree = [10, 20 , 30, 40, 50, 60, 70]
 
     table3 = {}
     table3['title'] = u"Ocupação do disco"
-    table3['width'] = "48%"
-    table3['type'] = "bar"
+    table3['width'] = ""
+    table3['type'] = "area"
     table3['cid'] = "chart3"
-    table3['header'] = ["Gigabytes"]
-    table3['lines'] = {
-        "Disponível": [diskfree],
-        "Ocupado": [diskusage]}
+    table3['height'] = "130"
+    # table3['header'] = ["Gigabytes"]
+    table3['header'] = ["11/01/11", "12/01/11", "13/01/11", "14/01/11", "15/01/11", "16/01/11", "17/01/11"]
+    table3['lines'] = {"Disponível": diskfree}
 
 
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
-
     
     table4 = {}
     table4['title'] = u"Uso da memória"
@@ -97,18 +98,20 @@ def home(request):
         "Ocupado": [cpu]}
 
     offsite_usage = 55 #TODO
-    offsite_free = 45
-
+    # offsite_free = 45
+    
+    # TODO: O offsite_free deve ser calculado como gráfico de história.
+    offsite_free = [10, 15, 20, 25, 20, 30, 25]
     
     table6 = {}
     table6['title'] = u"Uso do Offsite"
-    table6['width'] = "48%"
-    table6['type'] = "pie"
+    table6['width'] = ""
+    table6['type'] = "area"
+    table6['height'] = "130"
     table6['cid'] = "chart6"
-    table6['header'] = ["GB"]
-    table6['lines'] = {
-        "Disponível": [offsite_free],
-        "Ocupado": [offsite_usage]}
+    # table6['header'] = ["GB"]
+    table6['header'] = ["11/01/11", "12/01/11", "13/01/11", "14/01/11", "15/01/11", "16/01/11", "17/01/11"]
+    table6['lines'] = {"Disponível": offsite_free}
 
    
     

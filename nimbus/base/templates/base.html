@@ -34,16 +34,21 @@
     
     <script type="text/javascript" charset="utf-8">
         function create_chart(obj_id, data, ticks, chart_type) {
+            var fill = false;
+            var render = $.jqplot.PieRenderer;
+            
             if (chart_type == 'bar') {
                 var render = $.jqplot.BarRenderer;
-            } else {
-                var render = $.jqplot.PieRenderer;
+            } else if (chart_type == 'area') {
+                var render = $.jqplot.LineRenderer;
+                var fill = true;
             }
             
             $.jqplot(obj_id, [data], {
                 seriesDefaults: {
                     renderer: render,
-                    pointLabels: { show: true }
+                    pointLabels: { show: true },
+                    fill: true
                 },
                 axes: {
                     xaxis: {
