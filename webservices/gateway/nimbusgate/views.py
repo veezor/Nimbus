@@ -46,7 +46,6 @@ class Handler(object):
 
 
     def is_authenticated(self, request):
-        print  "opa"*20
         if not request.META.has_key('HTTP_AUTHORIZATION'):
             logout(request)
             return False
@@ -55,7 +54,6 @@ class Handler(object):
             return False
         auth = auth.strip().decode('base64')
         username, password = auth.split(':', 1)
-        print  "opa"*20
         return authenticate(username=username, password=password)
 
 
