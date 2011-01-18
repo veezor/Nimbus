@@ -10,9 +10,10 @@ try:
 except ImportError, e:
     import simplejson as json # python < 2.6
 
-from models import UserBucket, OperationLog, Operation
 import S3
-from util import load_config
+from gateway.nimbusgate.models import UserBucket, OperationLog, Operation
+from gateway.nimbusgate.util import load_config
+from gateway.relationshipcenter.models import UserPlans
 
 
 def with_auth(function):
@@ -139,6 +140,23 @@ class Handler(object):
         ol.save()
         return self._get_json_response({'url':url, 'id' : ol.id, 
                                         'service' : 'amazon' })
+
+
+    @with_auth
+    def check_auth(self, request):
+        return HttpResponse(status=200)
+
+    @with_auth
+    def get_plan_size(self, request):
+        # FIX: django does not support composite keys
+        try:
+            size = UserPlans.objects\
+                .filter(user__username=request.user.username)\
+                    .values("plan__size")[0]['plan__size']
+        except IndexError, error:
+            return HttpResponse(status=404)
+        
+        return self._get_json_response({'size':size})
 
 
 

@@ -128,6 +128,11 @@ class Api(object):
         opener = urllib2.build_opener(handler)
         return opener
 
+
+    def check_auth(self):
+        return self._fetch_url(self.url + "/check_auth")
+
+
     def get_file_url(self, filepath):
         url = self.url + "/json/get"
         return self._fetch_json_url(url, path=filepath)
@@ -284,6 +289,15 @@ class Api(object):
     def get_size(self):
         entries = self.list_all_files()
         return sum( e[1] for e in entries )
+
+
+    def get_plan_size(self):
+        url = self.url + "/json/plan_size"
+        return self._fetch_json_url(url)['size']
+
+    def get_usage(self):
+        return float(self.get_size())/self.get_plan_size()
+
 
 
 

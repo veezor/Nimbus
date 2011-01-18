@@ -3,21 +3,16 @@
 
 
 import os
-import logging
 from time import time
 from datetime import datetime
-
-
+from urllib2 import URLError
 
 from django.db import models
-from django.conf import settings
-from django.db.models.signals import post_save, post_delete 
-
+from django.core.exceptions import ValidationError
 
 from nimbus.base.models import UUIDSingletonModel as BaseModel
-from nimbus.storages.models import Storage
-from nimbus.libs.template import render_to_file
-from nimbus.shared import utils, signals, fields
+from nimbus.shared import fields
+from nimbusgateway import Api
 
 
 # Create your models here.
@@ -30,6 +25,18 @@ class Offsite(BaseModel):
     upload_rate = models.IntegerField(default=-1)
     active = models.BooleanField()
     hour = models.TimeField(blank=True, null=True)
+
+
+    def clean(self):
+        try:
+            api = Api(username=self.username,
+                      password=self.password,
+                      gateway_url=self.gateway_url)
+            api.check_auth()
+        except URLError, error:
+            raise ValidationError("Impossível autenticar. Login ou senha não confere")
+
+
 
 
 class Volume(models.Model):
