@@ -82,7 +82,8 @@ class Handler(object):
     @with_auth
     def call_method(self, request, path, method="GET", headers={}):
         bucket = self.get_bucketname(request)
-        url = self.aws.generate_url(method, bucket, path, headers=headers)
+        options = {'x-nimbus-user' : request.user.username}
+        url = self.aws.generate_url(method, bucket, path, options, headers)
 
         ol = OperationLog(  user=User.objects.get(username=request.user),
                             operation = Operation.objects.get(name=method),
@@ -123,14 +124,15 @@ class Handler(object):
     def list(self, request):    
         bucket = self.get_bucketname(request)
 
-        options = {} 
+        options={"x-nimbus-user" : request.user.username}
 
         if request.method == "POST":
             marker = request.POST.get("marker", None)
             options["marker"] = marker
 
-        url = self.aws.list_bucket( bucket, 
+        url = self.aws.list_bucket( bucket,
                                     options=options)
+
 
         ol = OperationLog(  user=User.objects.get(username=request.user),
                             operation = Operation.objects.get(name="LIST"))
