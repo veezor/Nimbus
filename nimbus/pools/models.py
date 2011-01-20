@@ -18,7 +18,7 @@ from nimbus.libs.template import render_to_file
 
 class Pool(BaseModel):
     name = models.CharField(max_length=255)
-    pool_size = models.FloatField(blank=False, null=False)
+    size = models.FloatField(blank=False, null=False, default=5242880)
     retention_time = models.IntegerField(blank=False, null=False, default=30)
 
     def __unicode__(self):
@@ -36,7 +36,7 @@ def update_pool_file(pool):
     render_to_file( filename,
                     "pool",
                     name=name,
-                    max_vol_bytes=1048576,
+                    max_vol_bytes=pool.size,
                     days=pool.retention_time)
 
 

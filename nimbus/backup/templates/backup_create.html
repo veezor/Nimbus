@@ -94,6 +94,15 @@
                 <label for="offsite_on">Ativar backup offsite</label>
                 <input type="checkbox" name="offsite_on" {% if offsite_on %}checked="checked"{% endif %} value="1" />
             </p>
+            {% if errors.retention_time %}
+            <ul class="errorlist">
+                <li>{{ errors.retention_time }}</li>
+            </ul>
+            {% endif %}
+            <p>
+                <label for="retention_time">Tempo de retenção (em dias)</label></br>
+                <input type="text" class="text small" name="retention_time" value="{{ retention_time }}" />
+            </p>
             
             <script type="text/javascript" charset="utf-8">
 	            $(document).ready(function(){

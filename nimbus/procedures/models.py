@@ -210,12 +210,6 @@ def remove_procedure_file(procedure):
    
 
 
-def create_pool(procedure):
-    try:
-        procedure.pool
-    except Pool.DoesNotExist, erro:
-        procedure.pool = Pool.objects.create(name=procedure.name,
-                                             pool_size=200)
 
 
 def offsiteconf_check(procedure):
@@ -225,7 +219,6 @@ def offsiteconf_check(procedure):
 
 
 
-signals.connect_on( create_pool, Procedure, pre_save)
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
 signals.connect_on( remove_procedure_file, Procedure, post_delete)

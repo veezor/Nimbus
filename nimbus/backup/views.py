@@ -2,8 +2,7 @@
 # Create your views here.
 
 
-import os
-from glob import glob
+
 from time import strftime, strptime
 import simplejson
 import xmlrpclib
@@ -29,11 +28,7 @@ from nimbus.shared.msgerrors import default_errors
 from nimbus.libs.db import Session
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 from nimbus.shared.views import render_to_response
-
-
-
-
-
+from nimbus.pools.models import Pool
 
 
 @login_required
@@ -93,6 +88,10 @@ def backup_form(request, object_id=None):
             errors["procedure_name"] = "Você deve inserir o nome do procedimento"
 
 
+        try:
+            retention_time = int(request.POST.get('retention_time'))
+        except ValueError, error:
+            errors["retention_time"] = "Informe o tempo de retenção dos arquivos em dias"
 
         try:
             computer = Computer.objects.get(id=request.POST['computer_id'])
@@ -288,6 +287,8 @@ def backup_form(request, object_id=None):
                 procedure.profile = profile
                 form = form_from_model(procedure)
                 if form.is_valid():
+                    procedure.pool = Pool.objects.create(name=procedure.name,
+                                                         retention_time=retention_time)
                     procedure.save()
                     session.add(procedure)
 
