@@ -57,6 +57,15 @@
                             <input type="submit" class="submit tiny" value="Desativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
                         </form>
                         {% endif %}
+                        {% if not procedure.active %}
+                        <form action="/procedures/{{procedure.id}}/activate/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                        {% else %}
+                        <form action="/procedures/{{procedure.id}}/deactivate/" method="post" style="float: right">
+                            <input type="submit" class="submit tiny" value="Desativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        </form>
+                        {% endif %}
                     </div>
                     <h4>CONFIGURAÇÕES DO PROCEDIMENTO</h4>
                     <div class="" style="background: #FFF; -moz-border-radius: 5px; padding: 10px; border: 1px solid #CCC">

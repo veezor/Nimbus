@@ -157,6 +157,23 @@ def deactivate_offsite(request, object_id):
 
 
 @login_required
+def activate(request, object_id):
+    procedure = Procedure.objects.get(id=object_id)
+    procedure.active = True
+    procedure.save()
+    return redirect('/procedures/list')
+
+
+@login_required
+def deactivate(request, object_id):
+    procedure = Procedure.objects.get(id=object_id)
+    procedure.active = False
+    procedure.save()
+    return redirect('/procedures/list')
+
+
+
+@login_required
 def profile_list(request):
     title = u"Perfis de configuração"
     profiles = Profile.objects.all()

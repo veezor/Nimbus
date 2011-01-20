@@ -51,6 +51,7 @@ class Procedure(BaseModel):
     profile = models.ForeignKey(Profile, blank=False, null=False)
     pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
+    active = models.BooleanField(default=True, blank=False, null=False, editable=False)
 
     def fileset_bacula_name(self):
         return self.profile.fileset.bacula_name
@@ -186,6 +187,7 @@ def update_procedure_file(procedure):
                     fileset=procedure.fileset_bacula_name(),
                     priority="10",
                     offsite=procedure.offsite_on,
+                    active=procedure.active,
                     offsite_param="--upload-requests %v",
                     client=procedure.computer.bacula_name,
                     pool=procedure.pool_bacula_name() )
