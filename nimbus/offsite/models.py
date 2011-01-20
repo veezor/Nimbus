@@ -28,13 +28,14 @@ class Offsite(BaseModel):
 
 
     def clean(self):
-        try:
-            api = Api(username=self.username,
-                      password=self.password,
-                      gateway_url=self.gateway_url)
-            api.check_auth()
-        except URLError, error:
-            raise ValidationError("Impossível autenticar. Login ou senha não confere")
+        if self.active:
+            try:
+                api = Api(username=self.username,
+                          password=self.password,
+                          gateway_url=self.gateway_url)
+                api.check_auth()
+            except URLError, error:
+                raise ValidationError("Impossível autenticar. Login ou senha não confere")
 
 
 
