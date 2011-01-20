@@ -49,7 +49,6 @@ def timezone(request):
     extra_context = {
         'wizard_title': u'1 de 4 - Configuração de Hora',
         'page_name': u'timezone',
-        'previous': reverse('nimbus.wizard.views.start')
     }
     return edit_singleton_model( request, "generic.html", 
                                  "nimbus.wizard.views.offsite",
