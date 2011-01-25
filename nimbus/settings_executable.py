@@ -50,6 +50,9 @@ NIMBUS_DEPLOY_PATH = join(ROOT_PATH, "var","www")
 
 
 BACULA_LOCK_FILE = join(NIMBUS_HOME_DIR, "bacula.lock" )
+NIMBUS_GRAPHDATA_FILENAME = join(NIMBUS_HOME_DIR, "graphs.data" )
+
+
 NIMBUS_CUSTOM_DIR = join(NIMBUS_HOME_DIR, "custom" )
 NIMBUS_CONFIG_DIR = join(NIMBUS_CUSTOM_DIR, "config" )
 NIMBUS_CERTIFICATES_DIR = join(NIMBUS_CUSTOM_DIR, "certificates" )

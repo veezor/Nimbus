@@ -25,7 +25,7 @@ from django.core.management import call_command
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from nimbus.libs import offsite
+from nimbus.libs import offsite, graphsdata
 from nimbus.shared import utils
 from nimbus.config.models import Config
 from nimbus.storages.models import Storage
@@ -79,6 +79,11 @@ class App(object):
                           settings.ADMINISTRATIVE_MODELS_DATA_FILE)
 
 
+    def update_graphs_data(self):
+        graphs_data_manager = graphsdata.GraphDataManager()
+        graphs_data_manager.update()
+        
+
     def shell(self):
         call_command('shell')
 
@@ -118,6 +123,8 @@ class App(object):
             self.upload_volumes()
         elif command == "--shell":
             self.shell()
+        elif command == "--update-graphs-data":
+            self.update_graphs_data()
         else:
             self.run_server()
 

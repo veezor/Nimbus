@@ -11,6 +11,7 @@ from django.contrib import messages
 from nimbus.shared import utils
 from nimbus.shared.views import render_to_response
 from nimbus.bacula.models import Job
+from nimbus.libs import graphsdata
 
 from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
@@ -45,18 +46,11 @@ def home(request):
     }
 
 
-    
-    diskinfo = systeminfo.DiskInfo("/bacula")
-    try:
-        diskusage = diskinfo.get_usage()
-    except OSError, error:
-        messages.error(request, "Partição /bacula não encontrada")
-        diskusage = 0
 
-    diskfree = 100 - diskusage
+    graph_data_manager = graphsdata.GraphDataManager()
+    diskdata = graph_data_manager.list_disk_measures()
     
     # TODO: O diskfree deve ser calculado como gráfico de história.
-    diskfree = [10, 20 , 30, 40, 50, 60, 70]
 
     table3 = {}
     table3['title'] = u"Ocupação do disco"
@@ -65,8 +59,9 @@ def home(request):
     table3['cid'] = "chart3"
     table3['height'] = "130"
     # table3['header'] = ["Gigabytes"]
-    table3['header'] = ["11/01/11", "12/01/11", "13/01/11", "14/01/11", "15/01/11", "16/01/11", "17/01/11"]
-    table3['lines'] = {"Disponível": diskfree}
+    table3['header'] = [ i[0] for i in diskdata ]
+    table3['lines'] = {"Disponível": [ i[1] for i in diskdata ]}
+
 
 
     memory = systeminfo.get_memory_usage()
@@ -100,9 +95,9 @@ def home(request):
     offsite_usage = 55 #TODO
     # offsite_free = 45
     
-    # TODO: O offsite_free deve ser calculado como gráfico de história.
-    offsite_free = [10, 15, 20, 25, 20, 30, 25]
-    
+
+    offsite_data = graph_data_manager.list_offsite_measures()
+
     table6 = {}
     table6['title'] = u"Uso do Offsite"
     table6['width'] = ""
@@ -110,8 +105,9 @@ def home(request):
     table6['height'] = "130"
     table6['cid'] = "chart6"
     # table6['header'] = ["GB"]
-    table6['header'] = ["11/01/11", "12/01/11", "13/01/11", "14/01/11", "15/01/11", "16/01/11", "17/01/11"]
-    table6['lines'] = {"Disponível": offsite_free}
+    table6['header'] = [ i[0] for i in offsite_data]
+    table6['lines'] = {"Disponível": [ i[1] for i in offsite_data] }
+
 
    
     
