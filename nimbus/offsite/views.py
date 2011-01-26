@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from urllib2 import URLError
 
 from os.path import join
 
@@ -8,8 +9,10 @@ import simplejson
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
+from django.contrib import messages
 
+
+import nimbusgateway
 from nimbus.libs import offsite, systemprocesses
 from nimbus.offsite.models import (LocalUploadRequest, 
                                    RemoteUploadRequest, 
@@ -19,6 +22,7 @@ from nimbus.offsite.models import Offsite
 from nimbus.shared import utils
 from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.offsite.forms import OffsiteForm
+
 
 
 @login_required
@@ -41,8 +45,22 @@ def detail(request):
         'content': content  
         }]
     
-    #TODO: Isto não deve ser fixo.
-    ocupacao_offsite = '70'
+
+    offsite = Offsite.get_instance()
+    if offsite.active:
+        api = nimbusgateway.Api(offsite.username,
+                                offsite.password,
+                                offsite.gateway_url)
+        try:
+            ocupacao_offsite = api.get_usage()
+        except URLError, error:
+            messages.error(request, "Erro na conexão com o backup nas nuvens. Verifique conexão.")
+            ocupacao_offsite = 0.0
+    else:
+        ocupacao_offsite = 0.0
+        messages.error(request, "Offsite desativado")
+
+
     return render_to_response(request, "detail.html", locals())
 
 
