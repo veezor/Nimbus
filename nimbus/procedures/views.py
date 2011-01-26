@@ -23,6 +23,7 @@ from nimbus.shared.msgerrors import default_errors
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping, form_from_model
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
+from nimbus.procedures.forms import ProfileForm
 
 from nimbus.shared import utils
 from nimbus.libs.db import Session
@@ -193,10 +194,12 @@ def profile_list(request):
 def profile_add(request):
     title = u"Adicionar perfil de configuração"
     
-    storages = Storage.objects.all()
-    schedules = Schedule.objects.all()
-    filesets = FileSet.objects.all()
-    computers = Computer.objects.all()
+    # storages = Storage.objects.all()
+    # schedules = Schedule.objects.all()
+    # filesets = FileSet.objects.all()
+    # computers = Computer.objects.all()
+    
+    profile_form = ProfileForm()
     
     days = days_enum
     weekdays = weekdays_enum
@@ -207,6 +210,8 @@ def profile_add(request):
     if request.method == "GET":
         return render_to_response(request, "profile_add.html", extra_context)
     elif request.method == "POST":
+        # TODO: Validate profile_form.
+        
         modeltriggers = []
         modelpaths = []
 
