@@ -226,12 +226,17 @@ def group_list(request):
 def activate(request, object_id):
     try:
         computer = Computer.objects.get(id=object_id)
+        if computer.active:
+            messages.info(request, "O computador já esta ativo")
+            return redirect('nimbus.computers.views.list')
+
         computer.activate()
 
         messages.success(request, u'Computador ativado com sucesso.')
         return redirect('nimbus.computers.views.list')
     except (socket.error, xmlrpclib.Fault), error:
         messages.error(request, u'Impossível ativar computador, verifique a conexão')
+        return redirect('nimbus.computers.views.add')
 
 
 @login_required
