@@ -10,6 +10,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 
 from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
+from nimbus.schedules.forms import (ScheduleForm, DailyForm, MonthlyForm,
+                                    HourlyForm, WeeklyForm)
 from nimbus.schedules.shared import trigger_class, trigger_map
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
@@ -22,6 +24,29 @@ from django.template import RequestContext
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 
 
+@login_required
+def add(request):
+    title = u"Criar agendamento"
+    
+    schedule_form = ScheduleForm()
+    daily_form = DailyForm()
+    monthly_form = MonthlyForm()
+    hourly_form = HourlyForm()
+    weekly_form = WeeklyForm()
+    
+    extra_content = {
+        'days': days,
+        'weekdays': weekdays,
+        'levels': levels,
+        'operating_systems': operating_systems,
+    }
+    extra_content.update(**locals())
+    
+    if request.method == 'POST':
+        # TODO: Save.
+        pass
+    
+    return render_to_response(request, 'base_schedules.html', extra_content)
 
 
 @login_required

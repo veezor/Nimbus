@@ -24,6 +24,79 @@
             return false;
         });
     });
+    
+    
+    $(document).ready(function(){
+        $('#schedule_id').change(function(){
+            if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
+                $('#schedule').slideDown();
+            } else {
+                $('#schedule').slideUp();
+            }
+        });
+        $('#schedule_id').change();
+    });
+    
+    $(document).ready(function(){
+        $('.schedule_activate').change(function(){
+            _checked = $(this).attr('checked');
+            _class = $(this).attr('id');
+            if (_checked) {
+                $('.' + _class).addClass('active');
+            } else {
+                $('.' + _class).removeClass('active');
+            }
+        });
+        $('.schedule_activate').change();
+    });
+    
+    $(document).ready(function(){
+        $('#fileset_id').change(function(){
+            if ($('#fileset_id :selected').attr('id') == 'new_fileset') {
+                $('#fileset').slideDown();
+            } else {
+                $('#fileset').slideUp();
+            }
+        });
+        $('#fileset_id').change();
+    });
+    
+    $(document).ready(function(){
+        $('#filepath_template').clone().appendTo('.filepaths').show();
+        
+        function remover_path(obj) {
+            $(obj).parent().remove();
+            if ($('#filepath_template').parent().children().length == 1) {
+                adicionar_path();
+            }
+        }
+        
+        function adicionar_path(obj) {
+            if (obj) {
+                $('#filepath_template').clone().insertAfter($(obj).parent()).show();
+            } else {
+                $('#filepath_template').clone().appendTo('.filepaths').show();
+            }
+            
+            
+            $('.filepaths .add').unbind('click').click(function(){
+                adicionar_path(this);
+            });
+            
+            $('.filepaths .del').unbind('click').click(function(){
+                remover_path(this);
+            });
+        }
+        
+        $('.filepaths .add').click(function(){
+            adicionar_path(this);
+        });
+        
+        $('.filepaths .del').click(function(){
+            remover_path(this);
+        });
+    });
+    
 </script>
 {% endblock %}
 
@@ -38,6 +111,14 @@
 
     <div class="block_content">
 
+        <form action="{% url nimbus.procedures.views.profile_add %}" method="post" class="form_styled">
+            {{ profile_form.as_p }}
+            <p>
+                <input type="submit" class="submit mid" value="Adicionar" />
+            </p>
+        </form>
+
+        {% if 0 %}
         <form action="{% url nimbus.procedures.views.profile_add %}" method="post">
             {% if errors.profile_name %}
             <ul class="errorlist">
@@ -397,6 +478,7 @@
                 <input type="submit" class="submit mid" value="Adicionar" />
             </p>
         </form>
+        {% endif %}
         <p></p>
     </div>
 

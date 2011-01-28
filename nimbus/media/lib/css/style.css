@@ -644,6 +644,10 @@ a:hover {
 	vertical-align: middle;
 	}
 
+.block form.form_styled label {
+    display: block;
+    }
+
 .block form input.text,
 .block form input[type=password] {
 	width: 410px;

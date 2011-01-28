@@ -11,6 +11,7 @@ from django.shortcuts import redirect
 
 from django.contrib.auth.decorators import login_required
 from nimbus.filesets.models import FileSet, FilePath
+from nimbus.filesets.forms import FileSetForm, FilePathForm
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form_mapping, form_from_model
@@ -18,8 +19,20 @@ from nimbus.libs.db import Session
 from nimbus.shared import utils
 
 
-
-
+@login_required
+def add(request):
+    title = u"Criar conjunto de arquivos"
+    computers = Computer.objects.all()
+    
+    fileset_form = FileSetForm()
+    filepath_form = FilePathForm()
+    
+    if request.method == 'POST':
+        # TODO: Save the queen.
+        pass
+    
+    return render_to_response(request, 'base_filesets.html',
+                                        locals())
 
 
 @login_required
