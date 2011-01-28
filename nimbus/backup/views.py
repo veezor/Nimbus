@@ -6,6 +6,7 @@
 from time import strftime, strptime
 import simplejson
 import xmlrpclib
+import socket
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -313,18 +314,22 @@ def get_tree(request):
         path = request.POST['path']
         computer_id = request.POST['computer_id']
 
-        computer = Computer.objects.get(id=computer_id)
+        try:
+            computer = Computer.objects.get(id=computer_id)
 
-        url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
-        proxy = xmlrpclib.ServerProxy(url)
+            url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
+            proxy = xmlrpclib.ServerProxy(url)
 
-        if computer.operation_system == "windows" and path == "/":
-            files = proxy.get_available_drives()
-            files = [ fname[:-1] + '/' for fname in files ]
-        else:
-            files = proxy.list_dir(path)
-        files.sort()
-        
-        response = simplejson.dumps(files)
+            if computer.operation_system == "windows" and path == "/":
+                files = proxy.get_available_drives()
+                files = [ fname[:-1] + '/' for fname in files ]
+            else:
+                files = proxy.list_dir(path)
+            files.sort()
+
+            response = simplejson.dumps(files)
+        except socket.error, error:
+            response = simplejson.dumps({"type" : "error",
+                                         "message" : "Impossível conectar ao cliente"})
         return HttpResponse(response, mimetype="text/plain")
     
