@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from filesets.models import *
+from nimbus.filesets.models import *
 from django import forms
 
 

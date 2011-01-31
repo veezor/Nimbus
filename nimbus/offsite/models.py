@@ -3,6 +3,7 @@
 
 
 import os
+import logging
 from time import time
 from datetime import datetime
 from urllib2 import URLError
@@ -35,6 +36,8 @@ class Offsite(BaseModel):
                           gateway_url=self.gateway_url)
                 api.check_auth()
             except URLError, error:
+                logger = logging.getLogger(__name__)
+                logger.exception("Auth error")
                 raise ValidationError("Impossível autenticar. Login ou senha não confere")
 
 
@@ -193,6 +196,12 @@ class DownloadRequest(Request):
         if self.volume.size == 0:
             self.volume.size = total_bytes
         super(DownloadRequest, self).update(new_bytes_size, total_bytes)
+
+
+
+class DeleteRequest(Request):
+    pass
+
 
 
 

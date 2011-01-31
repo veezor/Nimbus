@@ -3,10 +3,6 @@
 
 import traceback 
 from django.contrib import messages
-from django.views.generic import create_update
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse
-from django.core import serializers
 from django.shortcuts import redirect
 
 from django.contrib.auth.decorators import login_required

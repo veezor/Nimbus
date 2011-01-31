@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from procedures.models import *
+from nimbus.procedures.models import *
 from django import forms
 
 class ProfileForm(forms.ModelForm):

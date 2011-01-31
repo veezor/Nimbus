@@ -51,7 +51,8 @@ class Bacula(object):
                 output = self.cmd.reload.run()
                 return output
             except configcheck.ConfigFileError, error:
-                logging.exception("Arquivo de configuracao do bacula-sd gerado com erros")
+                logger = logging.getLogger(__name__)
+                logger.exception("Arquivo de configuracao do bacula-dir gerado com erros")
 
 
 
@@ -119,6 +120,26 @@ class Bacula(object):
         if client_name:
             return self.cmd.run.client[client_name].\
             job[job_name].level["Full"].when[date].yes.run()
+
+
+    def purge_volumes(self, volumes, pool_name):
+        purge = self.cmd.purge
+        
+        for volume in volumes:
+            purge.volume[volume]
+            
+        purge.pool[pool_name]
+        purge.run()
+
+
+    def truncate_volumes(self, pool_name):
+        self.cmd.purge.volume\
+            .action["truncate"]\
+            .pool[pool_name].run()
+
+
+    def delete_pool(self, pool_name):
+        self.cmd.delete.pool[pool_name].run()
     
     
   

@@ -25,7 +25,8 @@ from nimbus.offsite.models import ( Volume,
                                     LocalUploadRequest,
                                     DownloadRequest,
                                     UploadTransferredData,
-                                    DownloadTransferredData)
+                                    DownloadTransferredData,
+                                    DeleteRequest)
 
 
 from nimbusgateway import Api, File
@@ -104,6 +105,15 @@ def filename_is_volumename(filename):
 
 
 
+def get_offsite_interface():
+    config = Offsite.get_instance()
+    api = Api(username=config.username,
+              password=config.password,
+              gateway_url=config.gateway_url)
+    return api
+
+
+
 class BaseManager(object):
 
     UploadRequestClass = RemoteUploadRequest
@@ -173,6 +183,34 @@ class BaseManager(object):
         for vol in volumes:
             self.create_download_request(vol)
         self.process_pending_download_requests()
+
+
+    def create_delete_request(self, volume_path ):
+        volume = self.get_volume(volume_path=volume_path)
+        request, created = DeleteRequest\
+                            .objects.get_or_create(volume=volume)
+        return request
+
+
+    def create_deletes_request(self, volumes):
+        for volume in volumes:
+            self.create_delete_request(volume)
+
+
+    def delete_volume(self, volume):
+        raise AttributeError("method not implemented")
+
+
+
+    def delete_volumes(self, volumes):
+        for volume in volumes:
+            self.delete_volume(volume)
+
+
+    def process_pending_delete_requests(self):
+        for delete_request in DeleteRequest.objects.all():
+            self.delete_volume(delete_request.volume.path)
+
 
 
 
@@ -247,6 +285,17 @@ class RemoteManager(BaseManager):
                     retry += 1
                     register_transferred_data(req, initialbytes)
                     logger.error("Erro ao processar %s" % req)
+
+
+    def delete_volume(self, volume):
+        try:
+            self.api.delete_file(volume)
+            DeleteRequest.objects.filter(volume__path=volume).delete()
+        except pycurl.error, error:
+            pass
+
+
+
                 
 
 
