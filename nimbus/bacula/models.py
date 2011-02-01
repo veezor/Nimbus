@@ -162,13 +162,16 @@ class Job(models.Model):
 
     @property
     def status_friendly(self):
-        if self.jobstatus in ('T', 'W'):
+        if self.jobstatus == 'T':
             return 'ok'
 
         if self.jobstatus in ('e', 'E', 'f'):
             return 'error'
 
-        return 'warn'
+        if self.jobstatus == 'W':
+            return 'warn'
+
+        return 'running'
 
 
 
