@@ -9,6 +9,7 @@ import uuid
 from django.db import models
 from django.conf import settings
 
+from nimbus.security.lib import check_permission
 from nimbus.base.exceptions import UUIDViolation
 
 
@@ -79,6 +80,12 @@ class UUIDBaseModel(models.Model):
             self.uuid
         except UUID.DoesNotExist:
             self._generate_uuid()
+
+        system_permission = kwargs.pop("system_permission", False)
+
+        if not system_permission:
+            check_permission(self)
+
         return super(UUIDBaseModel, self).save(*args, **kwargs)
  
     @property

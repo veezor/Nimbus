@@ -10,13 +10,13 @@ from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 
 
-import networkutils
 from pybacula import configcheck
 
 from nimbus.base.models import BaseModel
 from nimbus.shared import utils, signals, fields
 from nimbus.libs.template import render_to_file
 from nimbus.config.models import Config
+from nimbus.network.models import get_nimbus_address
 from nimbus.computers.models import Computer
 
 
@@ -27,7 +27,7 @@ from nimbus.computers.models import Computer
 class Storage(BaseModel):
     name = models.CharField(max_length=255, null=False, blank=False,
                             validators=[fields.check_model_name])
-    address = models.IPAddressField(default="127.0.0.1", editable=False, 
+    address = models.IPAddressField(default=get_nimbus_address, editable=False,
                                     null=False, blank=False)
     password = models.CharField( max_length=255, null=False, 
                                  blank=False, editable=False,
@@ -39,7 +39,7 @@ class Storage(BaseModel):
 
     @property
     def is_local(self):
-        if self.address == "127.0.0.1":
+        if self.address == get_nimbus_address():
             return True
         return False
         
@@ -121,12 +121,13 @@ def update_device_file(device):
     if device.storage.active:
 
         name = device.bacula_name
+        storagename = device.storage.bacula_name
 
         filename = path.join( settings.NIMBUS_DEVICES_DIR, 
                               name)
         
         storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
-                              name)
+                              storagename)
 
         render_to_file( filename,
                         "device",

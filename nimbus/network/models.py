@@ -17,7 +17,6 @@ from django.conf import settings
 from nimbus.shared import signals
 from nimbus.libs import systemprocesses
 from nimbus.base.models import UUIDSingletonModel as BaseModel
-
 # Create your models here.
 
 class NetworkInterface(BaseModel):
@@ -100,4 +99,49 @@ def update_networks_file(interface):
                                      callable, interface)
 
 
+def update_director_address(interface):
+    from nimbus.config.models import Config # import loop
+
+    config = Config.get_instance()
+    config.director_address = interface.address
+    config.save(system_permission=True)
+
+    logger = logging.getLogger(__name__)
+    logger.info("Atualizando ip do director")
+
+
+def update_storage_address(interface):
+    from nimbus.storages.models import Storage # import loop
+
+    storage = Storage.objects.get(id=1) # storage default
+    storage.address = interface.address
+    storage.save(system_permission=True)
+
+    logger = logging.getLogger(__name__)
+    logger.info("Atualizando ip do storage")
+
+def update_nimbus_client_address(interface):
+    from nimbus.computers.models import Computer # import loop
+
+    computer = Computer.objects.get(id=1) # storage default
+    computer.address = interface.address
+    computer.save(system_permission=True)
+
+    logger = logging.getLogger(__name__)
+    logger.info("Atualizando ip do client nimbus")
+
+
+def get_nimbus_address():
+    networkinterface = NetworkInterface.get_instance()
+
+    if not networkinterface.address:
+        raw_iface = networkutils.get_interfaces()[0]
+        address = raw_iface.addr
+        return address
+
+    return networkinterface.address
+
 signals.connect_on( update_networks_file, NetworkInterface, post_save )
+signals.connect_on( update_director_address, NetworkInterface, post_save )
+signals.connect_on( update_storage_address, NetworkInterface, post_save )
+signals.connect_on( update_nimbus_client_address, NetworkInterface, post_save )
