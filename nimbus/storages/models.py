@@ -94,7 +94,7 @@ def update_storage_file(storage):
             render_to_file( filename,
                             "bacula-sd",
                             name=storage.bacula_name,
-                            port=9102,
+                            port=9103,
                             max_cur_jobs=100,
                             director_name=config.director_name,
                             director_password=storage.password,

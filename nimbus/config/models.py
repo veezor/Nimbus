@@ -74,7 +74,7 @@ def update_console_file(config):
                      director_name=config.director_name,
                      director_address=config.director_address,
                      director_password=config.director_password,
-                     director_port=9103)   
+                     director_port=9101)
 
     logger = logging.getLogger(__name__)
     logger.info("Arquivo de configuracao do bconsole gerado com sucesso")

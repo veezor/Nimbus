@@ -5,7 +5,7 @@ Director {
 
 FileDaemon {                          
   Name = {{ name }}
-  FDport = 9101
+  FDport = 9102
 
   {%ifequal os  "windows" %}             
   WorkingDirectory = "C:\\Program Files\\Bacula\\working"
