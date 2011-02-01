@@ -7,8 +7,7 @@ from time import strftime, strptime
 
 from django.contrib.auth.decorators import login_required
 from django.views.generic import create_update
-from django.core.urlresolvers import reverse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 
 
@@ -414,12 +413,18 @@ def profile_edit(request, object_id):
 
 @login_required
 def profile_delete(request, object_id):
+    profile = get_object_or_404(Profile, pk=object_id)
+
     if request.method == "POST":
-        profile = Profile.objects.get(id=object_id)
-        profile.delete()
-        messages.success(request, u"Procedimento removido com sucesso.")
-        return redirect('nimbus.procedures.profile_list')
-    else:
-        profile = Profile.objects.get(id=object_id)
-        remove_name = profile.name
-        return render_to_response(request, 'remove.html', locals())
+
+
+        n_procedures = Procedure.objects.filter(profile=profile).count()
+        if n_procedures:
+            messages.error(request, u"Impossível remover perfil em uso")
+        else:
+            profile.delete()
+            messages.success(request, u"Procedimento removido com sucesso.")
+            return redirect('nimbus.procedures.views.profile_list')
+    
+    remove_name = profile.name
+    return render_to_response(request, 'remove.html', locals())
