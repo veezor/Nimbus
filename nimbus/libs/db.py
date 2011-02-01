@@ -57,7 +57,11 @@ class Session(object):
     def rollback(self):
 
         for model in self.models_to_delete_on_rollback:
-            model.delete()
+            try:
+                model.delete()
+            except AssertionError, error:
+                #delete no-salved objects add to session
+                pass
 
         for model in self.models_to_save_on_rollback:
             model.save()

@@ -2,24 +2,21 @@
 
 from time import strftime, strptime
 
-from django.views.generic import create_update
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse
-from django.core import serializers
+
 from django.shortcuts import redirect
+from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 
-from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
+from nimbus.schedules.models import Schedule, Hourly
 from nimbus.schedules.forms import (ScheduleForm, DailyForm, MonthlyForm,
                                     HourlyForm, WeeklyForm)
 from nimbus.schedules.shared import trigger_class, trigger_map
 from nimbus.shared.views import render_to_response
-from nimbus.shared.forms import form
 from nimbus.shared import utils
 from nimbus.libs.db import Session
 
 from django.contrib import messages
-from django.template import RequestContext
+
 
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 
@@ -162,7 +159,10 @@ def edit(request, object_id):
                                 trigger.hour = hour
                                 trigger.level = level
                                 session.add(trigger)
-                                trigger.save()
+                                try:
+                                    trigger.save()
+                                except ValidationError, error:
+                                    errors['schedule_hour'] = 'Horário do agendamento errado'
 
 
 
