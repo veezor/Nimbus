@@ -192,197 +192,30 @@ def profile_list(request):
 @login_required
 def profile_add(request):
     title = u"Adicionar perfil de configuração"
-    
-    # storages = Storage.objects.all()
-    # schedules = Schedule.objects.all()
-    # filesets = FileSet.objects.all()
-    # computers = Computer.objects.all()
-    
-    profile_form = ProfileForm()
+
+
     
     days = days_enum
     weekdays = weekdays_enum
     levels = levels_enum
     errors = {}
-    extra_context = locals()
 
     if request.method == "GET":
-        return render_to_response(request, "profile_add.html", extra_context)
+        profile_form = ProfileForm()
+        return render_to_response(request, "profile_add.html", locals())
     elif request.method == "POST":
-        # TODO: Validate profile_form.
-        
-        modeltriggers = []
-        modelpaths = []
-
-
-        profile_name = request.POST.get('profile.name')
-
-        try:
-            has_profile = Profile.objects.get(name=profile_name)
-            errors["profile_name"] = "Nome inválido. Já existe um perfil de configuração com esse nome"
-        except Profile.DoesNotExist, notexist:
-            if profile_name:
-                profile = Profile(name=profile_name)
-            else:
-                errors['profile_name'] = "Você deve inserir um nome no perfil de configuração"
-        
-        
-        storage_id = request.POST.get('profile.storage_id')
-
-        if storage_id:
-            try:
-                storage = Storage.objects.get(id=storage_id)
-            except (Storage.DoesNotExist, ValueError), error:
-                key = "profile_storage_id"
-                errors[key] = default_errors[key]
+        profile_form = ProfileForm(request.POST)
+        if profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, "Perfil de configuração criado com sucesso")
+            return redirect('nimbus.procedures.views.profile_list')
         else:
-            key = "profile_storage_id"
-            errors[key] = default_errors[key]
+            return render_to_response(request, "profile_add.html", locals())
+    else:
+        #NOT GET OR POST
+        pass
+        
 
-        try:
-            schedule_id = request.POST['profile_schedule_id']
-            schedule = Schedule.objects.get(id=schedule_id)
-        except ValueError, error:
-
-            if schedule_id == "new_schedule":
-                schedule_name = request.POST.get('schedule.name')
-
-                try:
-                    has_schedule = Schedule.objects.get(name=schedule_name)
-                    key = "schedule_name"
-                    errors[key] = default_errors[key]
-                except Schedule.DoesNotExist, notexist:
-
-                    if schedule_name:
-                        schedule = Schedule(name = schedule_name)
-
-                        selected_a_trigger = False
-
-                        triggers = ["schedule.monthly", "schedule.dayly", "schedule.weekly", "schedule.hourly"]
-
-
-                        for trigger in triggers:
-
-                            if request.POST.get(trigger + '.active'):
-
-
-                                selected_a_trigger = True
-                                trigger_name = trigger[len("schedule."):]
-                                Trigger = trigger_class[trigger_name]
-
-
-                                hour = request.POST.get(trigger + '.hour')
-                                if not hour:
-                                    errors['schedule_hour'] = "Você deve informar a hora de execução do agendamento %s" % trigger_map[trigger_name]
-                                else:
-                                    if Trigger is Hourly:
-                                        hour = strftime("%H:%M", strptime(hour, "%M"))
-
-                                    level = request.POST.get(trigger + '.level')
-
-                                    if not trigger_name in ["dayly", "hourly"]:
-                                        post_days = set(request.POST.getlist(trigger + '.day'))
-
-                                        if not post_days:
-                                            errors['schedule_day'] = "Você deve selecionar um dia para a execução do agendamento %s"  % trigger_map[trigger_name]
-                                        else:
-                                            for d  in post_days:
-                                                trigger = Trigger(day=d, hour=hour,
-                                                                  level=level)
-                                                modeltriggers.append(trigger)
-                                    else:
-                                        trigger = Trigger(hour=hour,level=level)
-                                        modeltriggers.append(trigger)
-
-
-
-                        if not selected_a_trigger:
-                            errors['schedule_name'] = "Você deve ativar pelo menos um tipo de agendamento"
-                    else:
-                        errors['schedule_name'] = "Você deve inserir um nome na configuração do agendamento"
-            else:
-                errors['profile_schedule_id'] = "Você deve selecionar um agendamente ou criar um novo"
-
-
-
-        try: 
-            fileset_id = request.POST['profile_fileset_id']
-            fileset = FileSet.objects.get(id=fileset_id)
-        except ValueError, error:
-
-            if fileset_id == "new_fileset":
-
-
-                fileset_name = request.POST.get('fileset_name')
-
-
-                try:
-                    has_fileset = FileSet.objects.get(name=fileset_name)
-                    errors["fileset_name"] = "Nome inválido. Já existe um conjunto de arquivos com esse nome"
-                except FileSet.DoesNotExist, notexist:
-                    if fileset_name:
-                        fileset = FileSet(name=fileset_name)
-                    else:
-                        errors['fileset_name'] = "Você deve inserir um nome para o conjunto de arquivos"
-
-                    paths = request.POST.getlist('path')
-                    if not paths:
-                        errors['path'] = "Você deve selecionar pelo menos um arquivo para backup"
-
-            else:
-                errors['profile_fileset_id'] = "Você deve selecionar um conjunto de arquivos ou criar um novo"
-
-
-        if errors:
-            extra_context.update( utils.dict_from_querydict(
-                                        request.POST,
-                                        lists=("path", 
-                                               "schedule_monthly_day",
-                                               "schedule_dayly_day",
-                                               "schedule_hourly_day",
-                                               "schedule_weekly_day")) )
-
-            return render_to_response(request, "profile_add.html", extra_context )
-        else:
-            with Session() as session:
-                if not profile.id:
-                    if not fileset.id:
-                        form = form_from_model(fileset)
-                        if form.is_valid():
-                            fileset.save()
-                            session.add(fileset)
-                            for filepath in paths:
-                                path,created = FilePath.objects.get_or_create(path=filepath)
-                                session.add(path)
-                                path.filesets.add( fileset )
-                                form = form_from_model(path)
-                                if form.is_valid():
-                                    path.save()
-
-                    if not schedule.id:
-                        form = form_from_model(schedule)
-                        if form.is_valid():
-                            schedule.save()
-                            session.add(schedule)
-                            for trigger in modeltriggers:
-                                trigger.schedule = schedule
-                                form = form_from_model(trigger)
-                                if form.is_valid():
-                                    trigger.save()
-                                    session.add(trigger)
-
-
-                    profile.storage = storage
-                    profile.schedule = schedule
-                    profile.fileset = fileset
-                    form = form_from_model(profile)
-                    if form.is_valid():
-                        profile.save()
-                        session.add(profile)
-
-
-                messages.success(request, u"Perfil de configuração adicionado com sucesso.")
-                return redirect('nimbus.procedures.views.list')
         
 
 
