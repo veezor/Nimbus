@@ -36,6 +36,8 @@ FileDaemon {
   
   {% endifequal %}
 
+  SD Connect Timeout = 30 seconds
+
 }
 
 Messages {

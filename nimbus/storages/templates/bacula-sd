@@ -4,6 +4,7 @@ Storage {
     Maximum Concurrent Jobs = {{ max_cur_jobs }} 
     SDPort = {{ port }}
     PidDirectory = "/var/run"
+    Client Connect Wait = 30 seconds
     }
 
 Director {
