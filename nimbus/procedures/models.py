@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import logging
-from os.path import join
+from os.path import join, exists
 
 from django.db import models, connections
 from django.conf import settings
@@ -25,7 +25,6 @@ from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
 from nimbus.libs import offsite
 
-from django.forms import formsets
 
 
 from nimbus.bacula.models import Job, File
@@ -155,6 +154,9 @@ class Procedure(BaseModel):
             files = [ row[0] for row in cursor.fetchall() ]
             # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
             #             for row in cursor.fetchall() ]
+
+        files = list(set(files)) # remove duplicates
+        files.sort()
         return files
 
 
@@ -163,12 +165,15 @@ class Procedure(BaseModel):
 
         cursor = connections['bacula'].cursor()
 
-        cursor.execute(sql.SELECT_FILES_FROM_PATTERN, 
+        pattern = '%'+ pattern + '%'
+
+        cursor.execute(sql.SELECT_FILES_FROM_PATTERN,
                               params=(jobid, pattern))
-                              
+
         files = [ row[0] for row in cursor.fetchall() ]
         # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
         #             for row in cursor.fetchall() ]
+        files.sort()
         return files
 
 
@@ -193,13 +198,15 @@ def update_procedure_file(procedure):
                     client=procedure.computer.bacula_name,
                     pool=procedure.pool_bacula_name() )
 
-    render_to_file( filename + "restore",
-                    "restore",
-                    name=name + "restore",
-                    storage=procedure.storage_bacula_name(),
-                    fileset=procedure.fileset_bacula_name(),
-                    client=procedure.computer.bacula_name,
-                    pool=procedure.pool_bacula_name() )
+    if not exists(settings.NIMBUS_RESTORE_FILE):
+
+        render_to_file( filename + "restore",
+                        "restore",
+                        name=name + "restore",
+                        storage=procedure.storage_bacula_name(),
+                        fileset=procedure.fileset_bacula_name(),
+                        client=procedure.computer.bacula_name,
+                        pool=procedure.pool_bacula_name() )
 
 
 def remove_procedure_file(procedure):
@@ -208,9 +215,7 @@ def remove_procedure_file(procedure):
                                           settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
 
-    base_dir,filepath = utils.mount_path( procedure.bacula_name + "restore",
-                                          settings.NIMBUS_JOBS_DIR)
-    utils.remove_or_leave(filepath)
+
    
 
 
