@@ -436,8 +436,8 @@ SELECT_FILES_FROM_PATTERN = """\
     from File, Path, Filename 
     where File.PathId  = Path.PathId and 
     File.FilenameId = Filename.FilenameId and
-    File.JobId = %s
-    HAVING fullpath REGEXP %s 
+    File.JobId = %s and
+    Concat(Path.Path, Filename.Name) LIKE %s;
     """
 
 
