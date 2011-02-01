@@ -11,9 +11,6 @@ class OffsiteForm(forms.ModelForm):
     password = forms.CharField(required=False, initial='none',
                      widget=forms.PasswordInput(attrs={'class': 'text'})) 
 
-    hour = forms.CharField(required=False, initial='00:00',
-                     widget=forms.TextInput(attrs={'class': 'text'})) 
-
     upload_rate = forms.CharField(required=False, initial=-1,
                     widget=forms.TextInput(attrs={'class': 'text'})) 
 
@@ -21,4 +18,4 @@ class OffsiteForm(forms.ModelForm):
 
     class Meta:
         model = Offsite
-        fields = ('active', 'username', 'password', 'gateway_url', 'hour', 'upload_rate')
+        fields = ('active', 'username', 'password', 'upload_rate')

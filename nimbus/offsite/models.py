@@ -21,11 +21,11 @@ from nimbusgateway import Api
 class Offsite(BaseModel):
     username = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
-    gateway_url = models.CharField( max_length=255,
+    gateway_url = models.CharField( max_length=255, editable=False,
                                     default="http://gatewaynimbus.veezor.com")
     upload_rate = models.IntegerField(default=-1)
     active = models.BooleanField()
-    hour = models.TimeField(blank=True, null=True)
+
 
 
     def clean(self):
