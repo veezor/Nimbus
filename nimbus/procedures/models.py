@@ -200,7 +200,7 @@ def update_procedure_file(procedure):
 
     if not exists(settings.NIMBUS_RESTORE_FILE):
 
-        render_to_file( filename + "restore",
+        render_to_file( settings.NIMBUS_RESTORE_FILE,
                         "restore",
                         name=name + "restore",
                         storage=procedure.storage_bacula_name(),
