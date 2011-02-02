@@ -132,14 +132,15 @@ def update_nimbus_client_address(interface):
 
 
 def get_nimbus_address():
-    networkinterface = NetworkInterface.get_instance()
+    from nimbus.config.models import Config # import loop
+    config = Config.get_instance()
 
-    if not networkinterface.address:
+    if not config.director_address:
         raw_iface = networkutils.get_interfaces()[0]
         address = raw_iface.addr
         return address
 
-    return networkinterface.address
+    return config.director_address
 
 signals.connect_on( update_networks_file, NetworkInterface, post_save )
 signals.connect_on( update_director_address, NetworkInterface, post_save )
