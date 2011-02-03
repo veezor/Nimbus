@@ -38,8 +38,14 @@ def new(request):
             if not name:
                 name = u"Adicionado automaticamente"
 
+
+            address = request.META['REMOTE_ADDR']
+
+            if Computer.objects.filter(address=address).count():
+                return HttpResponse(status=400)
+
             computer = Computer(name = name,
-                                 address = request.META['REMOTE_ADDR'],
+                                 address = address,
                                  operation_system=os,
                                  description="Computador identificado automaticamente")
             computer.save()
