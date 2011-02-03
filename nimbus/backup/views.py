@@ -37,7 +37,7 @@ def backup_form(request, object_id=None):
 
     errors = {}
 
-    computers = Computer.objects.all()
+    computers = Computer.objects.filter(active=True)
     profiles = Profile.objects.all()
     storages = Storage.objects.all()
     schedules = Schedule.objects.all()
@@ -60,7 +60,7 @@ def backup_form(request, object_id=None):
     if request.method == "GET":
 
         try:
-            computer = Computer.objects.get(id=object_id)
+            computer = Computer.objects.get(id=object_id,active=True)
         except (Computer.DoesNotExist, ValueError), error:
             computer = None
 
