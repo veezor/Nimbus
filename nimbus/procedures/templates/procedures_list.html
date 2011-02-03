@@ -48,14 +48,16 @@
                         <form action="/procedures/{{procedure.id}}/execute/" method="post" style="float: right">
                             <input type="submit" class="submit tiny" value="Executar agora" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
                         </form>
-                        {% if not procedure.offsite_on %}
-                        <form action="/procedures/{{procedure.id}}/activate_offsite/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Ativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
-                        </form>
-                        {% else %}
-                        <form action="/procedures/{{procedure.id}}/deactivate_offsite/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Desativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
-                        </form>
+                        {%  if offsite_on %}
+                            {% if not procedure.offsite_on %}
+                            <form action="/procedures/{{procedure.id}}/activate_offsite/" method="post" style="float: right">
+                                <input type="submit" class="submit tiny" value="Ativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                            </form>
+                            {% else %}
+                            <form action="/procedures/{{procedure.id}}/deactivate_offsite/" method="post" style="float: right">
+                                <input type="submit" class="submit tiny" value="Desativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                            </form>
+                            {% endif %}
                         {% endif %}
                         {% if not procedure.active %}
                         <form action="/procedures/{{procedure.id}}/activate/" method="post" style="float: right">

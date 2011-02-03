@@ -38,8 +38,14 @@ def new(request):
             if not name:
                 name = u"Adicionado automaticamente"
 
+
+            address = request.META['REMOTE_ADDR']
+
+            if Computer.objects.filter(address=address).count():
+                return HttpResponse(status=400)
+
             computer = Computer(name = name,
-                                 address = request.META['REMOTE_ADDR'],
+                                 address = address,
                                  operation_system=os,
                                  description="Computador identificado automaticamente")
             computer.save()
@@ -225,7 +231,13 @@ def group_list(request):
 @login_required
 def activate(request, object_id):
     try:
-        computer = Computer.objects.get(id=object_id)
+
+        try:
+            computer = Computer.objects.get(id=object_id)
+        except Computer.DoesNotExist, error:
+            messages.error(request, u'Impossível ativar computador, computador inexistente')
+            return redirect('nimbus.computers.views.add')
+
         if computer.active:
             messages.info(request, "O computador já esta ativo")
             return redirect('nimbus.computers.views.list')
@@ -241,9 +253,14 @@ def activate(request, object_id):
 
 @login_required
 def deactivate(request, object_id):
-    computer = Computer.objects.get(id=object_id)
-    computer.active = 0
-    computer.save()
+    try:
+        computer = Computer.objects.get(id=object_id)
+        computer.active = False
+        computer.save()
+    except Computer.DoesNotExist, error:
+        messages.error(request, u'Impossível desativar computador, computador inexistente')
+        return redirect('nimbus.computers.views.list')
+
 
     # messages.success(u'Armazenamento ativado com sucesso.')
     return redirect('/computers/list')

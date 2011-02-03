@@ -15,17 +15,15 @@ from nimbus.bacula.models import Job
 from nimbus.procedures.models import Procedure, Profile
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
-from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
-from nimbus.filesets.models import FileSet, FilePath
-from nimbus.schedules.shared import trigger_class, trigger_map
-from nimbus.shared.msgerrors import default_errors
+from nimbus.schedules.models import Schedule
+from nimbus.filesets.models import FileSet
+from nimbus.offsite.models import Offsite
+
 from nimbus.shared.views import render_to_response
-from nimbus.shared.forms import form, form_mapping, form_from_model
+from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
 from nimbus.procedures.forms import ProfileForm
 
-from nimbus.shared import utils
-from nimbus.libs.db import Session
 
 
 
@@ -81,6 +79,10 @@ def execute(request, object_id):
 @login_required
 def list(request):
     procedures = Procedure.objects.all()
+
+    offsite = Offsite.get_instance()
+    offsite_on = offsite.active
+
     title = u"Procedimentos"
     running_status = ('R','p','j','c','d','s','M','m','s','F','B')
     running_jobs = Job.objects.filter( jobstatus__in=running_status)\

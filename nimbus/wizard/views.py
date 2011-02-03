@@ -83,16 +83,22 @@ def network(request):
         return render_to_response( request, "generic.html", extra_context)
     else:
         if interface.address != request.POST['address']:
-            #TODO: Atualizar o endereço.
-            
+
             port = project_port(request)
             extra_context['wizard_title'] = u'Redirecionamento'
             extra_context['wizard'] = True
             
             extra_context['ip_address'] = request.POST['address'] + port
             extra_context['url'] = 'wizard/password'
-            
-            return render_to_response(request, "redirect.html", extra_context)
+
+            FormClass = form(NetworkInterface)
+            interface_form = FormClass(request.POST, instance=interface)
+            if interface_form.is_valid():
+                interface_form.save()
+                return render_to_response(request, "redirect.html", extra_context)
+            else:
+                extra_context['form'] = interface_form
+                return render_to_response( request, "generic.html", extra_context)
         
         return edit_singleton_model( request, "generic.html", 
                                      "nimbus.wizard.views.password",

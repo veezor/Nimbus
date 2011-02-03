@@ -30,10 +30,15 @@ from nimbus.libs.bacula import Bacula
 @login_required
 def view(request, object_id=None):
     if object_id:
-        computer = Computer.objects.get(id=object_id)
+        try:
+            computer = Computer.objects.get(id=object_id, active=True)
+        except Computer.DoesNotExist, error:
+            return redirect('nimbus.restore.views.view')
     else:
         computer = None
-    computers = Computer.objects.all()
+
+    computers = Computer.objects.filter(active=True)
+    
     extra_content = {
         'computer': computer,
         'computers': computers,
