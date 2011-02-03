@@ -18,7 +18,7 @@ from nimbus.shared import utils
 @login_required
 def add(request):
     title = u"Criar conjunto de arquivos"
-    computers = Computer.objects.all()
+    computers = Computer.objects.filter(active=True)
     
     fileset_form = FileSetForm()
     filepath_form = FilePathForm()
@@ -36,7 +36,7 @@ def edit(request, object_id):
 
 
     title = u"Editar conjunto de arquivos"
-    computers = Computer.objects.all()
+    computers = Computer.objects.filter(active=True)
     fileset = FileSet.objects.get(id=object_id)
     
     if request.method == "POST":
