@@ -22,7 +22,7 @@ class Offsite(BaseModel):
     username = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
     gateway_url = models.CharField( max_length=255, editable=False,
-                                    default="http://gatewaynimbus.veezor.com")
+                                    default="http://www.veezor.com:8080")
     upload_rate = models.IntegerField(default=-1)
     active = models.BooleanField()
 
