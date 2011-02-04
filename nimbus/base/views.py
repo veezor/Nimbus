@@ -42,7 +42,7 @@ def home(request):
     table2['cid'] = "chart2"
     table2['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_files) ]
     table2['lines'] = {
-        "Arquivos": utils.ordered_dict_value_to_formatted_float(job_files) 
+        "Arquivos": utils.ordered_dict_value_to_formatted_int(job_files) 
     }
 
 
@@ -65,8 +65,9 @@ def home(request):
     table3['height'] = "130"
     # table3['header'] = ["Gigabytes"]
     table3['header'] = [ i[0] for i in diskdata ]
-    table3['lines'] = {"Disponível": [ i[1] for i in diskdata ]}
-
+    #setando valor padrao
+    t3data = [i[1] for i in diskdata] if len(diskdata) else [0.0]
+    table3['lines'] = {"Disponível": t3data}
 
 
     memory = systeminfo.get_memory_usage()
@@ -114,11 +115,9 @@ def home(request):
     table6['cid'] = "chart6"
     # table6['header'] = ["GB"]
     table6['header'] = [ i[0] for i in offsite_data]
-    table6['lines'] = {"Disponível": [ i[1] for i in offsite_data] }
+    t6data = [i[1] for i in offsite_data] if len(offsite_data) else [0.0]
+    table6['lines'] = {"Disponível": t6data }
 
-
-   
-    
     # Dados de content:
     # - type
     # - label

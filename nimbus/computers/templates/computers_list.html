@@ -17,6 +17,10 @@
         border: 2px solid #e7696d;
         -moz-border-radius: 5px; 
     }
+	
+	#computers-filter {
+		margin: 10px 0;
+	}
 </style>
 {% endblock %}
 
@@ -32,6 +36,20 @@
 
     <div class="block_content">
         <p><a href="/computers/add">Adicionar computador</a></p>
+		
+		<div id="computers-filter">
+			<form action="/computers/list" method="get">
+			<label for="computers-group">Filtrar por grupo</label>
+			<select name="group" id="computers-group">
+				<option value="">---</option>
+				{% for group in groups %}
+					<option value="{{group.name}}">{{group.name}}</option>
+				{% endfor%}
+			</select>
+			<input type="submit" class="submit tiny" value="Filtrar"/>
+			</form>
+		</div>
+		
         <div class="computers">
         {% for comp in computers %}
             {% ifchanged comp.groups.all %}

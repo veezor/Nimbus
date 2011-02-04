@@ -108,10 +108,16 @@ def delete(request, object_id):
 
 @login_required
 def list(request):
-    computers = Computer.objects.filter(active=True).order_by('groups__name')
+    if request.method == "GET":
+        group = request.GET.get("group")
+        computers = Computer.objects.filter(active=True, groups__name=group).order_by('groups__name')
+    else:
+        computers = Computer.objects.filter(active=True).order_by('groups__name')
+    groups = ComputerGroup.objects.order_by('name')
     extra_content = {
         'computers': computers,
-        'title': u"Computadores"
+        'title': u"Computadores",
+        'groups': groups
     }
     return render_to_response(request, "computers_list.html", extra_content)
 
