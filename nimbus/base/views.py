@@ -49,6 +49,11 @@ def home(request):
 
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
+
+    if len(diskdata) == 1: # duplicates first item for area graph
+        diskdata *= 2
+
+    
     
     # TODO: O diskfree deve ser calculado como gráfico de história.
 
@@ -97,6 +102,9 @@ def home(request):
     
 
     offsite_data = graph_data_manager.list_offsite_measures()
+
+    if len(offsite_data) == 1: # duplicates first item for area graph
+        offsite_data *= 2
 
     table6 = {}
     table6['title'] = u"Uso do Offsite"
