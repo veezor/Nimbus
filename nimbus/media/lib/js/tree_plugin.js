@@ -1,15 +1,30 @@
 function mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name, depends) {
+
+
     if (data.type = 'error' && data.message) {
         $('#mensagem_erro_fileset').html(data.message).show();
         return false;
     } else {
         $('#mensagem_erro_fileset').html('').hide();
     }
+
+    if (!tree_class) {
+        tree_class = '.tree';
+    }
+    if (!input_type) {
+        input_type = 'checkbox';
+    }
+    if (!input_name) {
+        input_name = 'path';
+    }
     
     root = $(tree_class + " *[path="+root_path+"]");
     root.addClass('directory_open');
     var ul = $("<ul>").addClass("open").hide();
     ul.insertAfter($(tree_class + " *[path="+root_path+"]"));
+
+    link = $(tree_class + " *[path="+root_path+"]");
+    link.append($("<div class='wait'>"));
     
     total = data.length;
     contador = 0;
@@ -29,7 +44,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
         path_name = path.replace(root_path_re, '');
 
         var input = $("<input>").attr("type", input_type).attr("name", input_name).val(path);
-        
+
         // If is a directory.
         if (path.match("/$") == "/" || path.match("\\$") == "\\") {
             attr_class = "directory";
@@ -82,7 +97,6 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     if (!tree_class) {
         tree_class = '.tree';
     }
-    // console.log(input_type);
     if (!input_type) {
         input_type = 'checkbox';
     }

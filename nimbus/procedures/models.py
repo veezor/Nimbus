@@ -1,33 +1,33 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import os
 import logging
-from os.path import join
+from os.path import join, exists
 
 from django.db import models, connections
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
 
 from nimbus.shared import utils, signals, fields
-import nimbus.shared.sqlqueries as sql 
+import nimbus.shared.sqlqueries as sql
+
+from pybacula import BConsoleInitError
 
 from nimbus.base.models import BaseModel
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.filesets.models import FileSet
 from nimbus.schedules.models import Schedule
+from nimbus.bacula.models import Media
 from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
+from nimbus.libs import offsite
 
 
-from nimbus.bacula.models import (Job, 
-                                  Temp1, 
-                                  JobMedia, 
-                                  Temp,
-                                  File)
+
+from nimbus.bacula.models import Job, File
 
 
 class Profile(models.Model):
@@ -154,6 +154,9 @@ class Procedure(BaseModel):
             files = [ row[0] for row in cursor.fetchall() ]
             # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
             #             for row in cursor.fetchall() ]
+
+        files = list(set(files)) # remove duplicates
+        files.sort()
         return files
 
 
@@ -162,12 +165,15 @@ class Procedure(BaseModel):
 
         cursor = connections['bacula'].cursor()
 
-        cursor.execute(sql.SELECT_FILES_FROM_PATTERN, 
+        pattern = '%'+ pattern + '%'
+
+        cursor.execute(sql.SELECT_FILES_FROM_PATTERN,
                               params=(jobid, pattern))
-                              
+
         files = [ row[0] for row in cursor.fetchall() ]
         # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
         #             for row in cursor.fetchall() ]
+        files.sort()
         return files
 
 
@@ -192,24 +198,50 @@ def update_procedure_file(procedure):
                     client=procedure.computer.bacula_name,
                     pool=procedure.pool_bacula_name() )
 
-    render_to_file( filename + "restore",
-                    "restore",
-                    name=name + "restore",
-                    storage=procedure.storage_bacula_name(),
-                    fileset=procedure.fileset_bacula_name(),
-                    client=procedure.computer.bacula_name,
-                    pool=procedure.pool_bacula_name() )
+    if not exists(settings.NIMBUS_RESTORE_FILE):
+
+        render_to_file( settings.NIMBUS_RESTORE_FILE,
+                        "restore",
+                        name=name + "restore",
+                        storage=procedure.storage_bacula_name(),
+                        fileset=procedure.fileset_bacula_name(),
+                        client=procedure.computer.bacula_name,
+                        pool=procedure.pool_bacula_name() )
 
 
 def remove_procedure_file(procedure):
     """remove procedure file"""
     base_dir,filepath = utils.mount_path( procedure.bacula_name,
                                           settings.NIMBUS_JOBS_DIR)
-
-    base_dir,filepath = utils.mount_path( procedure.bacula_name + "restore",
-                                          settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
+
+
    
+
+
+def remove_procedure_volumes(procedure):
+
+    pool_name = procedure.pool_bacula_name()
+    medias = Media.objects.filter(pool__name=pool_name).distinct()
+    volumes = [ m.volumename for m in medias ]
+
+    try:
+        bacula = Bacula()
+        bacula.purge_volumes(volumes, pool_name)
+        bacula.truncate_volumes(pool_name)
+        bacula.delete_pool(pool_name)
+    except BConsoleInitError, error:
+        logger = logging.getLogger(__name__)
+        logger.exception("Erro na comunicação com o bacula")
+
+
+    procedure.pool.delete()
+
+    if procedure.offsite_on:
+
+        remote_manager = offsite.RemoteManager()
+        remote_manager.create_deletes_request( volumes )
+
 
 
 
@@ -224,4 +256,5 @@ def offsiteconf_check(procedure):
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
 signals.connect_on( remove_procedure_file, Procedure, post_delete)
+signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
 

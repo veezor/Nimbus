@@ -10,6 +10,7 @@ Pool {
     AutoPrune = "yes"
     Recycle = "yes"
     Recycle Oldest Volume = "yes"
+    Action on Purge =  Truncate
 
 }
 

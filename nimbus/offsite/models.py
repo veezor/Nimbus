@@ -3,6 +3,7 @@
 
 
 import os
+import logging
 from time import time
 from datetime import datetime
 from urllib2 import URLError
@@ -20,11 +21,11 @@ from nimbusgateway import Api
 class Offsite(BaseModel):
     username = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
-    gateway_url = models.CharField( max_length=255,
-                                    default="http://gatewaynimbus.veezor.com")
+    gateway_url = models.CharField( max_length=255, editable=False,
+                                    default="http://www.veezor.com:8080")
     upload_rate = models.IntegerField(default=-1)
     active = models.BooleanField()
-    hour = models.TimeField(blank=True, null=True)
+
 
 
     def clean(self):
@@ -35,6 +36,8 @@ class Offsite(BaseModel):
                           gateway_url=self.gateway_url)
                 api.check_auth()
             except URLError, error:
+                logger = logging.getLogger(__name__)
+                logger.exception("Auth error")
                 raise ValidationError("Impossível autenticar. Login ou senha não confere")
 
 
@@ -193,6 +196,12 @@ class DownloadRequest(Request):
         if self.volume.size == 0:
             self.volume.size = total_bytes
         super(DownloadRequest, self).update(new_bytes_size, total_bytes)
+
+
+
+class DeleteRequest(Request):
+    pass
+
 
 
 

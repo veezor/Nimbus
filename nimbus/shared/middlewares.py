@@ -18,7 +18,7 @@ from backgroundjobs import ThreadPool as BJThreadPool
 class LogSetup(object): # on bootstrap
 
     def __init__(self):
-        #logging.config.fileConfig(settings.LOGGING_CONF)
+        logging.config.fileConfig(settings.LOGGING_CONF)
         pass
 
 

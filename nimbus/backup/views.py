@@ -43,7 +43,7 @@ def backup_form(request, object_id=None):
 
     errors = {}
 
-    computers = Computer.objects.all()
+    computers = Computer.objects.filter(active=True)
     profiles = Profile.objects.all()
     storages = Storage.objects.all()
     schedules = Schedule.objects.all()

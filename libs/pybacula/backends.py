@@ -77,12 +77,20 @@ class SubprocessConsole(IConsole):
         self.connection = Popen( [executable, "-c", self.configfile], 
                                  bufsize=0, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-        output, error = self.connection.communicate(command)
+
+        try:
+            output, error = self.connection.communicate(command)
+            self.connection.wait()
+        except OSError, error:
+            output = ""
+            error = ""
+
         logging.info("Bacula command is %s", command)
         logging.info("Stdout is %s", output)
         logging.info("Stderr is %s", error)
         if self.connection.returncode != 0:
             logging.error("Error on bconsole connection")
+            logging.error("Returncode is %s" % self.connection.returncode)
             logging.error(output)
             logging.error(error)
             raise BConsoleInitError("Communication failed")

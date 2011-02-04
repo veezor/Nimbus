@@ -22,82 +22,6 @@
             update_tree($(this).attr("path"), get_tree_path, undefined, undefined, undefined, '#computer_id');
             return false;
         });
-        
-        
-        $('.profile').change(function(){
-            if ($('.profile:checked').attr('id') == 'profile_0') {
-                $('.novo_perfil').slideDown();
-            } else {
-                $('.novo_perfil').slideUp();
-            }
-        });
-        $('.profile').change();
-        
-        
-        $('#schedule_id').change(function(){
-            if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
-                $('#schedule').slideDown();
-            } else {
-                $('#schedule').slideUp();
-            }
-        });
-        $('#schedule_id').change();
-        
-        
-        $('.schedule_activate').change(function(){
-            _checked = $(this).attr('checked');
-            _class = $(this).attr('id');
-            if (_checked) {
-                $('.' + _class).addClass('active');
-            } else {
-                $('.' + _class).removeClass('active');
-            }
-        });
-        $('.schedule_activate').change();
-        
-        
-        $('#fileset_id').change(function(){
-            if ($('#fileset_id :selected').attr('id') == 'new_fileset') {
-                $('#fileset').slideDown();
-            } else {
-                $('#fileset').slideUp();
-            }
-        });
-        $('#fileset_id').change();
-        
-        $('#filepath_template').clone().appendTo('.filepaths').show();
-        
-        function remover_path(obj) {
-            $(obj).parent().remove();
-            if ($('#filepath_template').parent().children().length == 1) {
-                adicionar_path();
-            }
-        }
-        
-        function adicionar_path(obj) {
-            if (obj) {
-                $('#filepath_template').clone().insertAfter($(obj).parent()).show();
-            } else {
-                $('#filepath_template').clone().appendTo('.filepaths').show();
-            }
-            
-            
-            $('.filepaths .add').unbind('click').click(function(){
-                adicionar_path(this);
-            });
-            
-            $('.filepaths .del').unbind('click').click(function(){
-                remover_path(this);
-            });
-        }
-        
-        $('.filepaths .add').click(function(){
-            adicionar_path(this);
-        });
-        
-        $('.filepaths .del').click(function(){
-            remover_path(this);
-        });
     });
 </script>
 
@@ -332,13 +256,13 @@
                             <p>
                                 <label>Dias da semana:</label><br/>
                                 {% for day in weekdays %}
-                                <input type="checkbox" id="day_{{day}}" name="schedule.weekly.day" value="{{day}}"  {% if day in schedule_weekly_day %}checked="checked"{% endif %} />
+                                <input type="checkbox" id="day_{{day}}" name="schedule.weekly.day" class="mascara_hora" value="{{day}}"  {% if day in schedule_weekly_day %}checked="checked"{% endif %} />
                                 <label for="day_{{day}}">{{day|title}}</label>
                                 {% endfor %}
                             </p>
                             <p>
-                                <label for="mothly_hour">Hora:</label><br/>
-                                <input type="text" name="schedule.weekly.hour" id="mothly_hour" class="text small mascara_hora" style="width: 45px" maxlength="5" value="{{schedule_weekly_hour}}" /><br/>
+                                <label for="weekly_hour">Hora:</label><br/>
+                                <input type="text" name="schedule.weekly.hour" id="weekly_hour" class="text small mascara_hora" style="width: 45px" maxlength="5" value="{{schedule_weekly_hour}}" /><br/>
                                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                             </p>
                             <p>
@@ -358,8 +282,8 @@
                             </p>
                             <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
                             <p>
-                                <label for="dayly_hour">Hora:</label><br/>
-                                <input type="text" name="schedule.dayly.hour" id="dayly_hour" class="text small mascara_hora" style="width: 45px" maxlength="5" value="{{schedule_dayly_hour}}" /><br/>
+                                <label for="daily_hour">Hora:</label><br/>
+                                <input type="text" name="schedule.dayly.hour" id="daily_hour" class="text small mascara_hora" style="width: 45px" maxlength="5" value="{{schedule_dayly_hour}}" /><br/>
                                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                             </p>
                             <p>

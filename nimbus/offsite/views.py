@@ -22,6 +22,7 @@ from nimbus.offsite.models import Offsite
 from nimbus.shared import utils
 from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.offsite.forms import OffsiteForm
+from nimbus.libs.graphsdata import GraphDataManager
 
 
 
@@ -52,7 +53,17 @@ def detail(request):
                                 offsite.password,
                                 offsite.gateway_url)
         try:
-            ocupacao_offsite = api.get_usage()
+            graph_data_manager = GraphDataManager()
+            data = graph_data_manager.list_offsite_measures()
+
+            if data:
+                usage = graph_data_manager.list_offsite_measures()[-1][-1]
+                # [(date, value),...]
+            else:
+                messages.warning(request, "Dados não disponíveis. Aguarde sincronização com o offsite")
+
+            ocupacao_offsite =  usage / float(api.get_plan_size())
+            
         except URLError, error:
             messages.error(request, "Erro na conexão com o backup nas nuvens. Verifique conexão.")
             ocupacao_offsite = 0.0

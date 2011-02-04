@@ -11,6 +11,7 @@ from django.db.models.signals import post_save
 
 
 from nimbus.base.models import UUIDSingletonModel as BaseModel
+from nimbus.network.models import get_nimbus_address
 from nimbus.shared import utils, signals
 from nimbus.libs.template import render_to_file
 
@@ -25,7 +26,7 @@ class Config(BaseModel):
                                           default=utils.random_password,
                                           blank=False, null=False)
     director_address = models.IPAddressField("nimbus address", null=False, blank=False,
-                                             default="127.0.0.1")
+                                             default=get_nimbus_address)
 
 
 
@@ -73,7 +74,7 @@ def update_console_file(config):
                      director_name=config.director_name,
                      director_address=config.director_address,
                      director_password=config.director_password,
-                     director_port=9103)   
+                     director_port=9101)
 
     logger = logging.getLogger(__name__)
     logger.info("Arquivo de configuracao do bconsole gerado com sucesso")

@@ -43,17 +43,24 @@
                 var render = $.jqplot.LineRenderer;
                 var fill = true;
             }
-            
-            $.jqplot(obj_id, [data], {
+			
+			$.jqplot(obj_id, [data], {
                 seriesDefaults: {
                     renderer: render,
-                    pointLabels: { show: true },
-                    fill: true
+                    pointLabels: { location:'s', show: true },
+                    fill: true,
+					color: '#95BACB'
                 },
+				axesDefaults: {
+					tickOptions: {
+						formatString: "%.2f"
+					}
+				},
                 axes: {
                     xaxis: {
                         renderer: $.jqplot.CategoryAxisRenderer,
-                        ticks: ticks
+                        ticks: ticks,
+						min: 0
                     },
                     yaxis: {
                         min: 0
@@ -66,7 +73,7 @@
         $(document).ready(function(){
             $('.jqplotchart').each(function(){
                 var chart_id = $(this).attr('id');
-                var data = $(this).children().filter('chartdata').text().split(',');
+				var data = $(this).children().filter('chartdata').text().split(',');
                 data = $.map(data, function(e){
                     return parseFloat(e);
                 });

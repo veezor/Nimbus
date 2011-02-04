@@ -162,13 +162,16 @@ class Job(models.Model):
 
     @property
     def status_friendly(self):
-        if self.jobstatus in ('T', 'W'):
+        if self.jobstatus == 'T':
             return 'ok'
 
         if self.jobstatus in ('e', 'E', 'f'):
             return 'error'
 
-        return 'warn'
+        if self.jobstatus == 'W':
+            return 'warn'
+
+        return 'running'
 
 
 
@@ -205,7 +208,7 @@ class Media(models.Model):
     mediaid = models.IntegerField(primary_key=True, db_column='MediaId') # Field name made lowercase.
     volumename = models.TextField(unique=True, db_column='VolumeName') # Field name made lowercase.
     slot = models.IntegerField(null=True, db_column='Slot', blank=True) # Field name made lowercase.
-    poolid = models.IntegerField(null=True, db_column='PoolId', blank=True) # Field name made lowercase.
+    pool = models.ForeignKey("Pool", null=True, db_column='PoolId', blank=True) # Field name made lowercase.
     mediatype = models.TextField(db_column='MediaType') # Field name made lowercase.
     mediatypeid = models.IntegerField(null=True, db_column='MediaTypeId', blank=True) # Field name made lowercase.
     labeltype = models.IntegerField(null=True, db_column='LabelType', blank=True) # Field name made lowercase.

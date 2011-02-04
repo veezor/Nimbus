@@ -50,7 +50,7 @@ class Computer(BaseModel):
     name = models.CharField( max_length=255, unique=True, 
                              blank=False, null=False,
                              validators=[fields.check_model_name])
-    address = models.IPAddressField(blank=False, null=False)
+    address = models.IPAddressField(blank=False, null=False, unique=True)
     operation_system = models.CharField( max_length=255,
                                          blank=False, null=False,
                                          choices=OS )
@@ -121,7 +121,7 @@ class Computer(BaseModel):
 
     def activate(self):
 
-        nimbuscomputer = Computer.objects.get(address="127.0.0.1")
+        nimbuscomputer = Computer.objects.get(id=1)
 
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
         proxy = xmlrpclib.ServerProxy(url)

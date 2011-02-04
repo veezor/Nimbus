@@ -7,7 +7,13 @@ from backends import get_active_backend, BConsoleInitError
 
 
 
-valid_commands = """autodisplay automount add cancel create delete label mount prune relabel release restore run setdebug status unmount update wait disable enable list llist use query reload"""
+valid_commands = """autodisplay automount add cancel create delete label
+                    mount prune relabel release restore run setdebug status
+                    unmount update wait disable enable list llist use query reload purge"""
+
+
+class CommandNotFound(Exception):
+    pass
 
 
 class BaculaCommandLine(object):
@@ -31,7 +37,7 @@ class BaculaCommandLine(object):
         if name in valid_commands:
             return Command(name)    
         else:
-            return None
+            raise CommandNotFound("command not found")
 
     def raw(self, string):
         string = string.encode("utf-8")
