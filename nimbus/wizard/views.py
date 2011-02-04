@@ -81,29 +81,36 @@ def network(request):
         Form = form(NetworkInterface)
         extra_context['form'] = Form(instance=interface)
         return render_to_response( request, "generic.html", extra_context)
+
     else:
         if interface.address != request.POST['address']:
+            change_address = True
+        else:
+            change_address = False
 
-            port = project_port(request)
-            extra_context['wizard_title'] = u'Redirecionamento'
-            extra_context['wizard'] = True
-            
-            extra_context['ip_address'] = request.POST['address'] + port
-            extra_context['url'] = 'wizard/password'
+        FormClass = form(NetworkInterface)
+        interface_form = FormClass(request.POST, instance=interface)
 
-            FormClass = form(NetworkInterface)
-            interface_form = FormClass(request.POST, instance=interface)
-            if interface_form.is_valid():
-                interface_form.save()
+        if interface_form.is_valid():
+
+            interface_form.save()
+
+            if change_address:
+
+                port = project_port(request)
+                extra_context['wizard_title'] = u'Redirecionamento'
+                extra_context['wizard'] = True
+
+                extra_context['ip_address'] = request.POST['address'] + port
+                extra_context['url'] = 'wizard/password'
+
                 return render_to_response(request, "redirect.html", extra_context)
             else:
-                extra_context['form'] = interface_form
-                return render_to_response( request, "generic.html", extra_context)
-        
-        return edit_singleton_model( request, "generic.html", 
-                                     "nimbus.wizard.views.password",
-                                     model = NetworkInterface,
-                                     extra_context = extra_context )
+                return redirect("nimbus.wizard.views.password")
+        else:
+            extra_context['form'] = interface_form
+            return render_to_response( request, "generic.html", extra_context)
+
 
 @only_wizard
 def password(request):
