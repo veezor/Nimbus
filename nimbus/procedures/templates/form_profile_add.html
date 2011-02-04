@@ -45,7 +45,7 @@
 <p>
     <label for="schedule_id">Agendamento:</label><br/>
     <select class="styled" id="schedule_id" name="profile_schedule">
-        <option> - Selecione - </option>
+        <option value=""> - Selecione - </option>
         {% for schedule in schedules %}
         <option value="{{schedule.id}}" {% if profile_post.schedule == schedule.id|stringformat:"s" %}selected="selected"{% endif %}>{{schedule.name}}</option>
         {% endfor %}
@@ -95,7 +95,7 @@
 <p>
     <label for="fileset_id">Conjunto de arquivos para backup:</label><br/>
     <select class="styled" id="fileset_id" name="profile_fileset">
-        <option> - Selecione - </option>
+        <option value=""> - Selecione - </option>
         {% for fileset in filesets %}
         <option value="{{fileset.id}}" {% if profile_post.fileset == fileset.id|stringformat:"s" %}selected="selected"{% endif %}>{{fileset.name}}</option>
         {% endfor %}

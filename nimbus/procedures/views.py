@@ -194,12 +194,10 @@ def profile_list(request):
 def profile_add(request):
     title = u"Adicionar perfil de configuração"
     
-    # storages = Storage.objects.all()
-    # schedules = Schedule.objects.all()
-    # filesets = FileSet.objects.all()
-    # computers = Computer.objects.all()
-    
-    profile_form = ProfileForm()
+    storages = Storage.objects.all()
+    schedules = Schedule.objects.all()
+    filesets = FileSet.objects.all()
+    computers = Computer.objects.all()
     
     days = days_enum
     weekdays = weekdays_enum
@@ -210,7 +208,10 @@ def profile_add(request):
     if request.method == "GET":
         return render_to_response(request, "profile_add.html", extra_context)
     elif request.method == "POST":
-        # TODO: Validate profile_form.
+        # TODO: Validate profile, schedule e fileset.
+        #profile_form = ProfileForm(request.POST)
+        #schedule_form = ScheduleForm(request.POST)
+        #fileset_form = FilesetForm(request.POST)
         
         modeltriggers = []
         modelpaths = []

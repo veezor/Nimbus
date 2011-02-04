@@ -224,3 +224,27 @@ def get_filesize_from_lstat(lstat):
 def project_port(request):
     return (':%s' % request.META['SERVER_PORT']) if request.META['SERVER_PORT'] else ''
 
+
+def get_variables_with_preffix(d, preffix, sep='.'):
+    """
+    Get the variable from a dict starting with preffix.
+    
+    >>> d = {'profile.name': 'Foo', 'profile.active': 1, 'procedure.name': 'bar'}
+    >>> get_variables_with_preffix(d, 'profile')
+    {'name': 'Foo', 'active': 1}
+    >>> get_variables_with_preffix(d, 'procedure')
+    {'name': 'bar'}
+    >>> d = {'phone_code': '84', 'phone_number': '22223333'}
+    >>> get_variables_with_preffix(d, 'phone')
+    {'phone_code': '84', 'phone_number': '22223333'}
+    >>> get_variables_with_preffix(d, 'phone', sep='_')
+    {'code': '84', 'number': '22223333'}
+    """
+    keys = [item for item in d.keys() if item.startswith(preffix)]
+    filtered_d = dict()
+    for key in keys:
+        # Remove the preffix.
+        new_key = key.replace(u"%s%s" % (preffix, sep), "")
+        filtered_d[new_key] = d[key]
+    return filtered_d
+
