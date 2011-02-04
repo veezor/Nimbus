@@ -47,8 +47,9 @@
 			$.jqplot(obj_id, [data], {
                 seriesDefaults: {
                     renderer: render,
-                    pointLabels: { show: true },
-                    fill: true
+                    pointLabels: { location:'s', show: true },
+                    fill: true,
+					color: '#95BACB'
                 },
 				axesDefaults: {
 					tickOptions: {
@@ -58,7 +59,8 @@
                 axes: {
                     xaxis: {
                         renderer: $.jqplot.CategoryAxisRenderer,
-                        ticks: ticks
+                        ticks: ticks,
+						min: 0
                     },
                     yaxis: {
                         min: 0
