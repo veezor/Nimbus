@@ -121,7 +121,7 @@ class Computer(BaseModel):
 
     def activate(self):
 
-        nimbuscomputer = Computer.objects.get(address="127.0.0.1")
+        nimbuscomputer = Computer.objects.get(id=1)
 
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
         proxy = xmlrpclib.ServerProxy(url)
