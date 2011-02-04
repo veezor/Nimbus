@@ -1,4 +1,4 @@
-jQuery(function () {
+$(document).ready(function(){
 	
 	// Preload images
     // jQuery.preloadCssImages();
@@ -69,7 +69,7 @@ jQuery(function () {
 	// Tabs
 	jQuery(".tab_content").hide();
 	jQuery("ul.tabs li:first-child").addClass("active").show();
-	jQuery(".block").find(".tab_content:first").show();
+	jQuery(".tab_content:first").show();
 
 	jQuery("ul.tabs li").click(function() {
 		jQuery(this).parent().find('li').removeClass("active");

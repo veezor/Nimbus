@@ -43,8 +43,8 @@
                 var render = $.jqplot.LineRenderer;
                 var fill = true;
             }
-            
-            $.jqplot(obj_id, [data], {
+			
+			$.jqplot(obj_id, [data], {
                 seriesDefaults: {
                     renderer: render,
                     pointLabels: { show: true },
@@ -71,7 +71,7 @@
         $(document).ready(function(){
             $('.jqplotchart').each(function(){
                 var chart_id = $(this).attr('id');
-                var data = $(this).children().filter('chartdata').text().split(',');
+				var data = $(this).children().filter('chartdata').text().split(',');
                 data = $.map(data, function(e){
                     return parseFloat(e);
                 });
