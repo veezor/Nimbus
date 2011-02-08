@@ -12,8 +12,18 @@
                 ps.slideUp();
             }
         }).change();
+		
+		$("#id_active_upload_rate").change(function(){
+			$("#id_upload_rate").toggle("fast");
+			$("#id_upload_rate").val(200);
+		});
     });
 </script>
+
+<style type="text/css">
+	#id_upload_rate { display: none; }
+</style>
+
 {% endblock %}
 
 {% block content %}

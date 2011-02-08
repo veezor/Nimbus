@@ -22,7 +22,74 @@
             update_tree($(this).attr("path"), get_tree_path, undefined, undefined, undefined, '#computer_id');
             return false;
         });
-		
+        
+        $('.profile').change(function(){
+            if ($('.profile:checked').attr('id') == 'profile_0') {
+                $('.novo_perfil').slideDown();
+            } else {
+                $('.novo_perfil').slideUp();
+            }
+        });
+        $('.profile').change();
+        
+        $('#schedule_id').change(function(){
+            if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
+                $('#schedule').slideDown();
+            } else {
+                $('#schedule').slideUp();
+            }
+        });
+        $('#schedule_id').change();
+        
+        $('.schedule_activate').change(function(){
+            _checked = $(this).attr('checked');
+            _class = $(this).attr('id');
+            if (_checked) {
+                $('.' + _class).addClass('active');
+            } else {
+                $('.' + _class).removeClass('active');
+            }
+        });
+        $('.schedule_activate').change();
+        
+        $('#fileset_id').change(function(){
+            if ($('#fileset_id :selected').attr('id') == 'new_fileset') {
+                $('#fileset').slideDown();
+            } else {
+                $('#fileset').slideUp();
+            }
+        });
+        $('#fileset_id').change();
+        $('#filepath_template').clone().appendTo('.filepaths').show();
+        
+        function remover_path(obj) {
+            $(obj).parent().remove();
+            if ($('#filepath_template').parent().children().length == 1) {
+                adicionar_path();
+            }
+        }
+        
+        function adicionar_path(obj) {
+            if (obj) {
+                $('#filepath_template').clone().insertAfter($(obj).parent()).show();
+            } else {
+                $('#filepath_template').clone().appendTo('.filepaths').show();
+            }
+            $('.filepaths .add').unbind('click').click(function(){
+                adicionar_path(this);
+            });
+            $('.filepaths .del').unbind('click').click(function(){
+                remover_path(this);
+            });
+        }
+        
+        $('.filepaths .add').click(function(){
+            adicionar_path(this);
+        });
+        
+        $('.filepaths .del').click(function(){
+            remover_path(this);
+        });
     });
 </script>
 
@@ -59,81 +126,76 @@
             </div>
             {% endif %}
             
-            {% if errors.procedure_name %}
+            {% if procedure_form.errors.name %}
             <ul class="errorlist">
-                <li>{{ errors.procedure_name }}</li>
+                <li>{{ procedure_form.errors.name }}</li>
             </ul>
             {% endif %}
             <p>
                 <label>Nome para o procedimento de backup:</label><br/>
-                <input type="text" class="text small" name="procedure_name" value="{{procedure_name}}" />
+                <input type="text" class="text small" name="procedure_name" value="{{ procedure_post.name }}" />
             </p>
             
             {% if not computer %}
-            {% if errors.computer_id %}
+            {% if procedure_form.errors.computer %}
             <ul class="errorlist">
-                <li>{{ errors.computer_id }}</li>
+                <li>{{ procedure_form.errors.computer }}</li>
             </ul>
             {% endif %}
             <p>
                 <label for="computer_id">Computador que será efetuado o backup:</label><br/>
-                <select class="styled" id="computer_id" name="computer_id">
+                <select class="styled" id="computer_id" name="procedure_computer">
                     <option value=""> - Selecione - </option>
                     {% for computer in computers %}
-                    <option value="{{computer.id}}" {% if computer_id == computer.id %}selected="selected"{% endif %}>{{computer.name}}</option>
+                    <option value="{{computer.id}}" {% if procedure_post.computer == computer.id|stringformat:"s" %}selected="selected"{% endif %}>{{computer.name}}</option>
                     {% endfor %}
                 </select>
             </p>
             {% endif %}
             
-            {% if errors.offsite_on %}
+            {% if procedure_form.errors.offsite_on %}
             <ul class="errorlist">
-                <li>{{ errors.offsite_on }}</li>
+                <li>{{ procedure_form.errors.offsite_on }}</li>
             </ul>
             {% endif %}
             <p>
                 <label for="offsite_on">Ativar backup offsite</label>
-                <input type="checkbox" name="offsite_on" {% if offsite_on %}checked="checked"{% endif %} value="1" />
+                <input type="checkbox" name="procedure_offsite_on" {% if procedure_form.offsite_on %}checked="checked"{% endif %} value="1" />
             </p>
-            {% if errors.retention_time %}
+            {% if pool_form.errors.retention_time %}
             <ul class="errorlist">
-                <li>{{ errors.retention_time }}</li>
+                <li>{{ pool_form.errors.retention_time }}</li>
             </ul>
             {% endif %}
             <p>
                 <label for="retention_time">Tempo de retenção (em dias)</label></br>
-                <input type="text" class="text small" name="retention_time" value="{{ retention_time }}" />
+                <input type="text" class="text small" name="pool_retention_time" value="{{ pool_post.retention_time }}" />
             </p>
             
-            <script type="text/javascript" charset="utf-8">
-	            $(document).ready(function(){
-		            $('.profile').change(function(){
-		                if ($('.profile:checked').attr('id') == 'profile_0') {
-		                    $('.novo_perfil').slideDown();
-		                } else {
-		                    $('.novo_perfil').slideUp();
-		                }
-		            });
-		            $('.profile').change();
-	            });
-	        </script>
+            <!-- PROFILE -->
 	        
-            {% if errors.profile_id %}
+            {% if procedure_form.errors.profile %}
             <ul class="errorlist">
-                <li>{{ errors.profile_id }}</li>
+                <li>{{ procedure_form.errors.profile }}</li>
             </ul>
             {% endif %}
             <p>
                 <label>Escolha um perfil de configuração:</label><br/>
                 {% for profile in profiles %}
-                <input type="radio" name="profile_id" value="{{profile.id}}" class="radio profile" id="profile_{{profile.id}}" {% if profile.id == profile_id %}checked="checked"{% endif %} />
+                <input type="radio" name="procedure_profile" value="{{profile.id}}" class="radio profile" id="profile_{{profile.id}}" {% if profile.id == profile_id %}checked="checked"{% endif %} />
                 <label for="profile_{{profile.id}}">{{profile.name}}</label>
                 {% endfor %}
-                <input type="radio" name="profile_id" value="new_profile" class="radio profile" id="profile_0" {% if profile_id == "new_profile" %}checked="checked"{% endif %} />
+                <input type="radio" name="procedure_profile" value="new_profile" class="radio profile" id="profile_0" {% if procedure_post.profile == "new_profile" %}checked="checked"{% endif %} />
                 <label for="profile_0">Criar um novo perfil</label><br/>
                 <small>Um perfil de configuração é um conjunto de armazenamento, agendamento e caminhos de diretórios que serão feitos backup.</small>
             </p>
             
+            <div class="novo_perfil" style="display: none; padding: 20px; background: #FFF2A7; margin-bottom: 20px">
+                {% include "form_profile_add.html" %}
+            </div>
+            
+            {% if 0 %}
+            <!--
             <div class="novo_perfil" style="display: none; padding: 20px; background: #FFF2A7; margin-bottom: 20px">
                 {% if errors.profile_name %}
                 <ul class="errorlist">
@@ -142,54 +204,46 @@
                 {% endif %}
                 <p>
                     <label for="profile_name">Nome do perfil de configuração:</label><br/>
-                    <input type="text" class="text" name="profile.name" id="profile_name" value="{{profile_name}}" />
+                    <input type="text" class="text" name="profile_name" id="profile_name" value="{{profile_name}}" />
                 </p>
                 
-                {% if errors.profile_storage_id %}
+                {% if errors.profile_storage %}
                 <ul class="errorlist">
-                    <li>{{ errors.profile_storage_id }}</li>
+                    <li>{{ errors.profile_storage }}</li>
                 </ul>
                 {% endif %}
                 <p>
                     <label for="storage_id">Local de armazenamento dos arquivos:</label><br/>
-                    <select class="styled" id="storage_id" name="profile.storage_id">
+                    <select class="styled" id="storage_id" name="profile_storage">
                         <option value=""> - Selecione - </option>
                         {% for storage in storages %}
                         <option value="{{storage.id}}" {% if storage.id == profile_storage_id %}selected="selected"{% endif %}>{{storage.name}} - {{storage.address}}</option>
                         {% endfor %}
                     </select>
+                    <input type="submit" class="submit long" value="Criar um novo" />
                 </p>
                 
-                <script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    		            $('#schedule_id').change(function(){
-    		                if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
-    		                    $('#schedule').slideDown();
-    		                } else {
-    		                    $('#schedule').slideUp();
-    		                }
-    		            });
-    		            $('#schedule_id').change();
-    	            });
-    	        </script>
                 
-                {% if errors.profile_schedule_id %}
+                <!-- SCHEDULE --/>
+                
+                {% if errors.profile_schedule %}
                 <ul class="errorlist">
-                    <li>{{ errors.profile_schedule_id }}</li>
+                    <li>{{ errors.profile_schedule }}</li>
                 </ul>
                 {% endif %}
                 <p>
                     <label for="schedule_id">Agendamento:</label><br/>
-                    <select class="styled" id="schedule_id" name="profile.schedule_id">
+                    <select class="styled" id="schedule_id" name="profile_schedule">
                         <option> - Selecione - </option>
                         {% for schedule in schedules %}
                         <option value="{{schedule.id}}" {% if schedule.id == profile_schedule_id %}selected="selected"{% endif %}>{{schedule.name}}</option>
                         {% endfor %}
                         <option id="new_schedule" value="new_schedule" {% if profile_schedule_id == "new_schedule" %}selected="selected"{% endif %}>Criar novo agendamento</option>
                     </select>
+                    <input type="submit" class="submit long" value="Criar um novo" />
                 </p>
         
-                <!-- TODO: Prever um agendamento já definido. -->
+                <!-- TODO: Prever um agendamento já definido. --/>
                 <div class="block withsidebar" id="schedule" style="display: none">
             		<div class="block_head">
             			<div class="bheadl"></div>
@@ -198,25 +252,9 @@
             			<h2 style="font-size: 1.2em">
             			    Criar novo agendamento
             			</h2>
-            		</div>		<!-- .block_head ends -->
+            		</div>		<!-- .block_head ends --/>
 		
             		<div class="block_content">
-			
-    			        <script type="text/javascript" charset="utf-8">
-    			            $(document).ready(function(){
-        			            $('.schedule_activate').change(function(){
-        			                _checked = $(this).attr('checked');
-        			                _class = $(this).attr('id');
-        			                if (_checked) {
-            			                $('.' + _class).addClass('active');
-        			                } else {
-        			                    $('.' + _class).removeClass('active');
-        			                }
-        			            });
-        			            $('.schedule_activate').change();
-    			            });
-    			        </script>
-			
 			            
 			            <div style="float: right; padding: 10px 20px 10px 0; clear: both">
 			                {% if errors.schedule_name %}
@@ -248,7 +286,7 @@
             				</ul>
 				
                             <p>Agende a execução deste backup, é possível ativar mais de um agendamento.</p>
-            			</div>		<!-- .sidebar ends -->
+            			</div>		<!-- .sidebar ends --/>
 			        
             			<div class="sidebar_content" id="mensal">
             			    <p>
@@ -276,7 +314,7 @@
                                 </select><br/>
                                 <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                             </p>
-            			</div>		<!-- .sidebar_content ends -->
+            			</div>		<!-- .sidebar_content ends --/>
 			        
             			<div class="sidebar_content" id="semanal">
             			    <p>
@@ -304,7 +342,7 @@
                                 </select>
                                 <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                             </p>
-            			</div>		<!-- .sidebar_content ends -->
+            			</div>		<!-- .sidebar_content ends --/>
 			        
             			<div class="sidebar_content" id="diario">
             			    <p>
@@ -325,7 +363,7 @@
                                 </select>
                                 <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                             </p>
-            			</div>		<!-- .sidebar_content ends -->
+            			</div>		<!-- .sidebar_content ends --/>
                     
                         <div class="sidebar_content" id="minuto">
                             <p>
@@ -348,88 +386,40 @@
                             </p>
                         </div>
 
-            		</div>		<!-- .block_content ends -->
+            		</div>		<!-- .block_content ends --/>
 
 		
             		<div class="bendl"></div>
             		<div class="bendr"></div>
 		
-            	</div>		<!-- .block .schedule ends -->
+            	</div>		<!-- .block .schedule ends --/>
             	
             	
-            	<script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    		            $('#fileset_id').change(function(){
-    		                if ($('#fileset_id :selected').attr('id') == 'new_fileset') {
-    		                    $('#fileset').slideDown();
-    		                } else {
-    		                    $('#fileset').slideUp();
-    		                }
-    		            });
-    		            $('#fileset_id').change();
-    	            });
-    	        </script>
+                <!-- FILESET --/>
 
-                {% if errors.profile_fileset_id %}
+                {% if errors.profile_fileset %}
                 <ul class="errorlist">
-                    <li>{{ errors.profile_fileset_id }}</li>
+                    <li>{{ errors.profile_fileset }}</li>
                 </ul>
                 {% endif %}
                 <p>
                     <label for="fileset_id">Conjunto de arquivos para backup:</label><br/>
-                    <select class="styled" id="fileset_id" name="profile.fileset_id">
+                    <select class="styled" id="fileset_id" name="profile_fileset">
                         <option> - Selecione - </option>
                         {% for fileset in filesets %}
                         <option value="{{fileset.id}}" {% if profile_fileset_id == fileset.id %}selected="selected"{% endif %}>{{fileset.name}}</option>
                         {% endfor %}
                         <option id="new_fileset" value="new_fileset" {% if profile_fileset_id == "new_fileset" %}selected="selected"{% endif %}>Criar novo conjunto de arquivo</option>
                     </select>
+                    <input type="submit" class="submit long" value="Criar um novo" />
                 </p>
-                
-                <script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    	                $('#filepath_template').clone().appendTo('.filepaths').show();
-    	                
-    	                function remover_path(obj) {
-    	                    $(obj).parent().remove();
-    	                    if ($('#filepath_template').parent().children().length == 1) {
-    	                        adicionar_path();
-    	                    }
-    	                }
-    	                
-    	                function adicionar_path(obj) {
-    	                    if (obj) {
-    	                        $('#filepath_template').clone().insertAfter($(obj).parent()).show();
-    	                    } else {
-    	                        $('#filepath_template').clone().appendTo('.filepaths').show();
-    	                    }
-    	                    
-    	                    
-    	                    $('.filepaths .add').unbind('click').click(function(){
-        	                    adicionar_path(this);
-        	                });
-        	                
-        	                $('.filepaths .del').unbind('click').click(function(){
-        	                    remover_path(this);
-        	                });
-    	                }
-    	                
-    	                $('.filepaths .add').click(function(){
-    	                    adicionar_path(this);
-    	                });
-    	                
-    	                $('.filepaths .del').click(function(){
-    	                    remover_path(this);
-    	                });
-    	            });
-    	        </script>
                 
                 <div class="block" id="fileset" style="display: none">
             		<div class="block_head">
             			<div class="bheadl"></div>
             			<div class="bheadr"></div>
             			<h2>Criar novo conjunto de arquivos</h2>
-            		</div>		<!-- .block_head ends -->
+            		</div>		<!-- .block_head ends --/>
             		<div class="block_content">
                         <p>
                             {% if errors.fileset_name %}
@@ -464,7 +454,7 @@
 
                         <div id="mensagem_erro_fileset" style="display: none"></div>
 
-                        <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
+                        <!-- <a href="#" id="update_tree">atualizar arvore</a> --/>
                         <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
             		    
             		    {% if 0 %}
@@ -476,16 +466,22 @@
                         </p>
                         {% endif %}
                         <p></p>
-            		</div>		<!-- .block_content ends -->
+            		</div>		<!-- .block_content ends --/>
             		<div class="bendl"></div>
             		<div class="bendr"></div>
-            	</div>		<!-- .block ends -->
+            	</div>		<!-- .block ends --/>
                 
-        	</div> <!-- .novo_perfil -->
+        	</div> <!-- .novo_perfil --/>
         	
         	<p>
         	    <input type="submit" class="submit small" value="Criar" />
     	    </p>
+    	    -->
+    	    {% endif %}
+    	    
+    	    <p>
+                <input type="submit" class="submit mid" value="Adicionar" />
+            </p>
     	</form>
         
     </div>

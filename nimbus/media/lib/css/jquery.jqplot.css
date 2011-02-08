@@ -82,6 +82,7 @@
     margin-top: 10px;
     font-size: 11pt;
     position: absolute;
+    color: #FFF;
 }
 
 .jqplot-x2axis-label {
@@ -175,6 +176,9 @@ table.jqplot-cursor-tooltip {
 .jqplot-point-label {
     font-size: 0.75em;
     z-index: 2;
+    color: #000;
+    font-weight: bold;
+    font-size: 12px;
 }
       
 td.jqplot-cursor-legend-swatch {

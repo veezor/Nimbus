@@ -17,7 +17,7 @@
     $.fn.select_skin = function (w) {
         return $(this).each(function(i) {
             s = $(this);
-
+            
             if (!s.attr('multiple')) {
                 // create the container
                 s.children().each(function(){
@@ -27,7 +27,8 @@
                 s.wrap('<div class="cmf-skinned-select"></div>');
                 c = s.parent();
                 c.children().before('<div class="cmf-skinned-text">&nbsp;</div>').each(function() {
-                    if (this.selectedIndex >= 0) $(this).prev().text(this.options[this.selectedIndex].innerHTML.replace(new RegExp('&nbsp;', 'gm'), '', 'g'))
+                    if (this.selectedIndex >= 0)
+                        $(this).prev().text(this.options[this.selectedIndex].innerHTML.replace(new RegExp('&nbsp;', 'gm'), '', 'g'))
                 });
                 c.width(s.outerWidth()-2);
                 c.height(s.outerHeight()-2);
@@ -50,10 +51,10 @@
                 t.css( { 'opacity': 100, 'overflow': 'hidden', 'position': 'absolute', 'text-indent': '0px', 'z-index': 1, 'top': 0, 'left': 0 } );
 
                 // add events
-                c.children().click(function() {
+                c.children("select").click(function() {
                     t.text( (this.options.length > 0 && this.selectedIndex >= 0 ? this.options[this.selectedIndex].innerHTML.replace(new RegExp('&nbsp;', 'gm'), '', 'g') : '') );
                 });
-                c.children().change(function() {
+                c.children("select").change(function() {
                     t.text( (this.options.length > 0 && this.selectedIndex >= 0 ? this.options[this.selectedIndex].innerHTML.replace(new RegExp('&nbsp;', 'gm'), '', 'g') : '') );
                 });
              }

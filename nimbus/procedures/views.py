@@ -194,8 +194,11 @@ def profile_list(request):
 @login_required
 def profile_add(request):
     title = u"Adicionar perfil de configuração"
-
-
+    
+    storages = Storage.objects.all()
+    schedules = Schedule.objects.all()
+    filesets = FileSet.objects.all()
+    computers = Computer.objects.all()
     
     days = days_enum
     weekdays = weekdays_enum
