@@ -22,7 +22,10 @@ def with_auth(function):
         user = self.is_authenticated(request)
         if user:
             login(request, user)
-            return function(self, request, *args, **kwargs)
+            if user.is_active:
+                return function(self, request, *args, **kwargs)
+            else:
+                return self.auth_error(request)
         else:
             return self.auth_error(request)
 
@@ -129,7 +132,9 @@ class Handler(object):
 
         if request.method == "POST":
             marker = request.POST.get("marker", None)
-            options["marker"] = marker
+            if marker:
+                options["marker"] = marker
+
 
         url = self.aws.list_bucket( bucket,
                                     options=options)
