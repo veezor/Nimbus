@@ -1,4 +1,0 @@
-#!/bin/sh
-/usr/bin/mysqldump -uroot -pn1mbus bacula | bzip2 -9 > /var/nimbus/bacula-sql.bz2
-/usr/bin/mysqldump -uroot -pn1mbus nimbus | bzip2 -9 > /var/nimbus/nimbus-sql.bz2
-

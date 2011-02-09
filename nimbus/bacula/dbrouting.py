@@ -13,6 +13,9 @@ class Router(object):
             return 'default'
 
     def db_for_write(self, model, **hints):
+        if not hasattr(model, "_meta"):
+            return 'default'
+
         if model._meta.app_label == 'bacula':
             return 'bacula'
         else:

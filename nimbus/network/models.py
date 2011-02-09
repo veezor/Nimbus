@@ -76,6 +76,7 @@ def update_networks_file(interface):
 
     def callable(interface):
         try:
+            time.sleep(10) # for redirect page
             server = ServerProxy(settings.NIMBUS_MANAGER_URL)
 
             server.generate_interfaces( "eth0", 
@@ -88,7 +89,6 @@ def update_networks_file(interface):
 
             server.generate_dns( interface.dns1, 
                                  interface.dns2)
-            time.sleep(2) # for redirect page
             server.network_restart()
         except Exception, error:
             logger = logging.getLogger(__name__)
