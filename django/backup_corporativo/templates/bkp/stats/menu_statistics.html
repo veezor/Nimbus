@@ -1,7 +1,0 @@
-{% load bkp_extras %}
-
-<ul class="horizontal_menu">
-	<li {% if request.META.PATH_INFO|isequal:"/statistics/global/" %}class="active"{% endif %}><a href="{% url bkp.views.stats_global %}">Geral</a></li>
-    <li {% if request.META.PATH_INFO|isequal:"/statistics/computer/" %}class="active"{% endif %}><a href="{% url bkp.views.stats_computer %}">Computador</a></li>
-    <li {% if request.META.PATH_INFO|isequal:"/statistics/procedure/" %}class="active"{% endif %}><a href="{% url bkp.views.stats_procedure %}">Procedimento</a></li>
-</ul>
