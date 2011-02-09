@@ -152,8 +152,11 @@ def copy_files(request):
         try:
             manager = StorageDeviceManager(device)
             manager.mount()
-        except MountError, e:
+        except (MountError, OSError), e:
             error = e
+            messages.error(request, "Impossível montar dispositivo. Sistema de arquivo inadequado")
+            return redirect('nimbus.system.views.select_storage')
+
 
         sizes = [ getsize( dev) for dev in offsite.get_all_bacula_volumes() ]
         required_size = sum( sizes )
