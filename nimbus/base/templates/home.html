@@ -1,5 +1,17 @@
 {% extends 'base.html' %}
 
+{% block headtags %}
+<link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.jqplot.css" />
+
+<script type="text/javascript" src="/media/lib/js/jquery.jqplot.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.barRenderer.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pieRenderer.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.categoryAxisRenderer.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.highlighter.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
+	
+<script type="text/javascript" src="/media/js/home.js"></script>
+{% endblock %}
 
 {% block content %}
 
