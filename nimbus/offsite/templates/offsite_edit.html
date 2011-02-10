@@ -13,16 +13,19 @@
             }
         }).change();
 		
-		$("#id_active_upload_rate").change(function(){
-			$("#id_upload_rate").toggle("fast");
-			$("#id_upload_rate").val(200);
+		$("#offsite_form #id_active_upload_rate").change(function(){
+			var ps = $("#id_upload_rate");
+			if( $("#id_active_upload_rate").attr('checked')){
+				ps.slideDown("fast");
+				ps.val(200);
+			} else {
+				ps.slideUp("fast");
+				ps.val(-1);
+			}
 		});
+		
     });
 </script>
-
-<style type="text/css">
-	#id_upload_rate { display: none; }
-</style>
 
 {% endblock %}
 
