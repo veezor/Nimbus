@@ -1,23 +1,8 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('.toggle').click(function(){
-            var target = $(this).attr('ref');
-            $(this).parent().parent().find('.' + target).slideToggle();
-            return false;
-        });
-    });
-</script>
-
-<style type="text/css" media="screen">
-    .computer.desativado {
-        background: #FFE5EB !important;
-        border: 2px solid #e7696d;
-        -moz-border-radius: 5px; 
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="/media/css/computers.css" />
+<script type="text/javascript" src="/media/js/computers.js"></script>
 {% endblock %}
 
 {% block page %}

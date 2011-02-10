@@ -619,10 +619,6 @@ color: #FFF;
 	padding: 0;
 }
 
-
-
-
-
 /* jQuery UI */
 .ui-tabs { margin-top: 45px !important; border: 1px solid #CCC !important; }
 .ui-tabs .ui-tabs-nav { margin-top: -37px !important; }
@@ -633,3 +629,7 @@ color: #FFF;
 
 .ui-state-active, .ui-widget-content .ui-state-active { background: #F8F8F8 !important; border: 1px solid #CCC !important; }
 .ui-state-active a, .ui-widget-content .ui-state-active a { color: #333 !important; }
+
+/* COMMON CLASSES */
+.floatleft {float: left;}
+.floatright {float: right;}
