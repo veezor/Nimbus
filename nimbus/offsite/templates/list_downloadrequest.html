@@ -7,10 +7,6 @@
         table = $('.request_list');
         $.post('{{script_name}}', {ajax: 1}, function(data)
         {
-            if (!data.length) {
-                console.log('Não existem uploads ativos.');
-            }
-            
             table.find('tbody tr').remove();
             for (var item in data) {
                 down = data[item];
