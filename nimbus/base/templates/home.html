@@ -9,7 +9,6 @@
 <script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.categoryAxisRenderer.js"></script>
 <script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.highlighter.js"></script>
 <script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
-	
 <script type="text/javascript" src="/media/js/home.js"></script>
 {% endblock %}
 
@@ -68,12 +67,12 @@
     			        {% include "bar_chart.html" %}
     			    {% endwith %}
                 </div>
-                <div class="left" style="margin-left: 30px; width: 35%">
+                <div class="left" id="disc-use">
     			    {% with table3 as table %}
     			        {% include "table_chart.html" %}
     			    {% endwith %}
                 </div>
-                <div class="left" style="margin-left: 30px; width: 35%">
+                <div class="left" id="offsite-use">
                     {% with table6 as table %}
     			        {% include "table_chart.html" %}
     			    {% endwith %}

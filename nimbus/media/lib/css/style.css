@@ -1304,6 +1304,7 @@ a.submit:hover {
     font-weight: bold;
     padding: 7px 5px 2px !important;
     margin-bottom: 10px;
+	display:none;
 }
 
 

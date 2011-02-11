@@ -610,6 +610,24 @@ color: #FFF;
 }
 
 
+/* Estatisticas */
+#disc-use {
+    margin-left: 30px;
+    width: 35%;
+}
+
+#offsite-use {
+    margin-left: 30px;
+    width: 35%;
+}
+
+/* FILESET */
+
+#fileset .tree {
+    padding-left: 20px !important; margin-bottom: 20px;
+}
+#fileset .tree li { padding-left: 20px; }
+#fileset .tree li span { padding-left: 10px; }
 
 /* Adicionais */
 

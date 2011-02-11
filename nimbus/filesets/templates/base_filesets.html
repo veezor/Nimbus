@@ -1,86 +1,19 @@
 {% extends "base.html" %}
 
-
 {% block headtags %}
-<script type="text/javascript" charset="utf-8" src="/media/lib/js/tree_plugin.js"></script>
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('.toggle').click(function(){
-            var target = $(this).attr('ref');
-            $(this).parent().parent().find('.' + target).slideToggle();
-        });
-        
-        get_tree_path = "/backup/get_tree/";
-        
-        $('#update_tree').click(function()
-        {
-            update_tree('/', get_tree_path);
-            return false;
-        });
-
-        $(".tree a").click(function()
-        {
-            update_tree($(this).attr("path"), get_tree_path);
-            return false;
-        });
-    });
-</script>
-
+<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript" src="/media/js/filesets.js"></script>
 {% endblock %}
 
-
 {% block page %}
-
-
-<div class="block">
+<div id="fileset" class="block">
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
 		<h2>{{title}}</h2>
 	</div>		<!-- .block_head ends -->
 	<div class="block_content">
-	    <script type="text/javascript" charset="utf-8">
-            $(document).ready(function(){
-                // $('#filepath_template').clone().appendTo('.filepaths').show();
-            
-                function remover_path(obj) {
-                    $(obj).parent().remove();
-                    if ($('#filepath_template').parent().children().length == 1) {
-                        adicionar_path();
-                    }
-                }
-            
-                function adicionar_path(obj) {
-                    if (obj) {
-                        $('#filepath_template').clone().insertAfter($(obj).parent()).show();
-                    } else {
-                        $('#filepath_template').clone().appendTo('.filepaths').show();
-                    }
-                
-                
-                    // $('.filepaths .add').unbind('click').click(function(){
-                    //     adicionar_path(this);
-                    // });
-                
-                    $('.filepaths .del').unbind('click').click(function(){
-                        remover_path(this);
-                    });
-                }
-            
-                // $('.filepaths .add').click(function(){
-                //     adicionar_path(this);
-                // });
-            
-                $('.filepaths .del').click(function(){
-                    remover_path(this);
-                });
-            
-                $('#computer_id').change(function(){
-                    $('.tree > li ul').first().remove();
-                });
-            });
-        </script>
-
+	    
         <form action="" method="post">
             {% if errors.fileset_name %}
             <ul class="errorlist">
@@ -92,11 +25,6 @@
                 <input type="text" name="fileset_name" id="fileset_name" class="text mid" value="{{ fileset.name }}" />
             </p>
 
-            {% if 0 %}
-            <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
-            <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
-            {% endif %}
-            
             {% if errors.path %}
             <ul class="errorlist">
                 <li>{{ errors.path }}</li>
@@ -105,9 +33,9 @@
             {% if fileset.files.count %}
             <p>
                 <label for="filepath_name">Caminhos para backup:</label><br/>
-                <ul class="tree" style="padding-left: 20px !important; margin-bottom: 20px">
+                <ul class="tree">
                     {% for p in fileset.files.all %}
-                    <li class="" style="padding-left: 20px"><span style="padding-left: 10px"><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
+                    <li><span><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
                     {% endfor %}
                 </ul>
             </p>
@@ -126,6 +54,9 @@
                     <option value="{{computer.id}}">{{computer.name}}</option>
                     {% endfor %}
                 </select>
+				
+				<div id="mensagem_erro_fileset"></div>
+				
                 <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
             </p>
             <p></p>

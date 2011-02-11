@@ -1,40 +1,4 @@
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('#filepath_template').clone().appendTo('.filepaths').show();
-        
-        function remover_path(obj) {
-            $(obj).parent().remove();
-            if ($('#filepath_template').parent().children().length == 1) {
-                adicionar_path();
-            }
-        }
-        
-        function adicionar_path(obj) {
-            if (obj) {
-                $('#filepath_template').clone().insertAfter($(obj).parent()).show();
-            } else {
-                $('#filepath_template').clone().appendTo('.filepaths').show();
-            }
-            
-            
-            $('.filepaths .add').unbind('click').click(function(){
-                adicionar_path(this);
-            });
-            
-            $('.filepaths .del').unbind('click').click(function(){
-                remover_path(this);
-            });
-        }
-        
-        $('.filepaths .add').click(function(){
-            adicionar_path(this);
-        });
-        
-        $('.filepaths .del').click(function(){
-            remover_path(this);
-        });
-    });
-</script>
+<script type="text/javascript" src="/media/js/filesets.js"></script>
 
 {% if errors.computer_id %}
 <ul class="errorlist">
@@ -72,15 +36,15 @@
 
 {% if path %}
 <p>Arquivos selecionados:</p>
-<ul class="tree" style="padding-left: 20px !important; margin-bottom: 20px">
+<ul class="tree">
     {% for p in path %}
-    <li class="" style="padding-left: 20px"><span style="padding-left: 10px"><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
+    <li><span><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
     {% endfor %}
 </ul>
 <p>Selecionar mais arquivos:</p>
 {% endif %}
 
-<div id="mensagem_erro_fileset" style="display: none"></div>
+<div id="mensagem_erro_fileset"></div>
 
 <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
 <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
