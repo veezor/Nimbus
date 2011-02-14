@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block headtags %}
+<link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
+<script type="text/javascript" src="/media/js/schedules.js"></script>
+{% endblock %}
+
 {% block page %}
 
     <!-- TODO: Prever um agendamento já definido. -->
@@ -7,43 +12,25 @@
 		<div class="block_head">
 			<div class="bheadl"></div>
 			<div class="bheadr"></div>
-
-			<h2 style="font-size: 1.2em">
-			    {{ title }}
-			</h2>
-		</div>		<!-- .block_head ends -->
+			<h2>{{ title }}</h2>
+		</div>
 
 		<div class="block_content">
 
             <form action="" method="post">
-    	        <script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    		            $('.schedule_activate').change(function(){
-    		                _checked = $(this).attr('checked');
-    		                _class = $(this).attr('id');
-    		                if (_checked) {
-    			                $('.' + _class).addClass('active');
-    		                } else {
-    		                    $('.' + _class).removeClass('active');
-    		                }
-    		            });
-    		            $('.schedule_activate').change();
-    	            });
-    	        </script>
-
-                <div style="float: right; padding: 10px 20px 0 0">
+                <div id="error-box">
                     {% if errors.schedule_name %}
-                    <ul class="errorlist" style="">
+                    <ul class="errorlist">
                         <li>{{ errors.schedule_name }}</li>
                     </ul>
                     {% endif %}
                     {% if errors.schedule_day %}
-                    <ul class="errorlist" style="">
+                    <ul class="errorlist">
                         <li>{{ errors.schedule_day }}</li>
                     </ul>
                     {% endif %}
                     {% if errors.schedule_hour %}
-                    <ul class="errorlist" style="">
+                    <ul class="errorlist">
                         <li>{{ errors.schedule_hour }}</li>
                     </ul>
                     {% endif %}
@@ -60,7 +47,7 @@
     				</ul>
 	
                     <p>Agende a execução deste backup, é possível ativar mais de um agendamento.</p>
-    			</div>		<!-- .sidebar ends -->
+    			</div>
         
     			<div class="sidebar_content" id="mensal">
     			    <p>
@@ -70,7 +57,7 @@
                     <p>
                         <label>Dias do mês:</label><br/>
                         {% for day in days %}
-                        <span style="display: block; width: 70px; float: left">
+                        <span class="dia">
                             <input type="checkbox" id="day_{{day}}" name="schedule.monthly.day" value="{{day}}" {% for i in schedule.monthly_set.all %}{% if i.day == day %}checked="checked"{% endif %}{% endfor %} />
                             <label for="day_{{day}}">{{day}}º</label>
                         </span>
@@ -78,7 +65,7 @@
                     </p>
                     <p>
                         <label for="mothly_hour">Hora:</label><br/>
-                        <input type="text" name="schedule.monthly.hour" id="mothly_hour" class="text small" style="width: 65px" value="{% if schedule.get_monthly_hour %}{{ schedule.get_monthly_hour }}{% endif %}" /><br/>
+                        <input type="text" name="schedule.monthly.hour" id="mothly_hour" class="text small mascara_hora" value="{% if schedule.get_monthly_hour %}{{ schedule.get_monthly_hour }}{% endif %}" /><br/>
                         <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                     </p>
                     <p>
@@ -88,7 +75,7 @@
                             <option value="{{level}}" {% for i in schedule.monthly_set.all %}{% if i.level == level %}selected="selected"{% endif %}{% endfor %}>{{level}}</option>
                             {% endfor %}
                         </select>
-                        <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                        <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                     </p>
                     <p>
                         <input type="submit" class="submit" value="Editar" />
@@ -109,7 +96,7 @@
                     </p>
                     <p>
                         <label for="mothly_hour">Hora:</label><br/>
-                        <input type="text" name="schedule.weekly.hour" id="mothly_hour" class="text small" style="width: 65px" maxlength="5" value="{% if schedule.get_weekly_hour %}{{ schedule.get_weekly_hour }}{% endif %}" /><br/>
+                        <input type="text" name="schedule.weekly.hour" id="weekly_hour" class="text small mascara_hora" maxlength="5" value="{% if schedule.get_weekly_hour %}{{ schedule.get_weekly_hour }}{% endif %}" /><br/>
                         <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                     </p>
                     <p>
@@ -119,7 +106,7 @@
                             <option value="{{level}}" {% for i in schedule.weekly_set.all %}{% if i.level == level %}selected="selected"{% endif %}{% endfor %}>{{level}}</option>
                             {% endfor %}
                         </select>
-                        <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                        <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                     </p>
                     <p>
                         <input type="submit" class="submit" value="Editar" />
@@ -133,7 +120,7 @@
                     <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
                     <p>
                         <label for="dayly_hour">Hora:</label><br/>
-                        <input type="text" name="schedule.dayly.hour" id="dayly_hour" class="text small" style="width: 65px" maxlength="5" value="{% for i in schedule.daily_set.all %}{{ i.hour }}{% endfor %}" /><br/>
+                        <input type="text" name="schedule.dayly.hour" id="dayly_hour" class="text small mascara_hora" maxlength="5" value="{% for i in schedule.daily_set.all %}{{ i.hour }}{% endfor %}" /><br/>
                         <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                     </p>
                     <p>
@@ -143,7 +130,7 @@
                             <option value="{{level}}" {% for i in schedule.daily_set.all %}{% if i.level == level %}selected="selected"{% endif %}{% endfor %}>{{level}}</option>
                             {% endfor %}
                         </select>
-                        <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                        <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                     </p>
                     <p>
                         <input type="submit" class="submit" value="Editar" />
@@ -157,7 +144,7 @@
                     <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
                     <p>
                         <label for="hourly_hour">Minuto:</label><br/>
-                        <input type="text" name="schedule.hourly.hour" id="hourly_hour" class="text small" style="width: 45px" maxlength="2" value="{% for i in schedule.hourly_set.all %}{{ i.hour|slice:'3:' }}{% endfor %}" /><br/>
+                        <input type="text" name="schedule.hourly.hour" id="hourly_hour" class="text small mascara_minuto" maxlength="2" value="{% for i in schedule.hourly_set.all %}{{ i.hour|slice:'3:' }}{% endfor %}" /><br/>
                         <small>Exemplo: 20, 35 ou 08.</small>
                     </p>
                     <p>
@@ -167,7 +154,7 @@
                             <option value="{{level}}" {% for i in schedule.hourly_set.all %}{% if i.level == level %}selected="selected"{% endif %}{% endfor %}>{{level}}</option>
                             {% endfor %}
                         </select>
-                        <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                        <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                     </p>
                     <p>
                         <input type="submit" class="submit" value="Editar" />
