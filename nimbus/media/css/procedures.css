@@ -1,0 +1,78 @@
+.procedure {
+    padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px;
+}
+
+.procedure .left {
+    float: left; width: 250px;
+}
+
+.procedure .right {
+    float: right; width: 600px;
+}
+
+.procedure .title img {
+    float: left; height: 32px; padding-right: 10px;
+}
+
+.procedure .name {
+    margin: 0 0 -5px 0; padding: 0;
+}
+
+.procedure .options {
+    font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em;
+}
+
+.procedure.desativado {
+    background: #FFE5EB !important;
+    border: 2px solid #e7696d;
+    -moz-border-radius: 5px;
+}
+
+.procedure .submit.tiny {
+    float: right;
+}
+
+.procedure-config {
+    background: #FFF;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border: 1px solid #CCC;
+    padding: 10px;
+}
+
+.profile {
+    padding: 20px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background: #EEE;
+    margin-bottom: 20px;
+}
+
+.profile .left {
+    float: left;
+    width: 250px;
+}
+
+.profile .right {
+    float: right;
+    width: 600px;
+}
+
+.profile img {
+    float: left;
+    height: 32px;
+    padding-right: 10px;
+}
+
+.profile .options {
+    font-size: 10px;
+    line-height: 1.4em;
+}
+
+.profile-config {
+    background: #FFF;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #CCC;
+}

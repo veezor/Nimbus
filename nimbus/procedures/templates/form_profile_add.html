@@ -24,19 +24,6 @@
     </select>
 </p>
 
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('#schedule_id').change(function(){
-            if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
-                $('#schedule').slideDown();
-            } else {
-                $('#schedule').slideUp();
-            }
-        });
-        $('#schedule_id').change();
-    });
-</script>
-
 {% if errors.profile_schedule_id %}
 <ul class="errorlist">
     <li>{{ errors.profile_schedule_id }}</li>
@@ -54,12 +41,12 @@
 </p>
 
 <!-- TODO: Prever um agendamento já definido. -->
-<div class="block withsidebar" id="schedule" style="display: none">
+<div class="block withsidebar hidden" id="schedule">
     <div class="block_head">
     	<div class="bheadl"></div>
     	<div class="bheadr"></div>
 
-    	<h2 style="font-size: 1.2em">
+    	<h2>
     	    Criar novo agendamento
     	</h2>
     </div>		<!-- .block_head ends -->
@@ -73,19 +60,6 @@
     <div class="bendr"></div>
 </div>		<!-- .block .schedule ends -->
 
-
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('#fileset_id').change(function(){
-            if ($('#fileset_id :selected').attr('id') == 'new_fileset') {
-                $('#fileset').slideDown();
-            } else {
-                $('#fileset').slideUp();
-            }
-        });
-        $('#fileset_id').change();
-    });
-</script>
 
 {% if profile_form.errors.fileset %}
 <ul class="errorlist">
@@ -103,7 +77,7 @@
     </select>
 </p>
 
-<div class="block" id="fileset" style="display: none">
+<div id="fileset" class="block hidden">
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>

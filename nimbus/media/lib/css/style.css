@@ -1364,6 +1364,17 @@ a.submit:hover {
     background: url(../images/nsp.gif) center left no-repeat;
 }
 
+/* Estatisticas */
+#disc-use {
+    margin-left: 30px;
+    width: 35%;
+}
+
+#offsite-use {
+    margin-left: 30px;
+    width: 35%;
+}
+
 .grafico_uma_barra {}
 .grafico_uma_barra .grafico_uma_barra_wrapper {
     -moz-border-radius: 3px;
@@ -1381,3 +1392,8 @@ a.submit:hover {
     font-size: 10px;
     text-align: center;
 }
+
+/* COMMON CLASSES */
+.floatleft {float: left;}
+.floatright {float: right;}
+.hidden { display: none; }
