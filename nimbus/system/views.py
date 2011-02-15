@@ -5,8 +5,6 @@
 import simplejson
 from os.path import getsize
 
-from django.views.generic import create_update
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
@@ -14,10 +12,8 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.core import validators
 
-from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
 from nimbus.shared import utils, middlewares
-from nimbus.shared.forms import form
 from nimbus.libs import offsite, systemprocesses, bacula
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
@@ -74,10 +70,14 @@ def create_or_view_network_tool(request):
             elif rtype == "traceroute":
                 rcode, output = networkutils.traceroute(ip)
             elif rtype == "nslookup":
-                if is_url:
-                    output = networkutils.resolve_name(ip)
-                else:
-                    output = networkutils.resolve_addr(ip)
+                try:
+                    if is_url:
+                        output = networkutils.resolve_name(ip)
+                    else:
+                        output = networkutils.resolve_addr(ip)
+                except (networkutils.HostAddrNotFound,
+                         networkutils.HostNameNotFound), error:
+                    output = "Não encontrado"
 
         except ValidationError, error:
             output = "\n".join(error.messages)

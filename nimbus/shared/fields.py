@@ -16,7 +16,12 @@ def check_model_name(value):
     if not NAME_RE.match(value):
         raise ValidationError("Campo não pode conter acentos. Limite mínimo de caracteres é 4")
 
-
+def name_is_valid(value):
+    try:
+        check_model_name(value)
+        return True
+    except ValidationError, error:
+        return False
 
 class FormPathField(forms.CharField):
     def clean(self, value):

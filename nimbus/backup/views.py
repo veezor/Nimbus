@@ -18,13 +18,13 @@ from django.contrib.auth.decorators import login_required
 from nimbus.computers.models import Computer
 from nimbus.procedures.models import Profile, Procedure
 from nimbus.storages.models import Storage
-from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
+from nimbus.schedules.models import Schedule, Hourly
 from nimbus.schedules.shared import trigger_class, trigger_map
 from nimbus.filesets.models import FileSet, FilePath
 from nimbus.shared.forms import form_from_model
-from nimbus.backup.forms import StorageForm
 
-from nimbus.shared import utils
+
+from nimbus.shared import utils, fields
 from nimbus.shared.msgerrors import default_errors
 from nimbus.libs.db import Session
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
@@ -85,6 +85,11 @@ def backup_form(request, object_id=None):
                 offsite_on = request.POST.get('offsite_on')
                 procedure = Procedure(name=procedure_name, 
                                       offsite_on=offsite_on)
+
+                if not fields.name_is_valid(procedure_name):
+                    errors["procedure_name"] = "Campo não pode conter acentos. Limite mínimo de caracteres é 4"
+
+
         else:
             errors["procedure_name"] = "Você deve inserir o nome do procedimento"
 
@@ -120,6 +125,8 @@ def backup_form(request, object_id=None):
                 except Profile.DoesNotExist, notexist:
                     if profile_name:
                         profile = Profile(name=profile_name)
+                        if not fields.name_is_valid(profile_name):
+                            errors["profile_name"] = "Campo não pode conter acentos. Limite mínimo de caracteres é 4"
                     else:
                         errors['profile_name'] = "Você deve inserir um nome no perfil de configuração"
                 
@@ -151,6 +158,10 @@ def backup_form(request, object_id=None):
                         except Schedule.DoesNotExist, notexist:
 
                             if schedule_name:
+
+                                if not fields.name_is_valid(schedule_name):
+                                    errors["schedule_name"] = "Campo não pode conter acentos. Limite mínimo de caracteres é 4"
+
                                 schedule = Schedule(name = schedule_name)
 
                                 selected_a_trigger = False
@@ -219,6 +230,8 @@ def backup_form(request, object_id=None):
                         except FileSet.DoesNotExist, notexist:
                             if fileset_name:
                                 fileset = FileSet(name=fileset_name)
+                                if not fields.name_is_valid(fileset_name):
+                                    errors["fileset_name"] = "Campo não pode conter acentos. Limite mínimo de caracteres é 4"
                             else:
                                 errors['fileset_name'] = "Você deve inserir um nome para o conjunto de arquivos"
 
