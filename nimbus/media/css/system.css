@@ -9,3 +9,9 @@
 .request_list {
     width: 100%;        
 }
+
+#mensagem {
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #FFF2A7;
+}

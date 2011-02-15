@@ -1,5 +1,30 @@
 $(document).ready(function(){
-
+    $('.toggle').click(function(){
+        var target = $(this).attr('ref');
+        $(this).parent().parent().find('.' + target).slideToggle();
+        return false;
+    });
+    
+    $('#form_ping').submit(function(){
+        $('#mensagem').slideUp().empty();
+        $('#mensagem').html('<img src="/media/icons/loading_bar.gif" /> Aguarde...');
+        $('#mensagem').slideDown();
+        
+        var type = $('#type').val();
+        $.post("/system/create_or_view_network_tool/", {ip: $('#ip').val(), type: type},
+            function(data){
+                $('#mensagem').empty();
+                if (!data) {
+                    $('#mensagem').html("Erro ao executar o ping.");
+                    return false;
+                }
+                
+                $('#mensagem').html(data.msg.replace(/\n/g, "<br/>"));
+            },
+            "json");
+        return false;
+    });
+    
     function update_table(table) {
         table = $('.request_list');
         $.post($(".atualizar_agora").attr("rel"), {ajax: 1}, function(data)
