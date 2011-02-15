@@ -3,9 +3,10 @@
 import simplejson
 import socket
 import xmlrpclib
+import logging
+import uuid
 
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponse
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -13,7 +14,6 @@ from django.core import serializers
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.db import IntegrityError
-from django.conf import settings
 
 from nimbus.computers.models import Computer, ComputerGroup
 from nimbus.procedures.models import Procedure
@@ -21,7 +21,6 @@ from nimbus.bacula.models import Job
 from nimbus.shared.views import render_to_response
 from nimbus.shared import enums
 from nimbus.shared.forms import form
-from nimbus.libs.template import render_to_string
 
 
 
@@ -30,6 +29,7 @@ from nimbus.libs.template import render_to_string
 def new(request):
 
     if request.method == "POST":
+        logger = logging.getLogger(__name__)
         try:
             os = request.POST['os']
             if os not in enums.operating_systems:
@@ -37,12 +37,13 @@ def new(request):
             
             name = request.META.get('REMOTE_HOST')
             if not name:
-                name = u"Adicionado automaticamente"
+                name = u"Adicionado automaticamente %s" % uuid.uuid4().hex
 
 
             address = request.META['REMOTE_ADDR']
 
             if Computer.objects.filter(address=address).count():
+                logger.error("Já existe computador com esse ip")
                 return HttpResponse(status=400)
 
             computer = Computer(name = name,
@@ -50,9 +51,11 @@ def new(request):
                                  operation_system=os,
                                  description="Computador identificado automaticamente")
             computer.save()
+            logger.info("Computador adicionado com sucesso")
 
             return HttpResponse(status=200)
         except (KeyError, IntegrityError), e:
+            logger.exception("Erro ao adicionar o computador")
             return HttpResponse(status=400)
 
 
