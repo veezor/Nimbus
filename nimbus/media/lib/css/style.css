@@ -312,6 +312,18 @@ a:hover {
 #header .user a { text-decoration: underline; }
 #header .user a:hover { text-decoration: none; }
 
+#header #logout-button {
+	float: right;
+	margin-left: 10px;
+	padding-left: 10px;
+}
+
+#header #clock {
+	float: right;
+	margin-left: 10px;
+	padding-left: 10px;
+	padding-bottom: 17px;
+}
 
 /* Blocks */
 
@@ -1397,3 +1409,5 @@ a.submit:hover {
 .floatleft {float: left;}
 .floatright {float: right;}
 .hidden { display: none; }
+
+/*  */
