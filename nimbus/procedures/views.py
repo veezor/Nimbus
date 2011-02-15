@@ -99,6 +99,7 @@ def list(request):
                 'type' : 'ok',
                 'label' : job.procedure.name,
                 'date' : job.starttime,
+                'tooltip' : job.status_message,
                 'message' : u'Computador : %s' % job.client.computer.name
             })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
@@ -112,6 +113,7 @@ def list(request):
                 'type' : job.status_friendly,
                 'label' : job.procedure.name,
                 'date' : job.endtime,
+                'tooltip' : job.status_message,
                 'message' : u'Computador : %s' % job.client.computer.name
             })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:

@@ -62,6 +62,51 @@ class Filename(models.Model):
         db_table = u'Filename'
 
 class Job(models.Model):
+    MESSAGES = [
+        'Criado mas sem executar ainda.',
+        'Executando',
+        'Bloqueado',
+        'Terminado com sucesso',
+        'Terminado com alertas',
+        'Terminado com erros',
+        'Erro nâo fatal',
+        'Erro fatal',
+        'Verificar diferenças',
+        'Cancelado pelo usuário',
+        'Incompleto',
+        'Esperando pelo cliente',
+        'Esperando',
+        'Gravando dados'
+    ]
+
+    STATUS_MESSAGES_MAPPING = {
+        'C' : MESSAGES[0],
+        'R' : MESSAGES[1],
+        'B' : MESSAGES[2],
+        'T' : MESSAGES[3],
+        'W' : MESSAGES[4],
+        'E' : MESSAGES[5],
+        'e' : MESSAGES[6],
+        'f' : MESSAGES[7],
+        'D' : MESSAGES[8],
+        'A' : MESSAGES[9],
+        'I' : MESSAGES[10],
+        'F' : MESSAGES[11],
+        'S' : MESSAGES[12],
+        'm' : MESSAGES[12],
+        'M' : MESSAGES[12],
+        's' : MESSAGES[12],
+        'j' : MESSAGES[12],
+        'c' : MESSAGES[12],
+        'd' : MESSAGES[12],
+        't' : MESSAGES[12],
+        'p' : MESSAGES[12],
+        'i' : MESSAGES[12],
+        'a' : MESSAGES[12],
+        'l' : MESSAGES[12],
+        'L' : MESSAGES[13],
+    }
+
     jobid = models.IntegerField(primary_key=True, db_column='JobId') # Field name made lowercase.
     job = models.TextField(db_column='Job') # Field name made lowercase.
     name = models.TextField(db_column='Name') # Field name made lowercase.
@@ -172,6 +217,10 @@ class Job(models.Model):
             return 'warn'
 
         return 'running'
+
+    @property
+    def status_message(self):
+        return self.STATUS_MESSAGES_MAPPING.get(self.jobstatus, "Desconhecido")
 
 
 

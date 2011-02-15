@@ -16,6 +16,7 @@ from django.db import IntegrityError
 from django.conf import settings
 
 from nimbus.computers.models import Computer, ComputerGroup
+from nimbus.procedures.models import Procedure
 from nimbus.bacula.models import Job
 from nimbus.shared.views import render_to_response
 from nimbus.shared import enums
@@ -139,6 +140,7 @@ def view(request, object_id):
                 'type' : 'ok',
                 'label' : job.procedure.name,
                 'date' : job.starttime,
+                'tooltip' : job.status_message,
                 'message' : u'Computador : %s' % job.client.computer.name
             })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
@@ -157,6 +159,7 @@ def view(request, object_id):
                 'type' : job.status_friendly,
                 'label' : job.procedure.name,
                 'date' : job.endtime,
+                'tooltip' : job.status_message,
                 'message' : u'Computador : %s' % job.client.computer.name
             })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
@@ -175,6 +178,7 @@ def view(request, object_id):
                 'type' : job.status_friendly,
                 'label' : job.procedure.name,
                 'date' : job.endtime,
+                'tooltip' : job.status_message,
                 'message' : u'Computador : %s' % job.client.computer.name
             })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
