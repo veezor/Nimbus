@@ -312,6 +312,18 @@ a:hover {
 #header .user a { text-decoration: underline; }
 #header .user a:hover { text-decoration: none; }
 
+#header #logout-button {
+	float: right;
+	margin-left: 10px;
+	padding-left: 10px;
+}
+
+#header #clock {
+	float: right;
+	margin-left: 10px;
+	padding-left: 10px;
+	padding-bottom: 17px;
+}
 
 /* Blocks */
 
@@ -1304,6 +1316,7 @@ a.submit:hover {
     font-weight: bold;
     padding: 7px 5px 2px !important;
     margin-bottom: 10px;
+	display:none;
 }
 
 
@@ -1363,6 +1376,17 @@ a.submit:hover {
     background: url(../images/nsp.gif) center left no-repeat;
 }
 
+/* Estatisticas */
+#disc-use {
+    margin-left: 30px;
+    width: 35%;
+}
+
+#offsite-use {
+    margin-left: 30px;
+    width: 35%;
+}
+
 .grafico_uma_barra {}
 .grafico_uma_barra .grafico_uma_barra_wrapper {
     -moz-border-radius: 3px;
@@ -1380,3 +1404,10 @@ a.submit:hover {
     font-size: 10px;
     text-align: center;
 }
+
+/* COMMON CLASSES */
+.floatleft {float: left;}
+.floatright {float: right;}
+.hidden { display: none; }
+
+/*  */

@@ -1,44 +1,8 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-
-function update_groups() {
-    groups = $('#id_groups');
-    groups.empty();
-    
-    $.post('/computers/group/list/', {'ajax': true}, function(data){
-        for (group in data) {
-            group = data[group];
-            $('<option>').attr('value', group['pk']).text(group['fields']['name']).appendTo(groups);
-        }
-    }, "json");
-}
-
-$(document).ready(function(){
-    $('#add_group').click(function(){
-        $('.add_group').slideToggle();
-        return false;
-    });
-    $('#add_group_submit').click(function(){
-        group_name = $('#add_group_name').val();
-        $.post('/computers/group/add/', {'name': group_name}, function(data){
-            if (data.message == 'success') {
-                $('.add_group').slideUp();
-                update_groups();
-                alert('Grupo "' + group_name + '" adicionado.');
-            } else {
-                alert('Não foi possível inserir o grupo. Um grupo com o mesmo nome já existe.');
-            }
-        }, "json");
-        return false;
-    });
-    $('#add_group_cancel').click(function(){
-        $('.add_group').slideUp();
-        return false;
-    });
-})
-</script>
+<link rel="stylesheet" type="text/css" href="/media/css/computers.css" />
+<script type="text/javascript" src="/media/js/computers.js"></script>
 {% endblock %}
 
 {% block page %}
@@ -55,8 +19,8 @@ $(document).ready(function(){
     
         <form method="post" action="">
             {% include "form.html" %}
-            <a href="#" id="add_group" style="margin-top: -10px; float: left;">Adicionar grupo</a>
-            <div class="add_group" style="clear: both; padding: 10px; margin: 15px 0 10px; background: #FFF2A7; display: none">
+            <a href="#" id="add_group">Adicionar grupo</a>
+            <div class="add_group">
                 <label>Nome do grupo:</label>
                 <input type="text" name="group" value="" class="text small" id="add_group_name" /> <input type="submit" class="submit" value="Adicionar" id="add_group_submit" /> ou <a href="#" id="add_group_cancel">Cancelar</a>
             </div>

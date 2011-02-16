@@ -611,6 +611,15 @@ color: #FFF;
 
 
 
+
+/* FILESET */
+
+#fileset .tree {
+    padding-left: 20px !important; margin-bottom: 20px;
+}
+#fileset .tree li { padding-left: 20px; }
+#fileset .tree li span { padding-left: 10px; }
+
 /* Adicionais */
 
 .inline-list ul, .inline-list li {
@@ -618,10 +627,6 @@ color: #FFF;
 	margin: 0;
 	padding: 0;
 }
-
-
-
-
 
 /* jQuery UI */
 .ui-tabs { margin-top: 45px !important; border: 1px solid #CCC !important; }
@@ -633,3 +638,7 @@ color: #FFF;
 
 .ui-state-active, .ui-widget-content .ui-state-active { background: #F8F8F8 !important; border: 1px solid #CCC !important; }
 .ui-state-active a, .ui-widget-content .ui-state-active a { color: #333 !important; }
+
+/* COMMON CLASSES */
+.floatleft {float: left;}
+.floatright {float: right;}

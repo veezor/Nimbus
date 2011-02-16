@@ -111,16 +111,16 @@
         <form action="/backup/add/" method="post">
             {% if computer %}
             <p></p>
-            <div class="computer" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
-                <div class="left" style="float: left; width: 250px">
+            <div class="computer">
+                <div class="computer-data">
                     <div class="title">
-                        <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{computer.name}}</h3>
+                        <img src="/media/icons/computer.png"/>
+                        <h3>{{computer.name}}</h3>
                         <small class="ip">{{computer.address}} - {{computer.operation_system|title}} - {% for g in computer.groups.all %}{{g.name}}{% endfor %}</small>
                     </div>
                 </div>
-                <div class="right" style="float: right; width: 600px">
-                    <p style="font-size: 10px; margin: 0; line-height: 1.4em">{{computer.description}}</p>
+                <div class="computer-description">
+                    {{computer.description}}
                 </div>
                 <div class="clear"></div>
                 <input type="hidden" name="computer_id" id="computer_id" value="{{computer.id}}" />

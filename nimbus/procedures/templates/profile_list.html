@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block headtags %}
+<link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
+{% endblock %}
+
 {% block page %}
 <div class="block">
 
@@ -13,18 +17,18 @@
         <p><a href="{% url nimbus.procedures.views.profile_add %}">Adicionar perfil de configuração</a></p>
         <div class="profiles">
         {% for profile in profiles %}
-            <div class="profile" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
-                <div class="left" style="float: left; width: 250px">
+            <div class="profile">
+                <div class="left">
                     <div class="title">
-                        <img src="/media/icons/engine.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 0 0; padding: 0">{{profile.name}}</h3>
+                        <img src="/media/icons/engine.png" />
+                        <h3 class="name">{{profile.name}}</h3>
                     </div>
-                    <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/procedures/profile/{{profile.id}}/edit/">Editar</a> - <a href="/procedures/profile/{{profile.id}}/delete/">Remover</a></p>
+                    <p class="options"><a href="/procedures/profile/{{profile.id}}/edit/">Editar</a> - <a href="/procedures/profile/{{profile.id}}/delete/">Remover</a></p>
                 </div>
-                <div class="right" style="float: right; width: 600px">
+                <div class="right">
                     <h4>CONFIGURAÇÕES DO PERFIL</h4>
-                    <div class="" style="background: #FFF; -moz-border-radius: 5px; padding: 10px; border: 1px solid #CCC">
-                        <p style="padding-bottom: 0;">
+                    <div class="profile-config">
+                        <p>
                             Local de armazenamento: <strong>{{profile.storage.name}}</strong> <small>(<a href="{% url nimbus.storages.views.edit object_id=profile.storage.id %}">editar</a>)</small><br/>
                             Agendamento: <strong>{{profile.schedule.name}}</strong> <small>(<a href="{% url nimbus.schedules.views.edit object_id=profile.schedule.id %}">editar</a>)</small><br/>
                             Conjunto de arquivos: <strong>{{profile.fileset.name}}</strong> <small>(<a href="{% url nimbus.filesets.views.edit object_id=profile.fileset.id %}">editar</a>)</small><br/>
