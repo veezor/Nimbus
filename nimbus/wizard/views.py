@@ -20,8 +20,10 @@ from nimbus.shared.utils import project_port
 from nimbus.wizard import models
 
 
-def only_wizard(view):
 
+
+
+def only_wizard(view):
     @wraps(view)
     def wrapper(request):
         wizard = models.Wizard.get_instance()
@@ -32,23 +34,27 @@ def only_wizard(view):
     
     return wrapper
 
-
 @only_wizard
-def start(request):
+def license(request):
     extra_context = {
-        'wizard_title': u'1 de 5 - Configuração inicial',
-        'page_name': u'start'
+        'wizard_title': u'1 de 5 - Licença',
+        'page_name': u'license',
+        'wide': 'wide'
     }
-    return edit_singleton_model( request, "generic.html", 
-                                 "nimbus.wizard.views.timezone",
-                                 model = Config,
-                                 extra_context = extra_context )
+    if request.method == "GET":
+        return render_to_response( request, "license.html", extra_context )
+    elif request.method == "POST":
+        return redirect('nimbus.wizard.views.timezone')
+    else:
+        raise Http404()
+
 
 @only_wizard
 def timezone(request):
     extra_context = {
-        'wizard_title': u'1 de 4 - Configuração de Hora',
+        'wizard_title': u'2 de 5 - Configuração de Hora',
         'page_name': u'timezone',
+        'previous': reverse('nimbus.wizard.views.license')
     }
     return edit_singleton_model( request, "generic.html", 
                                  "nimbus.wizard.views.offsite",
@@ -58,7 +64,7 @@ def timezone(request):
 @only_wizard
 def offsite(request):
     extra_context = {
-        'wizard_title': u'2 de 4 -Configuração do Offsite',
+        'wizard_title': u'3 de 5 -Configuração do Offsite',
         'page_name': u'offsite',
         'previous': reverse('nimbus.wizard.views.timezone')
     }
@@ -70,7 +76,7 @@ def offsite(request):
 @only_wizard
 def network(request):
     extra_context = {
-        'wizard_title': u'3 de 4 - Configuração de Rede',
+        'wizard_title': u'4 de 5 - Configuração de Rede',
         'page_name': u'network',
         'previous': reverse('nimbus.wizard.views.offsite')
     }
@@ -115,7 +121,7 @@ def network(request):
 @only_wizard
 def password(request):
     extra_context = {
-        'wizard_title': u'4 de 4 - Configuração de Senha admin',
+        'wizard_title': u'5 de 5 - Configuração de senha de administração',
         'page_name': u'network',
         'previous': reverse('nimbus.wizard.views.network')
     }

@@ -5,7 +5,7 @@
 import logging
 from xmlrpclib import ServerProxy
 
-import iplib
+from IPy import IP
 import time
 import networkutils
 
@@ -43,29 +43,29 @@ class NetworkInterface(BaseModel):
         return u"%s/%s" % (self.address, self.netmask)
 
 
-    def _get_cidr(self):
-        mask = iplib.IPv4NetMask(self.netmask)
-        ip =  iplib.IPv4Address(self.address)
-        cidr = iplib.CIDR(ip, mask)
-        return cidr
+    def _get_net_object(self):
+        net = IP(self.address).make_net(self.netmask)
+        return net
 
 
 
     @property
     def broadcast(self):
-        cidr = self._get_cidr()
-        return str(cidr.get_broadcast_ip())
+        net = self._get_net_object()
+        return str(net.broadcast())
 
 
     @property
     def network(self):
-        cidr = self._get_cidr()
-        return str(cidr.get_network_ip())
+        net = self._get_net_object()
+        return str(net.net())
+
 
     @property
     def default_gateway(self):
-        cidr = self._get_cidr()
-        return str(cidr.get_first_ip())
+        net = self._get_net_object()
+        return str(net[1])
+
 
 
 

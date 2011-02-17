@@ -23,7 +23,7 @@ class Wizard(object):
             if self.grant_access(request):
                 return None
             else:
-                return redirect('nimbus.wizard.views.timezone')
+                return redirect('nimbus.wizard.views.license')
 
     def grant_access(self, request):
         path = request.META['PATH_INFO']
