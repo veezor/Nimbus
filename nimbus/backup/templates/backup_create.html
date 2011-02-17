@@ -144,7 +144,7 @@
                 </p>
         
                 <!-- TODO: Prever um agendamento já definido. -->
-                <div class="block withsidebar" id="schedule" class="hidden">
+                <div class="block withsidebar hidden" id="schedule">
             		<div class="block_head">
             			<div class="bheadl"></div>
             			<div class="bheadr"></div>
@@ -294,20 +294,6 @@
 		
             	</div>		<!-- .block .schedule ends -->
             	
-            	
-            	<script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    		            $('#fileset_id').change(function(){
-    		                if ($('#fileset_id :selected').attr('id') == 'new_fileset') {
-    		                    $('#fileset').slideDown();
-    		                } else {
-    		                    $('#fileset').slideUp();
-    		                }
-    		            });
-    		            $('#fileset_id').change();
-    	            });
-    	        </script>
-
                 {% if errors.profile_fileset_id %}
                 <ul class="errorlist">
                     <li>{{ errors.profile_fileset_id }}</li>
@@ -324,45 +310,7 @@
                     </select>
                 </p>
                 
-                <script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    	                $('#filepath_template').clone().appendTo('.filepaths').show();
-    	                
-    	                function remover_path(obj) {
-    	                    $(obj).parent().remove();
-    	                    if ($('#filepath_template').parent().children().length == 1) {
-    	                        adicionar_path();
-    	                    }
-    	                }
-    	                
-    	                function adicionar_path(obj) {
-    	                    if (obj) {
-    	                        $('#filepath_template').clone().insertAfter($(obj).parent()).show();
-    	                    } else {
-    	                        $('#filepath_template').clone().appendTo('.filepaths').show();
-    	                    }
-    	                    
-    	                    
-    	                    $('.filepaths .add').unbind('click').click(function(){
-        	                    adicionar_path(this);
-        	                });
-        	                
-        	                $('.filepaths .del').unbind('click').click(function(){
-        	                    remover_path(this);
-        	                });
-    	                }
-    	                
-    	                $('.filepaths .add').click(function(){
-    	                    adicionar_path(this);
-    	                });
-    	                
-    	                $('.filepaths .del').click(function(){
-    	                    remover_path(this);
-    	                });
-    	            });
-    	        </script>
-                
-                <div class="block" id="fileset" class="hidden">
+                <div class="block hidden" id="fileset">
             		<div class="block_head">
             			<div class="bheadl"></div>
             			<div class="bheadr"></div>
@@ -405,18 +353,6 @@
                         <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
                         <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
             		    
-            		    {% if 0 %}
-                        <p>
-                            <label for="fileset_name">Caminhos para backup:</label><br/>
-                            <ol class="filepaths">
-                                <li id="filepath_template" class="hidden">
-                                <input type="text" name="fileset_name" id="fileset_name" class="text medium" />
-                                <span class="add"><img src="/media/icons/plus.png" /></span>
-                                <span class="del"><img src="/media/icons/minus.png" /></span></li>
-                            </ol>
-                        </p>
-                        {% endif %}
-                        <p></p>
             		</div>
             		<div class="bendl"></div>
             		<div class="bendr"></div>
