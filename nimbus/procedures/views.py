@@ -145,17 +145,21 @@ def list_offsite(request):
 
 @login_required
 def activate_offsite(request, object_id):
-    procedure = Procedure.objects.get(id=object_id)
-    procedure.offsite_on = True
-    procedure.save()
+
+    if request.method == "POST":
+        procedure = Procedure.objects.get(id=object_id)
+        procedure.offsite_on = True
+        procedure.save()
     return redirect('/procedures/list')
 
 
 @login_required
 def deactivate_offsite(request, object_id):
-    procedure = Procedure.objects.get(id=object_id)
-    procedure.offsite_on = False
-    procedure.save()
+
+    if request.method == "POST":
+        procedure = Procedure.objects.get(id=object_id)
+        procedure.offsite_on = False
+        procedure.save()
     return redirect('/procedures/list')
 
 
