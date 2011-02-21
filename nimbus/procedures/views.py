@@ -10,6 +10,8 @@ from django.views.generic import create_update
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 
+from pybacula import BConsoleInitError
+
 
 from nimbus.bacula.models import Job
 from nimbus.procedures.models import Procedure, Profile
@@ -67,10 +69,13 @@ def delete(request, object_id):
 
 @login_required
 def execute(request, object_id):
-    
-    procedure = Procedure.objects.get(id=object_id)
-    procedure.run()
-    messages.success(request, u"Procedimento em execução.")
+   
+    try:
+        procedure = Procedure.objects.get(id=object_id)
+        procedure.run()
+        messages.success(request, u"Procedimento em execução.")
+    except BConsoleInitError, error:
+        messages.error(request, u"Servidor de backup inativo, impossível realizar operação.")
     return redirect('nimbus.procedures.views.list')
 
 
