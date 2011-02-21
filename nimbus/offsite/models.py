@@ -10,9 +10,10 @@ from urllib2 import URLError
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
 
 from nimbus.base.models import UUIDSingletonModel as BaseModel
-from nimbus.shared import fields
+from nimbus.shared import fields, signals
 from nimbusgateway import Api
 
 
@@ -224,4 +225,15 @@ class DownloadTransferredData( TransferredData ):
 
 
 
+def nimbus_self_backup_update_offsite_status(offsite):
+    from nimbus.procedures.models import Procedure # loop
+    try:
+        procedure = Procedure.objects.get(id=1) # self backup
+        procedure.offsite_on = offsite.active
+        procedure.save(system_permission=True)
+    except Procedure.DoesNotExist, error:
+        pass
 
+
+
+signals.connect_on( nimbus_self_backup_update_offsite_status, Offsite, post_save)
