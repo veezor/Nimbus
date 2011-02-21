@@ -11,7 +11,7 @@ makedir "deb/usr/bin"
 makedir "deb/var"
 makedir "deb/etc/init.d"
 makedir "deb/etc/nimbus"
-makedir "deb/etc/cron.daily"
+makedir "deb/etc/cron.hourly"
 makedir "deb/etc/nginx/sites-enabled"
 makedir "deb/var/log/nimbus"
 makedir "deb/var/nimbus/deps"
@@ -38,7 +38,7 @@ cd ../..;
 cp -a apps/unix/client/nimbusclientservice deb/usr/bin
 cp -a apps/unix/client/nimbusclient deb/etc/init.d
 cp nimbus/confs/nginx-nimbus.site deb/etc/nginx/sites-enabled/default
-cp nimbus/confs/nimbus.cron deb/etc/cron.daily/nimbus
+cp nimbus/confs/nimbus.cron deb/etc/cron.hourly/nimbus
 cp nimbus/confs/nimbus.initd deb/etc/init.d/nimbus
 cp webservices/manager/nimbus_manager.conf deb/etc/nimbus
 cp webservices/manager/nimbus_manager_log.conf deb/etc/nimbus
