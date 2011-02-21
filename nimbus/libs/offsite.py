@@ -5,16 +5,19 @@ import os
 import bz2
 import subprocess
 import time
-from os.path import join, exists, isfile
+from os.path import join, exists, isfile, isabs
 import logging
 from django.conf import settings
 from datetime import datetime
+import stat
+from pwd import getpwnam
 
 
 import pycurl
 
 from devicemanager import StorageDeviceManager
 
+from nimbus.base.models import UUIDBaseModel
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
 from nimbus.pools.models import Pool
@@ -247,7 +250,13 @@ class RemoteManager(BaseManager):
     def _download_file(self, filename, dest, 
                        ratelimit=None, callback=None):
         device = Device.objects.all()[0]
-        return self.api.download_file( filename, join(device.archive, filename),
+
+        if isabs(filename):
+            destfilename = filename
+        else:
+            destfilename = join(device.archive, filename)
+
+        return self.api.download_file( filename, destfilename,
                                        ratelimit, callback, True)
 
 
@@ -278,6 +287,11 @@ class RemoteManager(BaseManager):
                     req.save()
                     process_function(req.volume.path, req.volume.filename,
                                      ratelimit=ratelimit, callback=req.update)
+
+                    if exists(req.volume.filename):
+                        os.chmod( req.volume.filename, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
+                        os.chown( req.volume.filename, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
+
                     req.finish()
                     logger.info("%s processado com sucesso" % req)
                     break
@@ -365,6 +379,13 @@ class LocalManager(BaseManager):
 
             dest.write(data)
 
+
+        try:
+            os.chmod( destination, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
+            os.chown( destination, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
+        except (OSError, IOError), error:
+            pass
+
         ori.close()
         dest.close()
 
@@ -443,7 +464,10 @@ class RecoveryManager(object):
 
         for model in nimbus_models:
             for instance in model.objects.all():
-                instance.save()
+                if isinstance(instance, UUIDBaseModel): 
+                    instance.save(system_permission=True)
+                else:
+                    instance.save()
 
 
     def download_volumes(self):
