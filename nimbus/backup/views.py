@@ -22,6 +22,7 @@ from nimbus.schedules.models import Schedule, Hourly
 from nimbus.schedules.shared import trigger_class, trigger_map
 from nimbus.filesets.models import FileSet, FilePath
 from nimbus.shared.forms import form_from_model
+from nimbus.offsite.models import Offsite
 
 
 from nimbus.shared import utils, fields
@@ -42,6 +43,7 @@ def backup_form(request, object_id=None):
     storages = Storage.objects.all()
     schedules = Schedule.objects.all()
     filesets = FileSet.objects.all()
+    offsite_on = Offsite.get_instance().active
    
     extra_context = {
         'title': u"Criar Backup",
@@ -55,6 +57,7 @@ def backup_form(request, object_id=None):
         'schedules': schedules,
         'filesets': filesets,
         'errors' : errors,
+        'offsite_on' : offsite_on
     }
 
     if request.method == "GET":
@@ -82,7 +85,7 @@ def backup_form(request, object_id=None):
                 key = "procedure_name"
                 errors[key] = default_errors[key]
             except (Procedure.DoesNotExist), error:
-                offsite_on = request.POST.get('offsite_on')
+                offsite_on = request.POST.get('offsite_on', False)
                 procedure = Procedure(name=procedure_name, 
                                       offsite_on=offsite_on)
 
