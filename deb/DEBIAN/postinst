@@ -26,6 +26,7 @@ case $1 in
     chmod -R 0775 /etc/nimbus/;
     chmod u+s /var/www/nimbus;
     /usr/sbin/adduser nimbus plugdev;
+    /usr/sbin/adduser nimbus bacula;
 	/etc/init.d/nimbusmanager restart ;
 	/etc/init.d/nimbusclient restart ;
     su - nimbus -c '/var/www/nimbus --create-database';
