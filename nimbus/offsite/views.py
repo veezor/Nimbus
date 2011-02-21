@@ -58,11 +58,13 @@ def detail(request):
 
             if data:
                 usage = graph_data_manager.list_offsite_measures()[-1][-1]
+                ocupacao_offsite =  usage / float(api.get_plan_size())
                 # [(date, value),...]
             else:
+                ocupacao_offsite = 0.0
                 messages.warning(request, "Dados não disponíveis. Aguarde sincronização com o offsite")
 
-            ocupacao_offsite =  usage / float(api.get_plan_size())
+
             
         except URLError, error:
             messages.error(request, "Erro na conexão com o backup nas nuvens. Verifique conexão.")
