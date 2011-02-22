@@ -31,7 +31,7 @@ def only_wizard(view):
             raise Http404()
         else:
             return view(request)
-    
+
     return wrapper
 
 @only_wizard
@@ -56,7 +56,7 @@ def timezone(request):
         'page_name': u'timezone',
         'previous': reverse('nimbus.wizard.views.license')
     }
-    return edit_singleton_model( request, "generic.html", 
+    return edit_singleton_model( request, "generic.html",
                                  "nimbus.wizard.views.offsite",
                                  formclass = TimezoneForm,
                                  extra_context = extra_context )
@@ -68,7 +68,7 @@ def offsite(request):
         'page_name': u'offsite',
         'previous': reverse('nimbus.wizard.views.timezone')
     }
-    return edit_singleton_model( request, "generic.html", 
+    return edit_singleton_model( request, "generic.html",
                                  "nimbus.wizard.views.network",
                                  formclass = OffsiteForm,
                                  extra_context = extra_context )
@@ -80,9 +80,9 @@ def network(request):
         'page_name': u'network',
         'previous': reverse('nimbus.wizard.views.offsite')
     }
-    
+
     interface = NetworkInterface()
-    
+
     if request.method == "GET":
         Form = form(NetworkInterface)
         extra_context['form'] = Form(instance=interface)
@@ -121,7 +121,7 @@ def network(request):
 @only_wizard
 def password(request):
     extra_context = {
-        'wizard_title': u'5 de 5 - Configuração de senha de administração',
+        'wizard_title': u'5 de 5 - Senha do usuário admin',
         'page_name': u'network',
         'previous': reverse('nimbus.wizard.views.network')
     }
@@ -148,4 +148,3 @@ def finish(request):
         wizard = models.Wizard.get_instance()
         wizard.finish()
         return redirect( "nimbus.base.views.home" )
-
