@@ -22,21 +22,18 @@ from nimbus.libs.devicemanager import (StorageDeviceManager,
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 
-
-@login_required
-def start(request):
-    extra_content = {
-        'title': u"Recuperação do sistema"
-    }
-    return render_to_response(request, "recovery_start.html", extra_content)
+#def start(request):
+#    extra_content = {
+#        'title': u"Recuperação do sistema"
+#    }
+#    return render_to_response(request, "recovery_start.html", extra_content)
 
 
-@login_required
 def select_source(request):
     extra_content = {
         'title': u"Recuperação do sistema"
     }
-    
+
     if request.method == "GET":
         return render_to_response(request, "recovery_select_source.html",
                                   extra_content)
@@ -49,8 +46,6 @@ def select_source(request):
     else:
         raise Http404()
 
-
-@login_required
 def select_storage(request):
     if request.method == "GET":
         extra_content = {
@@ -73,15 +68,13 @@ def select_storage(request):
         raise Http404()
 
 
-
-@login_required
 def recover_databases(request):
 
     logger = logging.getLogger(__name__)
     extra_content = {
         'title': u"Recuperação do sistema",
     }
-    
+
     if request.method == "GET":
 
         localsource = request.GET.get("localsource", "offsite")
@@ -92,43 +85,43 @@ def recover_databases(request):
 
     elif request.method == "POST":
         localsource = request.POST.get("localsource", "offsite")
-        
+
         if localsource != "offsite":
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
             try:
                 storage.mount()
             except MountError, error:
-                extra_content.update({ "error": error, 
-                   "device" : device, 
+                extra_content.update({ "error": error,
+                   "device" : device,
                    "localsource"  : True})
-                return render_to_response(request, 'recovery_mounterror.html', 
+                return render_to_response(request, 'recovery_mounterror.html',
                                           extra_content)
-        
+
             manager = offsite.LocalManager(storage.mountpoint)
-        
+
         else:
             manager = offsite.RemoteManager()
             device = None
             localsource = "offsite"
-        
-        
-        
+
+
+
         manager = offsite.RecoveryManager(manager)
         try:
             manager.download_databases()
         except (IOError, pycurl.error), error:
             logger.error('download databases')
-            extra_content.update({ "error": error }) 
+            extra_content.update({ "error": error })
             return render_to_response(request,
                     'recovery_instancenameerror.html', extra_content)
-       
+
         with bacula.BaculaLock() as lock:
             logger.info('Starting database recovery')
             manager.recovery_databases()
             manager.generate_conf_files()
             logger.info('Stoping database recovery')
-        
+
         extra_content.update({"device" : device, "localsource"  : localsource})
         return render_to_response(request, 'recovery_database_ok.html',  extra_content)
 
@@ -143,29 +136,28 @@ def recover_volumes_worker(manager):
         manager.finish()
 
 
-@login_required
 def recover_volumes(request):
     extra_content = {
         'title': u"Recuperação do sistema",
     }
-    
+
     if request.method == "GET":
         return render_to_response(request, "recovery_recover_volumes.html", extra_content)
     elif request.method == "POST":
         localsource = request.POST.get("localsource", "offsite")
-        
+
         if localsource != "offsite":
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
             manager = offsite.LocalManager(storage.mountpoint)
-        
+
         else:
             manager = offsite.RemoteManager()
-        
-       
-        systemprocesses.min_priority_job("Recovery nimbus volumes", 
+
+
+        systemprocesses.min_priority_job("Recovery nimbus volumes",
                                          recover_volumes_worker, manager)
-        
+
         extra_content.update({ "object_list" : DownloadRequest.objects.all()})
         return render_to_response(request,
                 "recovery_list_downloads.html",
@@ -173,8 +165,6 @@ def recover_volumes(request):
     else:
         raise Http404()
 
-
-@login_required
 def finish(request):
     extra_content = {
         'title': u"Recuperação do sistema",

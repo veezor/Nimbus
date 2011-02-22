@@ -16,7 +16,7 @@ class Wizard(object):
 
     def process_request(self, request):
         wizard = models.Wizard.get_instance()
-        
+
         if wizard.has_completed():
             return None
         else:
@@ -27,8 +27,9 @@ class Wizard(object):
 
     def grant_access(self, request):
         path = request.META['PATH_INFO']
+        print path
         if path.startswith("/wizard") or\
                 path.startswith("/media") or\
+                path.startswith("/recovery") or\
                 'ajax' in path:
             return True
-    

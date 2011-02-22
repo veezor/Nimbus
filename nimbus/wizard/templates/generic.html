@@ -40,10 +40,15 @@
 
         {% include "form.html" %}
 
+        {% if recovery %}
+        <a href="{{ recovery }}" class="submit"><span>Iniciar</span></a> &nbsp;
+        {% endif %}
+
         <p class="input_submit">
             {% if previous %}
             <a href="{{ previous }}" class="submit left"><span>Anterior</span></a> &nbsp;
             {% endif %}
+
             <input type="submit" class="submit right no_margin" value="Próximo" />
         </p>
 

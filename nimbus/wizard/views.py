@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.http import Http404
 
-
 from nimbus.config.models import Config
 from nimbus.network.models import NetworkInterface
 from nimbus.timezone.forms import TimezoneForm
@@ -18,9 +17,6 @@ from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.shared.forms import form
 from nimbus.shared.utils import project_port
 from nimbus.wizard import models
-
-
-
 
 
 def only_wizard(view):
@@ -44,7 +40,22 @@ def license(request):
     if request.method == "GET":
         return render_to_response( request, "license.html", extra_context )
     elif request.method == "POST":
-        return redirect('nimbus.wizard.views.timezone')
+        return redirect('nimbus.wizard.views.recovery')
+    else:
+        raise Http404()
+
+
+@only_wizard
+def recovery(request):
+    extra_context = {
+        'wizard_title': u'Recuperação do sistema',
+        'page_name': u'recovery',
+        'next': reverse('nimbus.wizard.views.timezone')
+    }
+    if request.method == "GET":
+        return render_to_response( request, "recovery.html", extra_context )
+    elif request.method == "POST":
+        return redirect('nimbus.recovery.views.select_source')
     else:
         raise Http404()
 
@@ -53,8 +64,7 @@ def license(request):
 def timezone(request):
     extra_context = {
         'wizard_title': u'2 de 5 - Configuração de Hora',
-        'page_name': u'timezone',
-        'previous': reverse('nimbus.wizard.views.license')
+        'page_name': u'timezone'
     }
     return edit_singleton_model( request, "generic.html",
                                  "nimbus.wizard.views.offsite",
@@ -64,7 +74,7 @@ def timezone(request):
 @only_wizard
 def offsite(request):
     extra_context = {
-        'wizard_title': u'3 de 5 -Configuração do Offsite',
+        'wizard_title': u'3 de 5 - Configuração do Offsite',
         'page_name': u'offsite',
         'previous': reverse('nimbus.wizard.views.timezone')
     }
