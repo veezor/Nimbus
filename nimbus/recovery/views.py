@@ -6,6 +6,7 @@ import pycurl
 import os
 import logging
 
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from django.views.generic import create_update
 from django.core.urlresolvers import reverse
@@ -14,13 +15,13 @@ from django.shortcuts import redirect
 from django.conf import settings
 
 from nimbus.offsite.models import DownloadRequest
-from nimbus.shared.views import render_to_response
+from nimbus.shared.views import render_to_response, edit_singleton_model
 from nimbus.libs import offsite, systemprocesses, bacula
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
+from nimbus.offsite.forms import OffsiteRecoveryForm
 
 
-from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 #def start(request):
 #    extra_content = {
@@ -31,6 +32,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 def select_source(request):
     extra_content = {
+        'wizard_title': u'Selecionar origem',
         'title': u"Recuperação do sistema"
     }
 
@@ -40,15 +42,35 @@ def select_source(request):
     elif request.method == "POST":
         source = request.POST['source']
         if source == "offsite":
-            return redirect( 'nimbus.recovery.views.recover_databases' )
+            extra_context = {
+                'wizard_title': u'Configuração do Offsite',
+                'page_name': u'offsite'
+            }
+            return redirect( 'nimbus.recovery.views.offsite_recovery' )
         else:
             return redirect( 'nimbus.recovery.views.select_storage' )
     else:
         raise Http404()
 
+
+def offsite_recovery(request):
+    extra_context = {
+        'wizard_title': u'Configurar Offsite',
+        'title': u"Recuperação do sistema",
+        'page_name': u'offsite',
+        'next': "nimbus.recovery.views.recover_databases"
+    }
+
+    return edit_singleton_model( request, "generic.html",
+                         "nimbus.recovery.views.recover_databases",
+                         formclass = OffsiteRecoveryForm,
+                         extra_context = extra_context)
+
+
 def select_storage(request):
     if request.method == "GET":
         extra_content = {
+            'wizard_title': u'Selecione o armazenamento',
             'title': u"Recuperação do sistema",
              "devices" : offsite.list_disk_labels()
         }
@@ -72,6 +94,7 @@ def recover_databases(request):
 
     logger = logging.getLogger(__name__)
     extra_content = {
+        'wizard_title': u'Recuperação do sistema',
         'title': u"Recuperação do sistema",
     }
 
@@ -138,6 +161,7 @@ def recover_volumes_worker(manager):
 
 def recover_volumes(request):
     extra_content = {
+        'wizard_title': u'Selecione o volume',
         'title': u"Recuperação do sistema",
     }
 

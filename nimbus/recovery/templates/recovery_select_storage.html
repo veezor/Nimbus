@@ -1,42 +1,27 @@
-{% extends "base.html" %}
+{% extends "base_wizard.html" %}
 
 {% block headtags %}{% endblock %}
 
-{% block page %}
+{% block content %}
 
-<div class="block">
+<h2>Por favor, selecione o disco de origem dos arquivos:</h2>
 
-	<div class="block_head">
-		<div class="bheadl"></div>
-		<div class="bheadr"></div>
-		<h2>{{title}}</h2>
-	</div>		<!-- .block_head ends -->
+<form action="/recovery/select_storage/" method="post">
+	{% for device in devices %}
+		<input type="radio" name="device" value="{{device}}" /> {{device}}
+		<br />
+	{% empty %}
+		Conecte um hd ou pendrive externo.
+	{% endfor %}
 
-    <div class="block_content">
-    
-        <h2>Por favor, selecione o disco de origem dos arquivos:</h2>
+	{% if devices %}
+	<br />
+	<input type="hidden" name="localsource" value="True"/>
 
-        <form action="/recovery/select_storage/" method="post">
-            {% for device in devices %}
-                <input type="radio" name="device" value="{{device}}" /> {{device}}
-                <br />
-            {% empty %}
-                Conecte um hd ou pendrive externo.
-            {% endfor %}
+	<input type="submit" class="submit mid" value="Prosseguir" />
+	{%endif%}
+</form>
 
-            {% if devices %}
-            <br />
-            <input type="hidden" name="localsource" value="True"/>
-            
-            <input type="submit" class="submit mid" value="Prosseguir" />
-            {%endif%}
-        </form>
-    
-        <p></p>
-    </div>
-    <div class="bendl"></div>
-	<div class="bendr"></div>
-    
-</div>
+<p></p>
 
 {% endblock %}
