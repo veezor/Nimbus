@@ -37,7 +37,7 @@ def view(request, object_id=None):
     else:
         computer = None
 
-    computers = Computer.objects.filter(active=True)
+    computers = Computer.objects.filter(active=True,id__gt=1)
     
     extra_content = {
         'computer': computer,

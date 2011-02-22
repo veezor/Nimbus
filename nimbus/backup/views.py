@@ -38,11 +38,11 @@ def backup_form(request, object_id=None):
 
     errors = {}
 
-    computers = Computer.objects.filter(active=True)
-    profiles = Profile.objects.all()
+    computers = Computer.objects.filter(active=True,id__gt=1)
+    profiles = Profile.objects.filter(id__gt=1)
     storages = Storage.objects.all()
-    schedules = Schedule.objects.all()
-    filesets = FileSet.objects.all()
+    schedules = Schedule.objects.filter(id__gt=1)
+    filesets = FileSet.objects.filter(id__gt=1)
     offsite_on = Offsite.get_instance().active
    
     extra_context = {

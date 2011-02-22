@@ -64,7 +64,7 @@ def new(request):
 @login_required
 def add(request):
     title = u"Adicionar computador"
-    computers = Computer.objects.filter(active=False)
+    computers = Computer.objects.filter(active=False,id__gt=1)
     
     return render_to_response(request, "computers_add.html", locals())
 
@@ -99,7 +99,7 @@ def edit_no_active(request, object_id):
 @login_required
 def delete(request, object_id):
     if request.method == "POST":
-        computer = Computer.objects.get(id=object_id)
+        computer = Computer.objects.get(id=object_id,id__gt=1)
         computer.delete()
         messages.success(request, u"Computador removido com sucesso.")
         return redirect('nimbus.computers.views.list')
@@ -114,9 +114,9 @@ def delete(request, object_id):
 def list(request):
     if request.method == "GET":
         group = request.GET.get("group")
-        computers = Computer.objects.filter(active=True, groups__name=group).order_by('groups__name')
+        computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
     else:
-        computers = Computer.objects.filter(active=True).order_by('groups__name')
+        computers = Computer.objects.filter(active=True,id__gt=1).order_by('groups__name')
     groups = ComputerGroup.objects.order_by('name')
     extra_content = {
         'computers': computers,
@@ -128,7 +128,7 @@ def list(request):
 
 @login_required
 def view(request, object_id):
-    computer = Computer.objects.get(id=object_id)
+    computer = Computer.objects.get(id=object_id,id__gt=1)
 
     running_status = ('R','p','j','c','d','s','M','m','s','F','B')
     running_jobs = Job.objects.filter( jobstatus__in=running_status,

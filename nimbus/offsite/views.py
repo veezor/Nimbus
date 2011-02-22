@@ -28,7 +28,7 @@ from nimbus.libs.graphsdata import GraphDataManager
 
 @login_required
 def detail(request):
-    offsite = Offsite.objects.all()[0]
+    offsite = Offsite.objects.get(id=1)
     uploads = list(LocalUploadRequest.objects.all()) + list(RemoteUploadRequest.objects.all())
 
     content = []

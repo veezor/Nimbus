@@ -83,7 +83,7 @@ def execute(request, object_id):
 
 @login_required
 def list(request):
-    procedures = Procedure.objects.all()
+    procedures = Procedure.objects.filter(id__gt=1)
 
     offsite = Offsite.get_instance()
     offsite_on = offsite.active
@@ -198,7 +198,7 @@ def deactivate(request, object_id):
 @login_required
 def profile_list(request):
     title = u"Perfis de configuração"
-    profiles = Profile.objects.all()
+    profiles = Profile.objects.filter(id__gt=1)
     return render_to_response(request, "profile_list.html", locals())
 
 
@@ -237,9 +237,9 @@ def profile_edit(request, object_id):
     title = u"Editar perfil de configuração"
     profile = Profile.objects.get(id=object_id)
     
-    storages = Storage.objects.all()
-    schedules = Schedule.objects.all()
-    filesets = FileSet.objects.all()
+    storages = Storage.objects.filter(id__gt=1)
+    schedules = Schedule.objects.filter(id__gt=1)
+    filesets = FileSet.objects.filter(id__gt=1)
     
     if request.method == "POST":
         
