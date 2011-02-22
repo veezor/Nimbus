@@ -22,7 +22,6 @@ urlpatterns = patterns('',
     (r'^offsite/', include('nimbus.offsite.urls')),
     (r'^procedures/', include('nimbus.procedures.urls')),
     (r'^system/', include('nimbus.system.urls')),
-    (r'^recovery/', include('nimbus.recovery.urls')),
     (r'^filesets/', include('nimbus.filesets.urls')),
     (r'^schedules/', include('nimbus.schedules.urls')),
 )
