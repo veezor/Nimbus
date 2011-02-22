@@ -153,16 +153,17 @@
                 </select>
             </p>
             {% endif %}
-            
-            {% if errors.offsite_on %}
-            <ul class="errorlist">
-                <li>{{ errors.offsite_on }}</li>
-            </ul>
+            {% if offsite_on %}
+                {% if errors.offsite_on %}
+                <ul class="errorlist">
+                    <li>{{ errors.offsite_on }}</li>
+                </ul>
+                {% endif %}
+                <p>
+                    <label for="offsite_on">Ativar backup offsite</label>
+                    <input type="checkbox" name="offsite_on" {% if offsite_on %}checked="checked"{% endif %} value="1" />
+                </p>
             {% endif %}
-            <p>
-                <label for="offsite_on">Ativar backup offsite</label>
-                <input type="checkbox" name="offsite_on" {% if offsite_on %}checked="checked"{% endif %} value="1" />
-            </p>
             {% if errors.retention_time %}
             <ul class="errorlist">
                 <li>{{ errors.retention_time }}</li>
