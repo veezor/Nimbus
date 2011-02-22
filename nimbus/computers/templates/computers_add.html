@@ -1,23 +1,8 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('.toggle').click(function(){
-            var target = $(this).attr('ref');
-            $(this).parent().parent().find('.' + target).slideToggle();
-            return false;
-        });
-    });
-</script>
-
-<style type="text/css" media="screen">
-    .computer.desativado {
-        background: #FFE5EB !important;
-        border: 2px solid #e7696d;
-        -moz-border-radius: 5px; 
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="/media/css/computers.css" />
+<script type="text/javascript" src="/media/js/computers.js"></script>
 {% endblock %}
 
 {% block page %}
@@ -35,19 +20,19 @@
         <p>Clique no botão ativar ao lado do computador desejado para torná-lo uma máquina ativa no Nimbus.</p>
         <div class="computers">
         {% for comp in computers %}
-            <div class="computer {% if not comp.active %}desativado{% endif %}" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
-                <div class="left" style="float: left; width: 250px">
+            <div class="computer {% if not comp.active %}desativado{% endif %}">
+                <div class="left">
                     <div class="title">
-                        <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{comp.name}}</h3>
+                        <img src="/media/icons/computer.png" alt=""/>
+                        <h3 class="name">{{comp.name}}</h3>
                         <small class="ip">{{comp.address}} - {{comp.operation_system|title}}</small>
-                        <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/computers/{{comp.id}}/edit_no_active/">Editar</a> - <a href="/computers/{{comp.id}}/delete/">Remover</a></p>
+                        <p class="options"><a href="/computers/{{comp.id}}/edit_no_active/">Editar</a> - <a href="/computers/{{comp.id}}/delete/">Remover</a></p>
                     </div>
                 </div>
-                <div class="right" style="float: right; width: 600px">
-                    <div style="float: right">
-                        <form action="/computers/{{comp.id}}/activate/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                <div class="right">
+                    <div class="floatright">
+                        <form action="/computers/{{comp.id}}/activate/" method="post" class="floatright">
+                            <input type="submit" class="submit tiny" value="Ativar"/>
                         </form>
                     </div>
                 </div>

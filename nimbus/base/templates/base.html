@@ -1,172 +1,54 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-
 <head>
-
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	
 	<title>{% block title %}{% endblock %} Nimbus</title>
 	
-    <style type="text/css" media="all">
-		@import url("/media/lib/css/style.css");
-		@import url("/media/lib/css/jquery.wysiwyg.css");
-		@import url("/media/lib/css/jquery.filetree.css");
-		@import url("/media/lib/css/facebox.css");
-/*      @import url("/media/lib/css/visualize.css");*/
-		@import url("/media/lib/css/date_input.css");
-		@import url("/media/js/iphone-style-checkboxes/style.css");
-		@import url("/media/js/progressbar/jquery.ui.all.css");
-		@import url("/media/lib/css/jquery.jqplot.css");
-    </style>
-	
-	<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=7" /><![endif]-->
-	<!--[if lt IE 8]><style type="text/css" media="all">@import url("/media/lib/css/ie.css");</style><![endif]-->
-	<!--[if IE]><script type="text/javascript" src="/media/lib/js/excanvas.js"></script><![endif]-->
-	
 	<link rel="icon" type="image/x-icon" href="/media/images/favicon.ico" />
 	<link rel="shortcut icon" type="image/x-icon" href="/media/images/favicon.ico" />
-
-	<script type="text/javascript" src="/media/lib/js/jquery.js"></script>
-    <script type="text/javascript" src="/media/lib/js/jquery.jqplot.js"></script>
-	<script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.barRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pieRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.categoryAxisRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.highlighter.js"></script>
-    <script language="javascript" type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
-    
-    <script type="text/javascript" charset="utf-8">
-        function create_chart(obj_id, data, ticks, chart_type) {
-            var fill = false;
-            var render = $.jqplot.PieRenderer;
-            
-            if (chart_type == 'bar') {
-                var render = $.jqplot.BarRenderer;
-            } else if (chart_type == 'area') {
-                var render = $.jqplot.LineRenderer;
-                var fill = true;
-            }
-			
-			$.jqplot(obj_id, [data], {
-                seriesDefaults: {
-                    renderer: render,
-                    pointLabels: { location:'s', show: true },
-                    fill: true,
-					color: '#95BACB'
-                },
-				axesDefaults: {
-					tickOptions: {
-						formatString: "%.2f"
-					}
-				},
-                axes: {
-                    xaxis: {
-                        renderer: $.jqplot.CategoryAxisRenderer,
-                        ticks: ticks,
-						min: 0
-                    },
-                    yaxis: {
-                        min: 0
-                    }
-                },
-                highlighter: { show: false }
-            });
-        };
-        
-        $(document).ready(function(){
-            $('.jqplotchart').each(function(){
-                var chart_id = $(this).attr('id');
-				var data = $(this).children().filter('chartdata').text().split(',');
-                data = $.map(data, function(e){
-                    return parseFloat(e);
-                });
-                var header = $(this).children().filter('chartheader').text().split(',');
-                var chart_type = $(this).attr('charttype');
-                $(this).text('');
-                
-                create_chart(chart_id, data, header, chart_type);
-            });
-        });
-    </script>
 	
-	<!--<script type="text/javascript" src="/media/lib/js/jquery.img.preload.js"></script>-->
-	<script type="text/javascript" src="/media/lib/js/jquery.filestyle.mini.js"></script>
+	<link rel="stylesheet" type="text/css" href="/media/lib/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.wysiwyg.css" />
+	<link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.filetree.css" />
+	<link rel="stylesheet" type="text/css" href="/media/lib/css/facebox.css" />
+	<link rel="stylesheet" type="text/css" href="/media/lib/css/date_input.css" />
+	<link rel="stylesheet" type="text/css" href="/media/js/iphone-style-checkboxes/style.css" />
+	<link rel="stylesheet" type="text/css" href="/media/js/progressbar/jquery.ui.all.css" />
+	
+	<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=7" /><![endif]-->
+	<!--[if lt IE 8]>
+		<link rel="stylesheet" type="text/css" href="/media/lib/css/ie.css" />
+	<![endif]-->
+	<!--[if IE]><script type="text/javascript" src="/media/lib/js/excanvas.js"></script><![endif]-->
+	
+	<script type="text/javascript" src="/media/lib/js/jquery.js"></script>
+    <script type="text/javascript" src="/media/lib/js/jquery.filestyle.mini.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.wysiwyg.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.date_input.pack.js"></script>
 	<script type="text/javascript" src="/media/lib/js/facebox.js"></script>
-	<!--<script type="text/javascript" src="/media/lib/js/jquery.visualize.js"></script>-->
 	<script type="text/javascript" src="/media/lib/js/jquery.select_skin.js"></script>
 	<script type="text/javascript" src="/media/lib/js/ajaxupload.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.pngfix.js"></script>
-	<script type="text/javascript" src="/media/lib/js/custom.js"></script>
 	<script type="text/javascript" src="/media/lib/js/jquery.filetree.js"></script>
 	<script type="text/javascript" src="/media/js/iphone-style-checkboxes/jquery/iphone-style-checkboxes.js"></script>
-	<!--<script src="/media/js/jquery.sparkline.min.js" type="text/javascript"></script>-->
-	<script src="/media/js/progressbar/jquery.ui.core.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/media/js/progressbar/jquery.ui.widget.min.js" type="text/javascript" charset="utf-8"></script>	
-	<script src="/media/js/progressbar/jquery.ui.progressbar.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/media/js/jquery.maskedinput-1.2.2.min.js" type="text/javascript" charset="utf-8"></script>
-	
-	
-	<script type="text/javascript" charset="utf-8">
-	    var data_hora = undefined;
-	    
-    	function update_time() {
-            seconds = data_hora.getSeconds() + 1;
-            if (seconds > 60) {
-                seconds = 1;
-            }
-            data_hora.setSeconds(seconds);
-
-            time_string = data_hora.toTimeString().substr(0, 8);
-            $('#actual_time').html(time_string);
-        
-            setTimeout("update_time()", 1000);
-        }
-        
-        $(document).ready( function() {
-            $('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
-
-            $('.filetree').each(function(){
-                var script = $(this).attr("ref");
-                $(this).fileTree({ root: '/media/lib/demo/', script: script }, function(file) { 
-                    alert(file);
-                });
-            })
-            $(".iPhoneCheckContainer").css("width", "85px");
-            // $(".sparklines").sparkline('html', {width: "300", height: "150px" });
-	        
-            var actual_time = $('#actual_time').html().split(':');
-            var hours = actual_time[0];
-            var minutes = actual_time[1];
-            var seconds = actual_time[2];
-            data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
-            update_time();
-            
-            $('.mascara_hora').mask('99:99');
-            $('.mascara_minuto').mask('99');
-
-        });
-	</script>
+	<script src="/media/js/progressbar/jquery.ui.core.min.js" type="text/javascript"></script>
+	<script src="/media/js/progressbar/jquery.ui.widget.min.js" type="text/javascript"></script>	
+	<script src="/media/js/progressbar/jquery.ui.progressbar.min.js" type="text/javascript"></script>
+	<script src="/media/js/jquery.maskedinput-1.2.2.min.js" type="text/javascript"></script>
 	
 	{% block headtags %}{% endblock %}
-
+	
+	<script type="text/javascript" src="/media/lib/js/custom.js"></script>
 </head>
-
-
-
-
-
 <body>
-	
 	<div id="hld">
-	
-		<div class="wrapper">		<!-- wrapper begins -->
-			
+		<div class="wrapper">
 			<div id="header">
 				<div class="hdrl"></div>
 				<div class="hdrr"></div>
 				
-				<div class="ico_nimbus"><img src="/media/lib/images/ico_nimbus.png" /></div>
+				<div class="ico_nimbus"><img src="/media/lib/images/ico_nimbus.png" alt=""/></div>
 				<h1><a href="#">Nimbus</a></h1>
 				
 				<ul id="nav">
@@ -215,47 +97,19 @@
                             <li><a href="/timezone/config">Configuração de Hora</a></li>
                         </ul>
 					</li>
-					
-                    <!-- <li class="active"><a href="#">Computador</a>
-                        <ul>
-                            <li><a href="#">List pages</a></li>
-                            <li><a href="#">Add page</a></li>
-                            <li><a href="#">More actions</a>
-                                <ul>
-                                    <li><a href="#">Some action</a></li>
-                                    <li><a href="#">Some action</a></li>
-                                    <li><a href="#">Some action</a>
-                                        <ul>
-                                            <li><a href="#">Some action</a></li>
-                                            <li><a href="#">Some action</a></li>
-                                            <li><a href="#">Some action</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li><a href="#">Media</a>
-                        <ul>
-                            <li><a href="#">List media</a></li>
-                            <li><a href="#">Add media</a></li>
-                            <li><a href="#">Something else</a></li>
-                        </ul>
-                    </li> -->
 				</ul>
 				
 				<!-- <p class="user">Olá, <a href="#">Administrador</a> | <a href="index.html">Sair do sistema</a></p> -->
 				{% include "status_header.html" %}
-				<div class="align_right" style="float: right; margin-left: 10px; padding-left: 10px"><a href="/session/logout">Logout</a></div>
-				<div class="time align_right" style="float: right; margin-left: 10px; padding-left: 10px; padding-bottom: 17px">
+				<div id="logout-button" class="align_right"><a href="/session/logout">Logout</a></div>
+				<div id="clock" class="time align_right">
 			        <small>Horário</small><br/>
 			        <span id="actual_time">{% now "H:i:s" %}</span>
 			    </div>
-			</div>		<!-- #header ends -->
+			</div>
 			
             {% if messages %}
                 {% for msg in messages %}
-                    <!-- TODO: Criar tipos de mensagens: errormsg, success, info, warning -->
                     <div class="message {{ msg.tags }}">
                         <p>{{ msg }}</p>
                     </div>
@@ -268,18 +122,12 @@
             {%block page%}
             {%endblock%}
 
-
 			<div id="footer">
-
-				<p class="left"><a href="http://nimbusbackup.com">Nimbus</a> Professional Backup - Um produto <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" style="vertical-align: middle" alt="Veezor® Network Intelligence" /></a></p>
+				<p class="left"><a href="http://nimbusbackup.com">Nimbus</a> Professional Backup - Um produto <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a></p>
 				<p class="right">Nimbus v1.0</p>
-
 			</div>
-
-
-		</div>						<!-- wrapper ends -->
-
-	</div>		<!-- #hld ends -->
+		</div>
+	</div>
 
 </body>
 </html>

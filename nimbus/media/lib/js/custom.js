@@ -186,5 +186,38 @@ $(document).ready(function(){
 	
 	// IE6 PNG fix
 	jQuery(document).pngFix();
-		
+	
+	var data_hora = undefined;
+	function update_time() {
+		seconds = data_hora.getSeconds() + 1;
+		if (seconds > 60) {
+			seconds = 1;
+		}
+		data_hora.setSeconds(seconds);
+
+		time_string = data_hora.toTimeString().substr(0, 8);
+		$('#actual_time').html(time_string);
+		setTimeout(update_time, 1000);
+	}
+	
+	$('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
+	$('.filetree').each(function(){
+		var script = $(this).attr("ref");
+		$(this).fileTree({ root: '/media/lib/demo/', script: script }, function(file) { 
+			alert(file);
+		});
+	})
+	$(".iPhoneCheckContainer").css("width", "85px");
+	// $(".sparklines").sparkline('html', {width: "300", height: "150px" });
+	
+	var actual_time = $('#actual_time').html().split(':');
+	var hours = actual_time[0];
+	var minutes = actual_time[1];
+	var seconds = actual_time[2];
+	data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
+	update_time();
+	
+	$('.mascara_hora').mask('99:99');
+	$('.mascara_minuto').mask('99');
+	
 });

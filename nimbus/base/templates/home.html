@@ -1,6 +1,17 @@
 
 {% extends 'base.html' %}
 
+{% block headtags %}
+<link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.jqplot.css" />
+
+<script type="text/javascript" src="/media/lib/js/jquery.jqplot.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.barRenderer.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pieRenderer.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.categoryAxisRenderer.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.highlighter.js"></script>
+<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
+<script type="text/javascript" src="/media/js/home.js"></script>
+{% endblock %}
 
 {% block content %}
 
@@ -52,17 +63,17 @@
     			        {% include "bar_chart.html" %}
     			    {% endwith %}
                     <br/>
-                    <h4>Uso do CPU</h4>
+                    <h4>Uso da CPU</h4>
                     {% with table5.lines.Ocupado.0 as value %}
     			        {% include "bar_chart.html" %}
     			    {% endwith %}
                 </div>
-                <div class="left" style="margin-left: 30px; width: 35%">
+                <div class="left" id="disc-use">
     			    {% with table3 as table %}
     			        {% include "table_chart.html" %}
     			    {% endwith %}
                 </div>
-                <div class="left" style="margin-left: 30px; width: 35%">
+                <div class="left" id="offsite-use">
                     {% with table6 as table %}
     			        {% include "table_chart.html" %}
     			    {% endwith %}
