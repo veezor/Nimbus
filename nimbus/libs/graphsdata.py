@@ -15,7 +15,6 @@ import nimbusgateway
 from nimbus.offsite.models import Offsite
 
 
-
 def _sort_key_function(date):
     day, month, year = date
     return (year, month, day)
@@ -76,7 +75,7 @@ class GraphDataManager(object):
     def get_disk_data(self):
         try:
             diskinfo = systeminfo.DiskInfo("/bacula")
-            diskusage = diskinfo.get_usage()
+            diskusage = diskinfo.get_used()
             return diskusage
         except OSError, error:
             return 0.0
