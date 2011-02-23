@@ -64,7 +64,7 @@ def timezone(request):
 @only_wizard
 def offsite(request):
     extra_context = {
-        'wizard_title': u'3 de 5 -Configuração do Offsite',
+        'wizard_title': u'3 de 5 - Configuração do Offsite',
         'page_name': u'offsite',
         'previous': reverse('nimbus.wizard.views.timezone')
     }
@@ -121,7 +121,7 @@ def network(request):
 @only_wizard
 def password(request):
     extra_context = {
-        'wizard_title': u'5 de 5 - Configuração de senha de administração',
+        'wizard_title': u'5 de 5 - Senha do usuário admin',
         'page_name': u'network',
         'previous': reverse('nimbus.wizard.views.network')
     }
