@@ -12,6 +12,7 @@ import networkutils
 from django.db import models
 from django.db.models.signals import post_save
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 
 from nimbus.shared import signals
@@ -35,6 +36,17 @@ class NetworkInterface(BaseModel):
             self.netmask = raw_iface.netmask
             self.gateway = self.default_gateway
             self.dns1 = self.default_gateway
+
+
+    def clean(self):
+        raw_iface = networkutils.get_interfaces()[0]
+
+        if self.address == raw_iface.addr:
+            return
+
+        returncode, stdout = networkutils.ping(self.address, packets=1)
+        if not returncode:
+            raise ValidationError(u'Erro, existe outra máquina com o mesmo IP na rede.')
 
 
 
