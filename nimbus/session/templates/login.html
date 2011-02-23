@@ -21,12 +21,7 @@
 
     <form action="{% url django.contrib.auth.views.login  %}" method="post">
         
-        {% if form.errors %}
-        <div class="message errormsg">
-            <p>Your username and password didn't match. Please try again.</p>
-        </div>
-        {% endif %}
-        
+         
         {% include "form.html" %}
 
         <p>
