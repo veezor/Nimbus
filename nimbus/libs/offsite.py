@@ -232,7 +232,7 @@ class RemoteManager(BaseManager):
                        gateway_url=settings.gateway_url)
 
         if settings.upload_rate > 0:
-            self.upload_rate = settings.upload_rate
+            self.upload_rate = settings.upload_rate * 1024 #kb
         else:
             self.upload_rate = None
 
@@ -262,7 +262,8 @@ class RemoteManager(BaseManager):
 
     def process_pending_download_requests(self):
         requests = self.get_download_requests()
-        self.process_requests( requests, self._download_file) 
+        self.process_requests( requests, self._download_file,
+                               self.upload_rate)
 
 
     def process_requests( self, requests, process_function, 
