@@ -190,7 +190,7 @@ class Job(models.Model):
 
         for day, jobs in jobs_by_day:
             bytes = jobs.aggregate(total=models.Sum('jobbytes'))
-            nbytes =  utils.bytes_to_mb( bytes['total']  or 0 )
+            nbytes =  bytes['total']  or 0
             result[day] = nbytes
 
 
