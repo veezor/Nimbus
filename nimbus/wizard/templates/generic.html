@@ -6,7 +6,7 @@
 
     $(document).ready(function() {
         $("select#id_country").bind("change", getAreaChoices);
-        
+
         $('#offsite_form #id_active').change(function(){
             input_active = $('#offsite_form #id_active');
             ps = input_active.parents().filter('p').siblings().filter(':not(p:last)');
@@ -16,8 +16,31 @@
                 ps.slideUp();
             }
         }).change();
+
+        var initial_upload = $("#id_upload_rate").val();
+        if(initial_upload == -1) {
+            $("#id_upload_rate").hide();
+            $("label[for=id_upload_rate]").hide();
+            $("#id_active_upload_rate").attr('checked', false).change();
+        } else {
+            $("#id_active_upload_rate").attr('checked', true).change();
+        }
+
+        $("#id_active_upload_rate").change(function(){
+            if ($("#id_active_upload_rate").is(':checked')){
+                $("#id_upload_rate").show();
+                $("label[for=id_upload_rate]").show();
+                if (initial_upload == -1)
+                    initial_upload = 200;
+                $("#id_upload_rate").val(initial_upload);
+            } else {
+                $("#id_upload_rate").hide();
+                $("label[for=id_upload_rate]").hide();
+                $("#id_upload_rate").val("-1");
+            }
+		});
     });
- 
+
     function getAreaChoices() {
         $.ajax({
             type: "POST",
@@ -47,7 +70,7 @@
 {% block content %}
 
     <form action="" method="post" id="{{page_name}}_form">
-        
+
         {% include "form.html" %}
 
         <p class="input_submit">
@@ -56,7 +79,7 @@
             {% endif %}
             <input type="submit" class="submit right no_margin" value="Próximo" />
         </p>
-               
+
         <input type="hidden" name="next" value="{{ next }}" />
 
     </form>
