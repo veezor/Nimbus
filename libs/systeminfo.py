@@ -25,6 +25,9 @@ class DiskInfo(object):
         usage = 100 *( float(used) / total)
         return usage
 
+    def get_used(self):
+        return self.get_data()[1]
+
 
 
 
