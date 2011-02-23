@@ -17,9 +17,11 @@ from django.conf import settings
 from nimbus.offsite.models import DownloadRequest
 from nimbus.shared.views import render_to_response, edit_singleton_model
 from nimbus.libs import offsite, systemprocesses, bacula
+from nimbus.offsite.models import DownloadRequest
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
 from nimbus.offsite.forms import OffsiteRecoveryForm
+from nimbus.wizard.models import Wizard
 
 
 
@@ -99,6 +101,8 @@ def recover_databases(request):
     }
 
     if request.method == "GET":
+        if not DownloadRequest.objects.count():
+            return redirect( 'nimbus.recovery.views.recover_volumes' )
 
         localsource = request.GET.get("localsource", "offsite")
         device = request.GET.get("device", None)
@@ -195,3 +199,7 @@ def finish(request):
     }
     if request.method == "GET":
         return render_to_response(request, "recovery_finish.html", extra_content)
+    elif request.method == "POST":
+        wizard = Wizard.get_instance()
+        wizard.finish()
+        return redirect( "nimbus.base.views.home" )
