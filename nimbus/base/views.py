@@ -25,13 +25,15 @@ def home(request):
 
 
     table1 = {}
-    table1['title'] = u"Quantidade de megabytes realizados backup"
+    table1['title'] = u"Quantidade de dados realizados backup"
     table1['width'] = "100%"
     table1['type'] = "bar"
     table1['cid'] = "chart1"
     table1['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_bytes)  ]
+    table1['labels'] = [ utils.filesizeformat(v) for k,v in sorted(job_bytes.items()) ]
+
     table1['lines'] = {
-        "Mega bytes": utils.ordered_dict_value_to_formatted_float(job_bytes)
+        "Dados": utils.ordered_dict_value_to_formatted_float(job_bytes)
     }
 
     job_files = Job.get_files_from_last_jobs()
@@ -41,8 +43,9 @@ def home(request):
     table2['type'] = "bar"
     table2['cid'] = "chart2"
     table2['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_files) ]
+    table2['labels'] = [ v for k,v in sorted(job_files.items()) ]
     table2['lines'] = {
-        "Arquivos": utils.ordered_dict_value_to_formatted_int(job_files) 
+        "Arquivos": [ v for k,v in sorted(job_files.items()) ]
     }
 
 
@@ -65,6 +68,7 @@ def home(request):
     table3['height'] = "130"
     # table3['header'] = ["Gigabytes"]
     table3['header'] = [ i[0] for i in diskdata ]
+    table3['labels'] = [ utils.filesizeformat(i[1]) for i in diskdata ]
     #setando valor padrao
     t3data = [i[1] for i in diskdata] if len(diskdata) else [0.0]
     table3['lines'] = {"Disponível": t3data}
@@ -115,6 +119,7 @@ def home(request):
     table6['cid'] = "chart6"
     # table6['header'] = ["GB"]
     table6['header'] = [ i[0] for i in offsite_data]
+    table6['labels'] = [ utils.filesizeformat(i[1]) for i in offsite_data ]
     t6data = [i[1] for i in offsite_data] if len(offsite_data) else [0.0]
     table6['lines'] = {"Disponível": t6data }
 

@@ -4,6 +4,7 @@
         {% for key, line in table.lines.items %}
         <chartdata>{{line|join:","}}</chartdata>
         {% endfor %}
+        <chartlabels>{{table.labels|join:","}}</chartlabels>
         <chartheader>{{table.header|join:","}}</chartheader>
     </div>
 </div>
