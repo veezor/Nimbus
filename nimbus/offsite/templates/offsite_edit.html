@@ -12,17 +12,31 @@
                 ps.slideUp();
             }
         }).change();
-		
-		$("#id_active_upload_rate").change(function(){
-			$("#id_upload_rate").toggle("fast");
-			$("#id_upload_rate").val(200);
+
+		var initial_upload = $("#id_upload_rate").val();
+        if(initial_upload == -1) {
+            $("#id_upload_rate").hide();
+            $("label[for=id_upload_rate]").hide();
+            $("#id_active_upload_rate").attr('checked', false).change();
+        } else {
+            $("#id_active_upload_rate").attr('checked', true).change();
+        }
+
+        $("#id_active_upload_rate").change(function(){
+            if ($("#id_active_upload_rate").is(':checked')){
+                $("#id_upload_rate").show();
+                $("label[for=id_upload_rate]").show();
+                if (initial_upload == -1)
+                    initial_upload = 200;
+                $("#id_upload_rate").val(initial_upload);
+            } else {
+                $("#id_upload_rate").hide();
+                $("label[for=id_upload_rate]").hide();
+                $("#id_upload_rate").val("-1");
+            }
 		});
     });
 </script>
-
-<style type="text/css">
-	#id_upload_rate { display: none; }
-</style>
 
 {% endblock %}
 
