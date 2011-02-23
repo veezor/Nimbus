@@ -20,6 +20,26 @@ def pathdepth(path):
 
 
 
+def filesizeformat(bytes):
+    bytes = float(bytes)
+
+    KB = 1024
+    MB = 1024*KB
+    GB = 1024*MB
+    TB = 1024*GB
+
+    if bytes < KB:
+        return "%.2f bytes" % bytes
+
+    elif bytes < MB:
+        return "%.2f Kb" % (bytes/KB)
+    elif bytes < GB:
+        return "%.2f Mb" % (bytes/MB)
+    elif bytes < TB:
+        return "%.2f Gb" % (bytes/GB)
+    else:
+        return "%.2f Tb" % (bytes/TB)
+
 def int_or_string(value):
     try:
         return int(value)
