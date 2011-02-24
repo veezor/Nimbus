@@ -42,19 +42,19 @@ def home(request):
     table2['cid'] = "chart2"
     table2['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_files) ]
     table2['lines'] = {
-        "Arquivos": utils.ordered_dict_value_to_formatted_int(job_files) 
+        "Arquivos": utils.ordered_dict_value_to_formatted_int(job_files)
     }
 
 
 
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
-
+    
     if len(diskdata) == 1: # duplicates first item for area graph
         diskdata *= 2
 
-    
-    
+
+
     # TODO: O diskfree deve ser calculado como gráfico de história.
 
     table3 = {}
@@ -65,6 +65,7 @@ def home(request):
     table3['height'] = "130"
     # table3['header'] = ["Gigabytes"]
     table3['header'] = [ i[0] for i in diskdata ]
+    table3['labels'] = [ i[1] for i in diskdata ]
     #setando valor padrao
     t3data = [i[1] for i in diskdata] if len(diskdata) else [0.0]
     table3['lines'] = {"Disponível": t3data}
@@ -72,7 +73,7 @@ def home(request):
 
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
-    
+
     table4 = {}
     table4['title'] = u"Uso da memória"
     table4['width'] = "48%"
@@ -87,7 +88,7 @@ def home(request):
     cpu = systeminfo.get_cpu_usage()
     cpu_free = 100 - memory
 
-    
+
     table5 = {}
     table5['title'] = u"Uso da CPU"
     table5['width'] = "48%"
@@ -100,7 +101,7 @@ def home(request):
 
     offsite_usage = 55 #TODO
     # offsite_free = 45
-    
+
 
     offsite_data = graph_data_manager.list_offsite_measures()
 
@@ -123,7 +124,7 @@ def home(request):
     # - label
     # - date
     # - message
-    
+
 
 
     last_jobs = Job.objects.all()\
@@ -162,15 +163,15 @@ def home(request):
         pass
 
 
-   
+
     backups_com_falhas = [{
         'title': u'Últimos backups executados',
         'content': last_procedures_content  }, {
         'title': u'Backups com falha',
-        'content': errors_procedures_content   
+        'content': errors_procedures_content
     }]
-    
-      
+
+
     # extra_content = {'table1': table1, 'table2': table2}
 
 
