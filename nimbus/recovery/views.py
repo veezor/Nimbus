@@ -86,7 +86,7 @@ def select_storage(request):
             "localsource" : localsource,
             "device" : device
         }
-        return render_to_response(request, "recovery_confirm_storage.html",
+        return render_to_response(request, "recovery_recover_databases.html",
                                   extra_content)
     else:
         raise Http404()
@@ -133,7 +133,6 @@ def recover_databases(request):
             localsource = "offsite"
 
 
-        """
         manager = offsite.RecoveryManager(manager)
         try:
             manager.download_databases()
@@ -150,7 +149,7 @@ def recover_databases(request):
             logger.info('Stoping database recovery')
 
         extra_content.update({"device" : device, "localsource"  : localsource})
-        """
+
         return render_to_response(request, 'recovery_database_ok.html',  extra_content)
 
     else:
@@ -174,7 +173,7 @@ def recover_volumes(request):
         return render_to_response(request, "recovery_recover_volumes.html", extra_content)
     elif request.method == "POST":
         localsource = request.POST.get("localsource", "offsite")
-        """
+
         if localsource != "offsite":
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
@@ -188,7 +187,6 @@ def recover_volumes(request):
                                          recover_volumes_worker, manager)
 
         extra_content.update({ "object_list" : DownloadRequest.objects.all()})
-        """
         return render_to_response(request,
                 "recovery_list_downloads.html",
                 extra_content)
