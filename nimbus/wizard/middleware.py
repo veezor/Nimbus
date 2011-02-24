@@ -27,7 +27,6 @@ class Wizard(object):
 
     def grant_access(self, request):
         path = request.META['PATH_INFO']
-        print path
         if path.startswith("/wizard") or\
                 path.startswith("/media") or\
                 path.startswith("/recovery") or\

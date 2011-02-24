@@ -118,6 +118,39 @@ $(document).ready(function(){
 		}
 	});
 
+
+	// Style file input
+	jQuery("input[type=file]").filestyle({
+	    image: "/media/lib/images/upload.gif",
+	    imageheight : 30,
+	    imagewidth : 80,
+	    width : 250
+	});
+
+
+	// File upload
+	if (jQuery('#fileupload').length) {
+		new AjaxUpload('fileupload', {
+			action: 'upload-handler.php',
+			autoSubmit: true,
+			name: 'userfile',
+			responseType: 'text/html',
+			onSubmit : function(file , ext) {
+					jQuery('.fileupload #uploadmsg').addClass('loading').text('Uploading...');
+					this.disable();
+				},
+			onComplete : function(file, response) {
+					jQuery('.fileupload #uploadmsg').removeClass('loading').text(response);
+					this.enable();
+				}
+		});
+	}
+
+
+	// Date picker
+	jQuery('input.date_picker').date_input();
+
+
 	// Navigation dropdown fix for IE6
 	if(jQuery.browser.version.substr(0,1) < 7) {
 		jQuery('#header #nav li').hover(
@@ -128,6 +161,7 @@ $(document).ready(function(){
 
 	// IE6 PNG fix
 	jQuery(document).pngFix();
+
 
 	$('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 	$('.filetree').each(function(){
