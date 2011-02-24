@@ -125,7 +125,7 @@ def recover_databases(request):
                 return render_to_response(request, 'recovery_mounterror.html',
                                           extra_content)
 
-            #manager = offsite.LocalManager(storage.mountpoint)
+            manager = offsite.LocalManager(storage.mountpoint)
 
         else:
             manager = offsite.RemoteManager()
