@@ -47,26 +47,28 @@ $(document).ready(function(){
     function update_table() {
         var table = $('.request_list');
         var url = $('.atualizar_agora').attr("rel");
-        $.post(url, {ajax: 1}, function(data)
-        {
-            table.find('tbody tr').remove();
-            for (var item in data) {
-                down = data[item];
-                tr = $('<tr>');
-                caminho_arquivo = $('<td>').text(down.fields.filename);
-                criado_em = $('<td>').text(down.fields.created_at);
-                tentativas = $('<td>').html(down.fields.attempts + " <small>(última: " + down.fields.last_attempt + ")</small>");
-                transferencia = $('<td>').html(down.fields.friendly_rate + " <small>(restante: " + down.fields.estimated_transfer_time + ")</small>");
+        if($('.atualizar_agora').length){
+            $.post(url, {ajax: 1}, function(data)
+            {
+                table.find('tbody tr').remove();
+                for (var item in data) {
+                    down = data[item];
+                    tr = $('<tr>');
+                    caminho_arquivo = $('<td>').text(down.fields.filename);
+                    criado_em = $('<td>').text(down.fields.created_at);
+                    tentativas = $('<td>').html(down.fields.attempts + " <small>(última: " + down.fields.last_attempt + ")</small>");
+                    transferencia = $('<td>').html(down.fields.friendly_rate + " <small>(restante: " + down.fields.estimated_transfer_time + ")</small>");
 
-                wrapper = $('<div>').addClass("concluido_wrapper").attr({"title": down.fields.finished_percent + "% concluído."});
-                percent = $('<div>').addClass("concluido_percent").css("width", down.fields.finished_percent + "%").html("&nbsp;");
-                concluido = $('<td>').append(wrapper.append(percent));
+                    wrapper = $('<div>').addClass("concluido_wrapper").attr({"title": down.fields.finished_percent + "% concluído."});
+                    percent = $('<div>').addClass("concluido_percent").css("width", down.fields.finished_percent + "%").html("&nbsp;");
+                    concluido = $('<td>').append(wrapper.append(percent));
 
-                tr.append(caminho_arquivo).append(criado_em).append(tentativas).append(transferencia).append(concluido);
-                tr.appendTo(table.find('tbody'));
-            }
-        },
-        "json");
+                    tr.append(caminho_arquivo).append(criado_em).append(tentativas).append(transferencia).append(concluido);
+                    tr.appendTo(table.find('tbody'));
+                }
+            },
+            "json");
+        }
     }
 
     var countDownInterval = 20;
