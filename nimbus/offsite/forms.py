@@ -24,6 +24,8 @@ class OffsiteForm(forms.ModelForm):
 
 
 class OffsiteRecoveryForm(forms.ModelForm):
+    active = forms.BooleanField(required=False, initial=True,
+                                widget=forms.HiddenInput())
     password = forms.CharField(required=False, initial='none',
                      widget=forms.PasswordInput(attrs={'class': 'text'}))
 
@@ -36,4 +38,4 @@ class OffsiteRecoveryForm(forms.ModelForm):
 
     class Meta:
         model = Offsite
-        fields = ('username', 'password', 'active_upload_rate', 'upload_rate')
+        fields = ('active', 'username', 'password', 'active_upload_rate', 'upload_rate')

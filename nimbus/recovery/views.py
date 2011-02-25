@@ -21,6 +21,7 @@ from nimbus.offsite.models import DownloadRequest
 from nimbus.libs.devicemanager import (StorageDeviceManager,
                                        MountError, UmountError)
 from nimbus.offsite.forms import OffsiteRecoveryForm
+from nimbus.offsite.models import Offsite
 from nimbus.wizard.models import Wizard
 
 
@@ -62,6 +63,11 @@ def offsite_recovery(request):
         'page_name': u'offsite',
         'next': "nimbus.recovery.views.recover_databases"
     }
+
+    if request.method == "GET":
+        offsite = Offsite.get_instance()
+        offsite.active = True
+        offsite.save()
 
     return edit_singleton_model( request, "generic.html",
                          "nimbus.recovery.views.recover_databases",
