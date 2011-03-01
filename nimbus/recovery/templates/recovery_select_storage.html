@@ -6,9 +6,14 @@
 
 <h2>Por favor, selecione o disco de origem dos arquivos:</h2>
 
-<form action="/recovery/select_storage/" method="post">
+<form action="/recovery/recover_databases/" method="post">
 	{% for device in devices %}
-		<input type="radio" name="device" value="{{device}}" /> {{device}}
+		{% if forloop.first %}
+			<input id="{{forloop.counter}}" type="radio" name="device" checked="checked" value="{{device}}" />
+		{% else %}
+			<input id="{{forloop.counter}}" type="radio" name="device" value="{{device}}" />
+		{% endif %}
+		<label for="{{forloop.counter}}">{{device}}</label>
 		<br />
 	{% empty %}
 		Conecte um hd ou pendrive externo.
