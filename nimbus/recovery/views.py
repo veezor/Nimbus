@@ -59,9 +59,9 @@ def select_source(request):
 def offsite_recovery(request):
     extra_context = {
         'wizard_title': u'Configurar Offsite',
-        'title': u"Recuperação do sistema",
+        'title': u'Recuperação do sistema',
         'page_name': u'offsite',
-        'next': "nimbus.recovery.views.recover_databases"
+        'next': 'nimbus.recovery.views.recover_databases'
     }
 
     if request.method == "GET":
@@ -80,26 +80,18 @@ def select_storage(request):
         extra_content = {
             'wizard_title': u'Selecione o armazenamento',
             'title': u"Recuperação do sistema",
-             "devices" : offsite.list_disk_labels()
+            'devices' : offsite.list_disk_labels()
         }
         return render_to_response(request, "recovery_select_storage.html",
-                                  extra_content)
-    elif request.method == "POST":
-        localsource = request.POST.get("localsource", True)
-        device = request.POST.get("device", None)
-        extra_content = {
-            'title': u"Recuperação do sistema",
-            "localsource" : localsource,
-            "device" : device
-        }
-        return render_to_response(request, "recovery_recover_databases.html",
                                   extra_content)
     else:
         raise Http404()
 
+def check_database_recover(request):
+    count = DownloadRequest.objects.count()
+    return HttpResponse(simplejson.dumps({"count": count}))
 
 def recover_databases(request):
-
     logger = logging.getLogger(__name__)
     extra_content = {
         'wizard_title': u'Recuperação do sistema',
@@ -107,9 +99,6 @@ def recover_databases(request):
     }
 
     if request.method == "GET":
-        if not DownloadRequest.objects.count():
-            return redirect( 'nimbus.recovery.views.recover_volumes' )
-
         localsource = request.GET.get("localsource", "offsite")
         device = request.GET.get("device", None)
         extra_content.update({ "localsource" : localsource, "device" : device})
@@ -131,7 +120,7 @@ def recover_databases(request):
                 return render_to_response(request, 'recovery_mounterror.html',
                                           extra_content)
 
-            manager = offsite.LocalManager(storage.mountpoint)
+            #manager = offsite.LocalManager(storage.mountpoint, "/bacula")
 
         else:
             manager = offsite.RemoteManager()
@@ -139,7 +128,7 @@ def recover_databases(request):
             localsource = "offsite"
 
 
-        manager = offsite.RecoveryManager(manager)
+        """manager = offsite.RecoveryManager(manager)
         try:
             manager.download_databases()
         except (IOError, pycurl.error), error:
@@ -153,10 +142,11 @@ def recover_databases(request):
             manager.recovery_databases()
             manager.generate_conf_files()
             logger.info('Stoping database recovery')
-
+"""
         extra_content.update({"device" : device, "localsource"  : localsource})
 
-        return render_to_response(request, 'recovery_database_ok.html',  extra_content)
+        #return render_to_response(request, 'recovery_database_ok.html',  extra_content)
+        return render_to_response(request, "recovery_recover_databases.html", extra_content)
 
     else:
         raise Http404()
@@ -168,10 +158,13 @@ def recover_volumes_worker(manager):
         manager.download_volumes()
         manager.finish()
 
+def check_volume_recover(request):
+    count = DownloadRequest.objects.count()
+    return HttpResponse(simplejson.dumps({"count": count}))
 
 def recover_volumes(request):
     extra_content = {
-        'wizard_title': u'Selecione o volume',
+        'wizard_title': u'Recuperando arquivos',
         'title': u"Recuperação do sistema",
     }
 
@@ -183,19 +176,15 @@ def recover_volumes(request):
         if localsource != "offsite":
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
-            manager = offsite.LocalManager(storage.mountpoint)
-
+            manager = offsite.LocalManager(storage.mountpoint, "/bacula")
         else:
-            manager = offsite.RemoteManager()
-
+            manager =  offsite.RemoteManager()
 
         systemprocesses.min_priority_job("Recovery nimbus volumes",
                                          recover_volumes_worker, manager)
 
         extra_content.update({ "object_list" : DownloadRequest.objects.all()})
-        return render_to_response(request,
-                "recovery_list_downloads.html",
-                extra_content)
+        return render_to_response(request, "recovery_recover_volumes.html", extra_content)
     else:
         raise Http404()
 

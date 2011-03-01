@@ -1,16 +1,43 @@
 {% extends "base_wizard.html" %}
 
-{% block headtags %}{% endblock %}
+{% block headtags %}
+<script type="text/javascript">
+
+	var idTimer = undefined;
+	function check(){
+		$.post('/recovery/check_volume_recover/', {}, function(json){
+			//json.count = 0;
+			if (! json.count) {
+				$("#recover_volume").submit();
+			}
+			$("#files_left span").text(json.count);
+			$("#files_left").show();
+		}, "json");
+	}
+	idTimer = setInterval(check, 2000);
+
+</script>
+<style type="text/css">
+	#files_left {
+		font-size: 15px;
+		display: none;
+	}
+	#files_left span {
+		color: #069;
+		font-weight: bold;
+	}
+</style>
+{% endblock %}
 
 {% block content %}
 
 <h1>O sistema de recuperação irá realizar o download de todos os seus dados armazenados.</h1>
-<p>Esta operação deve levar vários minutos ou horas. Clique no botão prosseguir e aguarde.</p>
+<p>Esta operação deve levar vários minutos ou horas.</p>
 
-<form action="/recovery/recover_volumes/" method="post">
-	<p class="input_submit">
-		<input type="submit" class="submit right mid" value="Prosseguir" />
-	</p>
+<p id="files_left">Falta(m) <span></span> arquivo(s) para concluir a recuperação.</p>
+
+<form id="recover_volume" action="/recovery/finish/" method="post">
+	<p></p>
 </form>
 
 {% endblock %}
