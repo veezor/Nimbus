@@ -14,7 +14,7 @@ NAME_RE = re.compile("^[\w\s]{4,255}$")
 
 def check_model_name(value):
     if not NAME_RE.match(value):
-        raise ValidationError("Campo não pode conter acentos. Limite mínimo de caracteres é 4")
+        raise ValidationError("O campo deve conter apenas caracteres alfa-numéricos e espaços. O limite mínimo de caracteres é 4.")
 
 def name_is_valid(value):
     try:
@@ -42,12 +42,12 @@ class CharFormField(forms.CharField):
 
     def widget_attrs(self, widget):
         attrs = super(CharFormField, self).widget_attrs(widget)
-        
+
         if not attrs:
             attrs = {}
-        
+
         # import pdb; pdb.set_trace()
-        
+
         # if self.choices:
         #     attrs['class'] = 'styled'
         # else:
@@ -57,13 +57,13 @@ class CharFormField(forms.CharField):
             attrs['class'] = 'text medium'
         else:
             attrs['class'] = "text big"
-            
+
         return attrs
 
 class IPAddressField(forms.IPAddressField):
 
     def widget_attrs(self, widget):
-        
+
         attrs = super(IPAddressField, self).widget_attrs(widget)
 
         if not attrs:
@@ -74,7 +74,7 @@ class IPAddressField(forms.IPAddressField):
         return attrs
 
 class ChoiceField(forms.ChoiceField):
-    
+
     def widget_attrs(self, widget):
         attrs = super(ChoiceField, self).widget_attrs(widget)
         import pdb; pdb.set_trace()
