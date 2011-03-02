@@ -1,9 +1,8 @@
+{% extends "base_login.html" %}
 
 {% block content %}
-
-<p>Loggouted.</p>
-
-<a href="{% url django.contrib.auth.views.login %}">Login</a>
-
+    <p>
+        Você foi desconectado com sucesso.
+        <br/><a href="{% url django.contrib.auth.views.login %}">Realizar login</a>
+    </p>
 {% endblock %}
-

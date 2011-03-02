@@ -7,33 +7,28 @@
         <label>Usuário:</label> <br />
         <input type="text" class="text" value="admin" />
     </p>
-    
+
     <p>
         <label>Senha:</label> <br />
         <input type="password" class="text" value="pass" />
     </p>
-    
+
     <p>
-        <input type="submit" class="submit" value="Acessar" /> &nbsp; 
+        <input type="submit" class="submit" value="Acessar" /> &nbsp;
         <input type="checkbox" class="checkbox" checked="checked" id="rememberme" /> <label for="rememberme">Manter minha sessão ativa</label>
     </p>
 </form> -->
 
     <form action="{% url django.contrib.auth.views.login  %}" method="post">
         
-        {% if form.errors %}
-        <div class="message errormsg">
-            <p>Your username and password didn't match. Please try again.</p>
-        </div>
-        {% endif %}
-        
+
         {% include "form.html" %}
 
         <p>
             <input type="submit" class="submit" value="Acessar" /> &nbsp;
             <input type="checkbox" class="checkbox" checked="checked" id="rememberme" /> <label for="rememberme">Manter minha sessão ativa</label>
         </p>
-               
+
         <input type="hidden" name="next" value="{{ next }}" />
 
     </form>
