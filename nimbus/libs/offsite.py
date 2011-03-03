@@ -244,7 +244,7 @@ class RemoteManager(BaseManager):
 
 
     def get_remote_volumes_list(self):
-        return [ f[0] for f in self.api.list_all_files() ]
+        return [ f[0] for f in self.api.list_all_files() if filename_is_volumename(f[0]) ]
 
 
     def _download_file(self, filename, dest, 
@@ -256,8 +256,12 @@ class RemoteManager(BaseManager):
         else:
             destfilename = join(device.archive, filename)
 
-        return self.api.download_file( filename, destfilename,
-                                       ratelimit, callback, True)
+        self.api.download_file( filename, destfilename,
+                                ratelimit, callback, True)
+
+
+        os.chmod( destfilename, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
+        os.chown( destfilename, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
 
 
     def process_pending_download_requests(self):
@@ -287,10 +291,6 @@ class RemoteManager(BaseManager):
                     req.save()
                     process_function(req.volume.path, req.volume.filename,
                                      ratelimit=ratelimit, callback=req.update)
-
-                    if exists(req.volume.filename):
-                        os.chmod( req.volume.filename, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
-                        os.chown( req.volume.filename, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
 
                     req.finish()
                     logger.info("%s processado com sucesso" % req)

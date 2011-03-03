@@ -31,3 +31,9 @@ def max_priority_job(description, callback, *args, **kwargs):
         threadpool.add_job(job)
 
 
+
+def has_pending_jobs():
+    threadpool = ThreadPool.get_instance()
+    if threadpool:
+        return bool(threadpool.list_jobs_pending())
+

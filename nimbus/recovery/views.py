@@ -89,7 +89,20 @@ def select_storage(request):
 
 def check_database_recover(request):
     count = DownloadRequest.objects.count()
-    return HttpResponse(simplejson.dumps({"count": count}))
+    has_finished = systemprocesses.has_pending_jobs()
+    return HttpResponse(simplejson.dumps({"count": count,
+                                          "has_finished" : has_finished}))
+def recover_databases_worker(manager):
+    logger = logging.getLogger(__name__)
+    logger.info("iniciando download da base de dados")
+    manager.download_databases()
+    logger.info("download da base de dados efetuado com sucesso")
+    logger.info("iniciando recuperacao da base de dados")
+    manager.recovery_databases()
+    logger.info("recuperacao da base de dados efetuado com sucesso")
+    logger.info("iniciando geracao de arquivos de configuracao")
+    manager.generate_conf_files()
+    logger.info("geracao dos arquivos de configuracao realizada com sucesso")
 
 def recover_databases(request):
     logger = logging.getLogger(__name__)
@@ -99,13 +112,6 @@ def recover_databases(request):
     }
 
     if request.method == "GET":
-        localsource = request.GET.get("localsource", "offsite")
-        device = request.GET.get("device", None)
-        extra_content.update({ "localsource" : localsource, "device" : device})
-        return render_to_response(request, "recovery_recover_databases.html",
-                                  extra_content)
-
-    elif request.method == "POST":
         localsource = request.POST.get("localsource", "offsite")
 
         if localsource != "offsite":
@@ -120,7 +126,7 @@ def recover_databases(request):
                 return render_to_response(request, 'recovery_mounterror.html',
                                           extra_content)
 
-            #manager = offsite.LocalManager(storage.mountpoint, "/bacula")
+            manager = offsite.LocalManager(storage.mountpoint, "/bacula")
 
         else:
             manager = offsite.RemoteManager()
@@ -128,24 +134,13 @@ def recover_databases(request):
             localsource = "offsite"
 
 
-        """manager = offsite.RecoveryManager(manager)
-        try:
-            manager.download_databases()
-        except (IOError, pycurl.error), error:
-            logger.error('download databases')
-            extra_content.update({ "error": error })
-            return render_to_response(request,
-                    'recovery_instancenameerror.html', extra_content)
-
-        with bacula.BaculaLock() as lock:
-            logger.info('Starting database recovery')
-            manager.recovery_databases()
-            manager.generate_conf_files()
-            logger.info('Stoping database recovery')
-"""
+        manager = offsite.RecoveryManager(manager)
+        logger.info("adicionando trabalho")
+        systemprocesses.min_priority_job("Recovery nimbus database",
+                                         recover_databases_worker, manager)
+        logger.info("trabalho adicionado com sucesso")
         extra_content.update({"device" : device, "localsource"  : localsource})
 
-        #return render_to_response(request, 'recovery_database_ok.html',  extra_content)
         return render_to_response(request, "recovery_recover_databases.html", extra_content)
 
     else:
@@ -153,14 +148,18 @@ def recover_databases(request):
 
 
 def recover_volumes_worker(manager):
-    with bacula.BaculaLock() as lock:
-        manager = offsite.RecoveryManager(manager)
-        manager.download_volumes()
-        manager.finish()
+    logger = logging.getLogger(__name__)
+    manager = offsite.RecoveryManager(manager)
+    logger.info("iniciando download dos volumes")
+    manager.download_volumes()
+    logger.info("download dos volumes efetuado com sucesso")
+    manager.finish()
 
 def check_volume_recover(request):
     count = DownloadRequest.objects.count()
-    return HttpResponse(simplejson.dumps({"count": count}))
+    has_finished = systemprocesses.has_pending_jobs()
+    return HttpResponse(simplejson.dumps({"count": count,
+                                          "has_finished" : has_finished}))
 
 def recover_volumes(request):
     extra_content = {
@@ -187,6 +186,7 @@ def recover_volumes(request):
         return render_to_response(request, "recovery_recover_volumes.html", extra_content)
     else:
         raise Http404()
+
 
 def finish(request):
     extra_content = {

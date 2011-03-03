@@ -7,7 +7,7 @@
 	function check(){
 		$.post('/recovery/check_volume_recover/', {}, function(json){
 			//json.count = 0;
-			if (! json.count) {
+			if (! json.has_finished) {
 				$("#recover_volume").submit();
 			}
 			$("#files_left span").text(json.count);
