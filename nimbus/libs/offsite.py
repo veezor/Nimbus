@@ -214,6 +214,9 @@ class BaseManager(object):
         for delete_request in DeleteRequest.objects.all():
             self.delete_volume(delete_request.volume.path)
 
+    def finish(self):
+        pass
+
 
 
 
@@ -322,9 +325,15 @@ class LocalManager(BaseManager):
 
     UploadRequestClass = LocalUploadRequest
 
-    def __init__(self, origin, destination):
-        self.origin = origin
+    def __init__(self, device_manager, destination):
+        self.device_manager = device_manager
+        self.origin = self.device_manager.mountpoint
         self.destination = destination
+
+
+    def create_download_request(self, volume_path):
+        volume_path = join(self.origin, volume_path)
+        return super(LocalManager, self).create_download_request(volume_path)
 
 
     def get_remote_volumes_list(self):
@@ -390,6 +399,10 @@ class LocalManager(BaseManager):
         dest.close()
 
 
+    def finish(self):
+        self.device_manager.umount()
+
+
 
 
 class RecoveryManager(object):
@@ -429,15 +442,22 @@ class RecoveryManager(object):
 
 
     def recovery_nimbus_dabatase(self):
-        nimbus_file = NIMBUS_DUMP
+        nimbus_file = os.path.split(NIMBUS_DUMP)[-1]
+        nimbus_file = os.path.join("/bacula", nimbus_file)
+
+
         db_data = settings.DATABASES['default']
         self.recovery_database( nimbus_file,
                                 db_data['NAME'],
                                 db_data['USER'],
                                 db_data['PASSWORD'])
 
+
     def recovery_bacula_dabatase(self):
-        bacula_file = BACULA_DUMP
+        bacula_file = os.path.split(BACULA_DUMP)[-1]
+        bacula_file = os.path.join("/bacula", bacula_file)
+
+
         db_data = settings.DATABASES['bacula']
         self.recovery_database( bacula_file,
                                 db_data['NAME'],
@@ -474,8 +494,6 @@ class RecoveryManager(object):
         self.manager.download_all_volumes()
 
     def finish(self):
-        if isinstance(self.manager, LocalManager):
-            storage = StorageDeviceManager( self.manager.device )
-            storage.umount()
+        self.manager.finish()
  
                 

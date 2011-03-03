@@ -112,6 +112,8 @@ def recover_databases(request):
     }
 
     if request.method == "GET":
+        manager = offsite.RemoteManager()
+    elif request.method == "POST":
         localsource = request.POST.get("localsource", "offsite")
 
         if localsource != "offsite":
@@ -126,25 +128,19 @@ def recover_databases(request):
                 return render_to_response(request, 'recovery_mounterror.html',
                                           extra_content)
 
-            manager = offsite.LocalManager(storage.mountpoint, "/bacula")
-
-        else:
-            manager = offsite.RemoteManager()
-            device = None
-            localsource = "offsite"
+            manager = offsite.LocalManager(storage, "/bacula")
 
 
-        manager = offsite.RecoveryManager(manager)
-        logger.info("adicionando trabalho")
-        systemprocesses.min_priority_job("Recovery nimbus database",
-                                         recover_databases_worker, manager)
-        logger.info("trabalho adicionado com sucesso")
-        extra_content.update({"device" : device, "localsource"  : localsource})
 
-        return render_to_response(request, "recovery_recover_databases.html", extra_content)
+    manager = offsite.RecoveryManager(manager)
+    logger.info("adicionando trabalho")
+    systemprocesses.min_priority_job("Recovery nimbus database",
+                                     recover_databases_worker, manager)
+    logger.info("trabalho adicionado com sucesso")
+    extra_content.update({"device" : device, "localsource"  : localsource})
 
-    else:
-        raise Http404()
+    return render_to_response(request, "recovery_recover_databases.html", extra_content)
+
 
 
 def recover_volumes_worker(manager):
@@ -175,7 +171,7 @@ def recover_volumes(request):
         if localsource != "offsite":
             device = request.POST.get("device")
             storage = StorageDeviceManager(device)
-            manager = offsite.LocalManager(storage.mountpoint, "/bacula")
+            manager = offsite.LocalManager(storage, "/bacula")
         else:
             manager =  offsite.RemoteManager()
 
