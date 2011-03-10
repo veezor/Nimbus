@@ -9,7 +9,7 @@ import urllib
 import urllib2
 import urlparse
 import pycurl
-import md5
+import hashlib
 import os
 import S3
 
@@ -67,7 +67,7 @@ class File(object):
 
 def _md5_for_file(filename, block_size=2**20):
     fileobj = file(filename, 'rb')
-    filemd5 = md5.md5()
+    filemd5 = hashlib.md5()
     while True:
         data = fileobj.read(block_size)
         if not data:
