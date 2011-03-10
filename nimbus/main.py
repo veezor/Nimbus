@@ -127,12 +127,11 @@ class App(object):
                 print "password does not match"
                 print
             else:
+                user = User.objects.get(id=1)
+                user.set_password(password)
+                user.save()
+                print "password changed"
                 break
-
-        user = User.objects.get(id=1)
-        user.set_password(password)
-        user.save()
-        print "password changed"
 
 
     def run(self):
