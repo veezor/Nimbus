@@ -4,6 +4,7 @@
 from django.shortcuts import redirect
 from django.core.exceptions import MiddlewareNotUsed
 
+from nimbus.libs import bacula
 from nimbus.wizard import views
 from nimbus.wizard import models
 
@@ -12,11 +13,12 @@ class Wizard(object):
     def __init__(self):
         wizard = models.Wizard.get_instance()
         if wizard.has_completed():
+            bacula.unlock_bacula_and_start()
             raise MiddlewareNotUsed("wizard completed")
 
     def process_request(self, request):
         wizard = models.Wizard.get_instance()
-        
+
         if wizard.has_completed():
             return None
         else:
@@ -29,6 +31,6 @@ class Wizard(object):
         path = request.META['PATH_INFO']
         if path.startswith("/wizard") or\
                 path.startswith("/media") or\
+                path.startswith("/recovery") or\
                 'ajax' in path:
             return True
-    

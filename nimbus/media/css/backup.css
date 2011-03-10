@@ -1,0 +1,46 @@
+/* BACKUP */
+
+.computer {
+    padding: 20px;
+    -moz-border-radius: 5px;
+    background: #EEE;
+    margin-bottom: 20px
+}
+
+.computer-data {
+    float: left;
+    width: 250px;
+}
+
+.computer-data h3 {
+    margin: 0 0 -5px 0;
+    padding: 0;
+}
+
+.computer-data img {
+    float: left;
+    height: 32px;
+    padding-right: 10px;
+}
+
+.computer-description {
+    float: right;
+    width: 600px;
+    font-size: 10px;
+    margin: 0;
+    line-height: 1.4em;
+}
+
+.novo_perfil {
+    display: none;
+    padding: 20px;
+    background: #FFB;
+    margin-bottom: 20px;
+}
+
+.tree {
+    padding-left: 20px !important;
+    margin-bottom: 20px;
+}
+
+.tree li { padding-left: 30px }

@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError
 
 
 from nimbus.shared import signals
-from nimbus.libs import systemprocesses
+from nimbus.libs import systemprocesses, bacula
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 # Create your models here.
 
@@ -107,8 +107,9 @@ def update_networks_file(interface):
             logger.exception("Conexao com nimbus-manager falhou")
 
 
-    systemprocesses.norm_priority_job("Generate network conf files and restart networking", 
-                                     callable, interface)
+    if not bacula.bacula_is_locked():
+        systemprocesses.norm_priority_job("Generate network conf files and restart networking", 
+                                         callable, interface)
 
 
 def update_director_address(interface):
@@ -148,11 +149,13 @@ def get_nimbus_address():
     config = Config.get_instance()
 
     if not config.director_address:
-        raw_iface = networkutils.get_interfaces()[0]
-        address = raw_iface.addr
-        return address
+        return get_raw_network_interface_address()
 
     return config.director_address
+
+def get_raw_network_interface_address():
+    raw_iface = networkutils.get_interfaces()[0]
+    return raw_iface.addr
 
 signals.connect_on( update_networks_file, NetworkInterface, post_save )
 signals.connect_on( update_director_address, NetworkInterface, post_save )

@@ -1,99 +1,11 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8" src="/media/lib/js/tree_plugin.js"></script>
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('.toggle').click(function(){
-            var target = $(this).attr('ref');
-            $(this).parent().parent().find('.' + target).slideToggle();
-        });
-        
-        get_tree_path = "/backup/get_tree/";
-        
-        $('#update_tree').click(function()
-        {
-            update_tree('/', get_tree_path, undefined, undefined, undefined, '#computer_id');
-            return false;
-        });
-
-        $(".tree a").click(function()
-        {
-            update_tree($(this).attr("path"), get_tree_path, undefined, undefined, undefined, '#computer_id');
-            return false;
-        });
-        
-        $('.profile').change(function(){
-            if ($('.profile:checked').attr('id') == 'profile_0') {
-                $('.novo_perfil').slideDown();
-            } else {
-                $('.novo_perfil').slideUp();
-            }
-        });
-        $('.profile').change();
-        
-        $('#schedule_id').change(function(){
-            if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
-                $('#schedule').slideDown();
-            } else {
-                $('#schedule').slideUp();
-            }
-        });
-        $('#schedule_id').change();
-        
-        $('.schedule_activate').change(function(){
-            _checked = $(this).attr('checked');
-            _class = $(this).attr('id');
-            if (_checked) {
-                $('.' + _class).addClass('active');
-            } else {
-                $('.' + _class).removeClass('active');
-            }
-        });
-        $('.schedule_activate').change();
-        
-        $('#fileset_id').change(function(){
-            if ($('#fileset_id :selected').attr('id') == 'new_fileset') {
-                $('#fileset').slideDown();
-            } else {
-                $('#fileset').slideUp();
-            }
-        });
-        $('#fileset_id').change();
-        $('#filepath_template').clone().appendTo('.filepaths').show();
-        
-        function remover_path(obj) {
-            $(obj).parent().remove();
-            if ($('#filepath_template').parent().children().length == 1) {
-                adicionar_path();
-            }
-        }
-        
-        function adicionar_path(obj) {
-            if (obj) {
-                $('#filepath_template').clone().insertAfter($(obj).parent()).show();
-            } else {
-                $('#filepath_template').clone().appendTo('.filepaths').show();
-            }
-            $('.filepaths .add').unbind('click').click(function(){
-                adicionar_path(this);
-            });
-            $('.filepaths .del').unbind('click').click(function(){
-                remover_path(this);
-            });
-        }
-        
-        $('.filepaths .add').click(function(){
-            adicionar_path(this);
-        });
-        
-        $('.filepaths .del').click(function(){
-            remover_path(this);
-        });
-		
-    });
-</script>
-
+<link type="text/css" rel="stylesheet" href="/media/css/backup.css"/>
+<link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
+<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript" src="/media/js/backup.js"></script>
+<script type="text/javascript" src="/media/js/schedules.js"></script>
 {% endblock %}
 
 {% block page %}
@@ -104,23 +16,23 @@
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
 		<h2>{{title}}</h2>
-	</div>		<!-- .block_head ends -->
+	</div>
 
     <div class="block_content">
         
         <form action="/backup/add/" method="post">
             {% if computer %}
             <p></p>
-            <div class="computer" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
-                <div class="left" style="float: left; width: 250px">
+            <div class="computer">
+                <div class="computer-data">
                     <div class="title">
-                        <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{computer.name}}</h3>
+                        <img src="/media/icons/computer.png"/>
+                        <h3>{{computer.name}}</h3>
                         <small class="ip">{{computer.address}} - {{computer.operation_system|title}} - {% for g in computer.groups.all %}{{g.name}}{% endfor %}</small>
                     </div>
                 </div>
-                <div class="right" style="float: right; width: 600px">
-                    <p style="font-size: 10px; margin: 0; line-height: 1.4em">{{computer.description}}</p>
+                <div class="computer-description">
+                    {{computer.description}}
                 </div>
                 <div class="clear"></div>
                 <input type="hidden" name="computer_id" id="computer_id" value="{{computer.id}}" />
@@ -174,19 +86,6 @@
                 <input type="text" class="text small" name="retention_time" value="{{ retention_time }}" />
             </p>
             
-            <script type="text/javascript" charset="utf-8">
-	            $(document).ready(function(){
-		            $('.profile').change(function(){
-		                if ($('.profile:checked').attr('id') == 'profile_0') {
-		                    $('.novo_perfil').slideDown();
-		                } else {
-		                    $('.novo_perfil').slideUp();
-		                }
-		            });
-		            $('.profile').change();
-	            });
-	        </script>
-	        
             {% if errors.profile_id %}
             <ul class="errorlist">
                 <li>{{ errors.profile_id }}</li>
@@ -203,7 +102,7 @@
                 <small>Um perfil de configuração é um conjunto de armazenamento, agendamento e caminhos de diretórios que serão feitos backup.</small>
             </p>
             
-            <div class="novo_perfil" style="display: none; padding: 20px; background: #FFF2A7; margin-bottom: 20px">
+            <div class="novo_perfil">
                 {% if errors.profile_name %}
                 <ul class="errorlist">
                     <li>{{ errors.profile_name }}</li>
@@ -229,19 +128,6 @@
                     </select>
                 </p>
                 
-                <script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    		            $('#schedule_id').change(function(){
-    		                if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
-    		                    $('#schedule').slideDown();
-    		                } else {
-    		                    $('#schedule').slideUp();
-    		                }
-    		            });
-    		            $('#schedule_id').change();
-    	            });
-    	        </script>
-                
                 {% if errors.profile_schedule_id %}
                 <ul class="errorlist">
                     <li>{{ errors.profile_schedule_id }}</li>
@@ -259,47 +145,31 @@
                 </p>
         
                 <!-- TODO: Prever um agendamento já definido. -->
-                <div class="block withsidebar" id="schedule" style="display: none">
+                <div class="block withsidebar hidden" id="schedule">
             		<div class="block_head">
             			<div class="bheadl"></div>
             			<div class="bheadr"></div>
 			
-            			<h2 style="font-size: 1.2em">
+            			<h2>
             			    Criar novo agendamento
             			</h2>
             		</div>		<!-- .block_head ends -->
 		
             		<div class="block_content">
 			
-    			        <script type="text/javascript" charset="utf-8">
-    			            $(document).ready(function(){
-        			            $('.schedule_activate').change(function(){
-        			                _checked = $(this).attr('checked');
-        			                _class = $(this).attr('id');
-        			                if (_checked) {
-            			                $('.' + _class).addClass('active');
-        			                } else {
-        			                    $('.' + _class).removeClass('active');
-        			                }
-        			            });
-        			            $('.schedule_activate').change();
-    			            });
-    			        </script>
-			
-			            
-			            <div style="float: right; padding: 10px 20px 10px 0; clear: both">
+			            <div id="error-box">
 			                {% if errors.schedule_name %}
-                            <ul class="errorlist" style="">
+                            <ul class="errorlist">
                                 <li>{{ errors.schedule_name }}</li>
                             </ul>
                             {% endif %}
                             {% if errors.schedule_day %}
-                            <ul class="errorlist" style="">
+                            <ul class="errorlist">
                                 <li>{{ errors.schedule_day }}</li>
                             </ul>
                             {% endif %}
                             {% if errors.schedule_hour %}
-                            <ul class="errorlist" style="">
+                            <ul class="errorlist">
                                 <li>{{ errors.schedule_hour }}</li>
                             </ul>
                             {% endif %}
@@ -333,7 +203,7 @@
                             </p>
                             <p>
                                 <label for="mothly_hour">Hora:</label><br/>
-                                <input type="text" name="schedule.monthly.hour" id="mothly_hour" class="text small mascara_hora" style="width: 45px" value="{{schedule_monthly_hour}}" /><br/>
+                                <input type="text" name="schedule.monthly.hour" id="mothly_hour" class="text small mascara_hora" value="{{schedule_monthly_hour}}" /><br/>
                                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                             </p>
                             <p>
@@ -343,7 +213,7 @@
                                     <option value="{{level}}" {% if schedule_monthly_level == level %}selected="selected"{% endif %}>{{level}}</option>
                                     {% endfor %}
                                 </select><br/>
-                                <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                                <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                             </p>
             			</div>		<!-- .sidebar_content ends -->
 			        
@@ -361,7 +231,7 @@
                             </p>
                             <p>
                                 <label for="weekly_hour">Hora:</label><br/>
-                                <input type="text" name="schedule.weekly.hour" id="weekly_hour" class="text small mascara_hora" style="width: 45px" maxlength="5" value="{{schedule_weekly_hour}}" /><br/>
+                                <input type="text" name="schedule.weekly.hour" id="weekly_hour" class="text small mascara_hora" maxlength="5" value="{{schedule_weekly_hour}}" /><br/>
                                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                             </p>
                             <p>
@@ -371,7 +241,7 @@
                                     <option value="{{level}}" {% if schedule_weekly_level == level %}selected="selected"{% endif %}>{{level}}</option>
                                     {% endfor %}
                                 </select>
-                                <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                                <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                             </p>
             			</div>		<!-- .sidebar_content ends -->
 			        
@@ -382,7 +252,7 @@
                             <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
                             <p>
                                 <label for="daily_hour">Hora:</label><br/>
-                                <input type="text" name="schedule.dayly.hour" id="daily_hour" class="text small mascara_hora" style="width: 45px" maxlength="5" value="{{schedule_dayly_hour}}" /><br/>
+                                <input type="text" name="schedule.dayly.hour" id="daily_hour" class="text small mascara_hora" maxlength="5" value="{{schedule_dayly_hour}}" /><br/>
                                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
                             </p>
                             <p>
@@ -392,7 +262,7 @@
                                     <option value="{{level}}" {% if schedule_dayly_level == level %}selected="selected"{% endif %}>{{level}}</option>
                                     {% endfor %}
                                 </select>
-                                <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                                <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                             </p>
             			</div>		<!-- .sidebar_content ends -->
                     
@@ -403,7 +273,7 @@
                             <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
                             <p>
                                 <label for="hourly_hour">Minuto:</label><br/>
-                                <input type="text" name="schedule.hourly.hour" id="hourly_hour" class="text small mascara_minuto" style="width: 20px" maxlength="2" value="{{schedule_hourly_hour}}" /><br/>
+                                <input type="text" name="schedule.hourly.hour" id="hourly_hour" class="text small mascara_minuto" maxlength="2" value="{{schedule_hourly_hour}}" /><br/>
                                 <small>Exemplo: 20, 35 ou 08.</small>
                             </p>
                             <p>
@@ -413,7 +283,7 @@
                                     <option value="{{level}}" {% if schedule_hourly_level == level %}selected="selected"{% endif %}>{{level}}</option>
                                     {% endfor %}
                                 </select>
-                                <small style="line-height: 1.2em">No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
+                                <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
                             </p>
                         </div>
 
@@ -425,20 +295,6 @@
 		
             	</div>		<!-- .block .schedule ends -->
             	
-            	
-            	<script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    		            $('#fileset_id').change(function(){
-    		                if ($('#fileset_id :selected').attr('id') == 'new_fileset') {
-    		                    $('#fileset').slideDown();
-    		                } else {
-    		                    $('#fileset').slideUp();
-    		                }
-    		            });
-    		            $('#fileset_id').change();
-    	            });
-    	        </script>
-
                 {% if errors.profile_fileset_id %}
                 <ul class="errorlist">
                     <li>{{ errors.profile_fileset_id }}</li>
@@ -455,45 +311,7 @@
                     </select>
                 </p>
                 
-                <script type="text/javascript" charset="utf-8">
-    	            $(document).ready(function(){
-    	                $('#filepath_template').clone().appendTo('.filepaths').show();
-    	                
-    	                function remover_path(obj) {
-    	                    $(obj).parent().remove();
-    	                    if ($('#filepath_template').parent().children().length == 1) {
-    	                        adicionar_path();
-    	                    }
-    	                }
-    	                
-    	                function adicionar_path(obj) {
-    	                    if (obj) {
-    	                        $('#filepath_template').clone().insertAfter($(obj).parent()).show();
-    	                    } else {
-    	                        $('#filepath_template').clone().appendTo('.filepaths').show();
-    	                    }
-    	                    
-    	                    
-    	                    $('.filepaths .add').unbind('click').click(function(){
-        	                    adicionar_path(this);
-        	                });
-        	                
-        	                $('.filepaths .del').unbind('click').click(function(){
-        	                    remover_path(this);
-        	                });
-    	                }
-    	                
-    	                $('.filepaths .add').click(function(){
-    	                    adicionar_path(this);
-    	                });
-    	                
-    	                $('.filepaths .del').click(function(){
-    	                    remover_path(this);
-    	                });
-    	            });
-    	        </script>
-                
-                <div class="block" id="fileset" style="display: none">
+                <div class="block hidden" id="fileset">
             		<div class="block_head">
             			<div class="bheadl"></div>
             			<div class="bheadr"></div>
@@ -502,7 +320,7 @@
             		<div class="block_content">
                         <p>
                             {% if errors.fileset_name %}
-                            <ul class="errorlist" style="">
+                            <ul class="errorlist">
                                 <li>{{ errors.fileset_name }}</li>
                             </ul>
                             {% endif %}
@@ -515,7 +333,7 @@
 
                         <p>
                             {% if errors.path %}
-                            <ul class="errorlist" style="">
+                            <ul class="errorlist">
                                 <li>{{ errors.path }}</li>
                             </ul>
                             {% endif %}
@@ -523,29 +341,20 @@
 
                         {% if path %}
                         <p>Arquivos selecionados:</p>
-                        <ul class="tree" style="padding-left: 20px !important; margin-bottom: 20px">
+                        <ul class="tree">
                             {% for p in path %}
-                            <li class="" style="padding-left: 20px"><span style="padding-left: 10px"><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
+                            <li><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</li>
                             {% endfor %}
                         </ul>
                         <p>Selecionar mais arquivos:</p>
                         {% endif %}
 
-                        <div id="mensagem_erro_fileset" style="display: none"></div>
+                        <div id="mensagem_erro_fileset" class="hidden"></div>
 
                         <!-- <a href="#" id="update_tree">atualizar arvore</a> -->
                         <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
             		    
-            		    {% if 0 %}
-                        <p>
-                            <label for="fileset_name">Caminhos para backup:</label><br/>
-                            <ol class="filepaths">
-                                <li id="filepath_template" style="display: none"><input type="text" name="fileset_name" id="fileset_name" class="text medium" /> <span class="add"><img src="/media/icons/plus.png" /></span> <span class="del"><img src="/media/icons/minus.png" /></span></li>
-                            </ol>
-                        </p>
-                        {% endif %}
-                        <p></p>
-            		</div>		<!-- .block_content ends -->
+            		</div>
             		<div class="bendl"></div>
             		<div class="bendr"></div>
             	</div>		<!-- .block ends -->

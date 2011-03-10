@@ -9,18 +9,15 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.http import Http404
 
-
 from nimbus.config.models import Config
-from nimbus.network.models import NetworkInterface
+from nimbus.network.models import (NetworkInterface, 
+                                   get_raw_network_interface_address)
 from nimbus.timezone.forms import TimezoneForm
 from nimbus.offsite.forms import OffsiteForm
 from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.shared.forms import form
 from nimbus.shared.utils import project_port
 from nimbus.wizard import models
-
-
-
 
 
 def only_wizard(view):
@@ -31,7 +28,7 @@ def only_wizard(view):
             raise Http404()
         else:
             return view(request)
-    
+
     return wrapper
 
 @only_wizard
@@ -44,7 +41,22 @@ def license(request):
     if request.method == "GET":
         return render_to_response( request, "license.html", extra_context )
     elif request.method == "POST":
-        return redirect('nimbus.wizard.views.timezone')
+        return redirect('nimbus.wizard.views.recovery')
+    else:
+        raise Http404()
+
+
+@only_wizard
+def recovery(request):
+    extra_context = {
+        'wizard_title': u'Recuperação do sistema',
+        'page_name': u'recovery',
+        'next': reverse('nimbus.wizard.views.timezone')
+    }
+    if request.method == "GET":
+        return render_to_response( request, "recovery.html", extra_context )
+    elif request.method == "POST":
+        return redirect('nimbus.recovery.views.select_source')
     else:
         raise Http404()
 
@@ -53,10 +65,9 @@ def license(request):
 def timezone(request):
     extra_context = {
         'wizard_title': u'2 de 5 - Configuração de Hora',
-        'page_name': u'timezone',
-        'previous': reverse('nimbus.wizard.views.license')
+        'page_name': u'timezone'
     }
-    return edit_singleton_model( request, "generic.html", 
+    return edit_singleton_model( request, "generic.html",
                                  "nimbus.wizard.views.offsite",
                                  formclass = TimezoneForm,
                                  extra_context = extra_context )
@@ -68,7 +79,7 @@ def offsite(request):
         'page_name': u'offsite',
         'previous': reverse('nimbus.wizard.views.timezone')
     }
-    return edit_singleton_model( request, "generic.html", 
+    return edit_singleton_model( request, "generic.html",
                                  "nimbus.wizard.views.network",
                                  formclass = OffsiteForm,
                                  extra_context = extra_context )
@@ -80,49 +91,26 @@ def network(request):
         'page_name': u'network',
         'previous': reverse('nimbus.wizard.views.offsite')
     }
-    
-    interface = NetworkInterface()
-    
+
     if request.method == "GET":
+        interface = NetworkInterface.get_instance()
         Form = form(NetworkInterface)
         extra_context['form'] = Form(instance=interface)
-        return render_to_response( request, "generic.html", extra_context)
-
+        return render_to_response( request, "generic.html",
+                                   extra_context)
     else:
-        if interface.address != request.POST['address']:
-            change_address = True
-        else:
-            change_address = False
+        return edit_singleton_model( request, "generic.html",
+                                    "nimbus.wizard.views.password",
+                                     model = NetworkInterface,
+                                     extra_context = extra_context )
 
-        FormClass = form(NetworkInterface)
-        interface_form = FormClass(request.POST, instance=interface)
-
-        if interface_form.is_valid():
-
-            interface_form.save()
-
-            if change_address:
-
-                port = project_port(request)
-                extra_context['wizard_title'] = u'Redirecionamento'
-                extra_context['wizard'] = True
-
-                extra_context['ip_address'] = request.POST['address'] + port
-                extra_context['url'] = 'wizard/password'
-
-                return render_to_response(request, "redirect.html", extra_context)
-            else:
-                return redirect("nimbus.wizard.views.password")
-        else:
-            extra_context['form'] = interface_form
-            return render_to_response( request, "generic.html", extra_context)
 
 
 @only_wizard
 def password(request):
     extra_context = {
         'wizard_title': u'5 de 5 - Senha do usuário admin',
-        'page_name': u'network',
+        'page_name': u'password',
         'previous': reverse('nimbus.wizard.views.network')
     }
     user = User.objects.get(id=1)
@@ -144,8 +132,15 @@ def password(request):
 @only_wizard
 def finish(request):
 
-    if request.method == "GET":
-        wizard = models.Wizard.get_instance()
-        wizard.finish()
+    #GET OR POST
+    wizard = models.Wizard.get_instance()
+    wizard.finish()
+
+    network_interface = NetworkInterface.get_instance()
+    if network_interface.address == get_raw_network_interface_address():
         return redirect( "nimbus.base.views.home" )
+    else:
+        network_interface.save() # change ip address
+        return render_to_response(request, "redirect.html", dict(ip_address=network_interface.address,
+                                                                 url="/"))
 

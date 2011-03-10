@@ -1,32 +1,48 @@
-{% extends "base.html" %}
+{% extends "base_wizard.html" %}
 
-{% block headtags %}{% endblock %}
+{% block headtags %}
+<script type="text/javascript">
 
-{% block page %}
+	var idTimer = undefined;
+	function check(){
+		$.post('/recovery/check_database_recover/', {}, function(json){
+			//json.count = 0;
+			if (! json.has_finished) {
+				$("#recover_database").submit();
+			}
+			$("#files_left span").text(json.count);
+			$("#files_left").show();
+		}, "json");
+	}
+	idTimer = setInterval(check, 2000);
 
-<div class="block">
+</script>
+<style type="text/css">
+	#files_left {
+		font-size: 15px;
+		display: none;
+	}
+	#files_left span {
+		color: #069;
+		font-weight: bold;
+	}
+</style>
 
-	<div class="block_head">
-		<div class="bheadl"></div>
-		<div class="bheadr"></div>
-		<h2>{{title}}</h2>
-	</div>		<!-- .block_head ends -->
+{% endblock %}
 
-    <div class="block_content">
-    
-        <p>Iremos tentar recuperar a base de dados do máquina, esta operação pode levar alguns minutos. Para prosseguir clique no botão OK e aguarde.</p>
+{% block content %}
 
-        <form action="/recovery/recover_databases/" method="post">
-            <input type="hidden" name="localsource" value="{{ localsource }}"/>
-            <input type="hidden" name="device" value="{{ device }}"/>
-            <input type="submit" class="submit" value="OK" />
-        </form>
-    
-        <p></p>
-    </div>
-    <div class="bendl"></div>
-	<div class="bendr"></div>
-    
-</div>
+<p>A recuperação da base de dados da máquina está sendo realizada.
+Esta operação pode levar alguns minutos.</p>
+
+<p id="files_left">Falta(m) <span></span> arquivo(s) para concluir a recuperação da base de dados.</p>
+
+<p>Você será redirecionado para a página de login.</p>
+
+<form id="recover_database" action="/recovery/recover_volumes/" method="post">
+	<input type="hidden" name="localsource" value="{{ localsource }}"/>
+	<input type="hidden" name="device" value="{{ device }}"/>
+	<p></p>
+</form>
 
 {% endblock %}

@@ -1,32 +1,17 @@
-{% extends "base.html" %}
+{% extends "base_wizard.html" %}
 
 {% block headtags %}{% endblock %}
 
-{% block page %}
+{% block content %}
 
-<div class="block">
+    <h2>Selecione a origem de onde deseja fazer a recuperação:</h2>
 
-	<div class="block_head">
-		<div class="bheadl"></div>
-		<div class="bheadr"></div>
-		<h2>{{title}}</h2>
-	</div>		<!-- .block_head ends -->
-
-    <div class="block_content">
-    
-        <h2>Selecione a origem de onde deseja fazer a recuperação:</h2>
-
-        <form action="/recovery/select_source/" method="post">
-          <input type="radio" name="source" value="offsite" /> Nimbus Cloud Backup <br />
-          <input type="radio" name="source" value="externalstorage" /> HD externo <br /> <br />
-          <input class="submit mid" type="submit" value="Prosseguir" /><br />
-        </form>
-    
-        <p></p>
-    </div>
-    <div class="bendl"></div>
-	<div class="bendr"></div>
-    
-</div>
+<form action="/recovery/select_source/" method="post">
+  <input type="radio" name="source" value="offsite" checked="checked"/> Nimbus Cloud Backup <br />
+  <input type="radio" name="source" value="externalstorage" /> HD externo <br /> <br />
+  <p class="input_submit">
+	<input class="submit right mid" type="submit" value="Prosseguir" />
+  </p>
+</form>
 
 {% endblock %}

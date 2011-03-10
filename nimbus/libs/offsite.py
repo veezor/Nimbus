@@ -214,6 +214,9 @@ class BaseManager(object):
         for delete_request in DeleteRequest.objects.all():
             self.delete_volume(delete_request.volume.path)
 
+    def finish(self):
+        pass
+
 
 
 
@@ -244,7 +247,7 @@ class RemoteManager(BaseManager):
 
 
     def get_remote_volumes_list(self):
-        return [ f[0] for f in self.api.list_all_files() ]
+        return [ f[0] for f in self.api.list_all_files() if filename_is_volumename(f[0]) ]
 
 
     def _download_file(self, filename, dest, 
@@ -256,8 +259,12 @@ class RemoteManager(BaseManager):
         else:
             destfilename = join(device.archive, filename)
 
-        return self.api.download_file( filename, destfilename,
-                                       ratelimit, callback, True)
+        self.api.download_file( filename, destfilename,
+                                ratelimit, callback, True)
+
+
+        os.chmod( destfilename, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
+        os.chown( destfilename, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
 
 
     def process_pending_download_requests(self):
@@ -289,10 +296,6 @@ class RemoteManager(BaseManager):
                     process_function(req.volume.path, req.volume.filename,
                                      ratelimit=ratelimit, callback=req.update)
 
-                    if exists(req.volume.filename):
-                        os.chmod( req.volume.filename, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
-                        os.chown( req.volume.filename, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
-
                     req.finish()
                     logger.info("%s processado com sucesso" % req)
                     break
@@ -323,9 +326,15 @@ class LocalManager(BaseManager):
 
     UploadRequestClass = LocalUploadRequest
 
-    def __init__(self, origin, destination):
-        self.origin = origin
+    def __init__(self, device_manager, destination):
+        self.device_manager = device_manager
+        self.origin = self.device_manager.mountpoint
         self.destination = destination
+
+
+    def create_download_request(self, volume_path):
+        volume_path = join(self.origin, volume_path)
+        return super(LocalManager, self).create_download_request(volume_path)
 
 
     def get_remote_volumes_list(self):
@@ -391,6 +400,10 @@ class LocalManager(BaseManager):
         dest.close()
 
 
+    def finish(self):
+        self.device_manager.umount()
+
+
 
 
 class RecoveryManager(object):
@@ -430,15 +443,22 @@ class RecoveryManager(object):
 
 
     def recovery_nimbus_dabatase(self):
-        nimbus_file = NIMBUS_DUMP
+        nimbus_file = os.path.split(NIMBUS_DUMP)[-1]
+        nimbus_file = os.path.join("/bacula", nimbus_file)
+
+
         db_data = settings.DATABASES['default']
         self.recovery_database( nimbus_file,
                                 db_data['NAME'],
                                 db_data['USER'],
                                 db_data['PASSWORD'])
 
+
     def recovery_bacula_dabatase(self):
-        bacula_file = BACULA_DUMP
+        bacula_file = os.path.split(BACULA_DUMP)[-1]
+        bacula_file = os.path.join("/bacula", bacula_file)
+
+
         db_data = settings.DATABASES['bacula']
         self.recovery_database( bacula_file,
                                 db_data['NAME'],
@@ -475,8 +495,6 @@ class RecoveryManager(object):
         self.manager.download_all_volumes()
 
     def finish(self):
-        if isinstance(self.manager, LocalManager):
-            storage = StorageDeviceManager( self.manager.device )
-            storage.umount()
+        self.manager.finish()
  
                 

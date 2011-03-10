@@ -1,34 +1,19 @@
-{% extends "base.html" %}
+{% extends "base_wizard.html" %}
 
 {% block headtags %}{% endblock %}
 
-{% block page %}
+{% block content %}
 
-<div class="block">
+<h1>A base de dados do nimbus foi recuperada com sucesso.</h1>
 
-	<div class="block_head">
-		<div class="bheadl"></div>
-		<div class="bheadr"></div>
-		<h2>{{title}}</h2>
-	</div>		<!-- .block_head ends -->
+<p>Por favor, clique em prosseguir para continuar com a recuperação.</p>
 
-    <div class="block_content">
-        
-        <h1>A base de dados do nimbus foi recuperada com sucesso.</h1>
-        
-        <p>Por favor, clique em prosseguir para continuar com a recuperação.</p>
-
-        <form action="/recovery/recover_volumes/" method="post">
-            <input type="hidden" name="localsource" value="{{localsource}}"/>
-            <input type="hidden" name="device" value="{{device}}"/>
-            <input type="submit" class="submit mid" value="Prosseguir" />
-        </form>
-        
-        <p></p>
-    </div>
-    <div class="bendl"></div>
-	<div class="bendr"></div>
-    
-</div>
+<form action="/recovery/recover_volumes/" method="post">
+	<input type="hidden" name="localsource" value="{{localsource}}"/>
+	<input type="hidden" name="device" value="{{device}}"/>
+	<p class="input_submit">
+		<input type="submit" class="submit right mid" value="Prosseguir" />
+	</p>
+</form>
 
 {% endblock %}
