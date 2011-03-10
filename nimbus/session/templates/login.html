@@ -20,13 +20,13 @@
 </form> -->
 
     <form action="{% url django.contrib.auth.views.login  %}" method="post">
-        
+
 
         {% include "form.html" %}
 
-        <p>
-            <input type="submit" class="submit" value="Acessar" /> &nbsp;
+        <p class="right">
             <input type="checkbox" class="checkbox" checked="checked" id="rememberme" /> <label for="rememberme">Manter minha sessão ativa</label>
+            <input type="submit" class="submit" value="Acessar" /> &nbsp;
         </p>
 
         <input type="hidden" name="next" value="{{ next }}" />
