@@ -14,13 +14,18 @@ $(document).ready(function(){
         $.jqplot(obj_id, [data], {
             seriesDefaults: {
                 renderer: render,
-                pointLabels: { location:'s', show: true, labels: labels },
+                pointLabels: {
+                    location:'s',
+                    show: false,
+                    labels: labels
+                    },
                 fill: true,
-                color: '#95BACB'
-            },
-            axesDefaults: {
-                tickOptions: {
-                    //formatString: "%.2f"
+                color: '#95BACB',
+                markerOptions: {
+                    show: true,
+                    lineWidth: 5,
+                    size: 5,
+                    color: 'red'
                 }
             },
             axes: {
@@ -30,10 +35,12 @@ $(document).ready(function(){
                     min: 0
                 },
                 yaxis: {
+                    tickOptions:{ formatString:'%.2f' },
                     min: 0
                 }
             },
-            highlighter: { show: false }
+            highlighter: { show: true, sizeAdjust: 7.5 },
+            cursor: { show: true }
         });
     };
 
