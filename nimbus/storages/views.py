@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-
-# Create your views here.
-
 import systeminfo
 
 from django.http import Http404, HttpResponse
@@ -21,24 +18,13 @@ from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form
 from nimbus.bacula.models import Job
 
-
-# def add(request):
-#     extra_context = {'title': u"Adicionar armazenamento"}
-#     return create_update.create_object( request, 
-#                                         model = Storage,
-#                                         form_class = form(Storage),
-#                                         template_name = "base_storages.html",
-#                                         extra_context = extra_context,
-#                                         post_save_redirect = "/storages/list")
-
-
 @login_required
 def new(request):
 
     if request.method == "POST":
         try:
             password = request.POST['password']
-            
+
             name = request.META.get('REMOTE_HOST')
             if not name:
                 name = u"Adicionado automaticamente"
@@ -66,11 +52,11 @@ def add(request):
 @login_required
 def edit(request, object_id):
     extra_context = {'title': u"Editar armazenamento"}
-    return create_update.update_object( request, 
+    return create_update.update_object( request,
                                         object_id = object_id,
                                         model = Storage,
                                         form_class = form(Storage),
-                                        template_name = "base_storages.html",
+                                        template_name = "storages_edit.html",
                                         extra_context = extra_context,
                                         post_save_redirect = "/storages/list")
 
@@ -81,9 +67,9 @@ def list(request):
         "storages" : Storage.objects.filter(active=True),
         "title": u"Armazenamento"
     }
-    
+
     return render_to_response(request, "storages_list.html", d)
-    
+
     # extra_content = {"object_list": Device.objects.all()}
     # return render_to_response(request, "list_storages.html", extra_content)
 
@@ -130,7 +116,7 @@ def view(request, object_id):
         "backups_em_execucao": backups_em_execucao,
         "espaco_em_disco": diskusage
     }
-    
+
     return render_to_response(request, "storages_view.html", d)
 
 
@@ -151,7 +137,7 @@ def activate(request, object_id):
     storage = Storage.objects.get(id=object_id)
     storage.active = True
     storage.save()
-    
+
     messages.success(request, u'Armazenamento ativado com sucesso.')
     return redirect('/storages/list')
 
@@ -163,4 +149,3 @@ def deactivate(request, object_id):
     storage.save()
 
     return redirect('/storages/list')
-
