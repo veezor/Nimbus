@@ -3,9 +3,15 @@ $(document).ready(function(){
     function create_chart(obj_id, data, ticks, chart_type, labels) {
         var fill = false;
         var render = $.jqplot.PieRenderer;
+        var highlighter_show = true;
+        var cursor_show = true;
+        var pointLabels_show = false;
 
         if (chart_type == 'bar') {
             var render = $.jqplot.BarRenderer;
+            highlighter_show = false;
+            cursor_show = false;
+            pointLabels_show = true;
         } else if (chart_type == 'area') {
             var render = $.jqplot.LineRenderer;
             var fill = true;
@@ -16,9 +22,9 @@ $(document).ready(function(){
                 renderer: render,
                 pointLabels: {
                     location:'s',
-                    show: false,
+                    show: pointLabels_show,
                     labels: labels
-                    },
+                },
                 fill: true,
                 color: '#95BACB',
                 markerOptions: {
@@ -39,8 +45,8 @@ $(document).ready(function(){
                     min: 0
                 }
             },
-            highlighter: { show: true, sizeAdjust: 7.5 },
-            cursor: { show: true }
+            highlighter: { show:highlighter_show },
+            cursor: { show: cursor_show }
         });
     };
 
