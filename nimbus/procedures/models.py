@@ -9,7 +9,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
 
 from nimbus.shared import utils, signals, fields
-import nimbus.shared.sqlqueries as sql
+
 
 from pybacula import BConsoleInitError
 
@@ -79,13 +79,7 @@ class Procedure(BaseModel):
                                    fileset__fileset=self.fileset_bacula_name,
                                    jobstatus='T').order_by('-endtime').distinct()[:15]
 
- 
-    def get_file_tree(self, job_id):
-        """Retrieves tree with files from a job id list"""
-        # build list with all job ids
-        ids = self.build_jid_list( job_id )    
-        files = File.objects.filter(job__jobid__in=ids)\
-                .distinct()
+
 
 
     def get_backup_jobs_between(self, start, end):
@@ -116,63 +110,18 @@ class Procedure(BaseModel):
 
 
     @staticmethod
-    def locate_files(jobid, path="/"):
-        depth = utils.pathdepth(path)
-
-        cursor = connections['bacula'].cursor()
-
-        regex = r"^([a-zA-Z]:)?%s.*$" % path
-
-
-        if path == "/": # get min depth files
-            cursor.execute(sql.SELECT_MIN_FILES_DEPTH, params=(jobid,))
-            depth = cursor.fetchone()[0]
-
-            cursor.execute(sql.SELECT_FILES_FROM_JOB_PATH_DEPTH, 
-                              params=(jobid, regex, depth))
-
-
-            files = [ row[0] for row in cursor.fetchall() ]
-
-            for filename in list(files):
-                like = "%s%%"  % filename
-                cursor.execute(sql.SELECT_NEXT_FILES_ON_DEPTH, params=(like, jobid,depth))
-                nextdepth = cursor.fetchone()[0]
-
-                cursor.execute(sql.SELECT_MORE_FILES_FROM_JOB_PATH_DEPTH, 
-                                          params=(jobid, like, nextdepth))
-
-                files.extend(  [ row[0] for row in cursor.fetchall() ]  )
-
-        else:
-            cursor.execute(sql.SELECT_NEXT_FILES_DEPTH, params=(jobid,depth))
-            depth = cursor.fetchone()[0]
-
-            cursor.execute(sql.SELECT_FILES_FROM_JOB_PATH_DEPTH, 
-                                  params=(jobid, regex, depth))
-
-            files = [ row[0] for row in cursor.fetchall() ]
-            # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
-            #             for row in cursor.fetchall() ]
-
-        files = list(set(files)) # remove duplicates
-        files.sort()
-        return files
+    def list_files(jobid, path="/"):
+       bacula = Bacula()
+       return bacula.list_files(jobid, path)
 
 
     @staticmethod
     def search_files(jobid, pattern):
-
-        cursor = connections['bacula'].cursor()
-
-        pattern = '%'+ pattern + '%'
-
-        cursor.execute(sql.SELECT_FILES_FROM_PATTERN,
-                              params=(jobid, pattern))
-
-        files = [ row[0] for row in cursor.fetchall() ]
-        # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
-        #             for row in cursor.fetchall() ]
+        files = File.objects.filter(
+                models.Q(filename__name__icontains=pattern) | models.Q(path__path__icontains=pattern),
+                job__jobid=jobid
+        ).distinct()
+        files = [ f.fullname for f in files ]
         files.sort()
         return files
 

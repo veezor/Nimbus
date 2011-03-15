@@ -16,22 +16,12 @@ from pybacula import BaculaCommandLine, configcheck
 
 from nimbus.shared import utils
 from nimbus.bacula import models
-import nimbus.shared.sqlqueries as sql 
-
-
-
-
 
 
 try:
     if settings.PYBACULA_TEST:
         pybacula.install_test_backend()
 except AttributeError, e:
-    pass
-
-
-
-class RestoreCallError(Exception):
     pass
 
 
@@ -56,31 +46,35 @@ class Bacula(object):
 
 
 
-    def db_size(self):
-        """Returns bacula's database size in MB."""
-        cursor = connections['bacula'].cursor()
-        return cursor.execute(sql.DB_SIZE_RAW_QUERY, 
-                                [settings.DATABASES['bacula']['NAME']])
+    def _get_items_from_bconsole_output(self, output):
+        result = []
+        for line in output.split("\n"):
+            data = line.split("\t")
+            if len(data) > 1:
+                result.append(data[-1])
 
-    def num_procedures(self):
-        """Returns generator of dict with number or total procedures stored at Nimbus."""
-        from nimbus.procedures.models import Procedure
-        return Procedure.objects.count()
-
-
-    def num_clients(self):
-        """Returns generator of dict with number of clients stored at Nimbus."""
-        from nimbus.computers.models import Computer
-        return Computer.objects.count()
-                        
-   
-    def total_mbytes(self):
-        """Returns generator of dict with total megabytes at bacula system backups."""
-        r = models.Job.objects.filter(jobstatus='T').aggregate(sum=Sum('jobbytes'))
-        return utils.bytes_to_mb(r['sum'])
+        result.sort()
+        return result
 
 
- 
+    def list_files(self, jobid, path):
+        result = []
+
+        self.cmd._bvfs_update.run()
+
+        dirs = self.cmd._bvfs_lsdir.jobid[jobid].path[path].run()
+        dirs = self._get_items_from_bconsole_output(dirs)
+        dirs.remove('.')
+        dirs.remove('..')
+        result.extend( dirs )
+
+        files = self.cmd._bvfs_lsfiles.jobid[jobid].path[path].run()
+        result.extend( self._get_items_from_bconsole_output(files) )
+
+        result.sort()
+        return result
+
+    
     def run_restore(self, client_name, jobid, where, files):
         
         self.logger.info("Executando run_restore_")
@@ -148,8 +142,6 @@ def bacula_is_locked():
     return os.path.exists(settings.BACULA_LOCK_FILE)
 
 
-
-
 def unlock_bacula_and_start():
 
     if bacula_is_locked():
@@ -163,8 +155,6 @@ def unlock_bacula_and_start():
             logger.info(stdout)
         except Exception, error:
             logger.exception("start bacula-dir error")
-
-
 
 
 
@@ -184,7 +174,6 @@ def lock_and_stop_bacula():
             logger.info(stdout)
         except Exception, error:
             logger.exception("stop bacula-dir error")
-
 
 
 class BaculaLock(object):

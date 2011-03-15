@@ -130,7 +130,7 @@ def get_tree(request):
     path = request.POST['path']
     job_id = request.POST['job_id']
     
-    files = Procedure.locate_files(job_id, path)
+    files = Procedure.list_files(job_id, path)
 
     response = simplejson.dumps(files)
     return HttpResponse(response, mimetype="text/plain")
