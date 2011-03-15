@@ -24,6 +24,9 @@ OS = ( (os,os) for os in enums.operating_systems)
 class UnableToGetFile(Exception):
     pass
 
+class ComputerAlreadyActive(Exception):
+    pass
+
 
 
 
@@ -121,6 +124,9 @@ class Computer(BaseModel):
 
     def activate(self):
 
+        if self.active:
+            raise ComputerAlreadyActive("Computer already active")
+
         nimbuscomputer = Computer.objects.get(id=1)
 
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
@@ -139,6 +145,27 @@ class Computer(BaseModel):
         proxy.restart_bacula()
 
         self.active = True
+        self.save()
+
+
+    def get_file_tree(self, path):
+
+        url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
+        proxy = xmlrpclib.ServerProxy(url)
+
+        if self.operation_system == "windows" and path == "/":
+            files = proxy.get_available_drives()
+            files = [ fname[:-1] + '/' for fname in files ]
+        else:
+            files = proxy.list_dir(path)
+
+        files.sort()
+
+        return files
+
+
+    def deactivate(self):
+        self.active = False
         self.save()
 
 

@@ -15,7 +15,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.db import IntegrityError
 
-from nimbus.computers.models import Computer, ComputerGroup
+from nimbus.computers.models import Computer, ComputerGroup, ComputerAlreadyActive
 from nimbus.procedures.models import Procedure
 from nimbus.bacula.models import Job
 from nimbus.shared.views import render_to_response
@@ -244,37 +244,33 @@ def group_list(request):
 @login_required
 def activate(request, object_id):
     try:
-
-        try:
-            computer = Computer.objects.get(id=object_id)
-        except Computer.DoesNotExist, error:
-            messages.error(request, u'Impossível ativar computador, computador inexistente')
-            return redirect('nimbus.computers.views.add')
-
-        if computer.active:
-            messages.info(request, "O computador já esta ativo")
-            return redirect('nimbus.computers.views.list')
-
+        computer = Computer.objects.get(id=object_id)
         computer.activate()
-
-        messages.success(request, u'Computador ativado com sucesso.')
+    except Computer.DoesNotExist, error:
+        messages.error(request, u'Impossível ativar computador, computador inexistente')
+        return redirect('nimbus.computers.views.add')
+    except ComputerAlreadyActive, error:
+        messages.info(request, "O computador já esta ativo")
         return redirect('nimbus.computers.views.list')
     except (socket.error, xmlrpclib.Fault), error:
         messages.error(request, u'Impossível ativar computador, verifique a conexão')
         return redirect('nimbus.computers.views.add')
+
+    messages.success(request, u'Computador ativado com sucesso.')
+    return redirect('nimbus.computers.views.list')
+
 
 
 @login_required
 def deactivate(request, object_id):
     try:
         computer = Computer.objects.get(id=object_id)
-        computer.active = False
-        computer.save()
+        computer.deactivate()
     except Computer.DoesNotExist, error:
         messages.error(request, u'Impossível desativar computador, computador inexistente')
         return redirect('nimbus.computers.views.list')
 
 
-    # messages.success(u'Armazenamento ativado com sucesso.')
-    return redirect('/computers/list')
+    messages.success(u'Computador desativado com sucesso.')
+    return redirect('nimbus.computers.views.list')
 

@@ -332,20 +332,14 @@ def get_tree(request):
 
         try:
             computer = Computer.objects.get(id=computer_id)
-
-            url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
-            proxy = xmlrpclib.ServerProxy(url)
-
-            if computer.operation_system == "windows" and path == "/":
-                files = proxy.get_available_drives()
-                files = [ fname[:-1] + '/' for fname in files ]
-            else:
-                files = proxy.list_dir(path)
-            files.sort()
-
+            files = computer.get_file_tree(path)
             response = simplejson.dumps(files)
         except socket.error, error:
             response = simplejson.dumps({"type" : "error",
                                          "message" : "Impossível conectar ao cliente"})
+        except Computer.DoesNotExist, error:
+            response = simplejson.dumps({"type" : "error",
+                                         "message" : "Computador não existe"})
+
         return HttpResponse(response, mimetype="text/plain")
     
