@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import simplejson
-import pycurl
-
-import os
 import logging
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -14,12 +11,13 @@ from django.core import serializers
 from django.shortcuts import redirect
 from django.conf import settings
 
-from nimbus.offsite.models import DownloadRequest
+from devicemanager import (StorageDeviceManager,
+                                       MountError)
+
 from nimbus.shared.views import render_to_response, edit_singleton_model
-from nimbus.libs import offsite, systemprocesses, bacula
+from nimbus.libs import offsite, systemprocesses
 from nimbus.offsite.models import DownloadRequest
-from nimbus.libs.devicemanager import (StorageDeviceManager,
-                                       MountError, UmountError)
+
 from nimbus.offsite.forms import OffsiteRecoveryForm
 from nimbus.offsite.models import Offsite
 from nimbus.wizard.models import Wizard

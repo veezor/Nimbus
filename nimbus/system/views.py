@@ -12,11 +12,12 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.core import validators
 
+from devicemanager import (StorageDeviceManager,
+                                       MountError, UmountError)
+
 from nimbus.shared.views import render_to_response
 from nimbus.shared import utils, middlewares
 from nimbus.libs import offsite, systemprocesses, bacula
-from nimbus.libs.devicemanager import (StorageDeviceManager,
-                                       MountError, UmountError)
 import networkutils 
 import systeminfo
 
