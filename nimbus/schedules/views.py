@@ -16,44 +16,43 @@ from nimbus.shared import utils
 from nimbus.libs.db import Session
 
 from django.contrib import messages
-
-
 from nimbus.shared.enums import days, weekdays, levels, operating_systems
 
 
 @login_required
 def add(request):
     title = u"Criar agendamento"
-    
+
     schedule_form = ScheduleForm()
     daily_form = DailyForm()
     monthly_form = MonthlyForm()
     hourly_form = HourlyForm()
     weekly_form = WeeklyForm()
-    
+
     extra_content = {
         'days': days,
         'weekdays': weekdays,
         'levels': levels,
         'operating_systems': operating_systems,
+        'schedule_form': schedule_form
     }
     extra_content.update(**locals())
-    
+
     if request.method == 'POST':
         # TODO: Save.
         pass
-    
-    return render_to_response(request, 'base_schedules.html', extra_content)
+
+    return render_to_response(request, 'add_schedules.html', extra_content)
 
 
 @login_required
 def edit(request, object_id):
-    
+
     schedule = Schedule.objects.get(id=object_id)
     title = u"Editar agendamento"
     template = 'base_schedules.html'
 
-    
+
     extra_content = {
         'days': days,
         'weekdays': weekdays,
@@ -68,12 +67,12 @@ def edit(request, object_id):
 
     if request.method == "POST":
 
-        
+
         errors = {}
         extra_content["errors"] =  errors
-        
+
         schedule = Schedule.objects.get(id=object_id)
-        
+
         template = 'edit_schedules.html'
         schedule_name = request.POST.get('schedule.name')
 
@@ -137,7 +136,7 @@ def edit(request, object_id):
 
                                     if len(old_days) != len(post_days):
                                         new_days = post_days - old_days
-                                        remove_days =  old_days - post_days 
+                                        remove_days =  old_days - post_days
 
                                         for d in remove_days:
                                             t = Trigger.objects.get(day=d,schedule=schedule)
@@ -145,9 +144,9 @@ def edit(request, object_id):
                                             session.delete(t)
 
                                         for d  in new_days:
-                                            Trigger.objects.create(day=d, 
+                                            Trigger.objects.create(day=d,
                                                                    hour=hour,
-                                                                   level=level, 
+                                                                   level=level,
                                                                    schedule=schedule)
                             else:
                                 try:
@@ -190,6 +189,3 @@ def edit(request, object_id):
                                                    "schedule_weekly_day")) )
 
                 return render_to_response(request, template, extra_content )
-     
-
-

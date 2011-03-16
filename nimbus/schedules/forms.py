@@ -5,6 +5,8 @@ from django import forms
 
 
 class ScheduleForm(forms.ModelForm):
+    name = forms.CharField(label="Nome do agendamento",
+                widget=forms.TextInput(attrs={'class':'text small'}))
     class Meta:
         model = Schedule
 
@@ -27,4 +29,3 @@ class HourlyForm(forms.ModelForm):
 class WeeklyForm(forms.ModelForm):
     class Meta:
         model = Weekly
-
