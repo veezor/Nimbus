@@ -4,18 +4,18 @@
 
 import subprocess
 
+import windowsnotifier
 import wx
 import wx.lib.masked as masked
 
 
-NIMBUS_NOTIFIER_PATH = r'C:\Nimbus\pkgs\windowsnotifier.exe'
 
 
 
-class Example(wx.Frame):
+class App(wx.Frame):
 
     def __init__(self, parent, title):
-        super(Example, self).__init__(parent, title=title,
+        super(App, self).__init__(parent, title=title,
             size=(450, 200))
         self.SetSizeHints(minW=450,minH=200,maxW=450,maxH=200)
 
@@ -72,15 +72,12 @@ class Example(wx.Frame):
 
     def button_ok_pressed(self, event):
         try:
-            subprocess.check_call([NIMBUS_NOTIFIER_PATH,
-                                   self.username.GetValue(),
-                                   self.password.GetValue(),
-                                   self.address.GetValue()],
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE
-            )
+            username = self.username.GetValue()
+            password = self.password.GetValue()
+            address = self.address.GetValue().replace(' ','')
+            windowsnotifier.Notifier(username, password, address).notify_new_computer()
             self.dialog_on_success()
-        except subprocess.CalledProcessError, error:
+        except Exception, error:
             self.dialog_on_error()
 
 
@@ -102,5 +99,5 @@ class Example(wx.Frame):
 
 if __name__ == '__main__':
     app = wx.App()
-    Example(None, title="Nimbus Client for Windows")
+    App(None, title="Nimbus Client for Windows")
     app.MainLoop()
