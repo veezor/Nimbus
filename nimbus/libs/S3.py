@@ -5,6 +5,7 @@ import os
 import boto
 import logging
 import tempfile
+from functools import wraps
 from time import sleep, time
 from cStringIO import StringIO
 from boto.s3.resumable_download_handler import ResumableDownloadHandler
@@ -19,10 +20,9 @@ class RateLimiter(object):
     """Rate limit a url fetch"""
 
 
-    def __init__(self, rate_limit, callback=None):
+    def __init__(self, rate_limit):
         """rate limit in kBytes / second"""
         self.rate_limit = rate_limit
-        self.callback = callback
         self.start = time()
 
 
@@ -42,12 +42,7 @@ class RateLimiter(object):
 
             expected_time = transferred_size / self.rate_limit
 
-
-            if self.callback:
-                self.callback(transferred_size, total_size)
-
             sleep_time = expected_time - elapsed_time
-
 
             if sleep_time > 0:
                 sleep(sleep_time)
@@ -96,28 +91,73 @@ class S3AuthError(Exception):
 
 
 
+def multipart_status_callback_template(filename, part):
+    pass
+
+
+def report_status_callback_template(transferred_size, total_size):
+    pass
+
+
+class CallbackAggregator(object):
+
+    def __init__(self, *callbacks):
+        self.callbacks = callbacks
+
+    def add_callback(self, callback):
+        self.callbacks.append(callback)
+
+    def remove_callback(self, callback):
+        self.callbacks.remove(callback)
+
+    def __call__(self, *args, **kwargs):
+        for callbacks in self.callbacks:
+            callbacks(*args, **kwargs)
+
+
+
+def callback_decorator(function):
+    "Add callback parameter to S3 methods"
+    
+    @wraps(function)
+    def wrapper(self, *args, **kwargs):
+
+        callback = kwargs.get('callback')
+
+        if callback:
+            self.callbacks.add_callbacks(callback)
+
+        value = function(*args, **kwargs)
+
+        if callback:
+            self.callbacks.remove_callbacks(callback)
+        return value
+
+    return wrapper
+
+
 class S3(object):
 
 
-    def __init__(self, username, access_key, secret_key, rate_limit=None):
+    def __init__(self, username, access_key, secret_key,
+                       rate_limit=None):
 
         self.username = username
         self.access_key = access_key
         self.secret_key = secret_key
         self.rate_limit = rate_limit
+        self.callbacks = CallbackAggregator()
+        self.multipart_status_callbacks = CallbackAggregator()
+
+        if self.rate_limit:
+            self.callbacks.add_callback(RateLimiter(self.rate_limit))
+
         self.connection = boto.connect_s3(access_key, secret_key)
 
         if not self.connection:
             raise S3AuthError("check access_key and secret_key")
 
         self.bucket = self.connection.lookup(username)
-
-
-        
-    def _get_rate_limiter(self):
-        if self.rate_limit:
-            return RateLimiter(self.rate_limit)
-        return None
 
 
     def list_files(self):
@@ -129,7 +169,7 @@ class S3(object):
         key = self.bucket.new_key(keyname)
         with file(filename) as f_obj:
             key.set_contents_from_file(f_obj,
-                                       cb=self._get_rate_limiter(),
+                                       cb=self.callbacks,
                                        num_cb=-1)
 
 
@@ -138,18 +178,22 @@ class S3(object):
         multipart = self.bucket.initiate_multipart_upload(keyname)
         with MultipartFileManager(filename, part) as manager:
             for (part_number, part_content) in enumerate(manager):
+
                 part = StringIO(part_content)
                 multipart.upload_part_from_file(part,
                                                 part_number + 1,
-                                                cb=self._get_rate_limiter(),
+                                                cb=self.callbacks,
                                                 num_cb=-1)
+
+                self.multipart_status_callbacks(filename, part_number)
 
         multipart.complete_upload()
 
 
-        
-    def upload_file(self, filename, key=None, part=0):
 
+
+    @callback_decorator
+    def upload_file(self, filename, key=None, part=0):
 
         if not key:
             key = os.path.basename(filename)
@@ -162,7 +206,7 @@ class S3(object):
             self._upload_multipart(filename, key, part)
 
 
-
+    @callback_decorator
     def download_file(self, filename, destination=None):
 
         if not destination:
@@ -172,7 +216,8 @@ class S3(object):
         handler = ResumableDownloadHandler(tempfile.mktemp())
         handler._save_tracker_info(key) # Ugly but necessary
         with file(destination, "a") as f:
-            handler.get_file(key, f, {}, cb=self._get_rate_limiter(), num_cb=-1)
+            handler.get_file(key, f, {}, cb=self.callbacks, num_cb=-1)
+
 
 
     def delete_file(self, filename):
