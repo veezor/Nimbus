@@ -12,19 +12,19 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 
-from nimbus.base.models import UUIDSingletonModel as BaseModel
+
+from nimbus.libs.S3 import S3, S3AuthError
 from nimbus.shared import fields, signals
-from nimbusgateway import Api
+from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 
 # Create your models here.
 
 class Offsite(BaseModel):
     username = models.CharField(max_length=255, blank=True, null=True)
-    password = models.CharField(max_length=255, blank=True, null=True)
-    gateway_url = models.CharField( max_length=255, editable=False,
-                                    default="http://www.veezor.com:8080")
-    upload_rate = models.IntegerField(default=-1)
+    access_key = models.CharField(max_length=255, blank=True, null=True)
+    secret_key = models.CharField(max_length=255, blank=True, null=True)
+    rate_limit = models.IntegerField(default=-1)
     active = models.BooleanField()
 
 
@@ -32,18 +32,33 @@ class Offsite(BaseModel):
     def clean(self):
         if self.active:
             try:
-                api = Api(username=self.username,
-                          password=self.password,
-                          gateway_url=self.gateway_url)
-                api.check_auth()
-            except URLError, error:
+                s3 = self.get_s3_interface()
+            except S3AuthError, error:
                 logger = logging.getLogger(__name__)
                 logger.exception("Auth error")
-                raise ValidationError("Impossível autenticar. Login ou senha não confere")
+                raise ValidationError("Impossível autenticar. Login e chaves de acesso não conferem")
 
 
 
+    @classmethod
+    def get_s3_interface(cls):
+        config = cls.get_instance()
+        
+        
+        if config.rate_limit == -1:
+            rate_limit = None
+        else:
+            rate_limit = config.rate_limit
 
+        s3 = S3(username=config.username,
+                 access_key=config.access_key,
+                 secret_key=config.secret_key,
+                 rate_limit=rate_limit)
+
+        return s3
+
+
+    
 class Volume(models.Model):
 
     path = fields.ModelPathField(max_length=2048, null=False)
@@ -81,6 +96,7 @@ class UploadedVolume(OffSiteVolume):
 class DownloadedVolume(OffSiteVolume):
     pass
 
+
 class Request(models.Model):
     UPDATE_DIFF_SIZE_100_KB = 102400
     KB = 1024
@@ -110,9 +126,11 @@ class Request(models.Model):
             self.transferred_bytes = new_bytes_size
             self.save()
 
+
     @property
     def remaining_bytes(self):
         return self.volume.size - self.transferred_bytes
+
 
     @property
     def estimated_transfer_time(self):
@@ -124,11 +142,13 @@ class Request(models.Model):
         minutes,seconds = divmod(seconds, self.MINUTES)
         return "%dh%dm%ds" % (hours, minutes, seconds)
 
+
     @property
     def finished_percent(self):
         if self.volume.size == 0:
             return 100
         return "%.1f" % (float(self.transferred_bytes * 100) / self.volume.size)
+
 
     @property
     def friendly_rate(self):
@@ -138,8 +158,6 @@ class Request(models.Model):
             return  "%dKB/s" % (self.rate / self.KB)
         else:
             return "%dB/s" % self.rate
-
-
 
 
     class Meta:
@@ -167,15 +185,22 @@ class UploadRequest(Request):
 
 
 class RemoteUploadRequest(UploadRequest):
+    part = models.IntegerField(default=0, editable=False)
+
+
+    def set_part(self, filename, part):
+        self.part = part
+        self.save()
     
     def __unicode__(self):
         return u"RemoteUploadRequest(path=%s)" % self.volume.path
+
+
 
 class LocalUploadRequest(UploadRequest):
 
     def __unicode__(self):
         return u"LocalUploadRequest(path=%s)" % self.volume.path
-
 
 
     def update(self, new_bytes_size, total_bytes):
@@ -202,8 +227,6 @@ class DownloadRequest(Request):
 
 class DeleteRequest(Request):
     pass
-
-
 
 
 
