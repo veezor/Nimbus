@@ -3,27 +3,25 @@
 
 import os
 import bz2
-import subprocess
-import time
-from os.path import join, exists, isfile, isabs
-import logging
-from django.conf import settings
-from datetime import datetime
 import stat
+import time
+import logging
+import subprocess
 from pwd import getpwnam
+from datetime import datetime
+from os.path import join, exists, isfile, isabs
 
-
-import pycurl
+from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 
 from devicemanager import StorageDeviceManager
 
+from nimbus.libs.S3 import S3
 from nimbus.base.models import UUIDBaseModel
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
 from nimbus.pools.models import Pool
-
-
-from nimbus.offsite.models import ( Volume, 
+from nimbus.offsite.models import ( Volume,
                                     RemoteUploadRequest,
                                     LocalUploadRequest,
                                     DownloadRequest,
@@ -32,8 +30,8 @@ from nimbus.offsite.models import ( Volume,
                                     DeleteRequest)
 
 
-from nimbusgateway import Api, File
-from django.contrib.contenttypes.models import ContentType
+
+
 
 
 DISK_LABELS_PATH = "/dev/disk/by-label/"
@@ -105,15 +103,6 @@ def filename_is_volumename(filename):
         return filename.startswith(name)
     except Pool.DoesNotExist, error:
         return False
-
-
-
-def get_offsite_interface():
-    config = Offsite.get_instance()
-    api = Api(username=config.username,
-              password=config.password,
-              gateway_url=config.gateway_url)
-    return api
 
 
 
@@ -226,32 +215,20 @@ class RemoteManager(BaseManager):
 
     MAX_RETRY = 3
 
-
     def __init__(self):
-        settings = Offsite.get_instance()
-
-        self.api = Api(username=settings.username,
-                       password=settings.password,
-                       gateway_url=settings.gateway_url)
-
-        if settings.upload_rate > 0:
-            self.upload_rate = settings.upload_rate * 1024 #kb
-        else:
-            self.upload_rate = None
-
+        self.s3 = Offsite.get_s3_interface()
 
     def process_pending_upload_requests(self):
         requests = self.get_upload_requests()
-        self.process_requests( requests, self.api.upload_file,
-                               ratelimit=self.upload_rate)
+        self.process_requests( requests, self.s3.upload_file)
 
 
     def get_remote_volumes_list(self):
         return [ f[0] for f in self.api.list_all_files() if filename_is_volumename(f[0]) ]
 
 
-    def _download_file(self, filename, dest, 
-                       ratelimit=None, callback=None):
+    def _download_file(self, filename, dest, callback=None):
+
         device = Device.objects.all()[0]
 
         if isabs(filename):
@@ -259,9 +236,7 @@ class RemoteManager(BaseManager):
         else:
             destfilename = join(device.archive, filename)
 
-        self.api.download_file( filename, destfilename,
-                                ratelimit, callback, True)
-
+        self.s3.download_file( filename, destfilename, callback=callback)
 
         os.chmod( destfilename, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
         os.chown( destfilename, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
@@ -294,23 +269,22 @@ class RemoteManager(BaseManager):
 
                     req.save()
                     process_function(req.volume.path, req.volume.filename,
-                                     ratelimit=ratelimit, callback=req.update)
+                                     callback=req.update)
 
                     req.finish()
                     logger.info("%s processado com sucesso" % req)
                     break
-                except pycurl.error, e:
+                except Exception, e:
                     retry += 1
                     register_transferred_data(req, initialbytes)
+                    logger.exception('Erro ao transferir volume')
                     logger.error("Erro ao processar %s" % req)
 
 
     def delete_volume(self, volume):
-        try:
-            self.api.delete_file(volume)
-            DeleteRequest.objects.filter(volume__path=volume).delete()
-        except pycurl.error, error:
-            pass
+        self.s3.delete_file(volume)
+        DeleteRequest.objects.filter(volume__path=volume).delete()
+
 
 
 
