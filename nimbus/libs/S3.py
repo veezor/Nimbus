@@ -74,13 +74,16 @@ class MultipartFileManager(object):
         if self.next_part_number == -1:
             raise StopIteration()
 
+        self.file.seek( self.MB_SIZE * self.next_part_number)
         data = self.file.read( self.MB_SIZE )
 
         if len(data) != self.MB_SIZE:
             self.finish = True
             self.next_part_number = -1
+            raise StopIteration()
         else:
             self.next_part_number += 1
+
         return data
 
 
