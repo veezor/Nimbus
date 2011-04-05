@@ -134,7 +134,7 @@ class Request(models.Model):
 
     @property
     def estimated_transfer_time(self):
-        if self.rate == 0:
+        if not self.rate:
             return "stalled"
 
         time = self.remaining_bytes / self.rate
@@ -145,7 +145,7 @@ class Request(models.Model):
 
     @property
     def finished_percent(self):
-        if self.volume.size == 0:
+        if not self.volume.size:
             return 100
         return "%.1f" % (float(self.transferred_bytes * 100) / self.volume.size)
 
@@ -188,8 +188,8 @@ class RemoteUploadRequest(UploadRequest):
     part = models.IntegerField(default=0, editable=False)
 
 
-    def set_part(self, filename, part):
-        self.part = part
+    def increment_part(self, filename, part):
+        self.part += 1
         self.save()
     
     def __unicode__(self):
