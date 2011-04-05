@@ -128,12 +128,12 @@ def callback_decorator(function):
         callback = kwargs.pop('callback', None)
 
         if callback:
-            self.callbacks.add_callbacks(callback)
+            self.callbacks.add_callback(callback)
 
         value = function(*args, **kwargs)
 
         if callback:
-            self.callbacks.remove_callbacks(callback)
+            self.callbacks.remove_callback(callback)
         return value
 
     return wrapper
