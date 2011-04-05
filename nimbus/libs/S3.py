@@ -125,7 +125,7 @@ def callback_decorator(function):
     @wraps(function)
     def wrapper(self, *args, **kwargs):
 
-        callback = kwargs.get('callback')
+        callback = kwargs.pop('callback', None)
 
         if callback:
             self.callbacks.add_callbacks(callback)
