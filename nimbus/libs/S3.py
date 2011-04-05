@@ -193,6 +193,10 @@ class S3(object):
         multipart.complete_upload()
 
 
+    def cancel_multipart_upload(self, filename):
+        for part in self.bucket.list_multipart_uploads():
+            if part.key_name == filename:
+                self.bucket.cancel_multipart_upload( part.key_name, part.id)
 
 
     @callback_decorator
@@ -207,6 +211,7 @@ class S3(object):
             self._upload(filename, key)
         else:
             self._upload_multipart(filename, key, part)
+
 
 
     @callback_decorator
