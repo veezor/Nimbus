@@ -130,7 +130,7 @@ def callback_decorator(function):
         if callback:
             self.callbacks.add_callback(callback)
 
-        value = function(*args, **kwargs)
+        value = function(self, *args, **kwargs)
 
         if callback:
             self.callbacks.remove_callback(callback)
