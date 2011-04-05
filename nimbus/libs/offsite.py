@@ -220,14 +220,19 @@ class RemoteManager(BaseManager):
 
     def process_pending_upload_requests(self):
         requests = self.get_upload_requests()
-        self.process_requests( requests, self.s3.upload_file)
+        self.process_requests( requests, self._upload_file)
+
+    def _upload_file(self, filename, dest, callback=None, userdata=None):
+        self.s3.multipart_status_callbacks.add_callback( userdata.increment_part )
+        self.s3.upload_file(filename, dest, part=userdata.part, callback=callback)
+        self.s3.multipart_status_callbacks.remove_callback( userdata.increment_part )
 
 
     def get_remote_volumes_list(self):
         return [ f[0] for f in self.api.list_all_files() if filename_is_volumename(f[0]) ]
 
 
-    def _download_file(self, filename, dest, callback=None):
+    def _download_file(self, filename, dest, callback=None, userdata=None):
 
         device = Device.objects.all()[0]
 
@@ -261,15 +266,11 @@ class RemoteManager(BaseManager):
                 try:
                     req.attempts += 1
                     req.last_update = time.time()
-
-                    if isinstance(req, self.UploadRequestClass): # no resume
-                        req.transferred_bytes = 0
-
                     initialbytes = req.transferred_bytes
 
                     req.save()
                     process_function(req.volume.path, req.volume.filename,
-                                     callback=req.update)
+                                     callback=req.update, userdata=req)
 
                     req.finish()
                     logger.info("%s processado com sucesso" % req)
@@ -279,6 +280,7 @@ class RemoteManager(BaseManager):
                     register_transferred_data(req, initialbytes)
                     logger.exception('Erro ao transferir volume')
                     logger.error("Erro ao processar %s" % req)
+
 
 
     def delete_volume(self, volume):
