@@ -105,7 +105,7 @@ def report_status_callback_template(transferred_size, total_size):
 class CallbackAggregator(object):
 
     def __init__(self, *callbacks):
-        self.callbacks = callbacks
+        self.callbacks = list(callbacks)
 
     def add_callback(self, callback):
         self.callbacks.append(callback)
