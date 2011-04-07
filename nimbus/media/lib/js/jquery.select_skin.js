@@ -42,13 +42,13 @@
                 c.css('position', 'relative');
 
                 // hide the original select
-                s.css( { 'opacity': 0,  'position': 'relative', 'z-index': 100 } );
+                s.css( { 'opacity': 0,  'position': 'relative', 'z-index': 0 } );
 
                 // get and skin the text label
                 var t = c.children().prev();
                 t.height(c.outerHeight()-s.css('padding-top').replace(/px,*\)*/g,"")-s.css('padding-bottom').replace(/px,*\)*/g,"")-t.css('padding-top').replace(/px,*\)*/g,"")-t.css('padding-bottom').replace(/px,*\)*/g,"")-2);
                 t.width(c.innerWidth()-s.css('padding-right').replace(/px,*\)*/g,"")-s.css('padding-left').replace(/px,*\)*/g,"")-t.css('padding-right').replace(/px,*\)*/g,"")-t.css('padding-left').replace(/px,*\)*/g,"")-c.innerHeight());
-                t.css( { 'opacity': 100, 'overflow': 'hidden', 'position': 'absolute', 'text-indent': '0px', 'z-index': 1, 'top': 0, 'left': 0 } );
+                t.css( { 'opacity': 100, 'overflow': 'hidden', 'position': 'absolute', 'text-indent': '0px', 'z-index': 0, 'top': 0, 'left': 0 } );
 
                 // add events
                 c.children("select").click(function() {
