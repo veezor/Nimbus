@@ -1,98 +1,166 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import unittest
-
 import os
-import pdb
-import sys
-import shutil
-
-
-
+import unittest
+import tempfile
+import M2Crypto
 import keymanager
+
+
+
+
+class KeyManagerTestWithoutBuild(unittest.TestCase):
+
+
+    def setUp(self):
+        self.key_manager = keymanager.KeyManager()
+
+
+    def test_raises_build_exception(self):
+        self.assertRaises( keymanager.BuildKeysNotCalled, lambda :self.key_manager.key_as_str)
+        self.assertRaises( keymanager.BuildKeysNotCalled, lambda : self.key_manager.public_key_as_str)
+        self.assertRaises( keymanager.BuildKeysNotCalled, lambda : self.key_manager.certificate_as_str)
+        self.assertRaises( keymanager.BuildKeysNotCalled, lambda : self.key_manager.keys_as_str)
+        self.assertRaises( keymanager.BuildKeysNotCalled, lambda : self.key_manager.pem)
+
+        self.assertRaises( keymanager.BuildKeysNotCalled, self.key_manager.save_key, tempfile.mktemp())
+        self.assertRaises( keymanager.BuildKeysNotCalled, self.key_manager.save_public_key, tempfile.mktemp())
+        self.assertRaises( keymanager.BuildKeysNotCalled, self.key_manager.save_certificate, tempfile.mktemp())
+        self.assertRaises( keymanager.BuildKeysNotCalled, self.key_manager.save_pem, tempfile.mktemp())
+
+        self.assertRaises( keymanager.BuildKeysNotCalled, self.key_manager.save_keys_on_directory, tempfile.mkdtemp(), 'client')
+
+
+    def test_constructor(self):
+        self.assertEquals(self.key_manager.key, None)
+        self.assertEquals(self.key_manager.public_key, None)
+        self.assertEquals(self.key_manager.certificate, None)
+
+
+    def test_build(self):
+        config = dict(C='BR',
+                      ST='Rio Grande Do Norte',
+                      L='Natal',
+                      O='Veezor',
+                      OU='Veezor',
+                      CN='Veezor')
+
+        self.assertFalse(self.key_manager._build_keys)
+        self.key_manager.build_keys(config)
+        self.assertTrue(isinstance(self.key_manager.key, M2Crypto.RSA.RSA))
+        self.assertTrue(isinstance(self.key_manager.public_key, M2Crypto.EVP.PKey))
+        self.assertTrue(isinstance(self.key_manager.certificate, M2Crypto.X509.X509))
+        self.assertTrue(self.key_manager._build_keys)
+
+
+
+    def test_config_error(self):
+        config = dict(C='BR',
+                      ST='Rio Grande Do Norte',
+                      L='Natal',
+                      O='Veezor',
+                      OU='Veezor',
+                      CN='Veezor')
+
+
+        def test(key):
+            tmp_config = config.copy()
+            del tmp_config[key]
+            self.assertRaises( KeyError, self.key_manager.build_keys, tmp_config )
+
+
+        for key in config:
+            test(key)
+
+#
+#    def test_generate_key(self):
+#        self.key_manager._generate_rsa_key()
+#        self.assertTrue(isinstance(self.key_manager.key, M2Crypto.RSA.RSA))
+#
+#
+#    def test_generate_public_key(self):
+#        self.key_manager._generate_public_key()
+#        self.assertTrue(isinstance(self.key_manager.public_key, M2Crypto.EVP.PKey))
+#
+#
+#    def test_generate_certificate(self):
+#        config = dict(C='BR',
+#                      ST='Rio Grande Do Norte',
+#                      L='Natal',
+#                      O='Veezor',
+#                      OU='Veezor',
+#                      CN='Veezor')
+#        self.key_manager._generate_certificate(config)
+#        self.assertTrue(isinstance(self.key_manager.certificate, M2Crypto.X509.X509))
+
+
+
+def read_file(filename):
+    with file(filename) as f:
+        return f.read()
+
+
 
 class KeyManagerTest(unittest.TestCase):
 
     def setUp(self):
-        unittest.TestCase.setUp(self)
-        self.password = "1234"
-        self.drive = "/tmp/strongbox.crypto"
-        self.mountpoint = "/tmp/strongbox"
-        self.backupfile = "/tmp/strongbox.crypto.backup"
-        self.new_password = "4567"
-        self.keymanager = keymanager.KeyManager( password = self.password,
-                                                 drive = self.drive,
-                                                 mountpoint = self.mountpoint )
-        
+        self.key_manager = keymanager.KeyManager()
+        self.config = dict(C='BR',
+                      ST='Rio Grande Do Norte',
+                      L='Natal',
+                      O='Veezor',
+                      OU='Veezor',
+                      CN='Veezor')
+        self.key_manager.build_keys(self.config)
 
 
-    def test_01_create(self):
-
-        km = keymanager.KeyManager( password = self.password,
-                                                 drive = self.drive,
-                                                 mountpoint = self.mountpoint )
-        self.assertEqual( self.password, km.password )
-        self.assertEqual( self.drive, km.drive )
-        self.assertEqual( self.mountpoint, km.mountpoint )
-        self.assertFalse( km.mounted )
+    def _test_save(self, method, attr):
+        filename = tempfile.mktemp()
+        method(filename)
+        self.assertTrue( os.path.exists(filename) )
+        self.assertEqual( attr, read_file(filename) )
 
 
-    def test_02_set_password(self):
-        password = "4567"
-        self.keymanager.set_password(password)
-        self.assertEqual( self.keymanager.password, password )
-        self.keymanager.set_password(self.password)
+    def test_save_key(self):
+        self._test_save( self.key_manager.save_key, self.key_manager.key_as_str )
 
-    def test_04_mount_drive(self):
-        r = self.keymanager.mount_drive()
-        self.assertTrue( r )
-        self.assertTrue( self.keymanager.mounted )
 
-    def test_03_create_drive(self):
-        try:
-            shutil.rmtree(self.keymanager.drive)
-        except OSError, error:
-            print error
-            pass
-        r = self.keymanager.create_drive()
-        self.assertTrue( r )
+    def test_save_public_key(self):
+        self._test_save( self.key_manager.save_public_key, self.key_manager.public_key_as_str )
 
-    def test_05_umount_drive(self):
-        r = self.keymanager.umount_drive()
-        self.assertTrue( r )
-        self.assertFalse( self.keymanager.mounted )
 
-    def test_07_force_umount_drive(self):
-        r = self.keymanager.force_umount_drive()
-        self.assertTrue( r )
-        self.assertFalse( self.keymanager.mounted )
+    def test_save_certificate(self):
+        self._test_save( self.key_manager.save_certificate, self.key_manager.certificate_as_str )
 
-    def test_06_generate_and_save_keys(self):
-        r = self.keymanager.generate_and_save_keys_for_client('test')
-        self.assertTrue( r )
 
-    def test_08_has_drive(self):
-        try:
-            r = self.keymanager.has_drive()
-            self.assertTrue( r )
-        except IOError, e:
-            pass
+    def test_save_pem(self):
+        self._test_save( self.key_manager.save_pem, self.key_manager.pem )
 
-    def test_09_make_backup(self):
-        r = self.keymanager.make_drive_backup(self.backupfile)
-        self.assertTrue(r)
 
-    def test_10_restore_backup(self):
-        r = self.keymanager.restore_drive_backup(self.backupfile)
-        self.assertTrue(r)
+    def test_pem(self):
+        self.assertEqual(self.key_manager.pem, self.key_manager.key_as_str + self.key_manager.certificate_as_str)
 
-    def test_11_change_drive_password(self):
-        r = self.keymanager.change_drive_password( self.new_password )
-        self.password = self.new_password
-        self.test_04_mount_drive()
-        self.test_07_force_umount_drive()
-        self.assertTrue(r)
+    def test_save_keys(self):
+        dirname = tempfile.mkdtemp()
+        self.key_manager.save_keys_on_directory(dirname, 'client')
+        self.assertTrue( os.path.exists(os.path.join(dirname, 'client.key')) )
+        self.assertTrue( os.path.exists(os.path.join(dirname, 'client.cert') ))
+        self.assertTrue( os.path.exists(os.path.join(dirname, 'client.pubkey') ))
+        self.assertTrue( os.path.exists(os.path.join(dirname, 'client.pem') ))
+
+    def test_save_keys_create_directory(self):
+        dirname = tempfile.mktemp()
+        self.key_manager.save_keys_on_directory(dirname, 'client')
+        self.assertTrue( os.path.exists(dirname) )
+
+
+    def test_keys_as_str(self):
+        key, pub, cert, pem = self.key_manager.keys_as_str
+        self.assertEqual(key, self.key_manager.key_as_str)
+        self.assertEqual(pub, self.key_manager.public_key_as_str)
+        self.assertEqual(cert, self.key_manager.certificate_as_str)
+        self.assertEqual(pem, self.key_manager.pem)
 
 
 
