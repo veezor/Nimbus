@@ -43,7 +43,12 @@ ROOT_PATH = "/"
 NIMBUS_ETC_DIR = join(ROOT_PATH, "etc", "nimbus")
 NIMBUS_HOME_DIR = join(ROOT_PATH, "var", "nimbus")
 
-NIMBUS_SSLCONFIG = join(NIMBUS_ETC_DIR, "ssl.conf")
+NIMBUS_SSLCONFIG = dict(C='BR',
+                        ST='Rio Grande Do Norte',
+                        L='Natal',
+                        O='Veezor',
+                        OU='Veezor',
+                        CN='Veezor')
 
 
 
