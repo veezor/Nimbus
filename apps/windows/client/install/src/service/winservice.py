@@ -20,10 +20,11 @@ if win32com.client.gencache.is_readonly == True:
     win32com.client.gencache.Rebuild()
 
 
-import SocketServer, socket
+import socket
+import securexmlrpc
 from glob import glob
 from time import sleep
-from SimpleXMLRPCServer import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
+
 
 
 TIMEOUT = 15
@@ -37,9 +38,14 @@ KEYPAR = "C:\\Program Files\\Bacula\\client.pem"
 MASTERKEY = "C:\\Program Files\\Bacula\\master.cert"
 
 
-# Threaded mix-in
-class AsyncXMLRPCServer(SocketServer.ThreadingMixIn, SimpleXMLRPCServer):
-    pass
+XMLRPC_KEY = "C:\\Nimbus\\xmlprc.key"
+XMLRPC_CERT = "C:\\Nimbus\\xmlprc.cert"
+SSL_CONFIG = dict(C='BR',
+                  ST='Rio Grande Do Norte',
+                  L='Natal',
+                  O='Veezor',
+                  OU='Veezor',
+                  CN='Veezor')
 
     
     
@@ -109,8 +115,11 @@ class XMLRPCservice(win32serviceutil.ServiceFramework):
         win32serviceutil.ServiceFramework.__init__(self, args)
         
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-        self.server = AsyncXMLRPCServer( ('0.0.0.0', 11110),
-                                         SimpleXMLRPCRequestHandler)
+        self.server = securexmlrpc.secure_xmlrpc( XMLRPC_KEY,
+                                                  XMLRPC_CERT,
+                                                  ('0.0.0.0', 11110),
+                                                  SSL_CONFIG)
+
 
                                         
     

@@ -4,15 +4,16 @@
 
 import os
 import sys
+import socket
 import signal
 import atexit
 import codecs
 import subprocess
-import SocketServer, socket
+import securexmlrpc
 from time import sleep
 from glob import glob
-from SimpleXMLRPCServer import ( SimpleXMLRPCServer, 
-                                 SimpleXMLRPCRequestHandler )
+
+
 
 
 TIMEOUT = 15
@@ -27,9 +28,17 @@ FDCONF = "/etc/bacula/bacula-fd.conf"
 BACULAFD = "/etc/init.d/bacula-ctl-fd"
 
 
+XMLRPC_KEY = "/etc/nimbus/xmlrpc.key"
+XMLRPC_CERT = "/etc/nimbus/xmlrpc.cert"
+SSL_CONFIG = dict(C='BR',
+                  ST='Rio Grande Do Norte',
+                  L='Natal',
+                  O='Veezor',
+                  OU='Veezor',
+                  CN='Veezor')
 
-class AsyncXMLRPCServer(SocketServer.ThreadingMixIn, SimpleXMLRPCServer):
-    pass
+
+
 
 
 def is_dir(name):
@@ -207,7 +216,7 @@ class Daemon(object):
 
 
     def run(self):
-        service = SimpleXMLRPCServer(('',11110))
+        service = securexmlrpc.secure_xmlrpc(XMLRPC_KEY, XMLRPC_CERT, ('',11110), SSL_CONFIG)
         service.register_instance(NimbusService())
         service.serve_forever()
 
