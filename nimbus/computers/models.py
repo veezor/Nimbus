@@ -75,7 +75,7 @@ class Computer(BaseModel):
                                 director_name=config.director_name,
                                 password=self.password,
                                 name=self.bacula_name,
-                                os=self.operating_systems,
+                                os=self.operation_system,
                                 nimbus=False)
 
 
