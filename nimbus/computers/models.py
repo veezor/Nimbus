@@ -69,23 +69,6 @@ class Computer(BaseModel):
                                     unique=True, editable=False)
 
 
-    def _get_crypt_file(self, filename):
-        km = KeyManager()
-        client_path = km.get_client_path(self.name)
-        path = os.path.join(client_path, file_name)
-        try:
-            file_content = open(file_path, 'r') 
-            file_read = file_content.read()
-            file_content.close()
-            return file_read
-        except IOError, e:
-            raise UnableToGetFile("Original error was: %s" % e)      
-
-
-    def get_pem(self):
-        return self._get_crypt_file("client.pem")
-
-
     def get_config_file(self):
         config = Config.get_instance()
         return render_to_string("bacula-fd", 
@@ -209,7 +192,9 @@ def generate_keys(computer):
     try:
         computer.crypto_info
     except CryptoInfo.DoesNotExist, error:
-        key, cert, pem = keymanager.generate_all_keys(settings.NIMBUS_SSLCONFIG)
+        key_manager = keymanager.KeyManager()
+        key_manager.build_keys(settings.NIMBUS_SSLCONFIG)
+        key, pubkey, cert, pem = key_manager.keys_as_str
         info = CryptoInfo.objects.create(key=key, certificate=cert, pem=pem)
         computer.crypto_info = info
 
