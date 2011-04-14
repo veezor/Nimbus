@@ -21,7 +21,12 @@ from nimbus.libs import systemprocesses
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 
-DOMAIN_RE = re.compile(r"^(\w+\.)?\w+\.\w+$")
+DOMAIN_RE = re.compile(
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|' #domain...
+    r'localhost|' #localhost...
+    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+    r'(?::\d+)?' # optional port
+    r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 EMPTY_CHOICES = [('', '----------')]
 
