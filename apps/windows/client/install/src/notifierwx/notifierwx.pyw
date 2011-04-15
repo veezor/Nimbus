@@ -4,9 +4,9 @@
 
 import subprocess
 
-import windowsnotifier
 import wx
 import wx.lib.masked as masked
+from nimbusclientlib import Notifier
 
 
 
@@ -75,7 +75,7 @@ class App(wx.Frame):
             username = self.username.GetValue()
             password = self.password.GetValue()
             address = self.address.GetValue().replace(' ','')
-            windowsnotifier.Notifier(username, password, address).notify_new_computer()
+            Notifier(username, password, address).notify_new_computer()
             self.dialog_on_success()
         except Exception, error:
             self.dialog_on_error()

@@ -10,7 +10,7 @@ import win32event
 import win32api
 import win32evtlogutil
 import servicemanager
-import subprocess
+
 
 import win32com.client
 
@@ -21,9 +21,7 @@ if win32com.client.gencache.is_readonly == True:
 
 
 import socket
-import securexmlrpc
-from glob import glob
-from time import sleep
+import nimbusclientlib
 
 
 
@@ -31,78 +29,6 @@ TIMEOUT = 15
 
 socket.setdefaulttimeout(TIMEOUT)
 
-
-
-FDCONF = "C:\\Program Files\\Bacula\\bacula-fd.conf"
-KEYPAR = "C:\\Program Files\\Bacula\\client.pem"
-MASTERKEY = "C:\\Program Files\\Bacula\\master.cert"
-
-
-XMLRPC_KEY = "C:\\Nimbus\\xmlprc.key"
-XMLRPC_CERT = "C:\\Nimbus\\xmlprc.cert"
-SSL_CONFIG = dict(C='BR',
-                  ST='Rio Grande Do Norte',
-                  L='Natal',
-                  O='Veezor',
-                  OU='Veezor',
-                  CN='Veezor')
-
-    
-    
-def is_dir(name):
-    if os.path.isdir(name):
-        return name + "/" 
-    return name
-
-    
-class NimbusService(object):
-
-    def save_keys(self, keypar, masterkey):
-        with file(KEYPAR, "w") as f:
-            f.write(keypar)
-
-        with file(MASTERKEY, "w") as f:
-            f.write(masterkey)
-
-        return True
-        
-
-    def save_config(self, config):
-        with codecs.open(FDCONF, "w", "utf-8") as f:
-            f.write(config)
-        return True
-
-
-
-    def restart_bacula(self):
-        cmd = subprocess.Popen(["sc","stop","Bacula-FD"], 
-                                stderr=subprocess.PIPE,
-                                stdout=subprocess.PIPE )
-        cmd.communicate()
-        sleep(3)
-        cmd = subprocess.Popen(["sc","start","Bacula-FD"], 
-                                stderr=subprocess.PIPE,
-                                stdout=subprocess.PIPE )
-        cmd.communicate()
-        return True
-        
-
-    def get_home(self):
-        return os.environ['HOME']
-
-    def get_available_drives(self):
-        drives = win32api.GetLogicalDriveStrings()
-        drives = drives.split('\000')[:-1]
-        return drives
-
-    def list_dir(self, path):
-        try:
-            files = glob(os.path.join(path,'*'))
-            files = map(is_dir, files)
-            return files
-        except IOError, error:
-            return []
-        
 
 class XMLRPCservice(win32serviceutil.ServiceFramework):
     _svc_name_ = "NimbusService"
@@ -115,10 +41,7 @@ class XMLRPCservice(win32serviceutil.ServiceFramework):
         win32serviceutil.ServiceFramework.__init__(self, args)
         
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-        self.server = securexmlrpc.secure_xmlrpc( XMLRPC_KEY,
-                                                  XMLRPC_CERT,
-                                                  ('0.0.0.0', 11110),
-                                                  SSL_CONFIG)
+        self.server = nimbusclientlib.get_nimbus_xml_rpc_server()
 
 
                                         
@@ -133,7 +56,6 @@ class XMLRPCservice(win32serviceutil.ServiceFramework):
                               servicemanager.PYS_SERVICE_STARTED,
                               (self._svc_name_, ' (%s)' % self._svc_name_))
 
-        self.server.register_instance(NimbusService())
 
         while win32event.WaitForSingleObject(self.hWaitStop, 0) ==\
                 win32event.WAIT_TIMEOUT:

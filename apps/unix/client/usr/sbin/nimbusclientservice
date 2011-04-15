@@ -4,102 +4,11 @@
 
 import os
 import sys
-import socket
 import signal
 import atexit
-import codecs
-import subprocess
-import securexmlrpc
+import nimbusclientlib
 from time import sleep
-from glob import glob
 
-
-
-
-TIMEOUT = 15
-
-socket.setdefaulttimeout(TIMEOUT)
-
-
-
-KEYPAR = "/etc/nimbus/client.pem"
-MASTERKEY = "/etc/nimbus/master.key"
-FDCONF = "/etc/bacula/bacula-fd.conf"
-BACULAFD = "/etc/init.d/bacula-ctl-fd"
-
-
-XMLRPC_KEY = "/etc/nimbus/xmlrpc.key"
-XMLRPC_CERT = "/etc/nimbus/xmlrpc.cert"
-SSL_CONFIG = dict(C='BR',
-                  ST='Rio Grande Do Norte',
-                  L='Natal',
-                  O='Veezor',
-                  OU='Veezor',
-                  CN='Veezor')
-
-
-
-
-
-def is_dir(name):
-    if os.path.isdir(name):
-        return name + "/" 
-    return name
-
-
-class NimbusService(object):
-
-
-    def save_keys(self, keypar, masterkey):
-        try:
-            f = file(KEYPAR, "w")
-            try:
-                f.write(keypar)
-            finally:
-                f.close()
-        except IOError, error:
-            pass
-
-        try:
-            f = file(MASTERKEY, "w")
-            try:
-                f.write(masterkey)
-            finally:
-                f.close()
-        except IOError, error:
-            pass
-
-        return True
-        
-
-    def save_config(self, config):
-        try:
-            f = codecs.open(FDCONF, "w", "utf-8")
-            try:
-                f.write(config)
-            finally:
-                f.close()
-        except IOError, error:
-            pass
-
-        return True
-
-
-    def restart_bacula(self):
-        cmd = subprocess.Popen( [BACULAFD, "restart"], 
-                                stderr=subprocess.PIPE,
-                                stdout=subprocess.PIPE )
-        cmd.communicate()
-        return True
-
-
-    def list_dir(self, path):
-        try:
-            files = glob(os.path.join(path,'*'))
-            files = map(is_dir, files)
-            return files
-        except IOError, error:
-            return []
 
 
 class Daemon(object):
@@ -216,8 +125,7 @@ class Daemon(object):
 
 
     def run(self):
-        service = securexmlrpc.secure_xmlrpc(XMLRPC_KEY, XMLRPC_CERT, ('',11110), SSL_CONFIG)
-        service.register_instance(NimbusService())
+        service = nimbusclientlib.get_nimbus_xml_rpc_server()
         service.serve_forever()
 
 
