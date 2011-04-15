@@ -53,7 +53,12 @@ def new(request):
             computer.save()
             logger.info("Computador adicionado com sucesso")
 
-            return HttpResponse(status=200)
+
+
+            json_response = simplejson.dumps(dict(token=computer.auth_token))
+            response = HttpResponse(json_response, mimetype="application/json", status=200)
+            response['Content-Disposition'] = 'attachment; filename="result.json"'
+            return response
         except (KeyError, IntegrityError), e:
             logger.exception("Erro ao adicionar o computador")
             return HttpResponse(status=400)
