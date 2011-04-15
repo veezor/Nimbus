@@ -69,6 +69,12 @@ class Computer(BaseModel):
                                     unique=True, editable=False)
 
 
+
+    @property
+    def auth_token(self):
+        return self.uuid.uuid_hex
+
+
     def get_config_file(self):
         config = Config.get_instance()
         return render_to_string("bacula-fd", 
@@ -112,9 +118,10 @@ class Computer(BaseModel):
 
         nimbuscomputer = Computer.objects.get(id=1)
 
-        url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
+        url = "https://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
         proxy = xmlrpclib.ServerProxy(url)
-        proxy.save_keys( self.crypto_info.pem, 
+        proxy.save_keys( self.auth_token,
+                         self.crypto_info.pem,
                          nimbuscomputer.crypto_info.certificate)
 
         config = Config.get_instance()
@@ -124,8 +131,8 @@ class Computer(BaseModel):
                         name=self.name,
                         os=self.operation_system)
 
-        proxy.save_config( unicode(fdconfig) )
-        proxy.restart_bacula()
+        proxy.save_config( self.auth_token, unicode(fdconfig) )
+        proxy.restart_bacula( self.auth_token)
 
         self.active = True
         self.save()
@@ -133,14 +140,14 @@ class Computer(BaseModel):
 
     def get_file_tree(self, path):
 
-        url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
+        url = "https://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
         proxy = xmlrpclib.ServerProxy(url)
 
         if self.operation_system == "windows" and path == "/":
-            files = proxy.get_available_drives()
+            files = proxy.get_available_drives(self.auth_token)
             files = [ fname[:-1] + '/' for fname in files ]
         else:
-            files = proxy.list_dir(path)
+            files = proxy.list_dir(self.auth_token, path)
 
         files.sort()
 
