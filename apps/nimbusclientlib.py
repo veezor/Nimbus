@@ -186,7 +186,7 @@ class NimbusService(object):
 
 
 class Notifier(object):
-    ADD_COMPUTER_URL = "http://%s:%d/computers/new/"
+    ACTION_URL = "http://%s:%d/computers/new/"
     LOGIN_URL = "http://%s:%d/session/login/"
 
     def __init__(self, username, password, address, port=80):
@@ -203,8 +203,8 @@ class Notifier(object):
         return baseurl % ( self.ip, self.port )
 
 
-    def get_computer_data(self):
-        args = { "os" :  self.get_os() }
+    def get_post_data(self):
+        args = { "os" :  self._get_os() }
         return urllib.urlencode( args.items() )
 
 
@@ -227,7 +227,7 @@ class Notifier(object):
 
 
 
-    def get_os(self):
+    def _get_os(self):
         if sys.platform in "win32":
             return "windows"
         else:
@@ -241,10 +241,10 @@ class Notifier(object):
         handle.close()
 
 
-    def notify_new_computer(self):
+    def notify(self):
         self.login()
-        handle = self.urlopener.open( self.get_url(self.ADD_COMPUTER_URL),
-                                      self.get_computer_data() )
+        handle = self.urlopener.open( self.get_url(self.ACTION_URL),
+                                      self.get_post_data() )
         data = handle.read()
         handle.close()
 

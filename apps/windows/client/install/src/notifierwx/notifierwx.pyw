@@ -75,7 +75,7 @@ class App(wx.Frame):
             username = self.username.GetValue()
             password = self.password.GetValue()
             address = self.address.GetValue().replace(' ','')
-            Notifier(username, password, address).notify_new_computer()
+            Notifier(username, password, address).notify()
             self.dialog_on_success()
         except Exception, error:
             self.dialog_on_error()

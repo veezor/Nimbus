@@ -16,10 +16,10 @@ if __name__ == "__main__":
         size = len(sys.argv)
         if size == 4:
             username, password, url = sys.argv[1:]
-            Notifier(username, password, url).notify_new_computer()
+            Notifier(username, password, url).notify()
         elif size == 5:
             username, password, url, port = sys.argv[1:]
-            Notifier(username, password, url, port).notify_new_computer()
+            Notifier(username, password, url, port).notify()
         else:
             sys.exit(1)
         sys.exit(0)

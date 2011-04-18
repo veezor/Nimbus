@@ -10,10 +10,10 @@ if __name__ == "__main__":
         size = len(sys.argv)
         if size == 4:
             username, password, address = sys.argv[1:]
-            Notifier(username, password, address).notify_new_computer()
+            Notifier(username, password, address).notify()
         elif size == 5:
             username, password, address, port = sys.argv[1:]
-            Notifier(username, password, address, port).notify_new_computer()
+            Notifier(username, password, address, port).notify()
         else:
             print "usage: username password address [port]"
             sys.exit(1)
