@@ -5,7 +5,6 @@
 import os
 import sys
 import codecs
-import socket
 import urllib
 import urllib2
 import cookielib
@@ -16,14 +15,10 @@ from glob import glob
 from time import sleep
 from functools import wraps
 
-
-#socket.setdefaulttimeout(10)
-
-
-PLATFORM_MAP = {
-    'linux' : 'linux2',
-    'windows' : 'win32'
-}
+try:
+    import win32api
+except ImportError, error:
+    pass
 
 
 CLIENT_CONF = {
@@ -53,82 +48,6 @@ SSL_CONFIG = dict(C='BR',
                   O='Veezor',
                   OU='Veezor',
                   CN='Veezor')
-
-
-class PlatformSpecificMethodNotFound(Exception):
-    pass
-
-
-class UnknowPlatform(Exception):
-    pass
-
-
-class PlatformSpecificMethod(object): 
-
-    def __init__(self):
-        self.methods = {}
-
-
-    def on(self, platform):
-
-        def wrapper(method):
-            self.register(method, platform)
-            return self
-
-        return wrapper
-
-    def register(self, method, platform):
-        try:
-            platform = PLATFORM_MAP[platform]
-        except KeyError, error:
-            raise UnknowPlatform(platform)
-
-        self.methods[platform] = method
-
-
-    def __get__(self, obj, obj_type=None):
-
-
-        def call(*args, **kwargs):
-            try:
-                return self.methods[sys.platform](obj, *args, **kwargs)
-            except KeyError:
-                raise PlatformSpecificMethodNotFound()
-
-        return call
-
-
-
-
-def platform_specific(platform):
-
-    def register(method):
-        platform_specific_method = PlatformSpecificMethod()
-        platform_specific_method.register(method, platform)
-        return platform_specific_method
-
-    return register
-
-
-
-
-def test_platform_specific_method():
-
-    class Test(object):
-
-
-        @platform_specific('linux')
-        def run(self):
-            print 'a',self
-
-        @run.on('windows')
-        def run(self):
-            print 'b'
-    
-
-
-    Test().run()
-
 
 
 def is_dir(name):
@@ -203,9 +122,8 @@ class NimbusService(object):
         return True
 
 
-    @platform_specific('linux')
     @check_auth_token
-    def restart_bacula(self):
+    def _restart_bacula_unix(self):
         cmd = subprocess.Popen( [self.client_config['baculafd'], "restart"],
                                 stderr=subprocess.PIPE,
                                 stdout=subprocess.PIPE )
@@ -213,9 +131,8 @@ class NimbusService(object):
         return True
 
 
-    @restart_bacula.on('windows')
     @check_auth_token
-    def restart_bacula(self):
+    def _restart_bacula_windows(self):
         cmd = subprocess.Popen(["sc","stop","Bacula-FD"],
                                 stderr=subprocess.PIPE,
                                 stdout=subprocess.PIPE )
@@ -228,10 +145,15 @@ class NimbusService(object):
         return True
 
 
-    @platform_specific('windows')
+    def restart_bacula(self):
+        if sys.platform == "win32":
+            self._restart_bacula_windows()
+        else:
+            self._restart_bacula_unix()
+
+
     @check_auth_token
     def get_available_drives(self):
-        import win32api # too ugly :)
         drives = win32api.GetLogicalDriveStrings()
         drives = drives.split('\000')[:-1]
         return drives
@@ -259,9 +181,6 @@ class NimbusService(object):
                 return True
 
         return False
-
-    def hello(self):
-        return "Hello world!"
 
 
 
