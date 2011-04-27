@@ -37,7 +37,7 @@ def generate_certificate(keyfilename, filename, sslconfig):
     cmd = subprocess.Popen(["openssl", "req", "-new", 
                             "-key", keyfilename, "-x509",
                             "-config", sslconfig,
-                            "-days","3650"
+                            "-days","3650",
                             "-out", filename],
                             stdout=subprocess.PIPE)
     cmd.communicate()
