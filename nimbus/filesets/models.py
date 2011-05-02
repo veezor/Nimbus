@@ -32,7 +32,8 @@ class FilePath(models.Model):
         return self.path
 
 
-
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^nimbus\.shared\.fields\.ModelPathField"])
 
 def update_fileset_file(fileset):
     """FileSet update filesets to a procedure instance"""
