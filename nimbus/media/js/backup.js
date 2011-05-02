@@ -12,6 +12,14 @@ $(document).ready(function(){
         return false;
     });
 
+    $('#schedule_id').change(function(){
+        if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
+            $('#schedule').slideDown();
+        } else {
+            $('#schedule').slideUp();
+        }
+    });
+
     $(".tree a").click(function()
     {
         update_tree($(this).attr("path"), get_tree_path, undefined, undefined, undefined, '#computer_id');
@@ -27,13 +35,7 @@ $(document).ready(function(){
     });
     $('.profile').change();
     
-    $('#schedule_id').change(function(){
-        if ($('#schedule_id :selected').attr('id') == 'new_schedule') {
-            $('#schedule').slideDown();
-        } else {
-            $('#schedule').slideUp();
-        }
-    });
+    
     $('#schedule_id').change();
     
     $('.schedule_activate').change(function(){
@@ -84,5 +86,12 @@ $(document).ready(function(){
     
     $('.filepaths .del').click(function(){
         remover_path(this);
+    });
+    // register new computer
+    $("#computer_id").change(function(){
+        var vlw = $(this).val();
+        if (vlw == 'add'){
+            window.location = '/computers/add/';
+        }
     });
 });

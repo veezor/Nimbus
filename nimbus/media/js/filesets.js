@@ -14,9 +14,12 @@ $(document).ready(function(){
         return false;
     });
 
-    $(".tree a").click(function()
-    {
-        update_tree($(this).attr("path"), get_tree_path);
+    $(".tree a").click(function() {
+        if (!document.getElementsByClassName('wait')[0]) {
+            update_tree($(this).attr("path"), get_tree_path);
+        } else {
+            $('.wait').remove();
+        }
         return false;
     });
     
