@@ -1,345 +1,77 @@
-# -*- coding: UTF-8 -*-
 # Create your views here.
+# -*- coding: UTF-8 -*-
+import traceback
 
-
-
-from time import strftime, strptime
-import simplejson
-import xmlrpclib
 import socket
-
-from django.conf import settings
 from django.http import HttpResponse
-from django.contrib import messages
-from django.shortcuts import redirect
-from django.core.exceptions import ValidationError
-from django.contrib.auth.decorators import login_required
-
 from nimbus.computers.models import Computer
-from nimbus.procedures.models import Profile, Procedure
-from nimbus.storages.models import Storage
-from nimbus.schedules.models import Schedule, Hourly
-from nimbus.schedules.shared import trigger_class, trigger_map
-from nimbus.filesets.models import FileSet, FilePath
-from nimbus.shared.forms import form_from_model
-from nimbus.offsite.models import Offsite
+from django.shortcuts import render_to_response
+import simplejson
+from nimbus.backup import forms
 
 
-from nimbus.shared import utils, fields
-from nimbus.shared.msgerrors import default_errors
-from nimbus.libs.db import Session
-from nimbus.shared.enums import days, weekdays, levels, operating_systems
-from nimbus.shared.views import render_to_response
-from nimbus.pools.models import Pool
+def render(request):
+
+    lforms = [ forms.ProcedureForm(prefix="procedure") ]
 
 
-@login_required
-def backup_form(request, object_id=None):
-
-    errors = {}
-
-    computers = Computer.objects.filter(active=True,id__gt=1)
-    profiles = Profile.objects.filter(id__gt=1)
-    storages = Storage.objects.all()
-    schedules = Schedule.objects.filter(id__gt=1)
-    filesets = FileSet.objects.filter(id__gt=1)
-    offsite_on = Offsite.get_instance().active
-   
-    extra_context = {
-        'title': u"Criar Backup",
-        'computers': computers,
-        'profiles': profiles,
-        'storages': storages,
-        'days': days,
-        'weekdays': weekdays,
-        'levels': levels,
-        'operating_systems': operating_systems,
-        'schedules': schedules,
-        'filesets': filesets,
-        'errors' : errors,
-        'offsite_on' : offsite_on
+    content = {
+        'title':u'Criar Backup',
+        'forms':lforms
     }
+    return render_to_response("backup_add.html", content)
+
+def profile_new(request):
+    lforms = [ forms.ProfileForm(prefix="profile") ]
+    content = {
+        'title':u'Criar Perfil de Backup',
+        'forms':lforms
+    }
+    return render_to_response("profile_new.html", content)
+
+def schedule_new(request):
+    if request.method == "POST":
+        print request.POST
+    lforms = [ forms.ScheduleForm(prefix="schedule") ]
+    schedule_forms = forms.make_schedule_form_container()
+    schedule_forms.get()
+    days_range = range(1, 32)
+    weekdays_range = {0:'Domingo', 1:'Segunda', 2:'Terca', 3:'Quarta', 4:'Quinta', 5:'Sexta', 6:'Sabado'}
+    end_days_range = [5, 10, 15, 20, 25, 30]
+    content = {'title':u'Criar Agendamento', 'forms':lforms, 'formset':schedule_forms, 'days':days_range, 'end_days':end_days_range, 'weekdays':weekdays_range}
+    return render_to_response("schedule_new.html", content)
+
+def fileset_new(request, object_id):
+    # apenas teste, remover em modo de produção
+    if request.method == "POST":
+        print request.POST
+    lforms = [ forms.FileSetForm(prefix="fileset") ]
+    lformsets = [ forms.FilePathForm(prefix="filepath") ]
+    formset = forms.FilesFormSet()
+    content = {'title':u'Criar Sistema de Arquivos', 'forms':lforms, 'formsets':lformsets, 'computer_id':object_id,
+               'formset' : formset}
+    return render_to_response("fileset_new.html", content)
 
-    if request.method == "GET":
 
-        try:
-            computer = Computer.objects.get(id=object_id,active=True)
-        except (Computer.DoesNotExist, ValueError), error:
-            computer = None
-
-        extra_context["computer"] = computer
-
-        return render_to_response(request, "backup_create.html", extra_context )
-
-    elif request.method == "POST":
-
-        
-        modeltriggers = []
-        modelpaths = []
-
-
-        procedure_name = request.POST.get('procedure_name')
-        if procedure_name:
-            try: 
-                procedure = Procedure.objects.get(name=procedure_name)
-                key = "procedure_name"
-                errors[key] = default_errors[key]
-            except (Procedure.DoesNotExist), error:
-                offsite_on = request.POST.get('offsite_on', False)
-                procedure = Procedure(name=procedure_name, 
-                                      offsite_on=offsite_on)
-
-                if not fields.name_is_valid(procedure_name):
-                    errors["procedure_name"] = "Campo não pode conter acentos. Limite mínimo de caracteres é 4"
-
-
-        else:
-            errors["procedure_name"] = "Você deve inserir o nome do procedimento"
-
-
-        try:
-            retention_time = int(request.POST.get('retention_time'))
-        except ValueError, error:
-            errors["retention_time"] = "Informe o tempo de retenção dos arquivos em dias"
-
-        try:
-            computer = Computer.objects.get(id=request.POST['computer_id'])
-        except Computer.DoesNotExist, error:
-            key = "computer_id"
-            errors[key] = default_errors[key]
-        except ValueError, error:
-            key = "computer_id"
-            errors[key] = default_errors[key]
-
-
-        profile_id = request.POST.get('profile_id')
-
-        if profile_id:
-
-            try:
-                profile = Profile.objects.get(id=request.POST['profile_id'])
-            except ValueError, error:
-
-                profile_name = request.POST.get('profile.name')
-
-                try:
-                    has_profile = Profile.objects.get(name=profile_name)
-                    errors["profile_name"] = "Nome inválido. Já existe um perfil de configuração com esse nome"
-                except Profile.DoesNotExist, notexist:
-                    if profile_name:
-                        profile = Profile(name=profile_name)
-                        if not fields.name_is_valid(profile_name):
-                            errors["profile_name"] = "Campo não pode conter acentos. Limite mínimo de caracteres é 4"
-                    else:
-                        errors['profile_name'] = "Você deve inserir um nome no perfil de configuração"
-                
-                
-                storage_id = request.POST.get('profile.storage_id')
-
-                if storage_id:
-                    try:
-                        storage = Storage.objects.get(id=storage_id)
-                    except (Storage.DoesNotExist, ValueError), error:
-                        key = "profile_storage_id"
-                        errors[key] = default_errors[key]
-                else:
-                    key = "profile_storage_id"
-                    errors[key] = default_errors[key]
-
-                try:
-                    schedule_id = request.POST['profile.schedule_id']
-                    schedule = Schedule.objects.get(id=schedule_id)
-                except ValueError, error:
-
-                    if schedule_id == "new_schedule":
-                        schedule_name = request.POST.get('schedule.name')
-
-                        try:
-                            has_schedule = Schedule.objects.get(name=schedule_name)
-                            key = "schedule_name"
-                            errors[key] = default_errors[key]
-                        except Schedule.DoesNotExist, notexist:
-
-                            if schedule_name:
-
-                                if not fields.name_is_valid(schedule_name):
-                                    errors["schedule_name"] = "Campo não pode conter acentos. Limite mínimo de caracteres é 4"
-
-                                schedule = Schedule(name = schedule_name)
-
-                                selected_a_trigger = False
-
-                                triggers = ["schedule.monthly", "schedule.dayly", "schedule.weekly", "schedule.hourly"]
-
-
-                                for trigger in triggers:
-
-                                    if request.POST.get(trigger + '.active'):
-
-
-                                        selected_a_trigger = True
-                                        trigger_name = trigger[len("schedule."):]
-                                        Trigger = trigger_class[trigger_name]
-
-
-                                        hour = request.POST.get(trigger + '.hour')
-                                        if not hour:
-                                            errors['schedule_hour'] = "Você deve informar a hora de execução do agendamento %s" % trigger_map[trigger_name]
-                                        else:
-                                            if Trigger is Hourly:
-                                                hour = strftime("%H:%M", strptime(hour, "%M"))
-
-                                            level = request.POST.get(trigger + '.level')
-
-                                            if not trigger_name in ["dayly", "hourly"]:
-                                                post_days = set(request.POST.getlist(trigger + '.day'))
-
-                                                if not post_days:
-                                                    errors['schedule_day'] = "Você deve selecionar um dia para a execução do agendamento %s"  % trigger_map[trigger_name]
-                                                else:
-                                                    for d  in post_days:
-                                                        trigger = Trigger(day=d, hour=hour,
-                                                                          level=level)
-                                                        modeltriggers.append(trigger)
-                                            else:
-                                                trigger = Trigger(hour=hour,level=level)
-                                                modeltriggers.append(trigger)
-
-
-
-                                if not selected_a_trigger:
-                                    errors['schedule_name'] = "Você deve ativar pelo menos um tipo de agendamento"
-                            else:
-                                errors['schedule_name'] = "Você deve inserir um nome na configuração do agendamento"
-                    else:
-                        errors['profile_schedule_id'] = "Você deve selecionar um agendamente ou criar um novo"
-
-
-
-                try: 
-                    fileset_id = request.POST['profile.fileset_id']
-                    fileset = FileSet.objects.get(id=fileset_id)
-                except ValueError, error:
-
-                    if fileset_id == "new_fileset":
-
-
-                        fileset_name = request.POST.get('fileset_name')
-
-
-                        try:
-                            has_fileset = FileSet.objects.get(name=fileset_name)
-                            errors["fileset_name"] = "Nome inválido. Já existe um conjunto de arquivos com esse nome"
-                        except FileSet.DoesNotExist, notexist:
-                            if fileset_name:
-                                fileset = FileSet(name=fileset_name)
-                                if not fields.name_is_valid(fileset_name):
-                                    errors["fileset_name"] = "Campo não pode conter acentos. Limite mínimo de caracteres é 4"
-                            else:
-                                errors['fileset_name'] = "Você deve inserir um nome para o conjunto de arquivos"
-
-                            paths = request.POST.getlist('path')
-                            if not paths:
-                                errors['path'] = "Você deve selecionar pelo menos um arquivo para backup"
-
-                    else:
-                        errors['profile_fileset_id'] = "Você deve selecionar um conjunto de arquivos ou criar um novo"
-
-
-
-
-        else:
-            errors["profile_id"] = "Você deve selecionar um perfil de configuração"
-
-        if errors:
-            extra_context.update( utils.dict_from_querydict(
-                                        request.POST,
-                                        lists=("path", 
-                                               "schedule_monthly_day",
-                                               "schedule_dayly_day",
-                                               "schedule_hourly_day",
-                                               "schedule_weekly_day")) )
-
-
-            return render_to_response(request, "backup_create.html", extra_context )
-        else:
-            with Session() as session:
-                if not profile.id:
-                    if not fileset.id:
-                        form = form_from_model(fileset)
-                        if form.is_valid():
-                            fileset.save()
-                            session.add(fileset)
-                            for filepath in paths:
-                                path,created = FilePath.objects.get_or_create(path=filepath)
-                                session.add(path)
-                                path.filesets.add( fileset )
-                                form = form_from_model(path)
-                                if form.is_valid():
-                                    path.save()
-
-                    if not schedule.id:
-                        form = form_from_model(schedule)
-                        if form.is_valid():
-                            schedule.save()
-                            session.add(schedule)
-                            for trigger in modeltriggers:
-                                trigger.schedule = schedule
-                                form = form_from_model(trigger)
-                                if form.is_valid():
-                                    trigger.save()
-                                    session.add(trigger)
-
-
-                    profile.storage = storage
-                    profile.schedule = schedule
-                    profile.fileset = fileset
-                    form = form_from_model(profile)
-                    if form.is_valid():
-                        profile.save()
-                        session.add(profile)
-
-
-                procedure.computer = computer
-                procedure.profile = profile
-                form = form_from_model(procedure)
-                if form.is_valid():
-                    procedure.pool = Pool.objects.create(name=procedure.name,
-                                                         retention_time=retention_time)
-                    procedure.save()
-                    session.add(procedure)
-
-
-                messages.success(request, u"Backup adicionado com sucesso.")
-                return redirect('nimbus.procedures.views.list')
-
-
-
-    else:
-        # NOT GET OR POST
-        pass
-
-
-
-
-
-@login_required
 def get_tree(request):
 
     if request.method == "POST":
-        path = request.POST['path']
-        computer_id = request.POST['computer_id']
-
         try:
-            computer = Computer.objects.get(id=computer_id)
-            files = computer.get_file_tree(path)
-            response = simplejson.dumps(files)
-        except socket.error, error:
-            response = simplejson.dumps({"type" : "error",
-                                         "message" : "Impossível conectar ao cliente"})
-        except Computer.DoesNotExist, error:
-            response = simplejson.dumps({"type" : "error",
-                                         "message" : "Computador não existe"})
+            path = request.POST['path']
+            computer_id = request.POST['computer_id']
 
-        return HttpResponse(response, mimetype="text/plain")
-    
+            try:
+                computer = Computer.objects.get(id=computer_id)
+                files = computer.get_file_tree(path)
+                response = simplejson.dumps(files)
+            except socket.error, error:
+                response = simplejson.dumps({"type" : "error",
+                                             "message" : "Impossível conectar ao cliente"})
+            except Computer.DoesNotExist, error:
+                response = simplejson.dumps({"type" : "error",
+                                             "message" : "Computador não existe"})
+            
+            return HttpResponse(response, mimetype="text/plain")
+        except Exception:
+            traceback.print_exc()
+
