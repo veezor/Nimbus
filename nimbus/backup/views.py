@@ -10,14 +10,15 @@ import simplejson
 from nimbus.backup import forms
 
 
-def render(request):
+def render(request, object_id=0):
 
-    lforms = [ forms.ProcedureForm(prefix="procedure") ]
+    lforms = [ forms.ProcedureForm(prefix="procedure", initial={'computer':object_id}) ]
 
 
     content = {
         'title':u'Criar Backup',
-        'forms':lforms
+        'forms':lforms,
+        'computer_id':object_id
     }
     return render_to_response("backup_add.html", content)
 

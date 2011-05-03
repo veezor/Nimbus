@@ -4,7 +4,7 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('nimbus.backup.views',
-    (r'^(?P<object_id>\d+)/add/$', 'render'),
+    (r'^add/(?P<object_id>\d+)$', 'render'),
     (r'^add/$', 'render'),
     (r'^profiles/add$', 'profile_new'),
     (r'^schedules/add$', 'schedule_new'),
