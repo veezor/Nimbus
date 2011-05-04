@@ -1,7 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 from django.db import models
 from nimbus.computers.models import Computer
-
-# Create your models here.
 
 class FileSet(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
@@ -11,44 +12,51 @@ class FilePath(models.Model):
     fileset = models.ForeignKey(FileSet, null=False, blank=False)
 
 
-class BackupType(models.Model):
+class BackupLevel(models.Model):
     name = models.CharField(max_length=255, unique=True, null=False)
 
+    def __unicode__(self):
+        return self.name
+        
 
 class Schedule(models.Model):
     name = models.CharField(u'Nome qualquer', max_length=255, null=False, blank=False)
 
+
 class Month(models.Model):
     schedule = models.OneToOneField(Schedule)
     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
-    type = models.ForeignKey(BackupType)
+    level = models.ForeignKey(BackupLevel)
     hour = models.TimeField()
+
 
 class Week(models.Model):
     schedule = models.OneToOneField(Schedule)
     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
-    type = models.OneToOneField(BackupType)
+    level = models.OneToOneField(BackupLevel)
     hour = models.TimeField()
+
 
 class Day(models.Model):
     schedule = models.OneToOneField(Schedule)
-
-    type = models.ForeignKey(BackupType)
+    level = models.ForeignKey(BackupLevel)
     hour = models.TimeField()
+
 
 class Hour(models.Model):
     schedule = models.OneToOneField(Schedule, related_name='hour_triggers')
-    type = models.ForeignKey(BackupType)
+    level = models.ForeignKey(BackupLevel)
     minute = models.PositiveSmallIntegerField()
+
 
 class Storage(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
 
 
-
 class Pool(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
     retention_time = models.IntegerField()
+
 
 class Procedure(models.Model):
     name = models.CharField(max_length=255, unique=True, null=False, blank=False)
