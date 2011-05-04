@@ -19,11 +19,37 @@ from nimbus.computers.models import Computer, ComputerGroup, ComputerAlreadyActi
 from nimbus.procedures.models import Procedure
 from nimbus.bacula.models import Job
 from nimbus.shared.views import render_to_response
+from django.shortcuts import render_to_response as render_this
 from nimbus.shared import enums
 from nimbus.shared.forms import form
 
+from nimbus.computers import forms as forms
 
+@login_required
+def add(request):
+    lforms = [ forms.ComputerForm ]
 
+    content = {
+        'title':u'Adicionar Computador',
+        'forms':lforms,
+        'computers':Computer.objects.filter(active=False)
+    }
+
+    return render_this("computers_add.html", content)
+
+@login_required
+def edit_no_active(request, object_id):
+    extra_context = {'title': u"Editar computador"}
+    messages.warning(request, u"O computador ainda não foi ativado.")
+
+    return create_update.update_object( request,
+                                        object_id = object_id,
+                                        model = Computer,
+                                        #form_class = form(Computer),
+                                        form_class = forms.ComputerForm,
+                                        template_name = "base_computers.html",
+                                        extra_context = extra_context,
+                                        post_save_redirect = reverse("nimbus.computers.views.add"))
 
 @login_required
 def new(request):
@@ -58,18 +84,6 @@ def new(request):
             logger.exception("Erro ao adicionar o computador")
             return HttpResponse(status=400)
 
-
-
-
-@login_required
-def add(request):
-    title = u"Adicionar computador"
-    computers = Computer.objects.filter(active=False,id__gt=1)
-    
-    return render_to_response(request, "computers_add.html", locals())
-
-
-
 @login_required
 def edit(request, object_id):
     extra_context = {'title': u"Editar computador"}
@@ -80,19 +94,6 @@ def edit(request, object_id):
                                         template_name = "base_computers.html",
                                         extra_context = extra_context,
                                         post_save_redirect = "/computers/")
-
-
-@login_required
-def edit_no_active(request, object_id):
-    extra_context = {'title': u"Editar computador"}
-    messages.warning(request, u"O computador ainda não foi ativado.")
-    return create_update.update_object( request, 
-                                        object_id = object_id,
-                                        model = Computer,
-                                        form_class = form(Computer),
-                                        template_name = "base_computers.html",
-                                        extra_context = extra_context,
-                                        post_save_redirect = reverse("nimbus.computers.views.add"))
 
 
 
@@ -116,11 +117,11 @@ def list(request):
         group = request.GET.get("group")
         computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
     else:
-        computers = Computer.objects.filter(active=True,id__gt=1).order_by('groups__name')
+        computers = Computer.objects.filter(active=True).order_by('groups__name')
     groups = ComputerGroup.objects.order_by('name')
     extra_content = {
         'computers': computers,
-        'title': u"Computadores",
+        'title': u"Computadores Ativos",
         'groups': groups
     }
     return render_to_response(request, "computers_list.html", extra_content)

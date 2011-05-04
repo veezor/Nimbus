@@ -28,45 +28,27 @@ class ComputerAlreadyActive(Exception):
     pass
 
 
-
-
 class ComputerGroup(models.Model):
-    name = models.CharField( max_length=255, unique=True, 
-                             blank=False, null=False)
-
-    def __unicode__(self):
-        return self.name
+    name = models.CharField(max_length=255, unique=True, blank=False, null=False)
 
 
 class CryptoInfo(models.Model):
-    key = models.CharField( max_length=2048, 
-                             blank=False, null=False)
-    certificate = models.CharField( max_length=2048, 
-                             blank=False, null=False)
-    pem = models.CharField( max_length=4096, 
-                             blank=False, null=False)
+    key = models.CharField( max_length=2048, blank=False, null=False)
+    certificate = models.CharField( max_length=2048, blank=False, null=False)
+    pem = models.CharField( max_length=4096, blank=False, null=False)
 
-
+class ComputerNewClass(BaseModel):
+    name = models.CharField(max_length=255, unique=True, blank=False, null=False, validators=[fields.check_model_name])
 
 class Computer(BaseModel):
-
-    name = models.CharField( max_length=255, unique=True, 
-                             blank=False, null=False,
-                             validators=[fields.check_model_name])
+    name = models.CharField(max_length=255, unique=True, blank=False, null=False, validators=[fields.check_model_name])
     address = models.IPAddressField(blank=False, null=False, unique=True)
-    operation_system = models.CharField( max_length=255,
-                                         blank=False, null=False,
-                                         choices=OS )
-    description = models.TextField( max_length=1024, blank=True)
-    password = models.CharField( max_length=255,
-                                 blank=False, null=False,
-                                 editable=False,
-                                 default=utils.random_password)
-    groups = models.ManyToManyField(ComputerGroup, related_name="computers",
-                                    blank=True, null=True)
+    operation_system = models.CharField(max_length=255, blank=False, null=False, choices=OS )
+    description = models.TextField(max_length=1024, blank=True)
+    password = models.CharField(max_length=255, blank=False, null=False, editable=False, default=utils.random_password)
+    groups = models.ManyToManyField(ComputerGroup, related_name="computers", blank=True, null=True)
     active = models.BooleanField(editable=False)
-    crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False, 
-                                    unique=True, editable=False)
+    crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False, unique=True, editable=False)
 
 
     def _get_crypt_file(self, filename):
@@ -74,7 +56,7 @@ class Computer(BaseModel):
         client_path = km.get_client_path(self.name)
         path = os.path.join(client_path, file_name)
         try:
-            file_content = open(file_path, 'r') 
+            file_content = open(file_path, 'r')
             file_read = file_content.read()
             file_content.close()
             return file_read
