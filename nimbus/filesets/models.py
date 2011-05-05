@@ -10,6 +10,7 @@ from django.db.models.signals import post_save, post_delete, m2m_changed
 
 from nimbus.base.models import BaseModel
 from nimbus.shared import utils, signals, fields
+from nimbus.computers import models as computer_models
 from nimbus.libs.template import render_to_file
 
 # Create your models here.
@@ -17,19 +18,13 @@ from nimbus.libs.template import render_to_file
 
 
 class FileSet(BaseModel):
-    name = models.CharField(max_length=255, unique=True, null=False,
-                            validators=[fields.check_model_name])
-
-    def __unicode__(self):
-        return self.name
+    name = models.CharField(max_length=255, unique=True, null=False, validators=[fields.check_model_name])
 
 
 class FilePath(models.Model):
+    computer = models.ForeignKey(computer_models.Computer)
     path = fields.ModelPathField(max_length=2048, null=False)
     filesets = models.ManyToManyField(FileSet, related_name="files", null=True, blank=True)
-
-    def __unicode__(self):
-        return self.path
 
 
 from south.modelsinspector import add_introspection_rules
