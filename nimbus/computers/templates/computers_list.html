@@ -58,9 +58,8 @@
                             <input type="submit" class="submit tiny" value="Restaurar" />
                         </form>
                         {% endif %}
-                        <form action="/backup/{{comp.id}}/add/" method="get" class="floatright">
-                            <input type="submit" class="submit tiny" value="Criar backup" />
-                        </form>
+                        <a href="/backup/add/{{ comp.id }}" class="floatright submit tiny">Criar Backup</a>
+                        
                     </div>
                     {% if not comp.procedure_set.count %}
                         <p>Não existem procedimentos para este computador.</p>

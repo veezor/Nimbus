@@ -19,13 +19,26 @@
     
         <form method="post" action="">
             {% include "form.html" %}
+            {% for form in forms %}
+                {{ form.non_field_errors }}
+                {% for field in form.visible_fields %}
+                    {% if field.errors %}
+                    <ul class="errorlist">
+                        <li>{{ field.errors }}</li>
+                    </ul>
+                    {% endif %}
+                {% endfor %}
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+            {% endfor %}
             <a href="#" id="add_group">Adicionar grupo</a>
             <div class="add_group">
                 <label>Nome do grupo:</label>
                 <input type="text" name="group" value="" class="text small" id="add_group_name" /> <input type="submit" class="submit" value="Adicionar" id="add_group_submit" /> ou <a href="#" id="add_group_cancel">Cancelar</a>
             </div>
             <br/>
-            <p><input type="submit" class="submit" value="Confirm" /></p>
+            <p><input type="submit" class="submit" value="Atualizar" /></p>
         </form>
     
     </div>
