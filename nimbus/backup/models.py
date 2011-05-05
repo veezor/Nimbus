@@ -33,7 +33,7 @@ class Week(models.Model):
 class Day(models.Model):
     schedule = models.OneToOneField(Schedule)
 
-    type = models.ForeignKey(BackupType)
+    type = models.ForeignKey(BackupType, related_name='')
     hour = models.TimeField()
 
 class Hour(models.Model):

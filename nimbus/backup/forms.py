@@ -58,8 +58,6 @@ FilesFormSet = forms.models.inlineformset_factory(models.FileSet, models.FilePat
 Procedure = make_form(models.Procedure)
 Pool = make_form(models.Pool, exclude_fields=["name"])
 
-
-
 MonthForm = make_form(models.Month)
 DayForm = make_form(models.Day)
 HourForm = make_form(models.Hour)

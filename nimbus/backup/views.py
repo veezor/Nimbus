@@ -14,7 +14,6 @@ def render(request, object_id=0):
 
     lforms = [ forms.ProcedureForm(prefix="procedure", initial={'computer':object_id}) ]
 
-
     content = {
         'title':u'Criar Backup',
         'forms':lforms,
@@ -43,7 +42,7 @@ def schedule_new(request):
     return render_to_response("schedule_new.html", content)
 
 def fileset_new(request, object_id):
-    # apenas teste, remover em modo de produção
+    # just for test, must be removed in production mode
     if request.method == "POST":
         print request.POST
     lforms = [ forms.FileSetForm(prefix="fileset") ]
