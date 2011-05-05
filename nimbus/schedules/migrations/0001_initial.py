@@ -8,69 +8,84 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'Schedule'
-        db.create_table('schedules_schedule', (
+        # Adding model 'BackupLevel'
+        db.create_table('schedules_backuplevel', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('uuid', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.UUID'])),
             ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
         ))
+        db.send_create_signal('schedules', ['BackupLevel'])
+
+        # Adding model 'Schedule'
+        db.create_table('schedules_schedule', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('uuid', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.UUID'])),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
+        ))
         db.send_create_signal('schedules', ['Schedule'])
 
-        # Adding model 'Daily'
-        db.create_table('schedules_daily', (
+        # Adding model 'Month'
+        db.create_table('schedules_month', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('schedule', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.Schedule'])),
-            ('level', self.gf('django.db.models.fields.CharField')(max_length='25')),
+            ('uuid', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.UUID'])),
+            ('schedule', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['schedules.Schedule'], unique=True)),
+            ('days', self.gf('django.db.models.fields.CommaSeparatedIntegerField')(max_length=255)),
             ('hour', self.gf('django.db.models.fields.TimeField')()),
+            ('level', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.BackupLevel'])),
         ))
-        db.send_create_signal('schedules', ['Daily'])
+        db.send_create_signal('schedules', ['Month'])
 
-        # Adding model 'Hourly'
-        db.create_table('schedules_hourly', (
+        # Adding model 'Week'
+        db.create_table('schedules_week', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('schedule', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.Schedule'])),
-            ('level', self.gf('django.db.models.fields.CharField')(max_length='25')),
+            ('uuid', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.UUID'])),
+            ('schedule', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['schedules.Schedule'], unique=True)),
+            ('days', self.gf('django.db.models.fields.CommaSeparatedIntegerField')(max_length=255)),
             ('hour', self.gf('django.db.models.fields.TimeField')()),
+            ('level', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.BackupLevel'])),
         ))
-        db.send_create_signal('schedules', ['Hourly'])
+        db.send_create_signal('schedules', ['Week'])
 
-        # Adding model 'Monthly'
-        db.create_table('schedules_monthly', (
+        # Adding model 'Day'
+        db.create_table('schedules_day', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('schedule', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.Schedule'])),
-            ('level', self.gf('django.db.models.fields.CharField')(max_length='25')),
+            ('uuid', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.UUID'])),
+            ('schedule', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['schedules.Schedule'], unique=True)),
             ('hour', self.gf('django.db.models.fields.TimeField')()),
-            ('day', self.gf('django.db.models.fields.IntegerField')()),
+            ('level', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.BackupLevel'])),
         ))
-        db.send_create_signal('schedules', ['Monthly'])
+        db.send_create_signal('schedules', ['Day'])
 
-        # Adding model 'Weekly'
-        db.create_table('schedules_weekly', (
+        # Adding model 'Hour'
+        db.create_table('schedules_hour', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('schedule', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.Schedule'])),
-            ('level', self.gf('django.db.models.fields.CharField')(max_length='25')),
-            ('hour', self.gf('django.db.models.fields.TimeField')()),
-            ('day', self.gf('django.db.models.fields.CharField')(max_length=4)),
+            ('uuid', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.UUID'])),
+            ('schedule', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['schedules.Schedule'], unique=True)),
+            ('minute', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
+            ('level', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.BackupLevel'])),
         ))
-        db.send_create_signal('schedules', ['Weekly'])
+        db.send_create_signal('schedules', ['Hour'])
 
 
     def backwards(self, orm):
         
+        # Deleting model 'BackupLevel'
+        db.delete_table('schedules_backuplevel')
+
         # Deleting model 'Schedule'
         db.delete_table('schedules_schedule')
 
-        # Deleting model 'Daily'
-        db.delete_table('schedules_daily')
+        # Deleting model 'Month'
+        db.delete_table('schedules_month')
 
-        # Deleting model 'Hourly'
-        db.delete_table('schedules_hourly')
+        # Deleting model 'Week'
+        db.delete_table('schedules_week')
 
-        # Deleting model 'Monthly'
-        db.delete_table('schedules_monthly')
+        # Deleting model 'Day'
+        db.delete_table('schedules_day')
 
-        # Deleting model 'Weekly'
-        db.delete_table('schedules_weekly')
+        # Deleting model 'Hour'
+        db.delete_table('schedules_hour')
 
 
     models = {
@@ -80,41 +95,51 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'uuid_hex': ('django.db.models.fields.CharField', [], {'default': "'none'", 'unique': 'True', 'max_length': '255'})
         },
-        'schedules.daily': {
-            'Meta': {'object_name': 'Daily'},
-            'hour': ('django.db.models.fields.TimeField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'level': ('django.db.models.fields.CharField', [], {'max_length': "'25'"}),
-            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.Schedule']"})
-        },
-        'schedules.hourly': {
-            'Meta': {'object_name': 'Hourly'},
-            'hour': ('django.db.models.fields.TimeField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'level': ('django.db.models.fields.CharField', [], {'max_length': "'25'"}),
-            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.Schedule']"})
-        },
-        'schedules.monthly': {
-            'Meta': {'object_name': 'Monthly'},
-            'day': ('django.db.models.fields.IntegerField', [], {}),
-            'hour': ('django.db.models.fields.TimeField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'level': ('django.db.models.fields.CharField', [], {'max_length': "'25'"}),
-            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.Schedule']"})
-        },
-        'schedules.schedule': {
-            'Meta': {'object_name': 'Schedule'},
+        'schedules.backuplevel': {
+            'Meta': {'object_name': 'BackupLevel'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
         },
-        'schedules.weekly': {
-            'Meta': {'object_name': 'Weekly'},
-            'day': ('django.db.models.fields.CharField', [], {'max_length': '4'}),
+        'schedules.day': {
+            'Meta': {'object_name': 'Day'},
             'hour': ('django.db.models.fields.TimeField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'level': ('django.db.models.fields.CharField', [], {'max_length': "'25'"}),
-            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.Schedule']"})
+            'level': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.BackupLevel']"}),
+            'schedule': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['schedules.Schedule']", 'unique': 'True'}),
+            'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
+        },
+        'schedules.hour': {
+            'Meta': {'object_name': 'Hour'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'level': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.BackupLevel']"}),
+            'minute': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
+            'schedule': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['schedules.Schedule']", 'unique': 'True'}),
+            'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
+        },
+        'schedules.month': {
+            'Meta': {'object_name': 'Month'},
+            'days': ('django.db.models.fields.CommaSeparatedIntegerField', [], {'max_length': '255'}),
+            'hour': ('django.db.models.fields.TimeField', [], {}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'level': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.BackupLevel']"}),
+            'schedule': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['schedules.Schedule']", 'unique': 'True'}),
+            'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
+        },
+        'schedules.schedule': {
+            'Meta': {'object_name': 'Schedule'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
+        },
+        'schedules.week': {
+            'Meta': {'object_name': 'Week'},
+            'days': ('django.db.models.fields.CommaSeparatedIntegerField', [], {'max_length': '255'}),
+            'hour': ('django.db.models.fields.TimeField', [], {}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'level': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.BackupLevel']"}),
+            'schedule': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['schedules.Schedule']", 'unique': 'True'}),
+            'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
         }
     }
 

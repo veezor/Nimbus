@@ -3,6 +3,7 @@
 
 from django.db import models
 from nimbus.computers.models import Computer
+from nimbus.schedules.models import BackupLevel, Schedule, Month, Week, Day, Hour
 
 class FileSet(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
@@ -12,41 +13,41 @@ class FilePath(models.Model):
     fileset = models.ForeignKey(FileSet, null=False, blank=False)
 
 
-class BackupLevel(models.Model):
-    name = models.CharField(max_length=255, unique=True, null=False)
-
-    def __unicode__(self):
-        return self.name
-        
-
-class Schedule(models.Model):
-    name = models.CharField(u'Nome qualquer', max_length=255, null=False, blank=False)
-
-
-class Month(models.Model):
-    schedule = models.OneToOneField(Schedule)
-    days = models.CommaSeparatedIntegerField(null=False, max_length=255)
-    level = models.ForeignKey(BackupLevel)
-    hour = models.TimeField()
-
-
-class Week(models.Model):
-    schedule = models.OneToOneField(Schedule)
-    days = models.CommaSeparatedIntegerField(null=False, max_length=255)
-    level = models.OneToOneField(BackupLevel)
-    hour = models.TimeField()
-
-
-class Day(models.Model):
-    schedule = models.OneToOneField(Schedule)
-    level = models.ForeignKey(BackupLevel)
-    hour = models.TimeField()
-
-
-class Hour(models.Model):
-    schedule = models.OneToOneField(Schedule, related_name='hour_triggers')
-    level = models.ForeignKey(BackupLevel)
-    minute = models.PositiveSmallIntegerField()
+# class BackupLevel(models.Model):
+#     name = models.CharField(max_length=255, unique=True, null=False)
+# 
+#     def __unicode__(self):
+#         return self.name
+#         
+# 
+# class Schedule(models.Model):
+#     name = models.CharField(u'Nome qualquer', max_length=255, null=False, blank=False)
+# 
+# 
+# class Month(models.Model):
+#     schedule = models.OneToOneField(Schedule)
+#     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
+#     level = models.ForeignKey(BackupLevel)
+#     hour = models.TimeField()
+# 
+# 
+# class Week(models.Model):
+#     schedule = models.OneToOneField(Schedule)
+#     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
+#     level = models.OneToOneField(BackupLevel)
+#     hour = models.TimeField()
+# 
+# 
+# class Day(models.Model):
+#     schedule = models.OneToOneField(Schedule)
+#     level = models.ForeignKey(BackupLevel)
+#     hour = models.TimeField()
+# 
+# 
+# class Hour(models.Model):
+#     schedule = models.OneToOneField(Schedule, related_name='hour_triggers')
+#     level = models.ForeignKey(BackupLevel)
+#     minute = models.PositiveSmallIntegerField()
 
 
 class Storage(models.Model):
