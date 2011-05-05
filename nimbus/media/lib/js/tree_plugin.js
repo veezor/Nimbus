@@ -24,8 +24,11 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
     var ul = $("<ul>").addClass("open").hide();
     ul.insertAfter($(tree_class + " *[path="+root_path+"]"));
 
+    $(tree_class + " *[path="+root_path+"]").click(function(){
+        alert("bla");
+    });
     link = $(tree_class + " *[path="+root_path+"]");
-    link.append($("<div class='wait'>"));
+    link.append($("<div class='wait'></div>"));
     
     total = data.length;
     contador = 0;
@@ -45,7 +48,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
         path_name = path.replace(root_path_re, '');
 
         var input = $("<input>").attr("type", input_type).attr("name", input_name).val(path);
-
+        
         // If is a directory.
         if (path.match("/$") == "/" || path.match("\\$") == "\\") {
             attr_class = "directory";
@@ -63,7 +66,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
         }
 
         var file = $("<span>").html(inner);
-
+        var counter = 0;
         if (input_type != "radio") {
             input.change(function(){
                 checked = $(this).attr("checked") && "checked" || "";
@@ -75,6 +78,29 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
                         atual.find('input').eq(0).attr('checked', '');
                         atual = atual.parent().parent().parent().parent();
                     }
+
+                    $.each($(':input').serializeArray(), function(i, field) {
+                        if (field.value == path)
+                        {
+                            $("#id_filepath_set-TOTAL_FORMS").val(counter-1);
+                            $("#id_filepath_set-INITIAL_FORMS").val(counter-1);
+                            $("#id_filepath_set-MAX_NUM_FORMS").val(counter-1);
+                            $("[name="+field.name+"]").remove();
+                        }
+                    });
+                }
+                else
+                {
+                    // creates input hidden for validation
+                    var input_path = "<input type='hidden' value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-path' name='filepath_set-"+counter+"-path' />";
+                    var input_fileset = "<input type='hidden'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-fileset' name='filepath_set-"+counter+"-fileset' />";
+                    var input_id = "<input type='hidden'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-id' name='filepath_set-"+counter+"-id' />";
+                    counter++;
+                    $('.submit').after(input_path);
+
+                    $("#id_filepath_set-TOTAL_FORMS").val(counter);
+                    $("#id_filepath_set-INITIAL_FORMS").val(counter);
+                    $("#id_filepath_set-MAX_NUM_FORMS").val(counter);
                 }
             });
         }
@@ -115,6 +141,10 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     if (computer_id) {
         attributes['computer_id'] = computer_id;
     }
+    else {
+        $('#mensagem_erro_fileset').html('Um computador deve ser selecionado antes.').show();
+        return false;
+    }
     
     if (depends == '#computer_id' && !computer_id) {
         $('#mensagem_erro_fileset').html('Um computador deve ser selecionado antes.').show();
@@ -127,7 +157,9 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     }
     
     link = $(tree_class + " *[path="+root_path+"]");
-    link.append($("<div class='wait'>"));
+    link.find(".wait").remove();
+    link.append($("<div class='wait'></div>"));
+
     wrapper = link.parent();
 
     if (wrapper.find('ul').length) {

@@ -49,6 +49,25 @@ class FilePath(models.Model):
 #     level = models.ForeignKey(BackupLevel)
 #     minute = models.PositiveSmallIntegerField()
 
+<<<<<<< HEAD
+=======
+class Week(models.Model):
+    schedule = models.OneToOneField(Schedule)
+    days = models.CommaSeparatedIntegerField(null=False, max_length=255)
+    type = models.OneToOneField(BackupType)
+    hour = models.TimeField()
+
+class Day(models.Model):
+    schedule = models.OneToOneField(Schedule)
+
+    type = models.ForeignKey(BackupType, related_name='')
+    hour = models.TimeField()
+
+class Hour(models.Model):
+    schedule = models.OneToOneField(Schedule, related_name='hour_triggers')
+    type = models.ForeignKey(BackupType)
+    minute = models.PositiveSmallIntegerField()
+>>>>>>> 6c7cd5f6b4fc61e6403c729869f4d0619f135382
 
 class Storage(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)

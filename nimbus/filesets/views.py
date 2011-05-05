@@ -13,22 +13,31 @@ from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form_mapping, form_from_model
 from nimbus.libs.db import Session
 from nimbus.shared import utils
+from nimbus.filesets import forms
 
 
 @login_required
 def add(request):
-    title = u"Criar conjunto de arquivos"
-    computers = Computer.objects.filter(active=True,id__gt=1)
+#    title = u"Criar Conjunto de Crquivos"
+#    computers = Computer.objects.filter(active=True,id__gt=1)
     
-    fileset_form = FileSetForm()
-    filepath_form = FilePathForm()
+#    fileset_form = FileSetForm()
+#    filepath_form = FilePathForm()
+    lforms = [ forms.FileSetForm(prefix="fileset") ]
+    lformsets = [ forms.FilePathForm(prefix="filepath") ]
+
+    content = {
+        'forms':lforms,
+        'formsets':lformsets,
+        'title':u"Criar Conjunto de Arquivos",
+        'computers':Computer.objects.filter(active=True,id__gt=1)
+    }
     
     if request.method == 'POST':
         # TODO: Save the queen.
         pass
     
-    return render_to_response(request, 'base_filesets.html',
-                                        locals())
+    return render_to_response(request, 'base_filesets.html', content)
 
 
 @login_required
