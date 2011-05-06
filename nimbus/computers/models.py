@@ -104,10 +104,7 @@ class Computer(BaseModel):
                                 .order_by('-endtime').distinct()[:15]
 
 
-    def activate(self):
-
-        if self.active:
-            raise ComputerAlreadyActive("Computer already active")
+    def configure(self):
 
         nimbuscomputer = Computer.objects.get(id=1)
 
@@ -126,6 +123,15 @@ class Computer(BaseModel):
         proxy.save_config( unicode(fdconfig) )
         proxy.restart_bacula()
 
+
+
+
+    def activate(self):
+
+        if self.active:
+            raise ComputerAlreadyActive("Computer already active")
+
+        self.configure() 
         self.active = True
         self.save()
 
