@@ -15,7 +15,7 @@ from pwd import getpwnam
 
 import pycurl
 
-from devicemanager import StorageDeviceManager
+from devicemanager import StorageDeviceManager, list_disk_labels
 
 from nimbus.base.models import UUIDBaseModel
 from nimbus.storages.models import Device
@@ -36,16 +36,9 @@ from nimbusgateway import Api, File
 from django.contrib.contenttypes.models import ContentType
 
 
-DISK_LABELS_PATH = "/dev/disk/by-label/"
 NIMBUS_DUMP = "/var/nimbus/nimbus-sql.bz2"
 BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
 
-
-def list_disk_labels():
-    try:
-        return os.listdir(DISK_LABELS_PATH)
-    except OSError, e:
-        return []
 
 
 def find_archive_devices():
