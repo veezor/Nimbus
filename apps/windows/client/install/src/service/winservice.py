@@ -78,19 +78,22 @@ def check_firewall_conf():
                             'C:\\Nimbus\\pkgs\\winservice.exe')
     check_firewall_app_conf("Nimbus Notifier for Windows Client", 
                             'C:\\Nimbus\\pkgs\\windowsnotifier.exe')
+    check_firewall_app_conf("bacula-fd",
+                            "C:\\Program Files\\Bacula\\bacula-fd.exe")
+ 
         
 def check_firewall_app_conf(name, imagefile):
 
     firewall = win32com.client.gencache.EnsureDispatch('HNetCfg.FwMgr',0)
     allowed_apps = firewall.LocalPolicy.CurrentProfile.AuthorizedApplications
     
-    nimbus_service_allowed = False
+    service_allowed = False
     
     for app in allowed_apps:
         if app.Name == name:
-            nimbus_service_allowed = True
+            service_allowed = True
         
-    if not nimbus_service_allowed:
+    if not service_allowed:
         newapp = win32com.client.Dispatch('HNetCfg.FwAuthorizedApplication')
         newapp.Name = name
         newapp.ProcessImageFileName = imagefile
