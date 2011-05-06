@@ -8,6 +8,7 @@ import time
 import logging
 import subprocess
 from pwd import getpwnam
+from hashlib import md5
 from datetime import datetime
 from os.path import join, exists, isfile, isabs
 
@@ -37,6 +38,22 @@ from nimbus.offsite.models import ( Volume,
 DISK_LABELS_PATH = "/dev/disk/by-label/"
 NIMBUS_DUMP = "/var/nimbus/nimbus-sql.bz2"
 BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
+
+
+
+class Md5CheckError(Exception):
+    pass
+
+def md5_for_large_file(filename, block_size=2**20):                                                                                                               
+    fileobj = file(filename, 'rb')
+    filemd5 = md5()
+    while True:
+        data = fileobj.read(block_size)
+        if not data:
+            break
+        filemd5.update(data)
+    fileobj.close()
+    return filemd5.digest()
 
 
 def list_disk_labels():
@@ -103,6 +120,43 @@ def filename_is_volumename(filename):
         return filename.startswith(name)
     except Pool.DoesNotExist, error:
         return False
+
+
+class File(object):
+
+    def __init__(self, filename, mode, callback):
+        self.fileobj = file(filename, mode)
+        self.callback = callback
+        self.filesize = os.path.getsize(filename)
+        self.read_bytes = 0
+        self.written_bytes = 0
+
+
+    def read(self, size):
+        r =  self.fileobj.read(size)
+        self.read_bytes += size
+        self.progress_upload( )
+        return r
+
+    def write(self, content):
+        size = len(content)
+        r = self.fileobj.write(content)
+        self.written_bytes += size
+        self.progress_download( )
+        return r
+
+    def progress_download(self):
+        if self.callback:
+            self.callback( self.written_bytes, self.filesize )
+
+
+    def progress_upload(self):
+        if self.callback:
+            self.callback( self.read_bytes, self.filesize )
+
+    def close(self):
+        self.fileobj.close()
+
 
 
 
@@ -366,14 +420,17 @@ class LocalManager(BaseManager):
             dest.write(data)
 
 
+        ori.close()
+        dest.close()
+
         try:
             os.chmod( destination, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
             os.chown( destination, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
         except (OSError, IOError), error:
-            pass
+            pass #FIX
 
-        ori.close()
-        dest.close()
+        if md5_for_large_file(destination) != md5_for_large_file(origin):
+            raise Md5CheckError("md5 mismatch")
 
 
     def finish(self):
