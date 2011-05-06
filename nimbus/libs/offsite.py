@@ -229,7 +229,7 @@ class RemoteManager(BaseManager):
 
 
     def get_remote_volumes_list(self):
-        return [ f[0] for f in self.api.list_all_files() if filename_is_volumename(f[0]) ]
+        return [ f[0] for f in self.s3.list_files() if filename_is_volumename(f[0]) ]
 
 
     def _download_file(self, filename, dest, callback=None, userdata=None):
@@ -250,7 +250,7 @@ class RemoteManager(BaseManager):
     def process_pending_download_requests(self):
         requests = self.get_download_requests()
         self.process_requests( requests, self._download_file,
-                               self.upload_rate)
+                               self.s3.rate_limit)
 
 
     def process_requests( self, requests, process_function, 
