@@ -171,12 +171,11 @@ def copy_files(request):
             required_size = utils.bytes_to_mb(required_size)
             available_size = utils.bytes_to_mb(manager.available_size)
             manager.umount()
-            error = u"Espaço necessário é de %.3fMB, somente %.3fMB disponível em %s" %\
+            error_msg = u"Espaço necessário é de %.3fMB, somente %.3fMB disponível em %s" %\
                     (required_size, available_size, device)
+            messages.error(request, error_msg)
+            return redirect('nimbus.system.views.select_storage')
 
-        if error:
-            return render_to_response(request, "bkp/offsite/mounterror.html",
-                    {"error" : error } )
 
 
 @login_required
