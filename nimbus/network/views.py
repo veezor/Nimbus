@@ -8,13 +8,11 @@ from nimbus.shared.views import edit_singleton_model
 from nimbus.shared.utils import project_port
 
 
-
 @login_required
 def network_conf(request):
-    return edit_singleton_model( request, "myform.html", 
+    return edit_singleton_model(request, "myform.html", 
                                  "nimbus.network.views.redirect_after_update",
                                  model = NetworkInterface )
-
 
 @login_required
 def redirect_after_update(request):
