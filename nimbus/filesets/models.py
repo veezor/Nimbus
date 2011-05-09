@@ -24,7 +24,7 @@ class FileSet(BaseModel):
 class FilePath(models.Model):
     computer = models.ForeignKey(computer_models.Computer)
     path = fields.ModelPathField(max_length=2048, null=False)
-    filesets = models.ManyToManyField(FileSet, related_name="files", null=True, blank=True)
+    filesets = models.ForeignKey(FileSet, related_name="files")
 
 
 from south.modelsinspector import add_introspection_rules
@@ -72,5 +72,5 @@ def update_filepath(obj):
 
 signals.connect_on( update_fileset_file, FileSet, post_save)
 signals.connect_on( remove_fileset_file, FileSet, post_delete)
-signals.connect_on( update_filepath, FilePath.filesets.through, m2m_changed)
+#signals.connect_on( update_filepath, FilePath.filesets.through, m2m_changed)
 #signals.connect_m2m_on( update_filepath, FilePath.filesets.through, m2m_changed)

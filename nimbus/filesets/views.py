@@ -46,7 +46,18 @@ def edit(request, object_id):
 
     title = u"Editar conjunto de arquivos"
     computers = Computer.objects.filter(active=True,id__gt=1)
-    fileset = FileSet.objects.get(id=object_id)
+    filesets = FileSet.objects.get(id=object_id)
+    
+    lforms = [ forms.FileSetForm(prefix="fileset") ]
+    lformsets = [ forms.FilePathForm(prefix="filepath") ]
+
+    content = {
+        'forms':lforms,
+        'formsets':lformsets,
+        'title':u"Editar Conjunto de Arquivos",
+        'computers':computers,
+        'filesets':filesets
+    }
     
     if request.method == "POST":
 
@@ -58,8 +69,6 @@ def edit(request, object_id):
             if filesetform.is_valid():
                 fileset = filesetform.save()
                 session.add(fileset)
-
-
 
                 paths_to_remove = fileset.files.exclude(path__in=paths)
 
@@ -90,5 +99,4 @@ def edit(request, object_id):
 
 
     
-    return render_to_response(request, 'base_filesets.html',
-                                        locals())
+    return render_to_response(request, 'edit_filesets.html', content)
