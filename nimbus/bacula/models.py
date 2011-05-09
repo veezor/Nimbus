@@ -2,12 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 from datetime import datetime, timedelta
-
 from django.db import models
-
-
-
-
 
 class Client(models.Model):
     clientid = models.IntegerField(primary_key=True, db_column='ClientId') # Field name made lowercase.
@@ -19,14 +14,11 @@ class Client(models.Model):
     class Meta:
         db_table = u'Client'
 
-
     @property
     def computer(self):
         from nimbus.computers.models import Computer
         client_name = self.name.split('_')[0]
         return Computer.objects.get(uuid__uuid_hex=client_name)
-
-
 
 
 class File(models.Model):
@@ -46,7 +38,6 @@ class File(models.Model):
         return self.path.path + self.filename.name
 
 
-
 class Fileset(models.Model):
     filesetid = models.IntegerField(primary_key=True, db_column='FileSetId') # Field name made lowercase.
     fileset = models.TextField(db_column='FileSet') # Field name made lowercase.
@@ -62,51 +53,45 @@ class Filename(models.Model):
         db_table = u'Filename'
 
 class Job(models.Model):
-    MESSAGES = [
-        'Criado mas sem executar ainda.',
-        'Executando',
-        'Bloqueado',
-        'Terminado com sucesso',
-        'Terminado com alertas',
-        'Terminado com erros',
-        'Erro nâo fatal',
-        'Erro fatal',
-        'Verificar diferenças',
-        'Cancelado pelo usuário',
-        'Incompleto',
-        'Esperando pelo cliente',
-        'Esperando',
-        'Gravando dados'
-    ]
-
-    STATUS_MESSAGES_MAPPING = {
-        'C' : MESSAGES[0],
-        'R' : MESSAGES[1],
-        'B' : MESSAGES[2],
-        'T' : MESSAGES[3],
-        'W' : MESSAGES[4],
-        'E' : MESSAGES[5],
-        'e' : MESSAGES[6],
-        'f' : MESSAGES[7],
-        'D' : MESSAGES[8],
-        'A' : MESSAGES[9],
-        'I' : MESSAGES[10],
-        'F' : MESSAGES[11],
-        'S' : MESSAGES[12],
-        'm' : MESSAGES[12],
-        'M' : MESSAGES[12],
-        's' : MESSAGES[12],
-        'j' : MESSAGES[12],
-        'c' : MESSAGES[12],
-        'd' : MESSAGES[12],
-        't' : MESSAGES[12],
-        'p' : MESSAGES[12],
-        'i' : MESSAGES[12],
-        'a' : MESSAGES[12],
-        'l' : MESSAGES[12],
-        'L' : MESSAGES[13],
-    }
-
+    MESSAGES = ['Criado mas sem executar ainda.',
+                'Executando',
+                'Bloqueado',
+                'Terminado com sucesso',
+                'Terminado com alertas',
+                'Terminado com erros',
+                'Erro nâo fatal',
+                'Erro fatal',
+                'Verificar diferenças',
+                'Cancelado pelo usuário',
+                'Incompleto',
+                'Esperando pelo cliente',
+                'Esperando',
+                'Gravando dados']
+    STATUS_MESSAGES_MAPPING = {'C' : MESSAGES[0],
+                               'R' : MESSAGES[1],
+                               'B' : MESSAGES[2],
+                               'T' : MESSAGES[3],
+                               'W' : MESSAGES[4],
+                               'E' : MESSAGES[5],
+                               'e' : MESSAGES[6],
+                               'f' : MESSAGES[7],
+                               'D' : MESSAGES[8],
+                               'A' : MESSAGES[9],
+                               'I' : MESSAGES[10],
+                               'F' : MESSAGES[11],
+                               'S' : MESSAGES[12],
+                               'm' : MESSAGES[12],
+                               'M' : MESSAGES[12],
+                               's' : MESSAGES[12],
+                               'j' : MESSAGES[12],
+                               'c' : MESSAGES[12],
+                               'd' : MESSAGES[12],
+                               't' : MESSAGES[12],
+                               'p' : MESSAGES[12],
+                               'i' : MESSAGES[12],
+                               'a' : MESSAGES[12],
+                               'l' : MESSAGES[12],
+                               'L' : MESSAGES[13]}
     jobid = models.IntegerField(primary_key=True, db_column='JobId') # Field name made lowercase.
     job = models.TextField(db_column='Job') # Field name made lowercase.
     name = models.TextField(db_column='Name') # Field name made lowercase.
@@ -142,61 +127,44 @@ class Job(models.Model):
 
     @classmethod
     def get_jobs_by_day_between(cls, start, end):
-
         diff = end - start
         days = diff.days
         oneday = timedelta(1)
         day = start
         count = 0
-
         result = []
-
-
         while count <= days:
             result.append( (day, cls.get_jobs_by_day(day)) )
             day = day + oneday
             count += 1
-
         return result
-
 
     @classmethod
     def get_jobs_from_last_seven_days(cls):
-
         now = datetime.now()
         start = now - timedelta(6)
         start = datetime(start.year, start.month, start.day)
         return cls.get_jobs_by_day_between(start, now)
 
-
     @classmethod
     def get_files_from_last_jobs(cls):
         jobs_by_day = cls.get_jobs_from_last_seven_days()
         result = {}
-
         for day, jobs in jobs_by_day:
             files = jobs.aggregate(total=models.Sum('jobfiles'))
             nfiles = files['total'] or 0
             result[day] = nfiles
-
         return result
-
 
     @classmethod
     def get_bytes_from_last_jobs(cls):
         jobs_by_day = cls.get_jobs_from_last_seven_days()
-
         result = {}
-
         for day, jobs in jobs_by_day:
             bytes = jobs.aggregate(total=models.Sum('jobbytes'))
             nbytes =  bytes['total']  or 0
             result[day] = nbytes
-
-
         return result
-
-
 
     @property
     def procedure(self):
@@ -204,27 +172,19 @@ class Job(models.Model):
         procedure_name = self.name.split('_')[0]
         return Procedure.objects.get(uuid__uuid_hex=procedure_name)
 
-
     @property
     def status_friendly(self):
         if self.jobstatus == 'T':
             return 'ok'
-
         if self.jobstatus in ('e', 'E', 'f'):
             return 'error'
-
         if self.jobstatus == 'W':
             return 'warn'
-
         return 'running'
 
     @property
     def status_message(self):
         return self.STATUS_MESSAGES_MAPPING.get(self.jobstatus, "Desconhecido")
-
-
-
-
 
     @property
     def duration(self):
@@ -252,6 +212,7 @@ class JobMedia(models.Model):
     stripe = models.IntegerField(null=True, db_column='Stripe', blank=True) # Field name made lowercase.
     class Meta:
         db_table = u'JobMedia'
+
 
 class Media(models.Model):
     mediaid = models.IntegerField(primary_key=True, db_column='MediaId') # Field name made lowercase.
@@ -306,6 +267,7 @@ class Path(models.Model):
     class Meta:
         db_table = u'Path'
 
+
 class Pool(models.Model):
     poolid = models.IntegerField(primary_key=True, db_column='PoolId') # Field name made lowercase.
     name = models.TextField(unique=True, db_column='Name') # Field name made lowercase.
@@ -336,8 +298,7 @@ class Pool(models.Model):
         db_table = u'Pool'
 
 
-
-
+# TODO: Dar um nome melhor a esta classe
 class Temp(models.Model):
     jobid = models.ForeignKey(Job, db_column='JobId', primary_key=True) # Field name made lowercase.
     jobtdate = models.BigIntegerField(null=True, db_column='JobTDate', blank=True) # Field name made lowercase.
@@ -353,9 +314,10 @@ class Temp(models.Model):
     class Meta:
         db_table = u'temp'
 
+
+# TODO: Dar um nome melhor a esta classe também
 class Temp1(models.Model):
     job = models.ForeignKey(Job, db_column='JobId', primary_key=True) # Field name made lowercase.
     jobtdate = models.BigIntegerField(null=True, db_column='JobTDate', blank=True) # Field name made lowercase.
     class Meta:
         db_table = u'temp1'
-
