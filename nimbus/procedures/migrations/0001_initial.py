@@ -12,9 +12,6 @@ class Migration(SchemaMigration):
         db.create_table('procedures_profile', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255, blank=True)),
-            ('storage', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storages.Storage'])),
-            ('fileset', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['filesets.FileSet'])),
-            ('schedule', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['schedules.Schedule'])),
         ))
         db.send_create_signal('procedures', ['Profile'])
 
@@ -24,10 +21,10 @@ class Migration(SchemaMigration):
             ('uuid', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.UUID'])),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('computer', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['computers.Computer'])),
-            ('profile', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['procedures.Profile'])),
-            ('pool', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['pools.Pool'])),
             ('offsite_on', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('active', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('retention_time', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
+            ('schedule', self.gf('django.db.models.fields.related.ForeignKey')(related_name='schedule', to=orm['schedules.Schedule'])),
+            ('fileset', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fileset', to=orm['filesets.FileSet'])),
         ))
         db.send_create_signal('procedures', ['Procedure'])
 
@@ -58,7 +55,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'operation_system': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'password': ('django.db.models.fields.CharField', [], {'default': "'GTsC80cb0O1JPGwaZhl1'", 'max_length': '255'}),
+            'password': ('django.db.models.fields.CharField', [], {'default': "'Y90Oce5XnZuxF3lXlayg'", 'max_length': '255'}),
             'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
         },
         'computers.computergroup': {
@@ -79,47 +76,26 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
         },
-        'pools.pool': {
-            'Meta': {'object_name': 'Pool'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'retention_time': ('django.db.models.fields.IntegerField', [], {'default': '30'}),
-            'size': ('django.db.models.fields.FloatField', [], {'default': '5242880'}),
-            'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
-        },
         'procedures.procedure': {
             'Meta': {'object_name': 'Procedure'},
-            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'computer': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['computers.Computer']"}),
+            'fileset': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'fileset'", 'to': "orm['filesets.FileSet']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'offsite_on': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'pool': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['pools.Pool']"}),
-            'profile': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['procedures.Profile']"}),
+            'retention_time': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
+            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'schedule'", 'to': "orm['schedules.Schedule']"}),
             'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
         },
         'procedures.profile': {
             'Meta': {'object_name': 'Profile'},
-            'fileset': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['filesets.FileSet']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255', 'blank': 'True'}),
-            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['schedules.Schedule']"}),
-            'storage': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storages.Storage']"})
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255', 'blank': 'True'})
         },
         'schedules.schedule': {
             'Meta': {'object_name': 'Schedule'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
-        },
-        'storages.storage': {
-            'Meta': {'object_name': 'Storage'},
-            'active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'address': ('django.db.models.fields.IPAddressField', [], {'default': "u'192.168.15.102'", 'max_length': '15'}),
-            'description': ('django.db.models.fields.TextField', [], {'max_length': '500', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'password': ('django.db.models.fields.CharField', [], {'default': "'GBG64I8TpdhuVlvFbN6M'", 'max_length': '255'}),
             'uuid': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.UUID']"})
         }
     }
