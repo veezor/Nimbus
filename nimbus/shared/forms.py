@@ -4,12 +4,14 @@
 import copy
 
 from django import forms
+from django.forms import widgets
+
 from django.db import models
 
 from nimbus.shared.fields import CharFormField, IPAddressField
 
-SELECT_ATTRS = {"class": "styled"}
-
+SELECT_ATTRS = {"class": "style-select"}
+INPUT_ATTRS = {"class":"text small"}
 
 class InvalidMapping(Exception):
     pass
@@ -25,7 +27,11 @@ def make_custom_fields(f, *args, **kwargs):
     if isinstance(f, models.IPAddressField):
         return f.formfield(form_class=IPAddressField, **kwargs)
     elif isinstance(f, models.CharField):
-        return f.formfield(form_class=CharFormField, **kwargs)
+        return f.formfield(widget=widgets.TextInput(attrs=INPUT_ATTRS), **kwargs)
+    elif isinstance(f, models.TimeField):
+        return f.formfield(widget=widgets.TextInput(attrs=INPUT_ATTRS), **kwargs)
+    elif isinstance(f, models.PositiveSmallIntegerField):
+        return f.formfield(widget=widgets.TextInput(attrs=INPUT_ATTRS), **kwargs)
     elif isinstance(f, models.ManyToManyField):
         kwargs.pop('widget', None)
         return f.formfield(widget=forms.SelectMultiple(attrs=SELECT_ATTRS), **kwargs)
