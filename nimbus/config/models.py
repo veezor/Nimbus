@@ -7,7 +7,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
 from nimbus.base.models import UUIDSingletonModel as BaseModel
-from nimbus.network.models import get_nimbus_address
+from nimbus.network.models import get_raw_network_interface_address
 from nimbus.shared import utils, signals
 from nimbus.libs.template import render_to_file
 
@@ -22,7 +22,7 @@ class Config(BaseModel):
                                          blank=False, null=False)
     director_address = models.IPAddressField("nimbus address", null=False,
                                              blank=False,
-                                             default=get_nimbus_address)
+                                             default=get_raw_network_interface_address)
 
     def _generate_uuid(self):
         super(Config, self)._generate_uuid()
