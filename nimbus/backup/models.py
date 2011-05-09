@@ -5,8 +5,8 @@ from django.db import models
 from nimbus.computers.models import Computer
 from nimbus.schedules.models import BackupLevel, Schedule, Month, Week, Day, Hour
 from nimbus.storages.models import Storage
-from nimbus.pools.models import Pool
 from nimbus.filesets.models import FileSet, FilePath
+from nimbus.pools.models import Pool
 from nimbus.procedures.models import Procedure
 
 # class FileSet(models.Model):
@@ -15,8 +15,8 @@ from nimbus.procedures.models import Procedure
 # class FilePath(models.Model):
 #     path = models.CharField(unique=True, null=False, max_length=255)
 #     fileset = models.ForeignKey(FileSet, null=False, blank=False)
-
-
+# 
+# 
 # class BackupLevel(models.Model):
 #     name = models.CharField(max_length=255, unique=True, null=False)
 # 
@@ -53,6 +53,7 @@ from nimbus.procedures.models import Procedure
 #     level = models.ForeignKey(BackupLevel)
 #     minute = models.PositiveSmallIntegerField()
 # 
+# 
 # class Storage(models.Model):
 #     name = models.CharField(max_length=255, null=False, blank=False)
 # 
@@ -61,7 +62,7 @@ from nimbus.procedures.models import Procedure
 #     name = models.CharField(max_length=255, null=False, blank=False)
 #     retention_time = models.IntegerField()
 # 
-
+# 
 # class Procedure(models.Model):
 #     name = models.CharField(max_length=255, unique=True, null=False, blank=False)
 #     computer = models.ForeignKey(Computer, related_name="procedure_test_set")

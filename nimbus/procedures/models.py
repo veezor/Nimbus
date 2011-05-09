@@ -8,8 +8,6 @@ from django.db import models, connections
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
 from pybacula import BConsoleInitError
-
-from nimbus.shared import utils, signals, fields
 from nimbus.base.models import BaseModel
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
@@ -36,20 +34,17 @@ class Profile(models.Model):
     def __unicode__(self):
         return self.name
 
-
 class Procedure(BaseModel):
-    
     name = models.CharField(max_length=255, blank=False, null=False,
                             validators=[fields.check_model_name])
     computer = models.ForeignKey(Computer, blank=False, null=False)
-    profile = models.ForeignKey(Profile, blank=False, null=False)
-    pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
+    # profile = models.ForeignKey(Profile, blank=False, null=False)
+    # pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
-    active = models.BooleanField(default=True, blank=False, null=False, editable=False)
-    # app 'backup' esperava 'retention_time' em 'Procedure' mas na verdade deve pegar de 'Pool'
+    # active = models.BooleanField(default=True, blank=False, null=False, editable=False)
+    retention_time = models.CharField(max_length=255, unique=True, null=False, blank=False)
     schedule = models.ForeignKey(Schedule, related_name='schedule')
     fileset = models.ForeignKey(FileSet, related_name='fileset')
-    storage = models.ForeignKey(Storage, null=False, blank=False)    
 
     def fileset_bacula_name(self):
         return self.fileset.bacula_name
@@ -94,7 +89,7 @@ class Procedure(BaseModel):
         bacula = Bacula()
         bacula.run_backup(  self.bacula_name, 
                             client_name=self.computer.bacula_name)
-
+   
     @classmethod
     def disable_offsite(cls):
         cls.objects.filter(offsite_on=True).update(offsite_on=False)
@@ -168,9 +163,7 @@ def offsiteconf_check(procedure):
     if not offsite.active:
         procedure.offsite_on = False
 
-
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
 signals.connect_on( remove_procedure_file, Procedure, post_delete)
 signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
-
