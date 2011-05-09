@@ -17,9 +17,6 @@ class FilePathAdminForm(forms.ModelForm):
 
 class FilePathAdmin(admin.ModelAdmin):
     form = FilePathAdminForm
-    
-
-
 
 
 admin.site.register(FileSet)
