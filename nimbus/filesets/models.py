@@ -24,7 +24,7 @@ class FileSet(BaseModel):
 class FilePath(models.Model):
     computer = models.ForeignKey(computer_models.Computer)
     path = fields.ModelPathField(max_length=2048, null=False)
-    filesets = models.ForeignKey(FileSet, related_name="files")
+    filesets = models.ForeignKey(FileSet, related_name="files", null=True, blank=True)
 
 
 from south.modelsinspector import add_introspection_rules
