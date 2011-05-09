@@ -1124,6 +1124,7 @@ a.submit:hover {
 
 /* Vertical Menu list */
 #horizontal_menu ul.menu {
+    z-index:1;
     margin: 0 !important;
     padding: 0 !important;
     width: 100%;

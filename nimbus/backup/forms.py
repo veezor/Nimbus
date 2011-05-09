@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-
 from nimbus.backup import models
 from django import forms
 from django.forms import widgets
@@ -22,8 +21,8 @@ def make_form(modeltype, exclude_fields=None):
         class Meta:
             model = modeltype
             exclude = exclude_fields
-
     return Form
+
 
 class ProcedureForm(forms.ModelForm):
     name = forms.CharField(label=u"Nome do Procedimento", widget=widgets.TextInput(attrs={'class': 'text'}))
@@ -32,6 +31,7 @@ class ProcedureForm(forms.ModelForm):
 
     class Meta:
         model = models.Procedure
+
 
 class ScheduleForm(forms.ModelForm):
     name = forms.CharField(label=u"Nome do Agendamento", widget=widgets.TextInput(attrs={'class': 'text small'}))
@@ -51,17 +51,6 @@ class FilePathForm(forms.ModelForm):
     class Meta:
         model = models.FilePath
 
-
-FilesFormSet = forms.models.inlineformset_factory(models.FileSet, models.FilePath, can_delete=False, extra=1)
-
-
-Procedure = make_form(models.Procedure)
-Pool = make_form(models.Pool, exclude_fields=["name"])
-
-MonthForm = make_form(models.Month)
-DayForm = make_form(models.Day)
-HourForm = make_form(models.Hour)
-WeekForm = make_form(models.Week)
 
 class FormContainer(object):
 
@@ -90,7 +79,6 @@ class FormContainer(object):
         result = {}
         for name, form in self.forms.items():
             result[name] = form.save()
-
         return result
 
     def post(self, post_data):
@@ -103,7 +91,6 @@ class FormContainer(object):
             self.forms[name] = FormClass(prefix=name)
 
 
-
 def make_schedule_form_container():
     return FormContainer(
         week = WeekForm,
@@ -111,3 +98,12 @@ def make_schedule_form_container():
         day = DayForm,
         hour = HourForm
     )
+
+
+FilesFormSet = forms.models.inlineformset_factory(models.FileSet, models.FilePath, can_delete=False, extra=1)
+Procedure = make_form(models.Procedure)
+Pool = make_form(models.Pool, exclude_fields=["name"])
+MonthForm = make_form(models.Month)
+DayForm = make_form(models.Day)
+HourForm = make_form(models.Hour)
+WeekForm = make_form(models.Week)

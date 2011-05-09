@@ -1,7 +1,7 @@
 # Create your views here.
 # -*- coding: UTF-8 -*-
-import traceback
 
+import traceback
 import socket
 from django.http import HttpResponse
 from nimbus.computers.models import Computer
@@ -52,14 +52,11 @@ def fileset_new(request, object_id):
                'formset' : formset}
     return render_to_response("fileset_new.html", content)
 
-
 def get_tree(request):
-
     if request.method == "POST":
         try:
             path = request.POST['path']
             computer_id = request.POST['computer_id']
-
             try:
                 computer = Computer.objects.get(id=computer_id)
                 files = computer.get_file_tree(path)
@@ -70,8 +67,6 @@ def get_tree(request):
             except Computer.DoesNotExist, error:
                 response = simplejson.dumps({"type" : "error",
                                              "message" : "Computador não existe"})
-            
             return HttpResponse(response, mimetype="text/plain")
         except Exception:
             traceback.print_exc()
-

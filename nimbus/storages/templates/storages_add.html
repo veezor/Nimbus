@@ -32,7 +32,7 @@
                 <div class="right">
                     <div class="floatright">
                         {% if not storage.active %}
-                        <form action="/storages/{{storage.id}}/activate/" method="post" class="floatright">
+                        <form action="/storages/{{storage.id}}/new/" method="post" class="floatright">
                             <input type="submit" class="submit tiny" value="Ativar"/>
                         </form>
                         {% endif %}

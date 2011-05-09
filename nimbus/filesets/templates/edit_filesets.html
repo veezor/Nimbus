@@ -3,61 +3,68 @@
 {% block headtags %}
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 <script type="text/javascript" src="/media/js/filesets.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#id_filepath-computer").change(function(){
+        //alert(this.value);
+        $("#computer_id").val(this.value);
+    });
+});
+</script>
+<style type="text/css">
+label{display: block;}
+/* All select elements on page */
+select {
+  position: relative;
+}
+
+/* Style by class. Effects the text of the contained options. */
+select.style-select {
+    padding: 4px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    width: 300px;
+}
+</style>
 {% endblock %}
 
 {% block page %}
-<div class="block">
+<div id="fileset" class="block">
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
 		<h2>{{title}}</h2>
 	</div>		<!-- .block_head ends -->
 	<div class="block_content">
-	    <form action="" method="post">
-            {% if errors.name %}
-            <ul class="errorlist">
-                <li>{{ errors.name }}</li>
-            </ul>
-            {% endif %}
+	    
+        <form action="" method="post">
+            {% for form in forms %}
             <p>
-                <label for="fileset_name">Nome do conjunto de arquivos:</label><br/>
-                <input type="text" name="fileset_name" id="fileset_name" class="text mid" value="{{ fileset_name }}" />
+                <label>{{ form.name.label }}:</label>{{ form.name }}
             </p>
-            
-            {% if errors.path %}
-            <ul class="errorlist">
-                <li>{{ errors.path }}</li>
-            </ul>
-            {% endif %}
+            {% endfor %}
+            {% for form in formsets %}
             <p>
-                <label for="filepath_name">Caminhos para backup:</label><br/>
-                {% if path %}
-                <ul class="tree">
-                    {% for p in path %}
-                    <li><span><input type="checkbox" name="path" value="{{p}}" checked="checked" />{{p}}</span></li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
+                <label>{{ form.computer.label }}:</label>{{ form.computer }}
             </p>
+            {% endfor %}
             
             {% if errors.computer_id %}
             <ul class="errorlist">
                 <li>{{ errors.computer_id }}</li>
             </ul>
             {% endif %}
+            <input type="hidden" name="computer_id" id="computer_id" value="" />
             <p>
-                <label>Adicionar arquivos:</label><br/>
-                <select class="styled" id="computer_id" name="computer_id">
-                    <option value=""> - Selecione - </option>
-                    {% for computer in computers %}
-                    <option value="{{computer.id}}">{{computer.name}}</option>
-                    {% endfor %}
-                </select>
+				<div id="mensagem_erro_fileset"></div>
+				
                 <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
             </p>
             <p></p>
             <p>
-                <input type="submit" class="submit mid" value="Atualizar" />
+                <input type="submit" class="submit mid" value="Salvar" />
             </p>
         </form>
 

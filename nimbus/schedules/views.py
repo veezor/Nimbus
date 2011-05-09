@@ -9,11 +9,46 @@ from nimbus.computers.models import Computer
 from django.shortcuts import render_to_response
 import simplejson
 from nimbus.schedules import forms
+from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_range
+from nimbus.schedules.models import Schedule as Schedule_obj
 
+
+def add(request):
+    lforms = [ forms.ScheduleForm(prefix="schedule") ]
+    schedule_forms = forms.make_schedule_form_container()
+    schedule_forms.get()
+    content = {
+        'title':u'Criar Agendamento',
+        'levels':levels,
+        'forms':lforms,
+        'formset':schedule_forms,
+        'days':days_range,
+        'end_days':end_days_range,
+        'weekdays':weekdays_range
+    }
+    return render_to_response('add_schedules.html', content)
+
+def edit(request, object_id):
+    print object_id
+    schedule = Schedule_obj.objects.get(id=object_id)
+    template = 'base_schedules.html'
+    lforms = [ forms.ScheduleForm(prefix="schedule", instance=schedule) ]
+    schedule_forms = forms.make_schedule_form_container(schedule)
+    schedule_forms.get()
+    extra_content = {
+        'title':u'Editar Agendamento',
+        'levels':levels,
+        'forms':lforms,
+        'formset':schedule_forms,
+        'days':days_range,
+        'end_days':end_days_range,
+        'weekdays':weekdays_range
+    }
+    return render_to_response(template, extra_content)
 
 def render(request, object_id=0):
 
-    lforms = [ forms.ProcedureForm(prefix="procedure", initial={'computer':object_id}) ]
+    lforms = [ forms.ScheduleForm(prefix="schedules", initial={'computer':object_id}) ]
 
 
     content = {
