@@ -15,9 +15,12 @@ from django.core.exceptions import ValidationError
 from nimbus.shared import signals
 from nimbus.libs import systemprocesses, bacula
 from nimbus.base.models import UUIDSingletonModel as BaseModel
-from nimbus.config.models import Config
-from nimbus.storages.models import Storage
-from nimbus.computers.models import Computer
+# TODO:
+# Config importado em update_director_address() e get_nimbus_address()
+# Por problemas com imports cruzados. Descobrir o jeito certo de fazer isso
+# from nimbus.config.models import Config
+# from nimbus.storages.models import Storage
+# from nimbus.computers.models import Computer
 
 
 class NetworkInterface(BaseModel):
@@ -91,6 +94,8 @@ def update_networks_file(interface):
 
 
 def update_director_address(interface):
+    from nimbus.config.models import Config # Ver nota nos imports iniciais
+    
     config = Config.get_instance()
     config.director_address = interface.address
     config.save(system_permission=True)
@@ -98,6 +103,8 @@ def update_director_address(interface):
     logger.info("Atualizando ip do director")
 
 def update_storage_address(interface):
+    from nimbus.storages.models import Storage # Ver nota nos imports iniciais
+    
     storage = Storage.objects.get(id=1) # storage default
     storage.address = interface.address
     storage.save(system_permission=True)
@@ -105,6 +112,8 @@ def update_storage_address(interface):
     logger.info("Atualizando ip do storage")
 
 def update_nimbus_client_address(interface):
+    from nimbus.computers.models import Computer # Ver nota nos imports iniciais
+    
     computer = Computer.objects.get(id=1) # storage default
     computer.address = interface.address
     computer.save(system_permission=True)
@@ -112,6 +121,8 @@ def update_nimbus_client_address(interface):
     logger.info("Atualizando ip do client nimbus")
 
 def get_nimbus_address():
+    from nimbus.config.models import Config # Ver nota nos imports iniciais
+    
     config = Config.get_instance()
     if not config.director_address:
         return get_raw_network_interface_address()
