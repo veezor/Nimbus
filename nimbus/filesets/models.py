@@ -29,19 +29,15 @@ class FilePath(models.Model):
 def update_fileset_file(fileset):
     """FileSet update filesets to a procedure instance"""
     name = fileset.bacula_name
-    filename = path.join(settings.NIMBUS_FILESETS_DIR, 
-                        name)
-    render_to_file(filename,
-                    "fileset",
-                    name=name,
-                    files=[ f.path for f in fileset.files.all() ])
+    filename = path.join(settings.NIMBUS_FILESETS_DIR, name)
+    render_to_file(filename, "fileset", name=name,
+                   files=[f.path for f in fileset.files.all()])
 
 
 def remove_fileset_file(fileset):
     """remove FileSet file"""
     name = fileset.bacula_name
-    filename = path.join( settings.NIMBUS_FILESETS_DIR, 
-                          name)
+    filename = path.join(settings.NIMBUS_FILESETS_DIR, name)
     utils.remove_or_leave(filename)    
 
 
@@ -52,6 +48,7 @@ def update_filepath(obj):
     elif isinstance(obj, FileSet):
         update_fileset_file(obj)
     else:
+        # TODO: TRATAR
         pass
 
 
