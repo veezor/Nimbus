@@ -15,6 +15,7 @@ from nimbus.libs import graphsdata
 
 from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
+from nimbus.base.models import int_format
 
 
 @login_required
@@ -43,9 +44,9 @@ def home(request):
     table2['type'] = "bar"
     table2['cid'] = "chart2"
     table2['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_files) ]
-    table2['labels'] = [ v for k,v in sorted(job_files.items()) ]
+    table2['labels'] = [ int_format(v) for k,v in sorted(job_files.items()) ]
     table2['lines'] = {
-        "Arquivos": [ v for k,v in sorted(job_files.items()) ]
+        "Arquivos": [ int_format(v) for k,v in sorted(job_files.items()) ]
     }
 
 
