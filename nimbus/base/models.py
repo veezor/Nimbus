@@ -25,7 +25,6 @@ class SingletonBaseModel(models.Model):
             instance = cls()
         return instance
 
-
     @classmethod
     def exists(cls):
         return cls.objects.all().count() > 0
@@ -78,8 +77,8 @@ class UUIDBaseModel(models.Model):
  
     @property
     def bacula_name(self):
-        return "%s_%s" % ( self.uuid.uuid_hex, 
-                           self.__class__.__name__.lower() )
+        return "%s_%s" % (self.uuid.uuid_hex, 
+                          self.__class__.__name__.lower())
  
     class Meta:
         abstract = True
@@ -92,6 +91,5 @@ class UUIDSingletonModel(UUIDBaseModel, SingletonBaseModel):
 
    def save(self, *args, **kwargs):
        super(UUIDSingletonModel, self).save(*args, **kwargs)
-
 
 BaseModel = UUIDBaseModel

@@ -22,8 +22,8 @@ def home(request):
     table1['width'] = "100%"
     table1['type'] = "bar"
     table1['cid'] = "chart1"
-    table1['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_bytes)  ]
-    table1['labels'] = [ utils.filesizeformat(v) for k,v in sorted(job_bytes.items()) ]
+    table1['header'] = [d.strftime("%d/%m/%y") for d in sorted(job_bytes)]
+    table1['labels'] = [utils.filesizeformat(v) for k,v in sorted(job_bytes.items())]
     table1['lines'] = {
                 "Dados": utils.ordered_dict_value_to_formatted_float(job_bytes)
                 }
@@ -34,14 +34,14 @@ def home(request):
     table2['width'] = "100%"
     table2['type'] = "bar"
     table2['cid'] = "chart2"
-    table2['header'] = [ d.strftime("%d/%m/%y") for d in sorted(job_files) ]
-    table2['labels'] = [ v for k,v in sorted(job_files.items()) ]
-    table2['lines'] = {
-                    "Arquivos": [ v for k,v in sorted(job_files.items()) ]
-                    }
+    table2['header'] = [d.strftime("%d/%m/%y") for d in sorted(job_files)]
+    table2['labels'] = ["%.2f" % v for k,v in sorted(job_files.items())]
+    table2['lines'] = {"Arquivos": ["%.2f" % v for k,v in sorted(job_files.items())]}
+
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
-    diskdata = [("13/11", 2), ("13/01", 25), ("13/01", 27), ("13/01", 10), ("16/01", 15), ("16/01", 15),
+    diskdata = [("13/11", 2), ("13/01", 25), ("13/01", 27), ("13/01", 10),
+                ("16/01", 15), ("16/01", 15),
                 ("16/01", 12), ("16/01", 28)]
     if len(diskdata) == 1: # duplicates first item for area graph
         diskdata *= 2
@@ -54,8 +54,8 @@ def home(request):
     table3['cid'] = "chart3"
     table3['height'] = "130"
     # table3['header'] = ["Gigabytes"]
-    table3['header'] = [ i[0] for i in diskdata ]
-    table3['labels'] = [ utils.filesizeformat(i[1]) for i in diskdata ]
+    table3['header'] = [i[0] for i in diskdata]
+    table3['labels'] = [utils.filesizeformat(i[1]) for i in diskdata]
     #setando valor padrao
     t3data = [i[1] for i in diskdata] if len(diskdata) else [0.0]
     table3['lines'] = {"Disponível": t3data}
@@ -68,9 +68,8 @@ def home(request):
     table4['type'] = "pie"
     table4['cid'] = "chart4"
     table4['header'] = ["Gigabytes"]
-    table4['lines'] = {
-        "Disponível": [memory_free],
-        "Ocupado": [memory]}
+    table4['lines'] = {"Disponível": [memory_free],
+                       "Ocupado": [memory]}
     cpu = systeminfo.get_cpu_usage()
     cpu_free = 100 - memory
 
@@ -96,8 +95,8 @@ def home(request):
     table6['height'] = "130"
     table6['cid'] = "chart6"
     # table6['header'] = ["GB"]
-    table6['header'] = [ i[0] for i in offsite_data]
-    table6['labels'] = [ utils.filesizeformat(i[1]) for i in offsite_data ]
+    table6['header'] = [i[0] for i in offsite_data]
+    table6['labels'] = [utils.filesizeformat(i[1]) for i in offsite_data]
     t6data = [i[1] for i in offsite_data] if len(offsite_data) else [0.0]
     table6['lines'] = {"Disponível": t6data }
 
@@ -122,7 +121,7 @@ def home(request):
         # TODO: TRATAR
         pass
     errors_jobs = Job.objects.filter(jobstatus__in=('e','E','f'))\
-                    .order_by('-endtime').distinct()[:5]
+                                            .order_by('-endtime').distinct()[:5]
     errors_procedures_content = []
     try:
         for job in errors_jobs:
@@ -142,6 +141,5 @@ def home(request):
                           {'title': u'Backups com falha',
                            'content': errors_procedures_content
                           }]
-
     # extra_content = {'table1': table1, 'table2': table2}
     return render_to_response(request, "home.html", locals())

@@ -43,8 +43,7 @@ class Procedure(BaseModel):
     # profile = models.ForeignKey(Profile, blank=False, null=False)
     pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
-    active = models.BooleanField(default=True, blank=False, null=False,
-                                 editable=False)
+    active = models.BooleanField(default=True, blank=False, null=False)
     retention_time = models.CharField(max_length=255, unique=True, null=False,
                                       blank=False)
     schedule = models.ForeignKey(Schedule, related_name='schedule')
