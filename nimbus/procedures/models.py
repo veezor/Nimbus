@@ -41,13 +41,15 @@ class Procedure(BaseModel):
                             validators=[fields.check_model_name])
     computer = models.ForeignKey(Computer, blank=False, null=False)
     # profile = models.ForeignKey(Profile, blank=False, null=False)
-    # pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
+    pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
-    # active = models.BooleanField(default=True, blank=False, null=False, editable=False)
+    active = models.BooleanField(default=True, blank=False, null=False,
+                                 editable=False)
     retention_time = models.CharField(max_length=255, unique=True, null=False,
                                       blank=False)
     schedule = models.ForeignKey(Schedule, related_name='schedule')
     fileset = models.ForeignKey(FileSet, related_name='fileset')
+    storage = models.ForeignKey(Storage, null=False, blank=False)
 
     def fileset_bacula_name(self):
         return self.fileset.bacula_name

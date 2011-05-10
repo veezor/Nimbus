@@ -74,35 +74,30 @@ def timezone(request):
 
 @only_wizard
 def offsite(request):
-    extra_context = {
-        'wizard_title': u'3 de 5 - Configuração do Offsite',
-        'page_name': u'offsite',
-        'previous': reverse('nimbus.wizard.views.timezone')
-    }
-    return edit_singleton_model( request, "generic.html",
-                                 "nimbus.wizard.views.network",
-                                 formclass = OffsiteForm,
-                                 extra_context = extra_context )
+    extra_context = {'wizard_title': u'3 de 5 - Configuração do Offsite',
+                     'page_name': u'offsite',
+                     'previous': reverse('nimbus.wizard.views.timezone')}
+    return edit_singleton_model(request, "generic.html",
+                                "nimbus.wizard.views.network",
+                                formclass = OffsiteForm,
+                                extra_context = extra_context)
 
 @only_wizard
 def network(request):
-    extra_context = {
-        'wizard_title': u'4 de 5 - Configuração de Rede',
-        'page_name': u'network',
-        'previous': reverse('nimbus.wizard.views.offsite')
-    }
-
+    extra_context = {'wizard_title': u'4 de 5 - Configuração de Rede',
+                     'page_name': u'network',
+                     'previous': reverse('nimbus.wizard.views.offsite')}
     if request.method == "GET":
         interface = NetworkInterface.get_instance()
         Form = form(NetworkInterface)
         extra_context['form'] = Form(instance=interface)
-        return render_to_response( request, "generic.html",
-                                   extra_context)
+        return render_to_response( request, "generic.html", extra_context)
     else:
-        return edit_singleton_model( request, "generic.html",
+        print "Teste"
+        return edit_singleton_model(request, "generic.html",
                                     "nimbus.wizard.views.password",
-                                     model = NetworkInterface,
-                                     extra_context = extra_context )
+                                    model = NetworkInterface,
+                                    extra_context = extra_context)
 
 
 
