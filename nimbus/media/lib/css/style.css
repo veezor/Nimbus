@@ -46,8 +46,8 @@ a:hover {
 	}
 	
 .wrapper {
-	/*width:90%;
-	min-width: 960px;*/
+	/*width:97%;*/
+	/*min-width: 960px;*/
 	width: 960px;
 	margin:0 auto;
 	padding-top: 20px;
@@ -104,18 +104,22 @@ a:hover {
 	/*margin-right: 60px;*/
 	/*margin-right: 30px;*/
 	margin-left: 40px;
-	font-family: "Helvetica Neue", "Trebuchet MS", Arial, sans-serif;
+	}
+
+#header h1 a {
+    color: #fff;
+    font-family: "Helvetica Neue", "Trebuchet MS", Arial, sans-serif;
 	font-size: 18px;
 	font-weight: normal;
 	text-transform: uppercase;
 	color: #fff;
 	background: url(../images/logo.png) left no-repeat;
 	width: 93px;
-	text-indent: -9999em;
+    height: 50px;
+	text-indent: -99999em;
 	overflow: hidden;
-	}
-
-#header h1 a { color: #fff; }
+    display: block;
+}
 #header h1 a:hover { color: #008ee8; }
 	
 #header .ico_nimbus {
@@ -666,9 +670,9 @@ a:hover {
 	background: #fefefe;
 	border: 1px solid #bbb;
 	font-family: "Lucida Grande", Verdana, sans-serif;
-	font-size: 14px;
+	font-size: 18px;
 	color: #333;
-	padding: 7px;
+	padding: 3px;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
@@ -715,10 +719,13 @@ a:hover {
 	/*width: 245px;*/
 	height: 18px;
 	/*margin-right: 20px;*/
-	cursor: pointer;
-	font-size: 15px;
+	/*cursor: pointer;*/
 	padding-right: 10px;
-	
+    -moz-border-radius: 3px 3px 3px 3px;
+    border: 1px solid #BBBBBB;
+    width: auto;
+    min-width: 245px;
+    background: #f0f0f0;
 	}
 
 .block form select.styled[multiple=multiple] {
@@ -728,6 +735,7 @@ a:hover {
     height: auto;
     width: auto;
     min-width: 245px;
+    background: #f0f0f0;
 }
 
 .block form select.styled[multiple=multiple] option {
