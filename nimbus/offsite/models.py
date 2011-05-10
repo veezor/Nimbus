@@ -17,17 +17,13 @@ from nimbus.shared import fields, signals
 from nimbusgateway import Api
 
 
-# Create your models here.
-
 class Offsite(BaseModel):
     username = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
-    gateway_url = models.CharField( max_length=255, editable=False,
-                                    default="http://www.veezor.com:8080")
+    gateway_url = models.CharField(max_length=255, editable=False,
+                                   default="http://www.veezor.com:8080")
     upload_rate = models.IntegerField(default=-1)
     active = models.BooleanField()
-
-
 
     def clean(self):
         if self.active:
@@ -42,8 +38,6 @@ class Offsite(BaseModel):
                 raise ValidationError("Impossível autenticar. Login ou senha não confere")
 
 
-
-
 class Volume(models.Model):
 
     path = fields.ModelPathField(max_length=2048, null=False)
@@ -54,15 +48,9 @@ class Volume(models.Model):
         if self.path and os.path.exists(self.path):
             self.size = os.path.getsize(self.path)
 
-
-
     @property
     def filename(self):
         return os.path.basename(self.path)
-
-
-
-
 
 
 class OffSiteVolume(models.Model):
@@ -73,12 +61,12 @@ class OffSiteVolume(models.Model):
         abstract = True
 
 
-
 class UploadedVolume(OffSiteVolume):
+    # WTF
     pass
 
-
 class DownloadedVolume(OffSiteVolume):
+    # WTF
     pass
 
 class Request(models.Model):
@@ -87,7 +75,6 @@ class Request(models.Model):
     MB = KB * 1024
     MINUTES = 60
     HOURS = MINUTES * 60
-
     volume = models.ForeignKey(Volume, unique=True, null=False)
     created_at = models.DateTimeField(default=datetime.now, editable=False)
     attempts = models.PositiveSmallIntegerField(default=0, editable=False)
@@ -96,16 +83,12 @@ class Request(models.Model):
     transferred_bytes = models.IntegerField(default=0, editable=False)
     rate = models.IntegerField(default=0, editable=False)
 
-
     def update(self, new_bytes_size, total_bytes):
-        
         bytesdiff = new_bytes_size - self.transferred_bytes
         if bytesdiff >= self.UPDATE_DIFF_SIZE_100_KB:
-
             if self.last_update:
                 timediff = int(time() - self.last_update) or 1
                 self.rate = bytesdiff / timediff
-
             self.last_update = time()
             self.transferred_bytes = new_bytes_size
             self.save()
@@ -118,7 +101,6 @@ class Request(models.Model):
     def estimated_transfer_time(self):
         if self.rate == 0:
             return "stalled"
-
         time = self.remaining_bytes / self.rate
         hours,seconds = divmod(time, self.HOURS)
         minutes,seconds = divmod(seconds, self.MINUTES)
@@ -139,17 +121,11 @@ class Request(models.Model):
         else:
             return "%dB/s" % self.rate
 
-
-
-
     class Meta:
         abstract = True
 
 
-
-
 class UploadRequest(Request):
-
 
     def __unicode__(self):
         return u"UploadRequest(path=%s)" % self.volume.path
@@ -160,11 +136,8 @@ class UploadRequest(Request):
         UploadTransferredData.objects.create(bytes=self.transferred_bytes)
         self.delete()
 
-
     class Meta:
         abstract = True
-
-
 
 class RemoteUploadRequest(UploadRequest):
     
@@ -176,9 +149,8 @@ class LocalUploadRequest(UploadRequest):
     def __unicode__(self):
         return u"LocalUploadRequest(path=%s)" % self.volume.path
 
-
-
     def update(self, new_bytes_size, total_bytes):
+        # WTF
         pass
 
 
@@ -199,30 +171,27 @@ class DownloadRequest(Request):
         super(DownloadRequest, self).update(new_bytes_size, total_bytes)
 
 
-
 class DeleteRequest(Request):
+    # WTF
     pass
-
-
-
 
 
 class TransferredData(models.Model):
     bytes = models.IntegerField(null=False)
     date = models.DateTimeField(null=False, default=datetime.now)
 
-
     class Meta:
         abstract = True
 
 
 class UploadTransferredData( TransferredData ):
+    # WTF
     pass
 
 
 class DownloadTransferredData( TransferredData ):
+    # WTF
     pass
-
 
 
 def nimbus_self_backup_update_offsite_status(offsite):
@@ -233,7 +202,6 @@ def nimbus_self_backup_update_offsite_status(offsite):
         procedure.save(system_permission=True)
     except Procedure.DoesNotExist, error:
         pass
-
 
 
 signals.connect_on( nimbus_self_backup_update_offsite_status, Offsite, post_save)
