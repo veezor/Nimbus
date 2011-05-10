@@ -26,8 +26,7 @@ from nimbus.shared import utils, enums, signals, fields
 # para Procedures
 class Profile(models.Model):
 
-    name = models.CharField(max_length=255 ,unique=True,
-                            blank=True, null=False)
+    name = models.CharField(max_length=255 ,unique=True, blank=True, null=False)
     # storage = models.ForeignKey(Storage, null=False, blank=False)
     # fileset = models.ForeignKey(FileSet, null=False, blank=False)
     # schedule = models.ForeignKey(Schedule, null=False, blank=False)
@@ -45,7 +44,8 @@ class Procedure(BaseModel):
     # pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
     # active = models.BooleanField(default=True, blank=False, null=False, editable=False)
-    retention_time = models.CharField(max_length=255, unique=True, null=False, blank=False)
+    retention_time = models.CharField(max_length=255, unique=True, null=False,
+                                      blank=False)
     schedule = models.ForeignKey(Schedule, related_name='schedule')
     fileset = models.ForeignKey(FileSet, related_name='fileset')
 
@@ -90,8 +90,8 @@ class Procedure(BaseModel):
 
     def run(self):
         bacula = Bacula()
-        bacula.run_backup(  self.bacula_name, 
-                            client_name=self.computer.bacula_name)
+        bacula.run_backup(self.bacula_name, 
+                          client_name=self.computer.bacula_name)
    
     @classmethod
     def disable_offsite(cls):
@@ -108,7 +108,7 @@ class Procedure(BaseModel):
                 models.Q(filename__name__icontains=pattern) | models.Q(path__path__icontains=pattern),
                 job__jobid=jobid
         ).distinct()
-        files = [ f.fullname for f in files ]
+        files = [f.fullname for f in files]
         files.sort()
         return files
 
@@ -117,37 +117,37 @@ def update_procedure_file(procedure):
     """Procedure update file"""
     name = procedure.bacula_name
     filename = join(settings.NIMBUS_JOBS_DIR, name)
-    render_to_file( filename,
-                    "job",
-                    name=name,
-                    schedule=procedure.schedule_bacula_name(),
-                    storage=procedure.storage_bacula_name(),
-                    fileset=procedure.fileset_bacula_name(),
-                    priority="10",
-                    offsite=procedure.offsite_on,
-                    active=procedure.active,
-                    offsite_param="--upload-requests %v",
-                    client=procedure.computer.bacula_name,
-                    pool=procedure.pool_bacula_name() )
+    render_to_file(filename,
+                   "job",
+                   name=name,
+                   schedule=procedure.schedule_bacula_name(),
+                   storage=procedure.storage_bacula_name(),
+                   fileset=procedure.fileset_bacula_name(),
+                   priority="10",
+                   offsite=procedure.offsite_on,
+                   active=procedure.active,
+                   offsite_param="--upload-requests %v",
+                   client=procedure.computer.bacula_name,
+                   pool=procedure.pool_bacula_name() )
     if not exists(settings.NIMBUS_RESTORE_FILE):
-        render_to_file( settings.NIMBUS_RESTORE_FILE,
-                        "restore",
-                        name=name + "restore",
-                        storage=procedure.storage_bacula_name(),
-                        fileset=procedure.fileset_bacula_name(),
-                        client=procedure.computer.bacula_name,
-                        pool=procedure.pool_bacula_name() )
+        render_to_file(settings.NIMBUS_RESTORE_FILE,
+                       "restore",
+                       name=name + "restore",
+                       storage=procedure.storage_bacula_name(),
+                       fileset=procedure.fileset_bacula_name(),
+                       client=procedure.computer.bacula_name,
+                       pool=procedure.pool_bacula_name())
 
 def remove_procedure_file(procedure):
     """remove procedure file"""
-    base_dir,filepath = utils.mount_path( procedure.bacula_name,
-                                          settings.NIMBUS_JOBS_DIR)
+    base_dir,filepath = utils.mount_path(procedure.bacula_name,
+                                         settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
 
 def remove_procedure_volumes(procedure):
     pool_name = procedure.pool_bacula_name()
     medias = Media.objects.filter(pool__name=pool_name).distinct()
-    volumes = [ m.volumename for m in medias ]
+    volumes = [m.volumename for m in medias]
     try:
         bacula = Bacula()
         bacula.purge_volumes(volumes, pool_name)
