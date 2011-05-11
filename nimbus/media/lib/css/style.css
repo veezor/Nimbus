@@ -652,6 +652,9 @@ a:hover {
 	}
 
 .block form label {
+    display:block;
+    margin:0;
+    padding:0;
 	font-family: "Lucida Grande", Verdana, sans-serif;
 	font-size: 12px;
 	font-weight: bold;
@@ -659,6 +662,14 @@ a:hover {
 	margin-right: 10px;
 	vertical-align: middle;
 	}
+
+.block form label.left{
+    float: left;
+}
+
+.block form label.right{
+    float: right;
+}
 
 .block form.form_styled label {
     display: block;
@@ -714,6 +725,16 @@ a:hover {
 
 
 /* Custom form select element */
+
+/* Style by class. Effects the text of the contained options. */
+select {
+    padding: 4px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    min-width: 245px;
+}
 
 .block form select.styled {
 	/*width: 245px;*/
