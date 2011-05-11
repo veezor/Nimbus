@@ -3,12 +3,32 @@
 
 import os
 import socket
+import xmlrpclib
 import SocketServer
 import BaseHTTPServer
 import SimpleXMLRPCServer
 from OpenSSL import SSL
 
 import keymanager
+
+
+
+
+class SecureServerProxy(xmlrpclib.ServerProxy):
+
+    def __init__(self, token, uri, transport=None, encoding=None, verbose=0,
+                 allow_none=0, use_datetime=0):
+        self.token = token
+        xmlrpclib.ServerProxy.__init__(self, uri, transport, encoding, verbose, 
+                                       allow_none, use_datetime)
+
+    def __request(self, methodname, params):
+        params = tuple([self.token] + list(params))
+        return self._ServerProxy__request(methodname, params)
+
+    def __getattr__(self, attr):
+        return xmlrpclib._Method(self.__request, attr)
+
 
 
 class SecureXMLRPCServer(BaseHTTPServer.HTTPServer,
