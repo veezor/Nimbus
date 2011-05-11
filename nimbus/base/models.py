@@ -107,16 +107,8 @@ class UUIDSingletonModel(UUIDBaseModel, SingletonBaseModel):
    def save(self, *args, **kwargs):
        super(UUIDSingletonModel, self).save(*args, **kwargs)
 
-def int_format(value, decimal_points=0, seperator=u'.'):
-    value = str(value)
-    if len(value) <= decimal_points:
-        return value
-    parts = []
-    while value:
-        parts.append(value[-decimal_points:])
-        value = value[:-decimal_points]
-    parts.reverse()
-    return seperator.join(parts)
+def int_format(vlw):
+    return "%.0f" % vlw
 
 
 
