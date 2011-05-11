@@ -92,4 +92,8 @@ class UUIDSingletonModel(UUIDBaseModel, SingletonBaseModel):
    def save(self, *args, **kwargs):
        super(UUIDSingletonModel, self).save(*args, **kwargs)
 
+
+
+
+
 BaseModel = UUIDBaseModel

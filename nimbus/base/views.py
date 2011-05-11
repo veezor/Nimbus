@@ -15,7 +15,6 @@ from nimbus.libs import graphsdata
 
 from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
-from nimbus.base.models import int_format
 
 
 @login_required
@@ -35,9 +34,9 @@ def home(request):
         'title': u"Quantidade de arquivos realizados backup", 'width': "100%",
         'type': "bar", 'cid': "chart2",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_files)],
-        'labels': [int_format(v) for k, v in sorted(job_files.items())],
+        'labels': [int(v) for k, v in sorted(job_files.items())],
         'lines': {
-            "Arquivos": [int_format(v) for k, v in sorted(job_files.items())]
+            "Arquivos": [int(v) for k, v in sorted(job_files.items())]
         }
     }
 
