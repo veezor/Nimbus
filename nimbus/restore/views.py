@@ -4,10 +4,13 @@
 
 import os
 import simplejson
-import xmlrpclib
+
 from glob import glob
 from datetime import datetime
 
+
+
+import securexmlrpc
 
 from django.conf import settings
 from django.core import serializers
@@ -147,7 +150,8 @@ def get_client_tree(request):
         computer = Computer.objects.get(id=computer_id)
 
         url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
-        proxy = xmlrpclib.ServerProxy(url)
+        proxy = securexmlrpc.ServerProxy(token=computer.auth_token,
+                                         uri=url)
         files = proxy.list_dir(path)
         files.sort()
         response = simplejson.dumps(files)

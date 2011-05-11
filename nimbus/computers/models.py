@@ -2,11 +2,15 @@
 # -*- coding: UTF-8 -*-
 
 from os import path
-import xmlrpclib
+
 
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save
+
+
+import keymanager
+import securexmlrpc
 
 from nimbus.bacula.models import Job, Client
 from nimbus.base.models import BaseModel
@@ -15,7 +19,7 @@ from nimbus.shared import utils, enums, signals, fields
 from nimbus.libs.template import render_to_file, render_to_string
 
 
-import keymanager
+
 
 
 OS = ( (os,os) for os in enums.operating_systems)
@@ -119,9 +123,9 @@ class Computer(BaseModel):
         nimbuscomputer = Computer.objects.get(id=1)
 
         url = "https://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
-        proxy = xmlrpclib.ServerProxy(url)
-        proxy.save_keys( self.auth_token,
-                         self.crypto_info.pem,
+        proxy = securexmlrpc.ServerProxy(token = self.auth_token,
+                                         uri=url)
+        proxy.save_keys( self.crypto_info.pem,
                          nimbuscomputer.crypto_info.certificate)
 
         config = Config.get_instance()
@@ -131,8 +135,8 @@ class Computer(BaseModel):
                         name=self.name,
                         os=self.operation_system)
 
-        proxy.save_config( self.auth_token, unicode(fdconfig) )
-        proxy.restart_bacula( self.auth_token)
+        proxy.save_config( unicode(fdconfig) )
+        proxy.restart_bacula()
 
         self.active = True
         self.save()
@@ -141,13 +145,14 @@ class Computer(BaseModel):
     def get_file_tree(self, path):
 
         url = "https://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
-        proxy = xmlrpclib.ServerProxy(url)
+        proxy = securexmlrpc.ServerProxy(token = self.auth_token,
+                                         uri=url)
 
         if self.operation_system == "windows" and path == "/":
-            files = proxy.get_available_drives(self.auth_token)
+            files = proxy.get_available_drives()
             files = [ fname[:-1] + '/' for fname in files ]
         else:
-            files = proxy.list_dir(self.auth_token, path)
+            files = proxy.list_dir(path)
 
         files.sort()
 
