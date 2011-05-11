@@ -20,9 +20,8 @@
 		
 		<div id="computers-filter">
 			<form action="/computers/list" method="get">
-			<label for="computers-group">Filtrar por grupo</label>
 			<select name="group" id="computers-group">
-				<option value="">---</option>
+				<option value="">Filtrar por Grupo</option>
 				{% for group in groups %}
 					<option value="{{group.name}}">{{group.name}}</option>
 				{% endfor%}
