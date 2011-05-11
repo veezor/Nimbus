@@ -13,7 +13,7 @@ import simplejson
 import securexmlrpc
 from glob import glob
 from time import sleep
-from functools import wraps
+from xmlrpcservicelib import SecureService
 
 try:
     import win32api
@@ -59,18 +59,6 @@ def is_dir(name):
 
 
 
-def check_auth_token(method):
-    
-    
-    @wraps(method)
-    def wrapper(self, token, *args, **kwargs):
-        if self._check_auth_token(token):
-            return method(self, *args, **kwargs)
-        else:
-            return 'Answer to the Ultimate Question of Life, the Universe, and Everything=(42)'
-
-
-    return wrapper
 
 
 def write_file(filename, content): #python 2.4 support
@@ -81,37 +69,29 @@ def write_file(filename, content): #python 2.4 support
         f.close()
 
 
-def read_file(filename): #python 2.4 support
-    f = file(filename)
-    try:
-        return f.read()
-    finally:
-        f.close()
 
 
-class NimbusService(object):
+
+class NimbusService(SecureService):
 
 
     def __init__(self):
-        self.client_config = self._get_config()
+        self.config = CLIENT_CONF[sys.platform]
 
 
-    @check_auth_token
     def save_keys(self, keypar, masterkey):
         try:
-            write_file(self.client_config['keypar'], keypar)
-            write_file(self.client_config['masterkey'], masterkey)
+            write_file(self.config['keypar'], keypar)
+            write_file(self.config['masterkey'], masterkey)
         except IOError, error:
             return False
 
         return True
 
 
-    @check_auth_token
     def save_config(self, config):
-        client_config = self._get_config()
         try:
-            f = codecs.open(self.client_config['fdconf'], "w", "utf-8")
+            f = codecs.open(self.config['fdconf'], "w", "utf-8")
             try:
                 f.write(config)
             finally:
@@ -122,16 +102,14 @@ class NimbusService(object):
         return True
 
 
-    @check_auth_token
     def _restart_bacula_unix(self):
-        cmd = subprocess.Popen( [self.client_config['baculafd'], "restart"],
+        cmd = subprocess.Popen( [self.config['baculafd'], "restart"],
                                 stderr=subprocess.PIPE,
                                 stdout=subprocess.PIPE )
         cmd.communicate()
         return True
 
 
-    @check_auth_token
     def _restart_bacula_windows(self):
         cmd = subprocess.Popen(["sc","stop","Bacula-FD"],
                                 stderr=subprocess.PIPE,
@@ -152,14 +130,12 @@ class NimbusService(object):
             self._restart_bacula_unix()
 
 
-    @check_auth_token
     def get_available_drives(self):
         drives = win32api.GetLogicalDriveStrings()
         drives = drives.split('\000')[:-1]
         return drives
 
 
-    @check_auth_token
     def list_dir(self, path):
         try:
             files = glob(os.path.join(path,'*'))
@@ -169,25 +145,12 @@ class NimbusService(object):
             return []
 
 
-    def _get_config(self):
-        return CLIENT_CONF[sys.platform]
-
-
-    def _check_auth_token(self, token):
-        filename = self.client_config['auth_token_file']
-        if os.path.exists(filename):
-            auth_token = read_file(filename).strip()
-            if token == auth_token:
-                return True
-
-        return False
-
-
-
 
 class Notifier(object):
     ACTION_URL = "http://%s:%d/computers/new/"
     LOGIN_URL = "http://%s:%d/session/login/"
+    TOKEN_FILE = CLIENT_CONF[sys.platform]['auth_token_file']
+
 
     def __init__(self, username, password, address, port=80):
         self.username = username
@@ -198,6 +161,10 @@ class Notifier(object):
         self.cookie_processor = urllib2.HTTPCookieProcessor(self.cookie)
         self.urlopener = urllib2.build_opener(self.cookie_processor)
 
+
+    @property
+    def auth_token_file(self):
+        return self.config['auth_token_file']
 
     def get_url(self, baseurl):
         return baseurl % ( self.ip, self.port )
@@ -255,7 +222,7 @@ class Notifier(object):
 
     def save_auth_token(self, token):
         token = token.strip()
-        filename = CLIENT_CONF[sys.platform]['auth_token_file']
+        filename = self.TOKEN_FILE
         write_file(filename, token)
 
 
