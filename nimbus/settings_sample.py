@@ -52,6 +52,9 @@ NIMBUS_SSLCONFIG = dict(C='BR',
 
 
 
+DEFAULT_BACULA_ARCHIVE = '/bacula'
+
+
 NIMBUS_DEPLOY_PATH = join(ROOT_PATH, "var", "www")
 
 BACULA_LOCK_FILE = join(NIMBUS_HOME_DIR, "bacula.lock" )
@@ -98,6 +101,7 @@ SERVE_STATIC_FILES = True
 
 
 NIMBUS_CLIENT_PORT = 11110
+REMOTE_STORAGE_SERVICE_PORT = 11111
 # END NIMBUS
 
 # Local time zone for this installation. Choices can be found here:

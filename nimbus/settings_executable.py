@@ -51,6 +51,10 @@ NIMBUS_SSLCONFIG = dict(C='BR',
                         CN='Veezor')
 
 
+
+DEFAULT_BACULA_ARCHIVE = '/bacula'
+
+
 NIMBUS_DEPLOY_PATH = join(ROOT_PATH, "var","www")
 
 
@@ -98,6 +102,7 @@ SERVE_STATIC_FILES = False
 
 
 NIMBUS_CLIENT_PORT = 11110
+REMOTE_STORAGE_SERVICE_PORT = 11111
 # END NIMBUS
 
 # Local time zone for this installation. Choices can be found here:
