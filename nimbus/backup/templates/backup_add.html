@@ -11,6 +11,7 @@
 <script type="text/javascript" src="/media/js/jquery.colorbox.js"></script>
 
 <script type="text/javascript">
+// local scripts, they meant to be here
 $(document).ready(function() {
     $(".schedule").colorbox({
         href: "/backup/schedules/add",
@@ -20,7 +21,6 @@ $(document).ready(function() {
         $.colorbox.close();
         if ($("#id_procedure-computer").val())
         {
-            //alert("/backup/filesets/add/"+$("#id_procedure-computer").val());
             $.colorbox({
                 href: "/backup/filesets/add/"+$("#id_procedure-computer").val()
             });
@@ -31,36 +31,9 @@ $(document).ready(function() {
         }
         return false;
     });
-/*
- $(".fileset").colorbox({
- href: "/backup/filesets/add/"+$("#id_procedure-computer").val(),
- scrolling:false
- });
- */
 });
 </script>
-<style type="text/css">
-label{display:block;margin:0;padding:0;}
-a.side_link{margin-top: 128px;}
 
-/* All select elements on page */
-select {
-  position: relative;
-}
-
-/* Style by class. Effects the text of the contained options. */
-select.style-select {
-    padding: 4px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    width: 300px;
-}
-option.style-option{
-    
-}
-</style>
 {% endblock %}
 
 {% block page %}
