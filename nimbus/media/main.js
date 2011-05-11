@@ -98,4 +98,5 @@ $(document).ready(function() {
     set_toggles();
     set_backup_type();
     set_schedule_procedure();
+    $('input:text').addClass("text");
 });
