@@ -25,32 +25,31 @@ def make_form(modeltype, exclude_fields=None):
 
 
 class ProcedureForm(forms.ModelForm):
-    name = forms.CharField(label=u"Nome do Procedimento", widget=widgets.TextInput(attrs={'class': 'text'}))
+    formfield_callback = nimbus_forms.make_custom_fields
+    name = forms.CharField(label=u"Nome do Procedimento")
     offsite_on = forms.BooleanField(label=u"Ativar Backup Offsite", required=False)
-    retention_time = forms.CharField(label=u"Tempo de Retenção (em dias)", widget=widgets.TextInput(attrs={'class': 'text small'}))
+    retention_time = forms.CharField(label=u"Tempo de Retenção (em dias)", widget=widgets.TextInput(attrs={'class':'small'}))
 
     class Meta:
         model = models.Procedure
 
 
 class ScheduleForm(forms.ModelForm):
-    name = forms.CharField(label=u"Nome do Agendamento", widget=widgets.TextInput(attrs={'class': 'text small'}))
     formfield_callback = nimbus_forms.make_custom_fields
+    name = forms.CharField(label=u"Nome do Agendamento", widget=widgets.TextInput(attrs={'class': 'small'}))
+
     class Meta:
         model = models.Schedule
-
 
 class FileSetForm(forms.ModelForm):
     name = forms.CharField(label=u"Nome", widget=widgets.TextInput(attrs={'class': 'text small'}))
     class Meta:
         model = models.FileSet
 
-
 class FilePathForm(forms.ModelForm):
     path = forms.CharField(label=u"Arquivos", widget=widgets.TextInput(attrs={'class': 'text small'}))
     class Meta:
         model = models.FilePath
-
 
 class FormContainer(object):
 
