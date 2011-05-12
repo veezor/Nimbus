@@ -62,6 +62,18 @@ a:hover {
     float: right;
 }
 
+.set-right{
+    text-align: right;
+}
+
+.set-left{
+    text-align: left;
+}
+
+.set-left{
+    text-align: center;
+}
+
 .no_margin {
     margin: 0 !important;
 }
@@ -652,7 +664,7 @@ a:hover {
 	}
 
 .block form label {
-    display:block;
+    /*display:block;*/
     margin:0;
     padding:0;
 	font-family: "Lucida Grande", Verdana, sans-serif;
@@ -1339,6 +1351,22 @@ a.submit:hover {
     padding: 0 5px !important;
 }
 
+/* messages
+*/
+p.error, p.notice, p.success, p.alert {
+	border-width:1px;border-style:solid;
+    -moz-border-radius:3px;-khtml-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+	padding:5px 9px 5px 20px ;margin-bottom:1em; font-weight: bold;}
+p.error {background:#FBE3E4 url(../../images/210.png) 3px 50% no-repeat;color:#8a1f11;border-color:#FBC2C4;}
+p.notice {background: #D8E6F1 url(../../images/282.png) 3px 50% no-repeat;color:#333;border-color: #53ADC8;}
+p.alert {background:#FFF6BF url(../../images/50.png) 3px 50% no-repeat;color:#514721;border-color:#FFD324;}
+p.success {background:#E6EFC2 url(../../images/02.png) 3px 50% no-repeat; color:#333;border-color:#8CCF81;}
+p.error a {color:#8a1f11; text-decoration: underline;}
+p.notice a {color:#514721; text-decoration: underline;}
+p.notice a:hover{color: #7F7037;}
+p.success a {color:#264409; text-decoration: underline;}
+p.alert a{color: #8F7E11;}
+
 #mensagem_erro_fileset {
     -moz-border-radius: 5px;
     background: none repeat scroll 0 0 red;
@@ -1441,3 +1469,4 @@ a.submit:hover {
 .hidden { display: none; }
 
 /*  */
+
