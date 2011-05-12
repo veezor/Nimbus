@@ -5,6 +5,7 @@ from django import forms
 from django.forms import widgets
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from nimbus.shared import forms as nimbus_forms
+from nimbus.procedures.forms import ProcedureForm
 
 
 class TriggerBaseForm(BaseInlineFormSet):
@@ -24,32 +25,33 @@ def make_form(modeltype, exclude_fields=None):
     return Form
 
 
-class ProcedureForm(forms.ModelForm):
-    formfield_callback = nimbus_forms.make_custom_fields
-    name = forms.CharField(label=u"Nome do Procedimento")
-    offsite_on = forms.BooleanField(label=u"Ativar Backup Offsite", required=False)
-    retention_time = forms.CharField(label=u"Tempo de Retenção (em dias)", widget=widgets.TextInput(attrs={'class':'small'}))
-
-    class Meta:
-        model = models.Procedure
+# class ProcedureForm(forms.ModelForm):
+#     name = forms.CharField(label=u"Nome do Procedimento", widget=widgets.TextInput(attrs={'class': 'text'}))
+#     offsite_on = forms.BooleanField(label=u"Ativar Backup Offsite", required=False)
+#     retention_time = forms.CharField(label=u"Tempo de Retenção (em dias)", widget=widgets.TextInput(attrs={'class': 'text small'}))
+# 
+#     class Meta:
+#         model = models.Procedure
 
 
 class ScheduleForm(forms.ModelForm):
+    name = forms.CharField(label=u"Nome do Agendamento", widget=widgets.TextInput(attrs={'class': 'text small'}))
     formfield_callback = nimbus_forms.make_custom_fields
-    name = forms.CharField(label=u"Nome do Agendamento", widget=widgets.TextInput(attrs={'class': 'small'}))
-
     class Meta:
         model = models.Schedule
+
 
 class FileSetForm(forms.ModelForm):
     name = forms.CharField(label=u"Nome", widget=widgets.TextInput(attrs={'class': 'text small'}))
     class Meta:
         model = models.FileSet
 
+
 class FilePathForm(forms.ModelForm):
     path = forms.CharField(label=u"Arquivos", widget=widgets.TextInput(attrs={'class': 'text small'}))
     class Meta:
         model = models.FilePath
+
 
 class FormContainer(object):
 
@@ -91,12 +93,10 @@ class FormContainer(object):
 
 
 def make_schedule_form_container():
-    return FormContainer(
-        week = WeekForm,
-        month = MonthForm,
-        day = DayForm,
-        hour = HourForm
-    )
+    return FormContainer(week = WeekForm,
+                         month = MonthForm,
+                         day = DayForm,
+                         hour = HourForm)
 
 
 FilesFormSet = forms.models.inlineformset_factory(models.FileSet, models.FilePath, can_delete=False, extra=1)

@@ -93,7 +93,6 @@ def network(request):
         extra_context['form'] = Form(instance=interface)
         return render_to_response( request, "generic.html", extra_context)
     else:
-        print "Teste"
         return edit_singleton_model(request, "generic.html",
                                     "nimbus.wizard.views.password",
                                     model = NetworkInterface,

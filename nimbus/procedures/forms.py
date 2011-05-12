@@ -10,3 +10,12 @@ class ProfileForm(forms.ModelForm):
                    'storage': forms.widgets.Select(attrs={'class': 'styled'}),
                    'schedule': forms.widgets.Select(attrs={'class': 'styled'}),
                    'fileset': forms.widgets.Select(attrs={'class': 'styled'})}
+
+
+class ProcedureForm(forms.ModelForm):
+   # name = forms.CharField(label=u"Nome do Procedimento", widget=forms.widgets.TextInput(attrs={'class': 'text'}))
+   # offsite_on = forms.BooleanField(label=u"Ativar Backup Offsite", required=False)
+   # retention_time = forms.CharField(label=u"Tempo de Retenção (em dias)", widget=forms.widgets.TextInput(attrs={'class': 'text small'}))
+
+   class Meta:
+       model = Procedure

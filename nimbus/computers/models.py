@@ -53,7 +53,7 @@ class Computer(BaseModel):
                                 editable=False, default=utils.random_password)
     groups = models.ManyToManyField(ComputerGroup, related_name="computers", 
                                     blank=True, null=True)
-    active = models.BooleanField(editable=False)
+    active = models.BooleanField(editable=True)
     crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False, 
                                     unique=True, editable=False)
 
