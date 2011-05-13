@@ -203,5 +203,11 @@ def nimbus_self_backup_update_offsite_status(offsite):
     except Procedure.DoesNotExist, error:
         pass
 
+def is_active(offsite):
+    verify = False
+    if offsite.objects.filter(active=1).exists():
+        verify = True
+    return verify
+
 
 signals.connect_on( nimbus_self_backup_update_offsite_status, Offsite, post_save)

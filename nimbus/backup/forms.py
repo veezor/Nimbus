@@ -2,10 +2,12 @@
 
 from nimbus.backup import models
 from django import forms
+from django.db import models as db_models
 from django.forms import widgets
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from nimbus.shared import forms as nimbus_forms
 from nimbus.procedures.forms import ProcedureForm
+from nimbus.offsite.models import Offsite
 
 
 class TriggerBaseForm(BaseInlineFormSet):
