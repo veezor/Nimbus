@@ -13,7 +13,7 @@ echo "###########################"
 echo "# Fazendo backup do banco #"
 echo "###########################"
 
-mysqldump -a -c --add-drop-table nimbus > nimbus_bkp_$UNIX_TIME.sql
+mysqldump -uroot -pmysqladm -a -c --add-drop-table nimbus > nimbus_bkp_$UNIX_TIME.sql
 
 echo "#################################################"
 echo "# Backup feito em nimbus_bkp_"$UNIX_TIME".sql     #"
@@ -25,9 +25,9 @@ echo "#########################"
 echo "# Recriando banco vazio #"
 echo "#########################"
 
-mysql -e "drop database nimbus; create database nimbus;"
+mysql -uroot -pmysqladm -e "drop database nimbus; create database nimbus;"
 # echo "Digite a senha do mysql"
-# mysql -p -e "drop database nimbus; create database nimbus;"
+# mysql -pmysqladm -e "drop database nimbus; create database nimbus;"
 
 echo "##################################"
 echo "# Recriando estrutura de tabelas #"
