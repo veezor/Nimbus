@@ -10,7 +10,7 @@ from django.db import models
 
 from nimbus.shared.fields import CharFormField, IPAddressField
 
-SELECT_ATTRS = {"class": "styled"}
+SELECT_ATTRS = {"class": ""}
 INPUT_ATTRS = {"class":"text"}
 
 class InvalidMapping(Exception):

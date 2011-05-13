@@ -18,6 +18,7 @@ from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
+from nimbus.offsite.models import is_active
 from nimbus.libs import offsite
 from nimbus.bacula.models import Job, File
 from nimbus.shared import utils, enums, signals, fields
@@ -36,18 +37,21 @@ class Profile(models.Model):
 
 
 class Procedure(BaseModel):
-    
-    name = models.CharField(max_length=255, blank=False, null=False,
-                            validators=[fields.check_model_name])
     computer = models.ForeignKey(Computer, blank=False, null=False)
     # profile = models.ForeignKey(Profile, blank=False, null=False)
     pool = models.ForeignKey(Pool, blank=False, null=False, editable=True)
-    offsite_on = models.BooleanField(default=False, blank=False, null=False)
+    offsite_on = models.BooleanField(default=False, blank=False, null=False, editable=is_active(Offsite))
     active = models.BooleanField(default=True, blank=False, null=False)
     retention_time = models.CharField(max_length=255, null=False, blank=False)
     schedule = models.ForeignKey(Schedule, related_name='schedule')
     fileset = models.ForeignKey(FileSet, related_name='fileset')
     storage = models.ForeignKey(Storage, null=False, blank=False)
+    name = models.CharField(max_length=255, blank=False, null=False,
+                            validators=[fields.check_model_name])
+#    if Offsite.objects.filter(active=1).exists():
+#        verify = True
+#    else:
+#        verify = False
 
     def fileset_bacula_name(self):
         return self.fileset.bacula_name
