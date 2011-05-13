@@ -21,7 +21,7 @@ from nimbus.offsite.models import Offsite
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
-from nimbus.procedures.forms import ProfileForm
+from nimbus.procedures.forms import ProfileForm, ProcedureForm
 
 
 @login_required
@@ -33,6 +33,22 @@ def add(request):
                                        template_name = "base_procedures.html",
                                        extra_context = extra_context,
                                        post_save_redirect = "/procedures/")
+
+@login_required
+def do_add(request):
+   title = u"Adicionar backup"
+   if request.method == "POST":
+       procedure_form = ProcedureForm(request.POST, prefix="procedure")
+       if procedure_form.is_valid():
+           procedure_form.save()
+           messages.success(request, "Procedimento de backup criado com sucesso")
+           return redirect('nimbus.procedures.views.list')
+       else:
+           messages.warning(request, "Falha ao salvar as informações")
+           return render_to_response(request, "backup_add.html", locals())
+#   else:
+       #NOT GET OR POST
+#       pass
 
 @login_required
 def edit(request, object_id):

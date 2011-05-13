@@ -38,11 +38,10 @@ class Profile(models.Model):
 class Procedure(BaseModel):
     computer = models.ForeignKey(Computer, blank=False, null=False)
     # profile = models.ForeignKey(Profile, blank=False, null=False)
-    pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
+    pool = models.ForeignKey(Pool, blank=False, null=False, editable=True)
     offsite_on = models.BooleanField(default=False, blank=False, null=False)
     active = models.BooleanField(default=True, blank=False, null=False)
-    retention_time = models.CharField(max_length=255, unique=True, null=False,
-                                      blank=False)
+    retention_time = models.CharField(max_length=255, null=False, blank=False)
     schedule = models.ForeignKey(Schedule, related_name='schedule')
     fileset = models.ForeignKey(FileSet, related_name='fileset')
     storage = models.ForeignKey(Storage, null=False, blank=False)
@@ -82,7 +81,7 @@ class Procedure(BaseModel):
                                   jobstatus='T',
                                   type='B',
                                   name=self.bacula_name)\
-                 .order_by('-endtime').distinct()
+                                                .order_by('-endtime').distinct()
         return jobs
 
     def __unicode__(self):
@@ -105,9 +104,8 @@ class Procedure(BaseModel):
     @staticmethod
     def search_files(jobid, pattern):
         files = File.objects.filter(
-                models.Q(filename__name__icontains=pattern) | models.Q(path__path__icontains=pattern),
-                job__jobid=jobid
-        ).distinct()
+                models.Q(filename__name__icontains=pattern) | models.Q(
+                path__path__icontains=pattern), job__jobid=jobid).distinct()
         files = [f.fullname for f in files]
         files.sort()
         return files
