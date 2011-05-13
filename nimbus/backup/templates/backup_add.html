@@ -10,30 +10,6 @@
 <script type="text/javascript" src="/media/js/schedules.js"></script>
 <script type="text/javascript" src="/media/js/jquery.colorbox.js"></script>
 
-<script type="text/javascript">
-// local scripts, they meant to be here
-$(document).ready(function() {
-    $(".schedule").colorbox({
-        href: "/backup/schedules/add",
-        scrolling:false
-    });
-    $(".fileset").click(function(){
-        $.colorbox.close();
-        if ($("#id_procedure-computer").val())
-        {
-            $.colorbox({
-                href: "/backup/filesets/add/"+$("#id_procedure-computer").val()
-            });
-        }
-        else
-        {
-            $.colorbox({html:"<h2>Atenção!</h2><h3>Você precisa escolher um computador</h3>"});
-        }
-        return false;
-    });
-});
-</script>
-
 {% endblock %}
 
 {% block page %}
@@ -55,7 +31,7 @@ $(document).ready(function() {
                     <li>{{ field.errors }}</li>
                 </ul>
                 {% endif %}
-                <p><label>{{ field.label }}:</label>
+                <p><label>{{ field.label }}:</label><br />
                     {{ field }}
                     {% if field.label == 'Computer' %}
                         <a href="/computers/add" class="side_link">Adicionar Computador</a>

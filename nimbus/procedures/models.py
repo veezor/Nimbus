@@ -36,9 +36,6 @@ class Profile(models.Model):
 
 
 class Procedure(BaseModel):
-    
-    name = models.CharField(max_length=255, blank=False, null=False,
-                            validators=[fields.check_model_name])
     computer = models.ForeignKey(Computer, blank=False, null=False)
     # profile = models.ForeignKey(Profile, blank=False, null=False)
     pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
@@ -49,6 +46,8 @@ class Procedure(BaseModel):
     schedule = models.ForeignKey(Schedule, related_name='schedule')
     fileset = models.ForeignKey(FileSet, related_name='fileset')
     storage = models.ForeignKey(Storage, null=False, blank=False)
+    name = models.CharField(max_length=255, blank=False, null=False,
+                            validators=[fields.check_model_name])
 
     def fileset_bacula_name(self):
         return self.fileset.bacula_name

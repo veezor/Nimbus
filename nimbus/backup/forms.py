@@ -26,9 +26,9 @@ def make_form(modeltype, exclude_fields=None):
 
 class ProcedureForm(forms.ModelForm):
     formfield_callback = nimbus_forms.make_custom_fields
-    name = forms.CharField(label=u"Nome do Procedimento")
     offsite_on = forms.BooleanField(label=u"Ativar Backup Offsite", required=False)
     retention_time = forms.CharField(label=u"Tempo de Retenção (em dias)", widget=widgets.TextInput(attrs={'class':'small'}))
+    name = forms.CharField(label=u"Nome do Procedimento")
 
     class Meta:
         model = models.Procedure
