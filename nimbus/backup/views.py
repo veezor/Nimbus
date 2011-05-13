@@ -8,6 +8,7 @@ from nimbus.computers.models import Computer
 from django.shortcuts import render_to_response
 import simplejson
 from nimbus.backup import forms
+from nimbus.schedules.views import schedule_new
 
 
 def render(request, object_id=0):
@@ -24,28 +25,28 @@ def profile_new(request):
                'forms':lforms}
     return render_to_response("profile_new.html", content)
 
-def schedule_new(request):
-    if request.method == "POST":
-        print request.POST
-    lforms = [forms.ScheduleForm(prefix="schedule")]
-    schedule_forms = forms.make_schedule_form_container()
-    schedule_forms.get()
-    days_range = range(1, 32)
-    weekdays_range = {0:'Domingo',
-                      1:'Segunda',
-                      2:'Terca',
-                      3:'Quarta',
-                      4:'Quinta',
-                      5:'Sexta',
-                      6:'Sabado'}
-    end_days_range = [5, 10, 15, 20, 25, 30]
-    content = {'title':u'Criar Agendamento',
-               'forms':lforms,
-               'formset':schedule_forms,
-               'days':days_range,
-               'end_days':end_days_range,
-               'weekdays':weekdays_range}
-    return render_to_response("schedule_new.html", content)
+# def schedule_new(request):
+#     if request.method == "POST":
+#         print request.POST
+#     lforms = [forms.ScheduleForm(prefix="schedule")]
+#     schedule_forms = forms.make_schedule_form_container()
+#     schedule_forms.get()
+#     days_range = range(1, 32)
+#     weekdays_range = {0:'Domingo',
+#                       1:'Segunda',
+#                       2:'Terca',
+#                       3:'Quarta',
+#                       4:'Quinta',
+#                       5:'Sexta',
+#                       6:'Sabado'}
+#     end_days_range = [5, 10, 15, 20, 25, 30]
+#     content = {'title':u'Criar Agendamento',
+#                'forms':lforms,
+#                'formset':schedule_forms,
+#                'days':days_range,
+#                'end_days':end_days_range,
+#                'weekdays':weekdays_range}
+#     return render_to_response("schedule_new.html", content)
 
 def fileset_new(request, object_id):
     # just for test, must be removed in production mode

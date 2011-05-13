@@ -26,7 +26,7 @@ $(document).ready(function(){
                 dataString += field.name+"="+field.value+"&";
             }
         });
-        dataString += "schedule.monthly.day="+month_days+"schedule.weekly.day="+week_days;
+        dataString += "schedule.monthly.day="+month_days+"&schedule.weekly.day="+week_days;
         alert (dataString);
         $.ajax({
             type: "POST",
