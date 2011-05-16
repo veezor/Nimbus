@@ -221,3 +221,12 @@ def deactivate(request, object_id):
         return redirect('nimbus.computers.views.list')
     messages.success(u'Computador desativado com sucesso.')
     return redirect('nimbus.computers.views.list')
+
+def configure(request, object_id):
+    try:
+        computer = Computer.objects.get(id=object_id)
+        computer.configure()
+        messages.success(request, u'Computador reconfigurado com sucesso.')
+    except IOError as (errno, strerror):
+        messages.error(request, u'Erro interno. {0}: {1}'.format(errno, strerror))
+    return redirect('nimbus.computers.views.list')

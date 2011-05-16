@@ -11,11 +11,13 @@ urlpatterns = patterns('nimbus.computers.views',
     (r'^(?P<object_id>\d+)/view/$', 'view'), 
     (r'^(?P<object_id>\d+)/edit/$', 'edit'), 
     (r'^(?P<object_id>\d+)/edit_no_active/$', 'edit_no_active'), 
-    (r'^(?P<object_id>\d+)/delete/$', 'delete'), 
+    (r'^(?P<object_id>\d+)/delete/$', 'delete'),
+    
     (r'^delete/$', 'delete'), 
     (r'^group/add/$', 'group_add'), 
     (r'^group/list/$', 'group_list'), 
     
     (r'^(?P<object_id>\d+)/activate/$', 'activate'), 
     (r'^(?P<object_id>\d+)/deactivate/$', 'deactivate'),
+    (r'^(?P<object_id>\d+)/configure/$', 'configure')
 )

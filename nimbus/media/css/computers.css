@@ -93,3 +93,10 @@
     background: #FFF2A7;
     display: none;
 }
+.submit{
+    padding: 0;
+    margin: 0 0 2px 0;
+}
+.tiny{
+    padding: 2px;
+}

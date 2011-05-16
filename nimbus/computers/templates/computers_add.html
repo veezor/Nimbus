@@ -31,9 +31,11 @@
                 </div>
                 <div class="right">
                     <div class="floatright">
-                        <form action="/computers/{{comp.id}}/activate/" method="post" class="floatright">
-                            <input type="submit" class="submit tiny" value="Ativar"/>
-                        </form>
+                        <a href="/computers/{{comp.id}}/activate/" class="submit tiny">Ativar</a><br />
+                        <a href="/computers/{{comp.id}}/configure/" class="submit tiny">Reconfigurar</a>
+{#                        <form action="/computers/{{comp.id}}/activate/" method="post" class="floatright">#}
+{#                            <input type="submit" class="submit tiny" value="Ativar"/>#}
+{#                        </form>#}
                     </div>
                 </div>
                 <div class="clear"></div>
