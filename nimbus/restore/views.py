@@ -106,19 +106,19 @@ def get_jobs(request, procedure_id, data_inicio, data_fim):
     #         {"name": "Job2 - 11 Aug 2010", "id": "60"},
     #         {"name": "Job3 - 12 Aug 2010", "id": "61"},
     #         {"name": "Job3 - 12 Aug 2010", "id": "37"}]
-    
+
     # response = serializers.serialize("json", jobs)
     
 
     data_inicio = "%s 00:00:00" % data_inicio
     data_inicio = datetime.strptime(data_inicio, '%d-%m-%Y %H:%M:%S')
-    
+
     data_fim = "%s 23:59:59" % data_fim
     data_fim = datetime.strptime(data_fim, '%d-%m-%Y %H:%M:%S')
-    
+
     procedure = Procedure.objects.get(id=procedure_id)
     jobs = procedure.get_backup_jobs_between(data_inicio, data_fim)
-    
+
     # response = simplejson.dumps(jobs)
     response = serializers.serialize("json", jobs, fields=("realendtime", "jobfiles", "name"))
     return HttpResponse(response, mimetype="text/plain")
