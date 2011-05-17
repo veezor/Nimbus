@@ -42,3 +42,5 @@ h2.titulo_step {
 .tree_computer {
     margin-bottom: 20px;
 }
+
+#data_inicio, #data_fim{width: 180px;}
