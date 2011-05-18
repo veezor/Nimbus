@@ -1,3 +1,4 @@
+GLOBAL_COUNTER = 0;
 function mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name, depends) {
 
 
@@ -47,7 +48,8 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
         root_path_re = new RegExp("^" + root_path, "g");
         path_name = path.replace(root_path_re, '');
 
-        var input = $("<input>").attr("type", input_type).attr("name", input_name).val(path);
+        var input = $("<input>").attr("type", input_type).attr("name", input_name+GLOBAL_COUNTER).val(path);
+        GLOBAL_COUNTER = GLOBAL_COUNTER + 1;
         
         // If is a directory.
         if (path.match("/$") == "/" || path.match("\\$") == "\\") {
