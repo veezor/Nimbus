@@ -48,19 +48,20 @@ def profile_new(request):
 #                'weekdays':weekdays_range}
 #     return render_to_response("schedule_new.html", content)
 
-def fileset_new(request, object_id):
-    # just for test, must be removed in production mode
-    if request.method == "POST":
-        print request.POST
-    lforms = [ forms.FileSetForm(prefix="fileset") ]
-    lformsets = [ forms.FilePathForm(prefix="filepath") ]
-    formset = forms.FilesFormSet()
-    content = {'title':u'Criar Sistema de Arquivos',
-               'forms':lforms,
-               'formsets':lformsets,
-               'computer_id':object_id,
-               'formset' : formset}
-    return render_to_response("fileset_new.html", content)
+# def fileset_new(request, object_id):
+#     # just for test, must be removed in production mode
+#     print "####################################################################"
+#     if request.method == "POST":
+#         print request.POST
+#     lforms = [ forms.FileSetForm(prefix="fileset") ]
+#     lformsets = [ forms.FilePathForm(prefix="filepath") ]
+#     formset = forms.FilesFormSet()
+#     content = {'title':u'Criar Sistema de Arquivos',
+#                'forms':lforms,
+#                'formsets':lformsets,
+#                'computer_id':object_id,
+#                'formset' : formset}
+#     return render_to_response("fileset_new.html", content)
 
 def get_tree(request):
     if request.method == "POST":

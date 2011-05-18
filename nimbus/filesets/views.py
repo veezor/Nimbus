@@ -5,32 +5,36 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from nimbus.filesets.models import FileSet, FilePath
-from nimbus.filesets.forms import FileSetForm, FilePathForm
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form_mapping, form_from_model
 from nimbus.libs.db import Session
 from nimbus.shared import utils
 from nimbus.filesets import forms
+import pdb
 
 
 @login_required
-def add(request):
-#    title = u"Criar Conjunto de Crquivos"
-#    computers = Computer.objects.filter(active=True,id__gt=1)
-    
-#    fileset_form = FileSetForm()
-#    filepath_form = FilePathForm()
-    lforms = [forms.FileSetForm(prefix="fileset")]
-    lformsets = [forms.FilePathForm(prefix="filepath")]
-    content = {'forms':lforms,
+def add(request, object_id=None):
+    # just for test, must be removed in production mode
+    print "####################################################################"
+    if request.method == "POST":
+        for i in request.POST:
+            print i, request.POST[i]
+        print "\n\n"
+    if request.method == "GET":
+        for i in request.GET:
+            print i, request.GET[i]
+        print "\n\n"
+    lforms = [ forms.FileSetForm(prefix="fileset") ]
+    lformsets = [ forms.FilePathForm(prefix="filepath") ]
+    formset = forms.FilesFormSet()
+    content = {'title':u'Criar Sistema de Arquivos',
+               'forms':lforms,
                'formsets':lformsets,
-               'title':u"Criar Conjunto de Arquivos",
-               'computers':Computer.objects.filter(active=True,id__gt=1)}
-    if request.method == 'POST':
-        # TODO: Save the queen.
-        pass
-    return render_to_response(request, 'base_filesets.html', content)
+               'computer_id':object_id,
+               'formset' : formset}
+    return render_to_response(request, "add.html", content)
 
 
 @login_required

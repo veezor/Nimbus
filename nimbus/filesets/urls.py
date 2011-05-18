@@ -4,6 +4,8 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('nimbus.filesets.views',
-    (r'^add/$', 'add'), 
-    (r'^(?P<object_id>\d+)/edit/$', 'edit'), 
-)
+                       (r'^(?P<object_id>\d+)/edit/$', 'edit'),
+                       (r'^add/(?P<object_id>\d+)$', 'add'),
+                       (r'^add/$', 'add'),
+                       (r'^teste/$', 'teste'),
+                      )

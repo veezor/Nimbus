@@ -15,7 +15,7 @@ $(document).ready(function(){
         //alert (dataString);
         $.ajax({
             type: "POST",
-            url: "/backup/filesets/add",
+            url: "/filesets/add",
             data: dataString,
             success: function() {
                 alert("Cadastro efetuado com sucesso!");
