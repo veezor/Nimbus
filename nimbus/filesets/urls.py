@@ -7,5 +7,5 @@ urlpatterns = patterns('nimbus.filesets.views',
                        (r'^(?P<object_id>\d+)/edit/$', 'edit'),
                        (r'^add/(?P<object_id>\d+)$', 'add'),
                        (r'^add/$', 'add'),
-                       (r'^teste/$', 'teste'),
+                       #(r'^teste/$', 'teste'),
                       )
