@@ -1,0 +1,16 @@
+Job {
+    Write Bootstrap = "/bacula/1f3f9a36797d4c2aae22ffced2128781_procedure.bsr"
+    Name = "1f3f9a36797d4c2aae22ffced2128781_procedure"
+    Schedule = "057e1b5e2bb045b494debbb2b0e1663e_schedule"
+    Messages = "Standard"
+    Storage = "68bb18edcefc4a519d5c2a7bfe01d4f8_storage"
+    FileSet = "bed3be393f394515a45b03aeb0e65ae7_fileset"
+    Priority = "10"
+    Client = "71e6f87d0b51459692dcd7293b0095b5_computer"
+    Type = "Backup"
+    Pool = "c704c674e46b4217a168b893c7f08522_pool"
+    
+    Enabled = "yes"
+    
+    
+}

@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="68a30a17-c4b8-48c8-8d77-2a66c0f03572" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/nimbus.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/media/images/02.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/media/images/210.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/media/images/282.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/media/images/50.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/etc/nimbus/logging.conf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/etc/nimbus/ssl.conf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/35eb1129955f448b816bb59bb76cef31_computer" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/71e6f87d0b51459692dcd7293b0095b5_computer" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/8ba54d146c84497fb10143167e3c67c0_computer" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/c00d0da483b147dc92278da2fd0f3cf9_computer" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/c02acdb830f74593a242215d92717830_computer" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/config/bacula-dir.conf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/config/bacula-sd.conf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/config/bconsole.conf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/devices/06b1b3add18041bbade3ed57d8ad2dab_device" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/devices/22fe3479ffd046229c209b2c5a6b997d_device" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/devices/73b80571d5214c5eb8244c27eac60f73_device" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/devices/756246b133f4460fa3807006f42a58a4_device" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/filesets/bed3be393f394515a45b03aeb0e65ae7_fileset" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/filesets/c2a564252fa1419c996e27944752ebcc_fileset" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/jobs/05429b46f5394da889ec04828040664f_procedure" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/jobs/1f3f9a36797d4c2aae22ffced2128781_procedure" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/jobs/restorejob" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/pools/3b7cf640d5584f52b801d4d70e468813_pool" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/pools/c704c674e46b4217a168b893c7f08522_pool" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/schedules/057e1b5e2bb045b494debbb2b0e1663e_schedule" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/storages/4c14e01968b14010a55fa3b22652ba33_storage" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/storages/68bb18edcefc4a519d5c2a7bfe01d4f8_storage" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/nimbus/procedures/templates/profile_add_form.html" />
+    </list>
+    <ignored path="nimbus.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+    <option name="REVERSE_PATCH" value="false" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="nimbus" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="settings.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nimbus/settings.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="44" column="0" selection-start="800" selection-end="800" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="backup_add.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/backup_add.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="profile_new.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/profile_new.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fileset_new.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/fileset_new.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="29" selection-start="254" selection-end="254" vertical-scroll-proportion="-3.75">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="filesets.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nimbus/media/js/filesets.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="20" column="25" selection-start="626" selection-end="626" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tree_plugin.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/nimbus/media/lib/js/tree_plugin.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="143" column="10" selection-start="5111" selection-end="5111" vertical-scroll-proportion="0.023659306">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="false" />
+    </FindUsagesManager>
+  </component>
+  <component name="Git.Settings">
+    <option name="CHECKOUT_INCLUDE_TAGS" value="false" />
+    <option name="UPDATE_CHANGES_POLICY" value="STASH" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="changedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/nimbus/media/css/computers.css" />
+        <option value="$PROJECT_DIR$/nimbus/computers/urls.py" />
+        <option value="$PROJECT_DIR$/nimbus/computers/models.py" />
+        <option value="$PROJECT_DIR$/nimbus/media/css/restore.css" />
+        <option value="$PROJECT_DIR$/nimbus/procedures/models.py" />
+        <option value="$PROJECT_DIR$/nimbus/restore/views.py" />
+        <option value="$PROJECT_DIR$/nimbus/restore/templates/restore_list.html" />
+        <option value="$PROJECT_DIR$/nimbus/urls.py" />
+        <option value="$PROJECT_DIR$/nimbus/computers/views.py" />
+        <option value="$PROJECT_DIR$/nimbus/remotestorages/urls.py" />
+        <option value="$PROJECT_DIR$/nimbus/remotestorages/templates/remotestorages_list.html" />
+        <option value="$PROJECT_DIR$/nimbus/remotestorages/views.py" />
+        <option value="$PROJECT_DIR$/nimbus/settings.py" />
+        <option value="$PROJECT_DIR$/nimbus/backup/templates/fileset_new.html" />
+        <option value="$PROJECT_DIR$/nimbus/media/js/filesets.js" />
+        <option value="$PROJECT_DIR$/nimbus/media/lib/js/tree_plugin.js" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nimbus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="Favorites" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
+    <property name="recentsLimit" value="5" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/nimbus/remotestorages/templates" />
+      <recent name="$PROJECT_DIR$/nimbus" />
+      <recent name="$PROJECT_DIR$/nimbus/backup/templates" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Django server.nimbus">
+    <configuration default="true" type="PythonUnitTestConfigurationType" factoryName="Python's unittest">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <module name="nimbus" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="PUREUNITTEST" value="true" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <module name="nimbus" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Python.DjangoServer" factoryName="Django server">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <module name="nimbus" />
+      <option name="port" value="8000" />
+      <option name="host" value="" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="false" />
+      <option name="customRunCommand" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonDocTestRunConfigurationType" factoryName="Python's doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <module name="nimbus" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <method />
+    </configuration>
+    <configuration default="false" name="nimbus" type="Python.DjangoServer" factoryName="Django server">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$USER_HOME$/nimbusenv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <module name="nimbus" />
+      <option name="port" value="8000" />
+      <option name="host" value="" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="http://127.0.0.1:8000/" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="false" />
+      <option name="customRunCommand" value="" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Django server.nimbus" />
+    </list>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" maxAnnotateRevisions="500">
+    <option name="USER" value="" />
+    <option name="PASSWORD" value="" />
+    <option name="mySSHConnectionTimeout" value="30000" />
+    <option name="mySSHReadTimeout" value="30000" />
+    <option name="LAST_MERGED_REVISION" />
+    <option name="MERGE_DRY_RUN" value="false" />
+    <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
+    <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
+    <option name="IGNORE_SPACES_IN_MERGE" value="false" />
+    <option name="DETECT_NESTED_COPIES" value="true" />
+    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
+    <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
+    <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
+    <option name="FORCE_UPDATE" value="false" />
+    <configuration useDefault="true">$USER_HOME$/.subversion_IDEA</configuration>
+    <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="68a30a17-c4b8-48c8-8d77-2a66c0f03572" name="Default" comment="" />
+      <created>1301919547654</created>
+      <updated>1301919547654</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TodoView" selected-index="0">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="-2" width="1280" height="802" extended-state="6" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32890856" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32852563" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32448378" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24940239" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24143426" sideWeight="0.45575222" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5442478" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37905604" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32852563" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="PERFORM_UPDATE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_COMMIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_CHECKOUT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ROLLBACK_IN_BACKGROUND" value="false" />
+    <option name="CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND" value="false" />
+    <option name="ENABLE_BACKGROUND_PROCESSES" value="false" />
+    <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
+    <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
+    <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
+    <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
+    <option name="LAST_COMMIT_MESSAGE" value="FIX: Envio de dados do formulário assíncrono de filesets, nos templates do backup" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
+    <option name="FILE_HISTORY_DIALOG_COMMENTS_SPLITTER_PROPORTION" value="0.8" />
+    <option name="FILE_HISTORY_DIALOG_SPLITTER_PROPORTION" value="0.5" />
+    <option name="ACTIVE_VCS_NAME" />
+    <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
+    <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
+    <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
+    <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
+    <MESSAGE value="Adicionados scripts de execução comum e menu otimizado" />
+    <MESSAGE value="Adicionada função de formatação numérica para melhoria dos gráficos" />
+    <MESSAGE value="Melhoria nos campos de formulários" />
+    <MESSAGE value="Revisão da instância de campos de formulários eatributos de estilo" />
+    <MESSAGE value="Removidos estilos locais desnecessários" />
+    <MESSAGE value="Melhoria dos estilos de formulários e inclusão de regras comuns, evitando aplicação de estilos inline" />
+    <MESSAGE value="Remoção de estilos inline" />
+    <MESSAGE value="Adequação de variáveis ao padrão django" />
+    <MESSAGE value="Adição de funções de execução automática" />
+    <MESSAGE value="Adição de scripts de execução automática" />
+    <MESSAGE value="Melhoria dos formulários e adequação aos estilos globais" />
+    <MESSAGE value="Melhoria nos formulários e adequação aos estilos globais" />
+    <MESSAGE value="Adequação de estilos globais" />
+    <MESSAGE value="Atualizada conversão de inteiro" />
+    <MESSAGE value="Melhoria na apresentação dos formulários e campos de erro" />
+    <MESSAGE value="Alteração do forumário de adicionar backup para sugestão de nome e adaptação de estilos de formulários" />
+    <MESSAGE value="Adequação de estilos de formulários" />
+    <MESSAGE value="Atualização dos arquivos com o diretório remoto" />
+    <MESSAGE value="Melhorias no formulário de backup: sugestão de nome e verificação do campo offsite" />
+    <MESSAGE value="Finalizada reconfiguração de máquina perdida, de acordo com o ticket #301" />
+    <MESSAGE value="FIX: Bug árvore de restauração - restore. Não completo." />
+    <MESSAGE value="Campo de data mais largo, evitando cortes e melorando compreensão" />
+    <MESSAGE value="Criação da interface dos storages adicionais" />
+    <MESSAGE value="Adição de dados na interface do storage" />
+    <MESSAGE value="FIX: Envio de dados do formulário assíncrono de filesets, nos templates do backup" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/nimbus/shared/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="54" selection-start="1396" selection-end="1396" vertical-scroll-proportion="0.6491499" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/restore/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="10" selection-start="591" selection-end="591" vertical-scroll-proportion="0.3709428" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/computers/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="6" selection-start="610" selection-end="641" vertical-scroll-proportion="0.25502318" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/recovery/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/procedures/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/remotestorages/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="31" selection-start="694" selection-end="694" vertical-scroll-proportion="0.3709428" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/remotestorages/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="21" selection-start="208" selection-end="208" vertical-scroll-proportion="0.16228747" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/procedures/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="56" selection-start="1114" selection-end="1114" vertical-scroll-proportion="0.6027821" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/remotestorages/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="33" selection-start="469" selection-end="469" vertical-scroll-proportion="0.3709428" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="0" selection-start="800" selection-end="800" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/backup_add.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/profile_new.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/fileset_new.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="29" selection-start="254" selection-end="254" vertical-scroll-proportion="-3.75">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/media/js/filesets.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="25" selection-start="626" selection-end="626" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/media/lib/js/tree_plugin.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="143" column="10" selection-start="5111" selection-end="5111" vertical-scroll-proportion="0.023659306">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
+

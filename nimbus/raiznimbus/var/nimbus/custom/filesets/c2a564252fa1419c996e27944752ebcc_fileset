@@ -1,0 +1,10 @@
+FileSet {
+    Name = "c2a564252fa1419c996e27944752ebcc_fileset"
+        Include {
+            Options{
+                signature = "MD5"
+                compression = "GZIP"
+            }
+            
+        }
+}

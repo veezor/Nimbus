@@ -1,0 +1,8 @@
+Client {
+    Name = 8ba54d146c84497fb10143167e3c67c0_computer
+    Catalog = MyCatalog
+    AutoPrune = yes
+    Address = 127.0.0.1
+    FDPort = 9102
+    password = "ET5LBv7z1oZDR9pQwSv9"
+}

@@ -1,0 +1,10 @@
+Device {
+	Name = 756246b133f4460fa3807006f42a58a4_device
+	LabelMedia = yes
+	AlwaysOpen = no
+	Random Access = yes
+	Archive Device = /bacula/
+	Media Type = File
+	RemovableMedia = no
+	AutomaticMount = yes
+}
