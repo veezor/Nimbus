@@ -3,12 +3,9 @@
 {% block headtags %}
 <link type="text/css" rel="stylesheet" href="/media/css/backup.css"/>
 <link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
-<link rel="stylesheet" type="text/css" href="/media/css/colorbox.css" />
 
-<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 <script type="text/javascript" src="/media/js/backup.js"></script>
-<script type="text/javascript" src="/media/js/schedules.js"></script>
-<script type="text/javascript" src="/media/js/jquery.colorbox.js"></script>
+<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 
 {% endblock %}
 
@@ -37,10 +34,10 @@
                         <a href="/computers/add" class="side_link">Adicionar Computador</a>
                     {% endif %}
                     {% if field.label == 'Schedule' %}
-                        <a href="/schedules/add" class="side_link schedule">Adicionar Agendamento</a>
+                        <a href="/backup/schedules/add" class="side_link schedules">Adicionar Agendamento</a>
                     {% endif %}
                     {% if field.label == 'Fileset' %}
-                        <a href="/filesets/add" class="side_link fileset">Adicionar Conjunto de Arquivos</a>
+                        <a href="/backup/filesets/add" class="side_link filesets">Adicionar Conjunto de Arquivos</a>
                     {% endif %}
                 </p>
             {% endfor %}
