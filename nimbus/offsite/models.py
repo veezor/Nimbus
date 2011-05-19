@@ -205,8 +205,11 @@ def nimbus_self_backup_update_offsite_status(offsite):
 
 def is_active(offsite):
     verify = False
-    if offsite.objects.filter(active=1).exists():
-        verify = True
+    try:
+        if offsite.objects.filter(active=1).exists():
+            verify = True
+    except:
+        return verify
     return verify
 
 

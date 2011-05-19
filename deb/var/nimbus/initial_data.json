@@ -195,8 +195,7 @@
         "model": "filesets.filepath",
         "fields": {
             "path": "/etc/",
-            "computer": 1,
-            "filesets": 1
+            "fileset": 1
         }
     },
     {
@@ -204,8 +203,7 @@
         "model": "filesets.filepath",
         "fields": {
             "path": "/var/nimbus/bacula-sql.bz2",
-            "computer": 1,
-            "filesets": 1
+            "fileset": 1
         }
     },
     {
@@ -213,8 +211,7 @@
         "model": "filesets.filepath",
         "fields": {
             "path": "/var/nimbus/custom/",
-            "computer": 1,
-            "filesets": 1
+            "fileset": 1
         }
     },
     {
@@ -222,8 +219,7 @@
         "model": "filesets.filepath",
         "fields": {
             "path": "/var/nimbus/nimbus-sql.bz2",
-            "computer": 1,
-            "filesets": 1
+            "fileset": 1
         }
     },
     {

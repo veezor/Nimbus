@@ -23,10 +23,10 @@ class FileSet(BaseModel):
 
 
 class FilePath(models.Model):
-    computer = models.ForeignKey(computer_models.Computer)
+#    computer = models.ForeignKey(computer_models.Computer)
     path = fields.ModelPathField(max_length=2048, null=False)
-    filesets = models.ForeignKey(FileSet, related_name="files", null=True,
-                                 blank=True)
+    fileset = models.ForeignKey(FileSet, related_name="files", null=False,
+                                 blank=False)
 
 
 def update_fileset_file(fileset):

@@ -99,7 +99,8 @@ $(document).ready(function(){
         if ($("#id_procedure-computer").val())
         {
             $.colorbox({
-                href: "/backup/filesets/add/"+$("#id_procedure-computer").val()
+                // href: "/backup/filesets/add/"+$("#id_procedure-computer").val()
+                href: "/filesets/add/"+$("#id_procedure-computer").val()
             });
         }
         else
