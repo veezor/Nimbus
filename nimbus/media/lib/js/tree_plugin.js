@@ -92,11 +92,11 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
                 else
                 {
                     // creates input hidden for validation
-                    var input_path = "<input type='hidden' value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-path' name='filepath_set-"+counter+"-path' />";
-                    var input_fileset = "<input type='hidden'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-fileset' name='filepath_set-"+counter+"-fileset' />";
-                    var input_id = "<input type='hidden'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-id' name='filepath_set-"+counter+"-id' />";
+                    var input_path = "<input type='text' value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-path' name='filepath_set-"+counter+"-path' />";
+                    var input_fileset = "<input type='text'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-fileset' name='filepath_set-"+counter+"-fileset' />";
+                    var input_id = "<input type='text'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-id' name='filepath_set-"+counter+"-id' />";
                     counter++;
-                    $('.submit').after(input_path);
+                    $('#submit_fileset').after(input_path);
 
                     $("#id_filepath_set-TOTAL_FORMS").val(counter);
                     $("#id_filepath_set-INITIAL_FORMS").val(counter);
@@ -128,7 +128,7 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
         input_type = 'checkbox';
     }
     if (!input_name) {
-        input_name = 'path';
+        input_name = 'path[]';
     }
     attributes = {path: root_path};
     

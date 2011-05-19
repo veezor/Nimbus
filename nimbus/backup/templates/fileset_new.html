@@ -12,7 +12,7 @@ $(document).ready(function(){
         $.each($('#fileset_new').serializeArray(), function(i, field) {
             dataString += field.name+"="+field.value+"&";
         });
-        //alert (dataString);
+        alert (dataString);
         $.ajax({
             type: "POST",
             url: "/backup/filesets/add",
@@ -59,7 +59,7 @@ $(document).ready(function(){
                 <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
             </p>
             <p>
-                <input type="button" class="submit mid" value="Salvar" />
+                <input type="button" class="submit mid" id="submit_fileset" value="Salvar" />
             </p>
             <input type="hidden" name="filepath_set-TOTAL_FORMS" value="" id="id_filepath_set-TOTAL_FORMS" />
             <input type="hidden" name="filepath_set-INITIAL_FORMS" value="" id="id_filepath_set-INITIAL_FORMS" />
