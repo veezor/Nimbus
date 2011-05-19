@@ -1,8 +1,0 @@
-Client {
-    Name = c02acdb830f74593a242215d92717830_computer
-    Catalog = MyCatalog
-    AutoPrune = yes
-    Address = 192.168.1.109
-    FDPort = 9102
-    password = "isO1gYFdWfoZcpmj9YWo"
-}

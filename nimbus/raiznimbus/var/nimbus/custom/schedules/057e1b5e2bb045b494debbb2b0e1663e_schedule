@@ -1,8 +1,0 @@
-Schedule {
-    Name = "057e1b5e2bb045b494debbb2b0e1663e_schedule"
-    
-    Run = hourly at 00:00
-    
-    Run = daily at 00:00
-    
-}
