@@ -2,8 +2,36 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68a30a17-c4b8-48c8-8d77-2a66c0f03572" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/etc/nimbus/logging.conf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/etc/nimbus/ssl.conf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/35eb1129955f448b816bb59bb76cef31_computer" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/71e6f87d0b51459692dcd7293b0095b5_computer" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/8ba54d146c84497fb10143167e3c67c0_computer" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/c00d0da483b147dc92278da2fd0f3cf9_computer" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/computers/c02acdb830f74593a242215d92717830_computer" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/config/bacula-dir.conf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/config/bacula-sd.conf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/config/bconsole.conf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/devices/06b1b3add18041bbade3ed57d8ad2dab_device" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/devices/22fe3479ffd046229c209b2c5a6b997d_device" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/devices/73b80571d5214c5eb8244c27eac60f73_device" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/devices/756246b133f4460fa3807006f42a58a4_device" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/filesets/bed3be393f394515a45b03aeb0e65ae7_fileset" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/filesets/c2a564252fa1419c996e27944752ebcc_fileset" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/jobs/05429b46f5394da889ec04828040664f_procedure" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/jobs/1f3f9a36797d4c2aae22ffced2128781_procedure" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/jobs/restorejob" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/pools/3b7cf640d5584f52b801d4d70e468813_pool" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/pools/c704c674e46b4217a168b893c7f08522_pool" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/schedules/057e1b5e2bb045b494debbb2b0e1663e_schedule" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/storages/4c14e01968b14010a55fa3b22652ba33_storage" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/nimbus/raiznimbus/var/nimbus/custom/storages/68bb18edcefc4a519d5c2a7bfe01d4f8_storage" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/nimbus.iml" afterPath="$PROJECT_DIR$/.idea/nimbus.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nimbus/filesets/urls.py" afterPath="$PROJECT_DIR$/nimbus/filesets/urls.py" />
     </list>
     <ignored path="nimbus.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,53 +53,7 @@
     <favorites_list name="nimbus" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="backup_add.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/backup_add.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="51" selection-start="244" selection-end="244" vertical-scroll-proportion="5.625">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="fileset_new.html" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/fileset_new.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="22" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="backup.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/nimbus/media/js/backup.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="57" selection-start="330" selection-end="330" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/nimbus/backup/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="51" selection-start="339" selection-end="339" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/nimbus/backup/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="55" column="27" selection-start="1963" selection-end="1963" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -162,59 +144,19 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nimbus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nimbus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nimbus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="backup" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nimbus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nimbus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nimbus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="backup" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Favorites" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="recentsLimit" value="5" />
-    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -297,22 +239,18 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="$USER_HOME$/nimbusenv/bin/python" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <module name="nimbus" />
       <option name="port" value="8000" />
       <option name="host" value="" />
       <option name="additionalOptions" value="" />
-      <option name="browserUrl" value="http://127.0.0.1:8000/" />
+      <option name="browserUrl" value="" />
       <option name="runTestServer" value="false" />
       <option name="runNoReload" value="false" />
       <option name="useCustomRunCommand" value="false" />
       <option name="customRunCommand" value="" />
-      <RunnerSettings RunnerId="PyDebugRunner" />
-      <RunnerSettings RunnerId="PythonRunner" />
-      <ConfigurationWrapper RunnerId="PyDebugRunner" />
-      <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
     <list size="1">
@@ -370,10 +308,8 @@
     <frame x="0" y="-2" width="1280" height="802" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32890856" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32852563" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32448378" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5943953" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24940239" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24143426" sideWeight="0.40560472" order="0" side_tool="false" content_ui="tabs" />
@@ -383,6 +319,8 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5943953" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32890856" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -448,114 +386,90 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/schedule_new.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="58" selection-start="331" selection-end="331" vertical-scroll-proportion="-3.75">
-          <folding />
-        </state>
+        <state line="6" column="58" selection-start="331" selection-end="331" vertical-scroll-proportion="-3.75" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/media/js/schedules.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="9" selection-start="1834" selection-end="1834" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="55" column="9" selection-start="1834" selection-end="1834" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/media/css/base_async.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="6" selection-start="6" selection-end="6" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nimbus/media/js/backup.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="57" selection-start="330" selection-end="330" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="6" selection-start="6" selection-end="6" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/setup.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nimbus/backup/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="51" selection-start="339" selection-end="339" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/shared/fields.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="6" selection-start="851" selection-end="851" vertical-scroll-proportion="0.33333334">
-          <folding />
-        </state>
+        <state line="33" column="6" selection-start="851" selection-end="851" vertical-scroll-proportion="0.33333334" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/filesets/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="28" selection-start="863" selection-end="863" vertical-scroll-proportion="0.384">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/backup_add.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="51" selection-start="244" selection-end="244" vertical-scroll-proportion="5.625">
-          <folding />
-        </state>
+        <state line="26" column="28" selection-start="863" selection-end="863" vertical-scroll-proportion="0.384" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/backup_create.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.6836735">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.6836735" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/media/lib/css/facebox.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="22" selection-start="276" selection-end="284" vertical-scroll-proportion="-0.26025236">
-          <folding>
-            <marker date="1305814596000" expanded="true" signature="-1:-1" placeholder="{...}" />
-          </folding>
-        </state>
+        <state line="7" column="22" selection-start="276" selection-end="284" vertical-scroll-proportion="-0.26025236" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/media/lib/js/facebox.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.368">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.368" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/backup/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="0" selection-start="1687" selection-end="1687" vertical-scroll-proportion="0.53431374">
-          <folding />
-        </state>
+        <state line="49" column="0" selection-start="1687" selection-end="1687" vertical-scroll-proportion="0.53431374" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="23" selection-start="279" selection-end="279" vertical-scroll-proportion="0.39412674">
-          <folding />
-        </state>
+        <state line="17" column="23" selection-start="279" selection-end="279" vertical-scroll-proportion="0.39412674" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/backup/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="27" selection-start="1963" selection-end="1963" vertical-scroll-proportion="0.0">
+        <state line="55" column="27" selection-start="1963" selection-end="1963" vertical-scroll-proportion="0.21174653">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/fileset_new.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="22" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0">
+        <state line="21" column="46" selection-start="801" selection-end="801" vertical-scroll-proportion="0.505618">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/backup/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="51" selection-start="339" selection-end="339" vertical-scroll-proportion="0.23183925">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/media/js/backup.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="57" selection-start="330" selection-end="330" vertical-scroll-proportion="0.023183925">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nimbus/backup/templates/backup_add.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="51" selection-start="244" selection-end="244" vertical-scroll-proportion="0.024077047">
           <folding />
         </state>
       </provider>
