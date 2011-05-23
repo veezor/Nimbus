@@ -13,6 +13,13 @@
 {% block page %}
 <!-- TODO: Prever um agendamento já definido. -->
 <div class="block withsidebar" id="schedule" style="margin: 0;">
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="message info">
+            <p>{{ msg }}</p>
+        </div>
+        {% endfor %}
+    {% endif %}
     <div class="block_head">
         <div class="bheadl"></div>
         <div class="bheadr"></div>
