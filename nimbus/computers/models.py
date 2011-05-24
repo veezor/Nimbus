@@ -11,6 +11,7 @@ from django.db.models.signals import post_save, post_delete, pre_save
 
 import keymanager
 import securexmlrpc
+from pybacula import statuscheck
 
 from nimbus.bacula.models import Job, Client
 from nimbus.base.models import BaseModel
@@ -73,6 +74,13 @@ class Computer(BaseModel):
                                     unique=True, editable=False)
 
 
+
+    @property
+    def status_service(self):
+        config = Config.get_instance()
+        return statuscheck.check_client_service( self.address,
+                                                 config.director_name,
+                                                 self.password )
 
     @property
     def auth_token(self):

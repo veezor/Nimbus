@@ -10,7 +10,7 @@ from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 
 
-from pybacula import configcheck
+from pybacula import configcheck, statuscheck
 
 from nimbus.base.models import BaseModel
 from nimbus.shared import utils, signals, fields
@@ -62,6 +62,14 @@ class Storage(BaseModel):
         # 
         # sorted(computers, key=lambda computer: computer.name)
         return computers
+
+
+    @property
+    def service_status(self):
+        config = Config.get_instance()
+        return statuscheck.check_storage_service( self.address,
+                                                  config.director_name,
+                                                  self.password )
 
 
 class Device(BaseModel):

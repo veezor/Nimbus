@@ -8,14 +8,15 @@ import tempfile
 import xmlrpclib
 
 from django.conf import settings
-from django.db import connections
-from django.db.models import Sum
 
 import pybacula
-from pybacula import BaculaCommandLine, configcheck
+from pybacula import BaculaCommandLine, configcheck, statuscheck
 
 from nimbus.shared import utils
 from nimbus.bacula import models
+
+
+#from nimbus.config.models import Config in function director_status. loop
 
 
 try:
@@ -187,3 +188,10 @@ class BaculaLock(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         unlock_bacula_and_start()
 
+
+
+def director_status():
+    from nimbus.config.models import Config
+    config = Config.get_instance()
+    return statuscheck.check_director_service( config.director_address,
+                                               config.director_password )
