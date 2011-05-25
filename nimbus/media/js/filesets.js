@@ -13,7 +13,7 @@ $(document).ready(function(){
         update_tree('/', get_tree_path);
         return false;
     });
-
+    
     $(".tree a").click(function() {
         if (!document.getElementsByClassName('wait')[0]) {
             update_tree($(this).attr("path"), get_tree_path);

@@ -15,6 +15,8 @@ from nimbus.schedules.models import Schedule as Schedule_obj
 
 
 def add(request):
+    if request.method == "POST":
+        pass
     lforms = [forms.ScheduleForm(prefix="schedule")]
     schedule_forms = forms.make_schedule_form_container()
     schedule_forms.get()
@@ -24,7 +26,10 @@ def add(request):
                'formset':schedule_forms,
                'days':days_range,
                'end_days':end_days_range,
-               'weekdays':weekdays_range}
+               'weekdays':weekdays_range,
+               'messages': {
+                   'Mensagem teste':u'Mensagem teste'
+               }}
     return render_to_response('add_schedules.html', content)
 
 def edit(request, object_id):
@@ -176,7 +181,11 @@ def schedule_new(request):
                    'formset':schedule_forms,
                    'days':days_range,
                    'end_days':end_days_range,
-                   'weekdays':weekdays_range}
+                   'weekdays':weekdays_range,
+                   'messages':{
+                       'msg1':u'Mensagem teste',
+                       'msg2':u'Mensagem teste 2'
+                   }}
         return render_to_response("schedule_new.html", content)
 
 

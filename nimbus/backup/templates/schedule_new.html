@@ -1,54 +1,11 @@
-{% extends "base.html" %}
+{% extends "base_async.html" %}
 {% block headtags %}
     
 <link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
-<link rel="stylesheet" type="text/css" href="/media/lib/css/stye.css" />
 <link rel="stylesheet" type="text/css" href="/media/lib/css/style.css" />
+<script type="text/javascript" src="/media/js/backup.js"></script>
 <script type="text/javascript" src="/media/js/schedules.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-    $('select').addClass("style-select");
-    $(".submit").click(function(){
-        var dataString = "";
-        var month_days = "";
-        var week_days = "";
-        $.each($('#schedule_new').serializeArray(), function(i, field) {
-            if (field.name == 'schedule.monthly.day')
-            {
-                month_days += field.value+",";
-            }
-            else if (field.name == 'schedule.weekly.day')
-            {
-                week_days += field.value+",";
-            }
-            else
-            {
-                dataString += field.name+"="+field.value+"&";
-            }
-        });
-        dataString += "schedule.monthly.day="+month_days+"&schedule.weekly.day="+week_days;
-        alert (dataString);
-        $.ajax({
-            type: "POST",
-            url: "/backup/schedules/add",
-            data: dataString,
-            success: function() {
-                //$('#schedule').hide();
-                //$("#cboxContent").html("<p>Message</p>");
-                alert("Cadastro efetuado com sucesso!");
-                $("#cboxOverlay").hide();
-                $("#colorbox").hide();
-            }
-        });
-    });
-    $("#header").hide();
-    $("#footer").hide();
-});
-</script>
 <style type="text/css">
-/*body, #hld, .wrapper{margin:0 auto;padding:0;}*/
-label{display: block;}
-.success{display: none;}
 .schedule_activate{float: left; margin-right: 4px;}
 </style>
 {% endblock %}
@@ -56,13 +13,19 @@ label{display: block;}
 {% block page %}
 <!-- TODO: Prever um agendamento já definido. -->
 <div class="block withsidebar" id="schedule" style="margin: 0;">
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="message info">
+            <p>{{ msg }}</p>
+        </div>
+        {% endfor %}
+    {% endif %}
     <div class="block_head">
         <div class="bheadl"></div>
         <div class="bheadr"></div>
 
         <h2>{{ title }}</h2>
     </div>		<!-- .block_head ends -->
-    <div class="success">Cadastro efetuado com sucesso</div>
     <div class="block_content">
         <form name="schedule_new" action="/backup/schedules/add" method="post" id="schedule_new">
         <div id="error-box">
