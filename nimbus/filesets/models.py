@@ -28,6 +28,8 @@ class FilePath(models.Model):
     fileset = models.ForeignKey(FileSet, related_name="files", null=False,
                                  blank=False)
 
+    def __unicode__(self):
+        return u"%s - %s" % (self.fileset.name, self.path)
 
 def update_fileset_file(fileset):
     """FileSet update filesets to a procedure instance"""
