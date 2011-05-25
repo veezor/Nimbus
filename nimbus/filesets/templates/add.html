@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block headtags %}
+<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript" src="/media/js/filesets.js"></script>
+<script type="text/javascript">
+GLOBAL_COUNTER = 0;
+$(document).ready(function(){
+    $(".submit").click(function(){
+        //alert("submit");
+        // submit forms using ajax
+        var dataString = "computer_id={{ computer_id }}&";
+        $.each($('#fileset_new').serializeArray(), function(i, field) {
+            dataString += "&"+field.name+"="+field.value;
+        });
+        alert (dataString);
+        $.ajax({
+            type: "POST",
+            url: "/filesets/add/",
+            data: dataString,
+            success: function() {
+                alert("Cadastro efetuado com sucesso!");
+                // gambiarra, tem que melhorar
+                $("#cboxOverlay").hide();
+                $("#colorbox").hide();
+            }
+        });
+    });
+    $("#header").hide();
+    $("#footer").hide();
+});
+</script>
+
+{% endblock %}
+
+{% block page %}
+<div id="fileset" class="block">
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>		<!-- .block_head ends -->
+	<div class="block_content">
+    <input type="hidden" value="{{ computer_id }}" id="computer_id" />
+
+        <form action="" method="post" name="fileset_new" id="fileset_new">
+            {% if forms.errors %}
+            <ul class="errorlist">
+                <li>{{ errors.fileset_name }}</li>
+            </ul>
+            {% endif %}
+            {% for form in forms %}
+            <p>
+                <label>{{ form.name.label }}:</label>{{ form.name }}
+            </p>
+            {% endfor %}
+            <p>
+                <div id="mensagem_erro_fileset"></div>
+
+                <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
+            </p>
+            <p>
+                <input type="button" class="submit mid" value="Salvar" />
+            </p>
+            <input type="hidden" name="filepath_set-TOTAL_FORMS" value="" id="id_filepath_set-TOTAL_FORMS" />
+            <input type="hidden" name="filepath_set-INITIAL_FORMS" value="" id="id_filepath_set-INITIAL_FORMS" />
+            <input type="hidden" name="filepath_set-MAX_NUM_FORMS" value="" id="id_filepath_set-MAX_NUM_FORMS" />
+        </form>
+
+	</div>		<!-- .block_content ends -->
+	<div class="bendl"></div>
+	<div class="bendr"></div>
+</div>		<!-- .block ends -->
+
+{% endblock %}

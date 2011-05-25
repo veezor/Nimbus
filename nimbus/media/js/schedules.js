@@ -18,10 +18,9 @@ $(document).ready(function(){
             }
         });
         dataString += "schedule.monthly.day="+month_days+"&schedule.weekly.day="+week_days;
-        alert (dataString);
         $.ajax({
             type: "POST",
-            url: "/schedules/add",
+            url: "/schedules/add/",
             data: dataString,
             success: function() {
                 alert("Cadastro efetuado com sucesso!");

@@ -8,7 +8,7 @@ from nimbus.computers.models import Computer
 from django.shortcuts import render_to_response
 import simplejson
 from nimbus.backup import forms
-from nimbus.schedules.views import schedule_new
+from nimbus.schedules.views import add_schedule
 
 
 def render(request, object_id=0):

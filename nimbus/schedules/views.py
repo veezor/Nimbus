@@ -14,23 +14,24 @@ from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_ran
 from nimbus.schedules.models import Schedule as Schedule_obj
 
 
-def add(request):
-    if request.method == "POST":
-        pass
-    lforms = [forms.ScheduleForm(prefix="schedule")]
-    schedule_forms = forms.make_schedule_form_container()
-    schedule_forms.get()
-    content = {'title':u'Criar Agendamento',
-               'levels':levels,
-               'forms':lforms,
-               'formset':schedule_forms,
-               'days':days_range,
-               'end_days':end_days_range,
-               'weekdays':weekdays_range,
-               'messages': {
-                   'Mensagem teste':u'Mensagem teste'
-               }}
-    return render_to_response('add_schedules.html', content)
+# def add(request):
+#     if request.method == "POST":
+#         print "#############################################################"
+#         pass
+#     lforms = [forms.ScheduleForm(prefix="schedule")]
+#     schedule_forms = forms.make_schedule_form_container()
+#     schedule_forms.get()
+#     content = {'title':u'Criar Agendamento',
+#                'levels':levels,
+#                'forms':lforms,
+#                'formset':schedule_forms,
+#                'days':days_range,
+#                'end_days':end_days_range,
+#                'weekdays':weekdays_range,
+#                'messages': {
+#                    'Mensagem teste':u'Mensagem teste'
+#                }}
+#     return render_to_response('add_schedules.html', content)
 
 def edit(request, object_id):
     print object_id
@@ -84,16 +85,19 @@ def insert_schedule(POST_data):
     schedule_form = forms.ScheduleForm(schedule_name, prefix="schedule")
     if schedule_form.is_valid():
         new_schedule = schedule_form.save()
+        print "deu certo"
         return new_schedule
     else:
         # tratar na interface
-        print schedule_form.errors
-        return False
+        # messages.warning(request, procedure_form.errors)
+        # return render_to_response(request, "schedules_new.html", locals())
+        print "nao deu certo"
+        return schedule_form.errors
 
 def insert_monthly(data, schedule):
     if data.has_key('schedule.monthly.active'):
         days = data['schedule.monthly.day']
-        if days[-1] == ",":
+        if (len(days) > 1) and (days[-1] == ","):
             days = days[0:-1]
         month_form = forms.MonthlyForm({'schedule': schedule.id,
                                         'days': days,
@@ -101,12 +105,12 @@ def insert_monthly(data, schedule):
                                         'level': data['month-level']})
         if month_form.is_valid():
             month_form.save()
-            return True
+            return u"Agendamento mensal adicionado com sucesso"
         else:
             # tratar na interface
-            print month_form.errors
+            return month_form.errors
     else:
-        return False
+        return None
 
 def insert_weekly(data, schedule):
     if data.has_key('week.active'):
@@ -119,12 +123,12 @@ def insert_weekly(data, schedule):
                                       'level': data['week-level']})
         if week_form.is_valid():
             week_form.save()
-            return True
+            return u"Agendamento semanal adicionado com sucesso"
         else:
             # tratar na interface
-            print week_form.errors
+            return week_form.errors
     else:
-        return False
+        return None
 
 def insert_daily(data, schedule):
     if data.has_key('schedule.dayly.active'):
@@ -133,12 +137,12 @@ def insert_daily(data, schedule):
                                     'level': data['day-level']})
         if day_form.is_valid():
             day_form.save()
-            return True
+            return u"Agendamento diário adicionado com sucesso"
         else:
             # tratar na interface
-            print day_form.errors
+            return day_form.errors
     else:
-        return False
+        return None
         
 def insert_hourly(data, schedule):
     if data.has_key('schedule.hourly.active'):
@@ -147,81 +151,83 @@ def insert_hourly(data, schedule):
                                     'level': data['hour-level']})
         if hour_form.is_valid():
             hour_form.save()
-            return True
+            return u"Agendamento de hora em hora adicionado com sucesso"
         else:
             # tratar na interface
-            print hour_form.errors
+            return hour_form.errors
     else:
-        return False
+        return None
 
-def schedule_new(request):
+def add_schedule(request):
+    print "##################################################################"
+    lforms = [forms.ScheduleForm(prefix="schedule")]
+    schedule_forms = forms.make_schedule_form_container()
+    schedule_forms.get()
+    days_range = range(1, 32)
+    weekdays_range = {0:'Domingo',
+                      1:'Segunda',
+                      2:'Terca',
+                      3:'Quarta',
+                      4:'Quinta',
+                      5:'Sexta',
+                      6:'Sabado'}
+    end_days_range = [5, 10, 15, 20, 25, 30]
+    content = {'title':u'Criar Agendamento',
+               'forms':lforms,
+               'formset':schedule_forms,
+               'days':days_range,
+               'end_days':end_days_range,
+               'weekdays':weekdays_range,
+               # 'messages':[u'Mensagem teste',
+               #             u'Mensagem teste 2']
+              }
     if request.method == "POST":
+        print request.POST
         data = request.POST
         new_schedule = insert_schedule(data)
         if new_schedule:
-            insert_monthly(data, new_schedule)
-            insert_weekly(data, new_schedule)
-            insert_daily(data, new_schedule)
-            insert_hourly(data, new_schedule)
-    else:
-        lforms = [forms.ScheduleForm(prefix="schedule")]
-        schedule_forms = forms.make_schedule_form_container()
-        schedule_forms.get()
-        days_range = range(1, 32)
-        weekdays_range = {0:'Domingo',
-                          1:'Segunda',
-                          2:'Terca',
-                          3:'Quarta',
-                          4:'Quinta',
-                          5:'Sexta',
-                          6:'Sabado'}
-        end_days_range = [5, 10, 15, 20, 25, 30]
-        content = {'title':u'Criar Agendamento',
-                   'forms':lforms,
-                   'formset':schedule_forms,
-                   'days':days_range,
-                   'end_days':end_days_range,
-                   'weekdays':weekdays_range,
-                   'messages':{
-                       'msg1':u'Mensagem teste',
-                       'msg2':u'Mensagem teste 2'
-                   }}
-        return render_to_response("schedule_new.html", content)
+            messages = []
+            messages.append(insert_monthly(data, new_schedule))
+            messages.append(insert_weekly(data, new_schedule))
+            messages.append(insert_daily(data, new_schedule))
+            messages.append(insert_hourly(data, new_schedule))
+            content["messages"] = messages
+    return render_to_response("add_schedule.html", content)
 
 
-def fileset_new(request, object_id):
-    # apenas teste, remover em modo de produção
-    if request.method == "POST":
-        print request.POST
-    lforms = [forms.FileSetForm(prefix="fileset")]
-    lformsets = [forms.FilePathForm(prefix="filepath")]
-    formset = forms.FilesFormSet()
-    content = {'title':u'Criar Sistema de Arquivos',
-               'forms':lforms,
-               'formsets':lformsets,
-               'computer_id':object_id,
-               'formset' : formset}
-    return render_to_response("fileset_new.html", content)
+# def fileset_new(request, object_id):
+#     # apenas teste, remover em modo de produção
+#     if request.method == "POST":
+#         print request.POST
+#     lforms = [forms.FileSetForm(prefix="fileset")]
+#     lformsets = [forms.FilePathForm(prefix="filepath")]
+#     formset = forms.FilesFormSet()
+#     content = {'title':u'Criar Sistema de Arquivos',
+#                'forms':lforms,
+#                'formsets':lformsets,
+#                'computer_id':object_id,
+#                'formset' : formset}
+#     return render_to_response("fileset_new.html", content)
 
 
-def get_tree(request):
-    if request.method == "POST":
-        try:
-            path = request.POST['path']
-            computer_id = request.POST['computer_id']
-            try:
-                computer = Computer.objects.get(id=computer_id)
-                files = computer.get_file_tree(path)
-                response = simplejson.dumps(files)
-            except socket.error, error:
-                response = simplejson.dumps({"type" : "error",
-                                             "message" : "Impossível conectar ao cliente"})
-            except Computer.DoesNotExist, error:
-                response = simplejson.dumps({"type" : "error",
-                                             "message" : "Computador não existe"})
-            return HttpResponse(response, mimetype="text/plain")
-        except Exception:
-            traceback.print_exc()
+# def get_tree(request):
+#     if request.method == "POST":
+#         try:
+#             path = request.POST['path']
+#             computer_id = request.POST['computer_id']
+#             try:
+#                 computer = Computer.objects.get(id=computer_id)
+#                 files = computer.get_file_tree(path)
+#                 response = simplejson.dumps(files)
+#             except socket.error, error:
+#                 response = simplejson.dumps({"type" : "error",
+#                                              "message" : "Impossível conectar ao cliente"})
+#             except Computer.DoesNotExist, error:
+#                 response = simplejson.dumps({"type" : "error",
+#                                              "message" : "Computador não existe"})
+#             return HttpResponse(response, mimetype="text/plain")
+#         except Exception:
+#             traceback.print_exc()
 
 
 

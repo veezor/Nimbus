@@ -1,7 +1,7 @@
 // open async windows
 $(document).ready(function(){
     $('.schedules').click(function(){
-        jQuery.facebox({ ajax: '/backup/schedules/add' });
+        jQuery.facebox({ ajax: '/schedules/add' });
         return false;
     });
     $('.filesets').click(function(){

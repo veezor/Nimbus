@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import create_update
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
+from django.template import RequestContext
 
 from pybacula import BConsoleInitError
 
@@ -44,9 +45,7 @@ def do_add(request):
            messages.success(request, "Procedimento de backup criado com sucesso")
            return redirect('nimbus.procedures.views.list')
        else:
-           # tratar na interface
-           print procedure_form.errors
-           messages.warning(request, "Falha ao salvar as informações")
+           messages.warning(request, procedure_form.errors)
            return render_to_response(request, "backup_add.html", locals())
 #   else:
        #NOT GET OR POST
