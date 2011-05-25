@@ -44,6 +44,8 @@ def do_add(request):
            messages.success(request, "Procedimento de backup criado com sucesso")
            return redirect('nimbus.procedures.views.list')
        else:
+           # tratar na interface
+           print procedure_form.errors
            messages.warning(request, "Falha ao salvar as informações")
            return render_to_response(request, "backup_add.html", locals())
 #   else:

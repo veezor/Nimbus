@@ -81,6 +81,8 @@ def insert_schedule(POST_data):
         new_schedule = schedule_form.save()
         return new_schedule
     else:
+        # tratar na interface
+        print schedule_form.errors
         return False
 
 def insert_monthly(data, schedule):
@@ -95,6 +97,9 @@ def insert_monthly(data, schedule):
         if month_form.is_valid():
             month_form.save()
             return True
+        else:
+            # tratar na interface
+            print month_form.errors
     else:
         return False
 
@@ -110,6 +115,9 @@ def insert_weekly(data, schedule):
         if week_form.is_valid():
             week_form.save()
             return True
+        else:
+            # tratar na interface
+            print week_form.errors
     else:
         return False
 
@@ -121,6 +129,9 @@ def insert_daily(data, schedule):
         if day_form.is_valid():
             day_form.save()
             return True
+        else:
+            # tratar na interface
+            print day_form.errors
     else:
         return False
         
@@ -132,6 +143,9 @@ def insert_hourly(data, schedule):
         if hour_form.is_valid():
             hour_form.save()
             return True
+        else:
+            # tratar na interface
+            print hour_form.errors
     else:
         return False
 

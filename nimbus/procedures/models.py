@@ -27,7 +27,7 @@ from nimbus.shared import utils, enums, signals, fields
 # para Procedures
 class Profile(models.Model):
 
-    name = models.CharField(max_length=255 ,unique=True, blank=True, null=False)
+    name = models.CharField(max_length=255, unique=True, blank=True, null=False)
     # storage = models.ForeignKey(Storage, null=False, blank=False)
     # fileset = models.ForeignKey(FileSet, null=False, blank=False)
     # schedule = models.ForeignKey(Schedule, null=False, blank=False)
@@ -42,7 +42,7 @@ class Procedure(BaseModel):
     pool = models.ForeignKey(Pool, blank=False, null=False, editable=True)
     offsite_on = models.BooleanField(default=False, blank=False, null=False, editable=is_active(Offsite))
     active = models.BooleanField(default=True, blank=False, null=False)
-    retention_time = models.CharField(max_length=255, null=False, blank=False)
+#    retention_time = models.CharField(max_length=255, null=False, blank=False)
     schedule = models.ForeignKey(Schedule, related_name='schedule')
     fileset = models.ForeignKey(FileSet, related_name='fileset')
     storage = models.ForeignKey(Storage, null=False, blank=False)
@@ -52,6 +52,9 @@ class Procedure(BaseModel):
 #        verify = True
 #    else:
 #        verify = False
+
+    def retention_time(self):
+        return self.pool.retention_time
 
     def fileset_bacula_name(self):
         return self.fileset.bacula_name
