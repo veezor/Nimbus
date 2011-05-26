@@ -277,7 +277,6 @@
             "uuid": 16,
             "schedule": 1,
 			"storage": 1,
-            "retention_time": "30",
             "fileset": 1,
             "computer": 1,
 			"pool": 1,

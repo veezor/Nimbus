@@ -13,9 +13,9 @@ class ProfileForm(forms.ModelForm):
 
 
 class ProcedureForm(forms.ModelForm):
-   # name = forms.CharField(label=u"Nome do Procedimento", widget=forms.widgets.TextInput(attrs={'class': 'text'}))
-   # offsite_on = forms.BooleanField(label=u"Ativar Backup Offsite", required=False)
-   # retention_time = forms.CharField(label=u"Tempo de Retenção (em dias)", widget=forms.widgets.TextInput(attrs={'class': 'text small'}))
 
-   class Meta:
-       model = Procedure
+    retention_time = forms.IntegerField(min_value=1, max_value=3650)
+
+    class Meta:
+        model = Procedure
+        exclude = ('pool')

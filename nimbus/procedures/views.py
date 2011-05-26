@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 
-
+from copy import copy
 from time import strftime, strptime
 
 from django.contrib.auth.decorators import login_required
@@ -19,6 +19,7 @@ from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
 from nimbus.filesets.models import FileSet
 from nimbus.offsite.models import Offsite
+from nimbus.pools.models import Pool
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
@@ -47,12 +48,23 @@ def add(request, object_id=0):
 def do_add(request):
    title = u"Adicionar backup"
    if request.method == "POST":
-       procedure_form = ProcedureForm(request.POST, prefix="procedure")
+       data = copy(request.POST)
+       pool = Pool(name="pool_",
+                   size=5242880,
+                   retention_time=data['procedure-retention_time'])
+       pool.save()
+       data[u'procedure-pool'] = u'%d' % pool.id
+       procedure_form = ProcedureForm(data, prefix="procedure")
        if procedure_form.is_valid():
-           procedure_form.save()
+           procedure = procedure_form.save(commit=False)
+           procedure.pool_id = pool.id
+           procedure.save()
+           pool.name = "pool_%s" % procedure.id
+           pool.save()
            messages.success(request, "Procedimento de backup criado com sucesso")
            return redirect('/procedures/list')
        else:
+           pool.delete()
            messages.warning(request, procedure_form.errors)
            return render_to_response(request, "add_procedure.html", locals())
 #   else:
@@ -76,7 +88,7 @@ def delete(request, object_id):
         procedure = Procedure.objects.get(id=object_id)
         procedure.delete()
         messages.success(request, u"Procedimento removido com sucesso.")
-        return redirect('nimbus.procedures.views.list')
+        return redirect('/procedures/list')
     else:
         procedure = Procedure.objects.get(id=object_id)
         remove_name = procedure.name
