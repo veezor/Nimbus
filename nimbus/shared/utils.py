@@ -63,10 +63,8 @@ def bytes_to_mb(size):
 def random_password(size=20):
     """Generates random password of a given size."""
     return ''.join([choice(string.letters + string.digits) for i in range(size)])
-    
-    
 
-
+random_name = random_password
 
 ###
 ###   File Handling Specific Definitions
