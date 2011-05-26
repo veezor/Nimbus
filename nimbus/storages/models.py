@@ -42,12 +42,13 @@ class Storage(BaseModel):
         if self.address == get_nimbus_address():
             return True
         return False
-        
+
 
     def __unicode__(self):
         return u"(%s:%s)" % (
             self.name,
             self.address)
+    
     
     @property
     def get_computers(self):
@@ -70,6 +71,11 @@ class Storage(BaseModel):
         return statuscheck.check_storage_service( self.address,
                                                   config.director_name,
                                                   self.password )
+
+    @property
+    def auth_token(self):
+        return self.uuid.uuid_hex
+
 
 
 class Device(BaseModel):
@@ -124,23 +130,31 @@ def create_default_device(storage):
         storage.devices.add(device)
 
 
-def update_device_file(device):
+def update_device_baculasd_file(device):
 
-    if device.storage.active:
+    if device.storage.is_local and device.storage.active:
 
         name = device.bacula_name
-        storagename = device.storage.bacula_name
 
-        filename = path.join( settings.NIMBUS_DEVICES_DIR, 
+        filename = path.join( settings.NIMBUS_DEVICES_DIR,
                               name)
-        
-        storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
-                              storagename)
 
         render_to_file( filename,
                         "device",
                         name=name,
                         archive_device=device.archive)
+
+
+
+
+def update_device_director_file(device):
+
+
+    if device.storage.active:
+
+        storagename = device.storage.bacula_name
+        storagefile = path.join( settings.NIMBUS_STORAGES_DIR,
+                              storagename)
 
         render_to_file( storagefile,
                         "storages",
@@ -150,7 +164,8 @@ def update_device_file(device):
 
 def update_storage_devices(storage):
     for device in storage.devices.all():
-        update_device_file(device)
+        update_device_baculasd_file(device)
+        update_device_director_file(device)
 
 
 
@@ -187,6 +202,7 @@ signals.connect_on( update_storage_file, Storage, post_save)
 signals.connect_on( update_storage_devices, Storage, post_save)
 signals.connect_on( restart_bacula_storage, Storage, post_save)
 signals.connect_on( create_default_device, Storage, post_save)
-signals.connect_on( update_device_file, Device, post_save)
+signals.connect_on( update_device_baculasd_file, Device, post_save)
+signals.connect_on( update_device_director_file, Device, post_save)
 signals.connect_on( restart_bacula_storage, Device, post_save)
 signals.connect_on( remove_device_file, Device, post_delete)

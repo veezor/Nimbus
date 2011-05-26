@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import simplejson
+
 import systeminfo
 
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from django.views.generic import create_update
-from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
+from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
@@ -23,19 +25,29 @@ def new(request):
 
     if request.method == "POST":
         try:
+
+            config = Config.get_instance()
+
+            name = request.POST['name']
             password = request.POST['password']
+            address = request.META['REMOTE_ADDR']
+            director_name = config.director_name
 
-            name = request.META.get('REMOTE_HOST')
-            if not name:
-                name = u"Adicionado automaticamente"
 
-            storage =  Storage(name = name,
-                                address = request.META['REMOTE_ADDR'],
-                                password= request.POST['password'],
+            if Storage.objects.filter(address=address).count():
+                return HttpResponse(status=400)
+
+
+            storage =  Storage(name=name,
+                                address=address,
+                                password=password,
                                 description="Armazenamento identificado automaticamente")
             storage.save()
-
-            return HttpResponse(status=200)
+            json_response = simplejson.dumps(dict(token=storage.auth_token,
+                                                  director_name=director_name))
+            response = HttpResponse(json_response, mimetype="application/json", status=200)
+            response['Content-Disposition'] = 'attachment; filename="result.json"'
+            return response
         except (KeyError, IntegrityError), e:
             return HttpResponse(status=400)
 
