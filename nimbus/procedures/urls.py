@@ -4,25 +4,28 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('nimbus.procedures.views',
-    (r'^$', 'list'), 
-    (r'^list/$', 'list'), 
-    (r'^add/$', 'add'),
-    (r'^do_add/$', 'do_add'),
-    # (r'^(?P<object_id>\d+)/view/$', 'view'), 
-    (r'^(?P<object_id>\d+)/edit/$', 'edit'),
-    (r'^(?P<object_id>\d+)/delete/$', 'delete'),
-    (r'^(?P<object_id>\d+)/activate/$', 'activate'),
-    (r'^(?P<object_id>\d+)/deactivate/$', 'deactivate'),
-    
-    (r'^list_offsite/$', 'list_offsite'), 
-    (r'^(?P<object_id>\d+)/activate_offsite/$', 'activate_offsite'), 
-    (r'^(?P<object_id>\d+)/deactivate_offsite/$', 'deactivate_offsite'), 
-    
-    (r'^(?P<object_id>\d+)/execute/$', 'execute'),
-    
-    (r'^profile/$', 'profile_list'),
-    (r'^profile/list/$', 'profile_list'),
-    (r'^profile/add/$', 'profile_add'),
-    (r'^profile/(?P<object_id>\d+)/edit/$', 'profile_edit'),
-    (r'^profile/(?P<object_id>\d+)/delete/$', 'profile_delete'),
+                        (r'^add/(?P<object_id>\d+)$', 'add'),
+                        (r'^add/$', 'add'),
+                        (r'^do_add/$', 'do_add'),
+                        (r'^$', 'list_all'), 
+                        (r'^list/$', 'list_all'), 
+                        # (r'^add/$', 'add'),
+                        # (r'^do_add/$', 'do_add'),
+                        # # (r'^(?P<object_id>\d+)/view/$', 'view'), 
+                        # (r'^(?P<object_id>\d+)/edit/$', 'edit'),
+                        (r'^(?P<object_id>\d+)/delete/$', 'delete'),
+                        # (r'^(?P<object_id>\d+)/activate/$', 'activate'),
+                        # (r'^(?P<object_id>\d+)/deactivate/$', 'deactivate'),
+                        #     
+                        # (r'^list_offsite/$', 'list_offsite'), 
+                        # (r'^(?P<object_id>\d+)/activate_offsite/$', 'activate_offsite'), 
+                        # (r'^(?P<object_id>\d+)/deactivate_offsite/$', 'deactivate_offsite'), 
+                        #     
+                        # (r'^(?P<object_id>\d+)/execute/$', 'execute'),
+                        #     
+                        # (r'^profile/$', 'profile_list'),
+                        # (r'^profile/list/$', 'profile_list'),
+                        # (r'^profile/add/$', 'profile_add'),
+                        # (r'^profile/(?P<object_id>\d+)/edit/$', 'profile_edit'),
+                        # (r'^profile/(?P<object_id>\d+)/delete/$', 'profile_delete'),
 )

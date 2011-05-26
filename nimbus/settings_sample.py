@@ -204,7 +204,7 @@ INSTALLED_APPS = (
     'nimbus.offsite',
     'nimbus.wizard',
     'nimbus.computers',
-    'nimbus.backup',
+    # 'nimbus.backup',
     'nimbus.restore',
     'nimbus.system',
     'nimbus.security',

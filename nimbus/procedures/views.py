@@ -24,16 +24,24 @@ from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
 from nimbus.procedures.forms import ProfileForm, ProcedureForm
 
-
 @login_required
-def add(request):
-    extra_context = {'title': u"Adicionar procedimento"}
-    return create_update.create_object(request, 
-                                       model = Procedure,
-                                       form_class = form(Procedure),
-                                       template_name = "base_procedures.html",
-                                       extra_context = extra_context,
-                                       post_save_redirect = "/procedures/")
+def add(request, object_id=0):
+    lforms = [ProcedureForm(prefix="procedure", initial={'computer':object_id})]
+    content = {'title':u'Criar Backup',
+               'forms':lforms,
+               'computer_id':object_id}
+    return render_to_response(request, "add_procedure.html", content)
+
+
+# @login_required
+# def add(request):
+#     extra_context = {'title': u"Adicionar procedimento"}
+#     return create_update.create_object(request, 
+#                                        model = Procedure,
+#                                        form_class = form(Procedure),
+#                                        template_name = "base_procedures.html",
+#                                        extra_context = extra_context,
+#                                        post_save_redirect = "/procedures/")
 
 @login_required
 def do_add(request):
@@ -43,10 +51,10 @@ def do_add(request):
        if procedure_form.is_valid():
            procedure_form.save()
            messages.success(request, "Procedimento de backup criado com sucesso")
-           return redirect('nimbus.procedures.views.list')
+           return redirect('/procedures/list')
        else:
            messages.warning(request, procedure_form.errors)
-           return render_to_response(request, "backup_add.html", locals())
+           return render_to_response(request, "add_procedure.html", locals())
 #   else:
        #NOT GET OR POST
 #       pass
@@ -85,7 +93,7 @@ def execute(request, object_id):
     return redirect('nimbus.procedures.views.list')
 
 @login_required
-def list(request):
+def list_all(request):
     procedures = Procedure.objects.filter(id__gt=1)
     offsite = Offsite.get_instance()
     offsite_on = offsite.active
