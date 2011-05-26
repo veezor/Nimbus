@@ -8,7 +8,7 @@ $(document).ready(function(){
         return false;
     });
     
-    get_tree_path = "/backup/get_tree/";
+    get_tree_path = "/filesets/get_tree/";
     
     $('#update_tree').click(function()
     {

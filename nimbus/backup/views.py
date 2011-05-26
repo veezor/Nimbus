@@ -48,36 +48,36 @@ def profile_new(request):
 #                'weekdays':weekdays_range}
 #     return render_to_response("schedule_new.html", content)
 
-def fileset_new(request, object_id):
-     # just for test, must be removed in production mode
-     print "####################################################################"
-     if request.method == "POST":
-         print request.POST
-     lforms = [ forms.FileSetForm(prefix="fileset") ]
-     lformsets = [ forms.FilePathForm(prefix="filepath") ]
-     formset = forms.FilesFormSet()
-     content = {'title':u'Criar Sistema de Arquivos',
-                'forms':lforms,
-                'formsets':lformsets,
-                'computer_id':object_id,
-                'formset' : formset}
-     return render_to_response("fileset_new.html", content)
+# def fileset_new(request, object_id):
+#      # just for test, must be removed in production mode
+#      print "####################################################################"
+#      if request.method == "POST":
+#          print request.POST
+#      lforms = [ forms.FileSetForm(prefix="fileset") ]
+#      lformsets = [ forms.FilePathForm(prefix="filepath") ]
+#      formset = forms.FilesFormSet()
+#      content = {'title':u'Criar Sistema de Arquivos',
+#                 'forms':lforms,
+#                 'formsets':lformsets,
+#                 'computer_id':object_id,
+#                 'formset' : formset}
+#      return render_to_response("fileset_new.html", content)
 
-def get_tree(request):
-    if request.method == "POST":
-        try:
-            path = request.POST['path']
-            computer_id = request.POST['computer_id']
-            try:
-                computer = Computer.objects.get(id=computer_id)
-                files = computer.get_file_tree(path)
-                response = simplejson.dumps(files)
-            except socket.error, error:
-                response = simplejson.dumps({"type" : "error",
-                                             "message" : "Impossível conectar ao cliente"})
-            except Computer.DoesNotExist, error:
-                response = simplejson.dumps({"type" : "error",
-                                             "message" : "Computador não existe"})
-            return HttpResponse(response, mimetype="text/plain")
-        except Exception:
-            traceback.print_exc()
+# def get_tree(request):
+#     if request.method == "POST":
+#         try:
+#             path = request.POST['path']
+#             computer_id = request.POST['computer_id']
+#             try:
+#                 computer = Computer.objects.get(id=computer_id)
+#                 files = computer.get_file_tree(path)
+#                 response = simplejson.dumps(files)
+#             except socket.error, error:
+#                 response = simplejson.dumps({"type" : "error",
+#                                              "message" : "Impossível conectar ao cliente"})
+#             except Computer.DoesNotExist, error:
+#                 response = simplejson.dumps({"type" : "error",
+#                                              "message" : "Computador não existe"})
+#             return HttpResponse(response, mimetype="text/plain")
+#         except Exception:
+#             traceback.print_exc()

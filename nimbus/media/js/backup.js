@@ -7,7 +7,7 @@ $(document).ready(function(){
     $('.filesets').click(function(){
         if ($('#id_procedure-computer').val())
         {
-            jQuery.facebox({ ajax: '/backup/filesets/add/'+$('#id_procedure-computer').val() });
+            jQuery.facebox({ ajax: '/filesets/add/'+$('#id_procedure-computer').val() });
         }
         else
         {
@@ -23,7 +23,7 @@ $(document).ready(function(){
         $(this).parent().parent().find('.' + target).slideToggle();
     });
 
-    get_tree_path = "/backup/get_tree/";
+    get_tree_path = "/filesets/get_tree/";
 
     $('#update_tree').click(function()
     {

@@ -6,7 +6,7 @@ $(document).ready(function(){
         $(this).parent().parent().find('.' + target).slideToggle();
     });
     
-    get_tree_path = "/backup/get_tree/";
+    get_tree_path = "/filesets/get_tree/";
     
     $('#update_tree').click(function()
     {

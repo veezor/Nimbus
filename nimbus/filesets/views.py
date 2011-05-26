@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import traceback 
+import traceback
+import socket
+import simplejson
+from django.http import HttpResponse
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -11,7 +14,7 @@ from nimbus.shared.forms import form_mapping, form_from_model
 from nimbus.libs.db import Session
 from nimbus.shared import utils
 from nimbus.filesets import forms
-import pdb
+# import pdb
 
 def name_sugestion(computer_id):
     computer = Computer.objects.get(id=computer_id)
@@ -103,3 +106,22 @@ def edit(request, object_id):
                 messages.success(request, u"Conjunto de arquivos atualizado com sucesso.")
                 return redirect('nimbus.filesets.views.edit', object_id)
     return render_to_response(request, 'edit_filesets.html', content)
+
+def get_tree(request):
+    if request.method == "POST":
+        try:
+            path = request.POST['path']
+            computer_id = request.POST['computer_id']
+            try:
+                computer = Computer.objects.get(id=computer_id)
+                files = computer.get_file_tree(path)
+                response = simplejson.dumps(files)
+            except socket.error, error:
+                response = simplejson.dumps({"type" : "error",
+                                             "message" : "Impossível conectar ao cliente"})
+            except Computer.DoesNotExist, error:
+                response = simplejson.dumps({"type" : "error",
+                                             "message" : "Computador não existe"})
+            return HttpResponse(response, mimetype="text/plain")
+        except Exception:
+            traceback.print_exc()
