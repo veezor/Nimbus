@@ -1,11 +1,37 @@
 
 from django.db import models
 from nimbus.base.models import SingletonBaseModel
+from nimbus.storages.models import Storage
+
 
 MANAGED="MANAGED"
 STANDALONE="STANDALONE"
 REMOTE_STORAGE_STATES = ( MANAGED, STANDALONE )
 REMOTE_STORAGE_STATES_CHOICES = ( (x,x) for x in REMOTE_STORAGE_STATES )
+
+
+OK="OK"
+WARNNING="WARNNING"
+CRITICAL="CRITICAL"
+REMOTE_STORAGE_STATUS = ( OK, WARNNING, CRITICAL )
+REMOTE_STORAGE_STATUS_CHOICES = ( (x,x) for x in REMOTE_STORAGE_STATUS )
+
+
+
+
+class RemoteStorageStatus(models.Model):
+    storage = models.ForeignKey(Storage, null=False, unique=True)
+    state = models.CharField(max_length=255, default=STANDALONE,
+                             choices=REMOTE_STORAGE_STATES_CHOICES,
+                             blank=False, null=False, unique=False)
+
+    status = models.CharField(max_length=255, default=OK,
+                             choices=REMOTE_STORAGE_STATUS_CHOICES,
+                             blank=False, null=False, unique=False)
+
+    disk_usage = models.IntegerField(null=False,unique=False)
+    online = models.BooleanField(default=False, null=False,unique=False)
+
 
 
 class RemoteStorageConf(SingletonBaseModel):
