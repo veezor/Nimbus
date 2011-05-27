@@ -1,7 +1,15 @@
 
+
+
 from django.db import models
+from django.conf import settings
+
+
+import systeminfo
+
 from nimbus.base.models import SingletonBaseModel
 from nimbus.storages.models import Storage
+from nimbus.remotestorages import notifier
 
 
 MANAGED="MANAGED"
@@ -51,3 +59,18 @@ class RemoteStorageConf(SingletonBaseModel):
 
     def standalone_mode(self):
         return self.state == STANDALONE
+
+
+
+def send_disk_usage_alert():
+    disk_info = systeminfo.DiskInfo(path=settings.DEFAULT_BACULA_ARCHIVE)
+    usage = int(disk_info.get_usage())
+
+    config = RemoteStorageConf.get_instance()
+    if usage >= config.disk_critical_threshold:
+        notifier.DiskCriticalNotifier().notify()
+        return
+
+    if usage >= config.disk_warning_threshold:
+        notifier.DiskWarnningNotifier().notify()
+

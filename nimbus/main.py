@@ -31,6 +31,7 @@ from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
 from nimbus.shared.middlewares import LogSetup
+from nimbus.remotestorages.models import send_disk_usage_alert
 
 
 
@@ -134,6 +135,10 @@ class App(object):
                 break
 
 
+    def disk_usage_alert(self):
+        send_disk_usage_alert()
+
+
     def run(self):
         commands = {
             "--server-forever" : self.run_server,
@@ -143,7 +148,8 @@ class App(object):
             "--upload-now" : self.upload_volumes,
             "--shell" : self.shell,
             "--delete-volumes" : self.delete_volumes,
-            "--change-password" : self.change_password
+            "--change-password" : self.change_password,
+            "--disk-usage-alert" : self.disk_usage_alert
         }
 
         if len(sys.argv) > 1:

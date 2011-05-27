@@ -1,0 +1,3 @@
+#!/bin/sh
+su - nimbus -c '/var/www/nimbus --disk-usage-alert';
+
