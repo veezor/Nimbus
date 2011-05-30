@@ -29,15 +29,15 @@
                 </ul>
                 {% endif %}
                 <p><label>{{ field.label }}:</label><br />
-                    {{ field }}
-                    {% if field.label == 'Computer' %}
-                        <a href="/computers/add" class="side_link">Adicionar Computador</a>
-                    {% endif %}
                     {% if field.label == 'Schedule' %}
-                        <a href="/schedules/add" class="side_link schedules">Adicionar Agendamento</a>
+                        <a href="/schedules/add" class="side_link schedules">Criar um agendamento</a> ou escolher um modelo:
                     {% endif %}
                     {% if field.label == 'Fileset' %}
-                        <a href="/filesets/add" class="side_link filesets">Adicionar Conjunto de Arquivos</a>
+                        <a href="/filesets/add" class="side_link filesets">Criar um conjunto de arquivos</a> ou escolher um modelo:
+                    {% endif %}
+                    {{ field }}
+                    {% if field.label == 'Computer' %}
+                        <a href="/computers/add" class="side_link">Adicionar computador</a>
                     {% endif %}
                 </p>
             {% endfor %}

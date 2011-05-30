@@ -2,6 +2,7 @@
 
 from nimbus.procedures.models import *
 from django import forms
+from django.utils.translation import ugettext as _
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -14,9 +15,7 @@ class ProfileForm(forms.ModelForm):
 
 class ProcedureForm(forms.ModelForm):
 
-    pool_retention_time = forms.IntegerField(
-                                    label="Tempo de validade do backup (dias)",
-                                    min_value=1, max_value=3650)
+    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"), min_value=1, max_value=3650)
 
     class Meta:
         model = Procedure
