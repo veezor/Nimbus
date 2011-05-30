@@ -2,7 +2,7 @@
 // iPhone-style Checkboxes jQuery plugin
 // Copyright Thomas Reynolds, licensed GPL & MIT
 */
-;(function($, iphoneStyle) {
+(function($, iphoneStyle) {
 
 // Constructor
 $[iphoneStyle] = function(elem, options) {

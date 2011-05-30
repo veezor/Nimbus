@@ -178,13 +178,18 @@ def add_schedule(request):
                'days':days_range,
                'end_days':end_days_range,
                'weekdays':weekdays_range,
-               # 'messages':[u'Mensagem teste',
-               #             u'Mensagem teste 2']
+               'messages':[u'Mensagem teste',
+                           u'Mensagem teste 2']
               }
     if request.method == "POST":
         print request.POST
         data = request.POST
         new_schedule = insert_schedule(data)
+        messages = []
+        messages.append("bla")
+        messages.append("ble")
+        messages.append("bli")
+        content["messages"] = messages
         if new_schedule:
             messages = []
             messages.append(insert_monthly(data, new_schedule))

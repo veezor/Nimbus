@@ -664,14 +664,10 @@ a:hover {
 	}
 
 .block form label {
-    /*display:block;*/
-    margin:0;
-    padding:0;
 	font-family: "Lucida Grande", Verdana, sans-serif;
 	font-size: 12px;
 	font-weight: bold;
 	color: #555;
-	margin-right: 10px;
 	vertical-align: middle;
 	}
 
@@ -730,10 +726,12 @@ a:hover {
 	
 .block form textarea.wysiwyg { width: 98%; padding: 0; }
 	
+/*
 .block form input.radio,
 .block form input.checkbox {
 	vertical-align: middle;
 	}
+*/
 
 
 /* Custom form select element */

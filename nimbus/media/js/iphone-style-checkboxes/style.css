@@ -1,4 +1,4 @@
-// Disable text selection outside of IE
+/* Disable text selection outside of IE */
 .iPhoneCheckContainer, 
 .iPhoneCheckContainer label {
   user-select: none;

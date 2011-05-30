@@ -1,0 +1,14 @@
+--- nimbus/config/management/commands/makeenviron.py
++++ nimbus/config/management/commands/makeenviron.py
+@@ -41,5 +43,10 @@
+                         error.strerror == "Permission denied":
+                     raise CommandError("%s is not writable" % d)
+ 
++
++        if prefix:
++            etc_dir = prefix +  '/' + settings.NIMBUS_ETC_DIR
++        else:
++            etc_dir = settings.NIMBUS_ETC_DIR
+         shutil.copy( settings.NIMBUS_UNDEPLOYED_LOG_CONF, 
+-                     os.path.sep.join([prefix, settings.NIMBUS_ETC_DIR]))
++                     etc_dir)
