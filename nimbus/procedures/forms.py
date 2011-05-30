@@ -14,8 +14,16 @@ class ProfileForm(forms.ModelForm):
 
 class ProcedureForm(forms.ModelForm):
 
-    retention_time = forms.IntegerField(min_value=1, max_value=3650)
+    pool_retention_time = forms.IntegerField(
+                                    label="Tempo de validade do backup (dias)",
+                                    min_value=1, max_value=3650)
 
     class Meta:
         model = Procedure
-        exclude = ('pool')
+        fields = ('computer',
+                  'schedule',
+                  'fileset',
+                  'storage',
+                  'pool_retention_time',
+                  'name')
+        exclude = ('active', 'pool_size', 'pool_name')
