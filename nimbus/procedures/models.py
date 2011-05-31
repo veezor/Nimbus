@@ -58,8 +58,6 @@ class Procedure(BaseModel):
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
 
-
-
     def fileset_bacula_name(self):
         return self.fileset.bacula_name
         # return self.profile.fileset.bacula_name
@@ -166,7 +164,6 @@ def remove_procedure_volumes(procedure):
     except BConsoleInitError, error:
         logger = logging.getLogger(__name__)
         logger.exception("Erro na comunicação com o bacula")
-    procedure.pool.delete()
     if procedure.offsite_on:
         remote_manager = offsite.RemoteManager()
         remote_manager.create_deletes_request( volumes )

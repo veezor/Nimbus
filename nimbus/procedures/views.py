@@ -72,6 +72,10 @@ def edit(request, procedure_id):
 def delete(request, object_id):
     if request.method == "POST":
         procedure = Procedure.objects.get(id=object_id)
+        if not procedure.schedule.is_model:
+            procedure.schedule.delete()
+        if not procedure.fileset.is_model:
+            procedure.fileset.delete()
         procedure.delete()
         messages.success(request, u"Procedimento removido com sucesso.")
         return redirect('/procedures/list')
