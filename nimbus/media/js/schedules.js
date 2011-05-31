@@ -1,5 +1,8 @@
 $(document).ready(function(){
-    $(".submit").click(function(){
+
+
+    function commit_settings(is_model){
+        console.log(is_model)
         var dataString = "";
         var month_days = "";
         var week_days = "";
@@ -31,5 +34,13 @@ $(document).ready(function(){
                 //$(document).trigger('close.facebox');
             }
         });
+    };
+    $(".use_it").click(function(){
+        commit_settings("False");
     });
+    $(".use_and_save_it").click(function(){
+        commit_settings("True");
+    });
+    
+    
 });
