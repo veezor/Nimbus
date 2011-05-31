@@ -64,7 +64,7 @@ def profile_new(request):
 
 def insert_schedule(POST_data):
     if POST_data.has_key('schedule-name') and (POST_data['schedule-name'] != ''):
-        schedule_name = {'schedule-name': POST_data['schedule-name']}
+        schedule_data = {'schedule-name': POST_data['schedule-name']}
     else:
         sugested = []
         if POST_data.has_key('schedule.hourly.active'):
@@ -81,8 +81,9 @@ def insert_schedule(POST_data):
             sugested_name = sugested[0]
         else:
             return False
-        schedule_name = {'schedule-name': sugested_name.capitalize()}
-    schedule_form = forms.ScheduleForm(schedule_name, prefix="schedule")
+        schedule_data = {'schedule-name': sugested_name.capitalize()}
+    schedule_data["schedule-is_model"] = POST_data["schedule-is_model"]
+    schedule_form = forms.ScheduleForm(schedule_data, prefix="schedule")
     if schedule_form.is_valid():
         new_schedule = schedule_form.save()
         print "deu certo"
