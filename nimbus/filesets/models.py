@@ -17,6 +17,7 @@ add_introspection_rules([], ["^nimbus\.shared\.fields\.ModelPathField"])
 class FileSet(BaseModel):
     name = models.CharField(max_length=255, unique=True, null=False,
                             validators=[fields.check_model_name])
+    is_model = models.BooleanField(default=False, blank=True, null=False)
 
     def __unicode__(self):
         return self.name

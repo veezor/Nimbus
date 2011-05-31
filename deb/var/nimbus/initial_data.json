@@ -261,16 +261,6 @@
     },
     {
         "pk": 1,
-        "model": "pools.pool",
-        "fields": {
-            "size": 5242880.0,
-            "retention_time": 30,
-            "uuid": 15,
-            "name": "Nimbus Self Backup"
-        }
-    },
-    {
-        "pk": 1,
         "model": "procedures.procedure",
         "fields": {
             "offsite_on": false,
@@ -279,7 +269,9 @@
 			"storage": 1,
             "fileset": 1,
             "computer": 1,
-			"pool": 1,
+			"pool_name": "Nimbus self backup",
+			"pool_size": 5242880,
+			"pool_retention_time": 30,
             "name": "Nimbus Self Backup"
         }
     },

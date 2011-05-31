@@ -3,6 +3,7 @@
 
 import logging
 from os.path import join, exists
+from django.utils.translation import ugettext as _
 
 from django.db import models, connections
 from django.conf import settings
@@ -14,7 +15,7 @@ from nimbus.storages.models import Storage
 from nimbus.filesets.models import FileSet
 from nimbus.schedules.models import Schedule
 from nimbus.bacula.models import Media
-from nimbus.pools.models import Pool
+# from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
@@ -37,22 +38,26 @@ class Profile(models.Model):
 
 
 class Procedure(BaseModel):
-    computer = models.ForeignKey(Computer, blank=False, null=False)
-    # profile = models.ForeignKey(Profile, blank=False, null=False)
-    pool = models.ForeignKey(Pool, blank=False, null=False)
+    pool_name = models.CharField(max_length=255)
+    pool_size = models.FloatField(blank=False, null=False, default=5242880,
+                                  editable=False)
+    pool_retention_time = models.IntegerField(verbose_name=_("Retention Time (days)"),
+                                              blank=False, null=False,
+                                              default=30)
+    computer = models.ForeignKey(Computer, verbose_name=_("Computer"),
+                                 blank=False, null=False)
     offsite_on = models.BooleanField(default=False, blank=False, null=False,
                                      editable=is_active(Offsite))
-    active = models.BooleanField(default=True, blank=False, null=False)
-#    retention_time = models.CharField(max_length=255, null=False, blank=False)
-    schedule = models.ForeignKey(Schedule, related_name='schedule')
-    fileset = models.ForeignKey(FileSet, related_name='fileset')
-    storage = models.ForeignKey(Storage, null=False, blank=False)
-    name = models.CharField(max_length=255, blank=False, null=False,
-                            validators=[fields.check_model_name])
-#    if Offsite.objects.filter(active=1).exists():
-#        verify = True
-#    else:
-#        verify = False
+    active = models.BooleanField(default=True, blank=True, null=False)
+    schedule = models.ForeignKey(Schedule, verbose_name=_("Schedule"),
+                                 related_name='schedule')
+    fileset = models.ForeignKey(FileSet, verbose_name=_("Fileset"),
+                                related_name='fileset')
+    storage = models.ForeignKey(Storage, verbose_name=_("Storage"), null=False,
+                                blank=False)
+    name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
+                            null=False)
+
 
 
     def fileset_bacula_name(self):
@@ -71,7 +76,7 @@ class Procedure(BaseModel):
         # return self.profile.storage.bacula_name
 
     def pool_bacula_name(self):
-        return self.pool.bacula_name
+        return self.pool_name
 
     def last_success_date(self):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\

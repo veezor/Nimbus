@@ -25,62 +25,48 @@ from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
 from nimbus.procedures.forms import ProfileForm, ProcedureForm
 
+
 @login_required
-def add(request, object_id=0):
-    lforms = [ProcedureForm(prefix="procedure", initial={'computer':object_id})]
+def add(request):
+    title = u"Adicionar backup"
+    lforms = [ProcedureForm(prefix="procedure")]
     content = {'title':u'Criar Backup',
-               'forms':lforms,
-               'computer_id':object_id}
+              'forms':lforms}
+    if request.method == "POST":
+        print request.POST
+        lforms = [ProcedureForm(request.POST, prefix="procedure")]
+        content = {'title':u'Criar Backup',
+                  'forms':lforms}
+        data = copy(request.POST)
+        procedure_form = ProcedureForm(data, prefix="procedure")
+        if procedure_form.is_valid():
+            procedure = procedure_form.save()
+            messages.success(request, "Procedimento de backup criado com sucesso")
+            return redirect('/procedures/list')
+        else:
+            messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
+            return render_to_response(request, "add_procedure.html", content)
     return render_to_response(request, "add_procedure.html", content)
 
 
+@login_required
+def edit(request, procedure_id):
+    p = get_object_or_404(Procedure, pk=procedure_id)
+    return render_to_response(request, 'add_procedure.html', {'procedure': p})
+
+
+
+
 # @login_required
-# def add(request):
-#     extra_context = {'title': u"Adicionar procedimento"}
-#     return create_update.create_object(request, 
+# def edit(request, object_id):
+#     extra_context = {'title': u"Editar procedimento"}
+#     return create_update.update_object(request, 
+#                                        object_id = object_id,
 #                                        model = Procedure,
 #                                        form_class = form(Procedure),
 #                                        template_name = "base_procedures.html",
 #                                        extra_context = extra_context,
-#                                        post_save_redirect = "/procedures/")
-
-@login_required
-def do_add(request):
-   title = u"Adicionar backup"
-   if request.method == "POST":
-       data = copy(request.POST)
-       pool = Pool(name="pool_",
-                   size=5242880,
-                   retention_time=data['procedure-retention_time'])
-       pool.save()
-       data[u'procedure-pool'] = u'%d' % pool.id
-       procedure_form = ProcedureForm(data, prefix="procedure")
-       if procedure_form.is_valid():
-           procedure = procedure_form.save(commit=False)
-           procedure.pool_id = pool.id
-           procedure.save()
-           pool.name = "pool_%s" % procedure.id
-           pool.save()
-           messages.success(request, "Procedimento de backup criado com sucesso")
-           return redirect('/procedures/list')
-       else:
-           pool.delete()
-           messages.warning(request, procedure_form.errors)
-           return render_to_response(request, "add_procedure.html", locals())
-#   else:
-       #NOT GET OR POST
-#       pass
-
-@login_required
-def edit(request, object_id):
-    extra_context = {'title': u"Editar procedimento"}
-    return create_update.update_object(request, 
-                                       object_id = object_id,
-                                       model = Procedure,
-                                       form_class = form(Procedure),
-                                       template_name = "base_procedures.html",
-                                       extra_context = extra_context,
-                                       post_save_redirect = "/procedures/")
+#                                        post_save_redirect = "/procedures/list")
 
 @login_required
 def delete(request, object_id):

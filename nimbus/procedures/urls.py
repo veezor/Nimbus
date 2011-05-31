@@ -4,15 +4,14 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('nimbus.procedures.views',
-                        (r'^add/(?P<object_id>\d+)$', 'add'),
+                        # (r'^add/(?P<object_id>\d+)$', 'add'),
                         (r'^add/$', 'add'),
-                        (r'^do_add/$', 'do_add'),
                         (r'^$', 'list_all'), 
                         (r'^list/$', 'list_all'), 
                         # (r'^add/$', 'add'),
-                        # (r'^do_add/$', 'do_add'),
+                        # (r'^do_add/$', 'add'),
                         # # (r'^(?P<object_id>\d+)/view/$', 'view'), 
-                        # (r'^(?P<object_id>\d+)/edit/$', 'edit'),
+                        (r'^(?P<procedure_id>\d+)/edit/$', 'edit'),
                         (r'^(?P<object_id>\d+)/delete/$', 'delete'),
                         # (r'^(?P<object_id>\d+)/activate/$', 'activate'),
                         # (r'^(?P<object_id>\d+)/deactivate/$', 'deactivate'),

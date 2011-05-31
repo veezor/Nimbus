@@ -13,7 +13,7 @@ $(document).ready(function(){
         $.each($('#fileset_new').serializeArray(), function(i, field) {
             dataString += "&"+field.name+"="+field.value;
         });
-        alert (dataString);
+        // alert (dataString);
         $.ajax({
             type: "POST",
             url: "/filesets/add/",
