@@ -26,12 +26,20 @@ class Command(BaseCommand):
         directories.remove(settings.FILE_UPLOAD_TEMP_DIR) 
         for d in directories:
             try:
-                d = os.path.sep.join([prefix, d])
+                if prefix:
+                    d = prefix + "/" + d
+                print d
                 os.makedirs(d)
             except OSError, error:
                 if (error.strerror == "FileExists" and \
                         not os.access(d, os.W_OK)) or\
                         error.strerror == "Permission denied":
                     raise CommandError("%s is not writable" % d)
+
+        if prefix:
+            etc_dir = prefix +  '/' + settings.NIMBUS_ETC_DIR
+        else:
+            etc_dir = settings.NIMBUS_ETC_DIR
+ 
         shutil.copy(settings.NIMBUS_UNDEPLOYED_LOG_CONF, 
-                    os.path.sep.join([prefix, settings.NIMBUS_ETC_DIR]))
+                    etc_dir)

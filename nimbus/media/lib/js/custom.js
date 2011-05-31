@@ -9,6 +9,7 @@ $(document).ready(function(){
 	jQuery('.block_head ul').each(function() { jQuery('li:first', this).addClass('nobg'); });
 	jQuery('.block table tr:odd').css('background-color', '#fbfbfb');
 	jQuery('.block form input[type=file]').addClass('file');
+	$(':checkbox').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 			
 	
 	// Web stats
@@ -47,7 +48,7 @@ $(document).ready(function(){
 	
 	
 	// Modal boxes - to all links with rel="facebox"
-	jQuery('a[rel*=facebox]').facebox()
+	//jQuery('a[rel*=facebox]').facebox()
 	
 	
 	// Messages
@@ -63,7 +64,7 @@ $(document).ready(function(){
 	
 	
 	// Form select styling
-	jQuery("form select.styled").select_skin();
+	//jQuery("form select.styled").select_skin();
 	
 	
 	// Tabs
@@ -207,7 +208,6 @@ $(document).ready(function(){
 			alert(file);
 		});
 	})
-	$(".iPhoneCheckContainer").css("width", "85px");
 	// $(".sparklines").sparkline('html', {width: "300", height: "150px" });
 	
 	var actual_time = $('#actual_time').html().split(':');

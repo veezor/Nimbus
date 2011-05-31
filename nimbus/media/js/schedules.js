@@ -1,8 +1,6 @@
 $(document).ready(function(){
-
-
-    function commit_settings(is_model){
-        console.log(is_model)
+    $(".submit").click(function(){
+    	alert('vai');
         var dataString = "";
         var month_days = "";
         var week_days = "";
@@ -26,7 +24,7 @@ $(document).ready(function(){
             url: "/schedules/add/",
             data: dataString,
             success: function() {
-                alert("Cadastro efetuado com sucesso!");
+                alert("Cadastro efetuado com MUITO MUITO sucesso!");
                 //$(document).trigger('close.facebox');
             },
             error: function(){
@@ -40,6 +38,7 @@ $(document).ready(function(){
     });
     $(".use_and_save_it").click(function(){
         commit_settings("True");
+        jQuery.facebox( ajax : "/schedules/add/" )
     });
     
     
