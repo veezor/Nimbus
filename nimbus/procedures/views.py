@@ -13,7 +13,7 @@ from django.template import RequestContext
 from pybacula import BConsoleInitError
 
 from nimbus.bacula.models import Job
-from nimbus.procedures.models import Procedure, Profile
+from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
@@ -23,7 +23,7 @@ from nimbus.pools.models import Pool
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
-from nimbus.procedures.forms import ProfileForm, ProcedureForm
+from nimbus.procedures.forms import ProcedureForm
 
 
 @login_required
@@ -92,14 +92,14 @@ def execute(request, object_id):
         messages.success(request, u"Procedimento em execução.")
     except BConsoleInitError, error:
         messages.error(request, u"Servidor de backup inativo, impossível realizar operação.")
-    return redirect('nimbus.procedures.views.list')
+    return redirect('/procedures/list')
 
 @login_required
 def list_all(request):
     procedures = Procedure.objects.filter(id__gt=1)
     offsite = Offsite.get_instance()
     offsite_on = offsite.active
-    title = u"Procedimentos"
+    title = u"Procedimentos de backup"
     running_status = ('R','p','j','c','d','s','M','m','s','F','B')
     running_jobs = Job.objects.filter(jobstatus__in=running_status)\
                                           .order_by('-starttime').distinct()[:5]

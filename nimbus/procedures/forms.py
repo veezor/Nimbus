@@ -3,19 +3,16 @@
 from nimbus.procedures.models import *
 from django import forms
 from django.utils.translation import ugettext as _
-
-class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        widgets = {'name': forms.widgets.TextInput(attrs={'class': 'text small'}),
-                   'storage': forms.widgets.Select(attrs={'class': 'styled'}),
-                   'schedule': forms.widgets.Select(attrs={'class': 'styled'}),
-                   'fileset': forms.widgets.Select(attrs={'class': 'styled'})}
+from nimbus.schedules.models import Schedule
+from nimbus.filesets.models import FileSet
 
 
 class ProcedureForm(forms.ModelForm):
 
     pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"), min_value=1, max_value=3650)
+    # limita a exibicao apenas aos objetos que forem Modelo (is_model=True)
+    fileset = forms.models.ModelChoiceField(label=_("Fileset"), queryset=FileSet.objects.filter(is_model=True))
+    schedule = forms.models.ModelChoiceField(label=_("Schedule"), queryset=Schedule.objects.filter(is_model=True))
 
     class Meta:
         model = Procedure
