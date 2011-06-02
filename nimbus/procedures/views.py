@@ -59,8 +59,9 @@ def add(request):
 @login_required
 def edit(request, procedure_id):
     p = get_object_or_404(Procedure, pk=procedure_id)
-    title = u"Editando %s" % p.name
-    lforms = [ProcedureEditForm(prefix="procedure", initial=procedure2dict(p))]
+    title = u"Editando '%s'" % p.name
+    partial_form = ProcedureEditForm(prefix="procedure", instance=p)
+    lforms = [partial_form]
     content = {'title': title,
               'forms':lforms,
               'id': procedure_id,
@@ -69,6 +70,11 @@ def edit(request, procedure_id):
     if request.method == "POST":
         print request.POST
         data = copy(request.POST)
+        if data['procedure-schedule'] == u"":
+            data['procedure-schedule'] = u"%d" % p.schedule.id
+        if data['procedure-fileset'] == u"":
+            data['procedure-fileset'] = u"%d" % p.fileset.id
+        print data
         procedure_form = ProcedureEditForm(data, instance=p, prefix="procedure")
         if procedure_form.is_valid():
             procedure_form.save()

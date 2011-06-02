@@ -4,8 +4,8 @@
 <link type="text/css" rel="stylesheet" href="/media/css/backup.css"/>
 <link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
 
-<script type="text/javascript" src="/media/js/backup.js"></script>
-<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<!-- <script type="text/javascript" src="/media/js/backup.js"></script> -->
+<!-- <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script> -->
 
 {% endblock %}
 
@@ -29,13 +29,13 @@
                 </ul>
                 {% endif %}
                 <p><label>{{ field.label }}:</label><br />
+                    {{ field }}
                     {% if field.label == 'Schedule' %}
-                        {{schedule}} - <a href="/schedules/add" class="side_link schedules">Editar</a> ou escolher um modelo:
+                        ou modifique o atual: <a href="/schedules/add" class="side_link schedules">[{{schedule}}]</a>
                     {% endif %}
                     {% if field.label == 'Fileset' %}
-                        {{fileset}} - <a href="/filesets/add" class="side_link filesets">Editar</a> ou escolher um modelo:
+                        ou modifique o atual: <a href="/filesets/add" class="side_link filesets">[{{fileset}}]</a>
                     {% endif %}
-                    {{ field }}
                 </p>
             {% endfor %}
             {% for hidden in form.hidden_fields %}
