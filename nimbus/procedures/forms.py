@@ -10,10 +10,21 @@ from nimbus.filesets.models import FileSet
 
 class ProcedureForm(forms.ModelForm):
 
-    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"), min_value=1, max_value=3650)
+    def __init__(self, data=None, *args, **kwargs):
+        super(ProcedureForm, self).__init__(data, *args, **kwargs)
+        # Se houver apenas uma opcao num ChoiceField a opção NULL sera removida
+        for field in self.fields:
+            if isinstance(self.fields[field], forms.models.ModelChoiceField):
+                if len(self.fields[field].choices) == 1:
+                    remove_null_choice(self, [field])
+
+    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
+                                                    min_value=1, max_value=3650)
     # limita a exibicao apenas aos objetos que forem Modelo (is_model=True)
-    fileset = forms.models.ModelChoiceField(label=_("Fileset"), queryset=FileSet.objects.filter(is_model=True))
-    schedule = forms.models.ModelChoiceField(label=_("Schedule"), queryset=Schedule.objects.filter(is_model=True))
+    fileset = forms.models.ModelChoiceField(label=_("Fileset"),
+                                queryset=FileSet.objects.filter(is_model=True))
+    schedule = forms.models.ModelChoiceField(label=_("Schedule"),
+                                queryset=Schedule.objects.filter(is_model=True))
 
     class Meta:
         model = Procedure
@@ -25,7 +36,7 @@ class ProcedureForm(forms.ModelForm):
                   'name')
         exclude = ('active', 'pool_size', 'pool_name')
 
-import pdb
+
 class ProcedureEditForm(forms.ModelForm):
     
     def __init__(self, data=None, *args, **kwargs):
@@ -41,7 +52,7 @@ class ProcedureEditForm(forms.ModelForm):
                                             label=_("Schedule"), required=False,
                                             queryset=Schedule.objects.filter(
                                                 Q(is_model=True) | Q(id=s_id)))
-        self.remove_null_choice()
+        remove_null_choice(self, ['schedule', 'fileset', 'storage', 'computer'])
                                                 
     pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
                                              min_value=1, max_value=3650)
@@ -57,11 +68,11 @@ class ProcedureEditForm(forms.ModelForm):
                   'pool_retention_time')
         exclude = ('pool_size', 'pool_name')
     
-    def remove_null_choice(self):
-        for field in ['schedule', 'fileset']:
-            choices = []
-            for choice in self.fields[field].choices:
-                if choice[0] != u'':
-                    choices.append(choice)
-            self.fields[field].choices = choices
+def remove_null_choice(current_form, fields):
+    for field in fields:
+        choices = []
+        for choice in current_form.fields[field].choices:
+            if choice[0] != u'':
+                choices.append(choice)
+        current_form.fields[field].choices = choices
 

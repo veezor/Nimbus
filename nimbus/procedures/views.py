@@ -37,12 +37,10 @@ def procedure2dict(procedure):
 @login_required
 def add(request):
     title = u"Adicionar backup"
-    lforms = [ProcedureForm(prefix="procedure")]
+    lforms = ProcedureForm(prefix="procedure")
     content = {'title': title,
-              'forms':lforms}
+              'forms':[lforms]}
     if request.method == "POST":
-        print request.POST
-        lforms = [ProcedureForm(request.POST, prefix="procedure")]
         data = copy(request.POST)
         procedure_form = ProcedureForm(data, prefix="procedure")
         if procedure_form.is_valid():
@@ -68,13 +66,11 @@ def edit(request, procedure_id):
               'schedule': p.schedule.name,
               'fileset': p.fileset.name}
     if request.method == "POST":
-        print request.POST
         data = copy(request.POST)
         if data['procedure-schedule'] == u"":
             data['procedure-schedule'] = u"%d" % p.schedule.id
         if data['procedure-fileset'] == u"":
             data['procedure-fileset'] = u"%d" % p.fileset.id
-        print data
         procedure_form = ProcedureEditForm(data, instance=p, prefix="procedure")
         if procedure_form.is_valid():
             procedure_form.save()
@@ -84,7 +80,6 @@ def edit(request, procedure_id):
             messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
             content['forms'] = [procedure_form]
             return render_to_response(request, "edit_procedure.html", content)
-
     return render_to_response(request, 'edit_procedure.html', content)
 
 
