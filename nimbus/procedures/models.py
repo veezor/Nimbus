@@ -26,15 +26,15 @@ from nimbus.shared import utils, enums, signals, fields
 
 # Nao serao usados profiles por enquanto. Passei os relacionamentos
 # para Procedures
-class Profile(models.Model):
-
-    name = models.CharField(max_length=255, unique=True, blank=True, null=False)
-    # storage = models.ForeignKey(Storage, null=False, blank=False)
-    # fileset = models.ForeignKey(FileSet, null=False, blank=False)
-    # schedule = models.ForeignKey(Schedule, null=False, blank=False)
-
-    def __unicode__(self):
-        return self.name
+# class Profile(models.Model):
+# 
+#     name = models.CharField(max_length=255, unique=True, blank=True, null=False)
+#     # storage = models.ForeignKey(Storage, null=False, blank=False)
+#     # fileset = models.ForeignKey(FileSet, null=False, blank=False)
+#     # schedule = models.ForeignKey(Schedule, null=False, blank=False)
+# 
+#     def __unicode__(self):
+#         return self.name
 
 
 class Procedure(BaseModel):
@@ -42,7 +42,7 @@ class Procedure(BaseModel):
     pool_size = models.FloatField(blank=False, null=False, default=5242880,
                                   editable=False)
     pool_retention_time = models.IntegerField(verbose_name=_("Retention Time (days)"),
-                                              blank=False, null=False, 
+                                              blank=False, null=False,
                                               default=30)
     computer = models.ForeignKey(Computer, verbose_name=_("Computer"),
                                  blank=False, null=False)
@@ -57,8 +57,6 @@ class Procedure(BaseModel):
                                 blank=False)
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
-
-
 
     def fileset_bacula_name(self):
         return self.fileset.bacula_name
@@ -166,7 +164,6 @@ def remove_procedure_volumes(procedure):
     except BConsoleInitError, error:
         logger = logging.getLogger(__name__)
         logger.exception("Erro na comunicação com o bacula")
-    procedure.pool.delete()
     if procedure.offsite_on:
         remote_manager = offsite.RemoteManager()
         remote_manager.create_deletes_request( volumes )

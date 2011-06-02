@@ -27,7 +27,7 @@ class BackupLevel(BaseModel):
 
 class Schedule(BaseModel):
     name = models.CharField(u'Nome qualquer', max_length=255, null=False, blank=False)
-    is_model = models.BooleanField(default=False, blank=True, null=False)
+    is_model = models.BooleanField(default=False, null=False)
 
     def __unicode__(self):
         return self.name

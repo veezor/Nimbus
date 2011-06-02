@@ -1,6 +1,6 @@
 $(document).ready(function(){
-    $(".submit").click(function(){
-    	alert('vai');
+    function commit_settings(is_model){
+    	console.log(is_model);
         var dataString = "";
         var month_days = "";
         var week_days = "";
@@ -18,7 +18,7 @@ $(document).ready(function(){
                 dataString += field.name+"="+field.value+"&";
             }
         });
-        dataString += "schedule.monthly.day="+month_days+"&schedule.weekly.day="+week_days;
+        dataString += "schedule.monthly.day="+month_days+"&schedule.weekly.day="+week_days+"&schedule-is_model="+is_model;
         $.ajax({
             type: "POST",
             url: "/schedules/add/",
@@ -34,10 +34,9 @@ $(document).ready(function(){
         });
     };
     $(".use_it").click(function(){
-        commit_settings("False");
+        commit_settings(0);
     });
     $(".use_and_save_it").click(function(){
-        commit_settings("True");
-        jQuery.facebox( ajax : "/schedules/add/" )
+        commit_settings(1);
     });
 });

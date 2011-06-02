@@ -22,10 +22,11 @@ def name_sugestion(computer_id):
 
 def insert_fileset(POST_data):
     if POST_data.has_key('fileset-name') and (POST_data['fileset-name'] != ''):
-        fileset_name = {'fileset-name': POST_data['fileset-name']}
+        fileset_data = {'fileset-name': POST_data['fileset-name']}
     else:
-        fileset_name = {'fileset-name': name_sugestion(POST_data['computer_id'])}
-    fileset_form = forms.FileSetForm(fileset_name, prefix="fileset")
+        fileset_data = {'fileset-name': name_sugestion(POST_data['computer_id'])}
+    fileset_data["fileset-is_model"] = POST_data["fileset-is_model"]
+    fileset_form = forms.FileSetForm(fileset_data, prefix="fileset")
     if fileset_form.is_valid():
         new_fileset = fileset_form.save()
         return new_fileset
@@ -44,6 +45,7 @@ def file_list(POST_data):
 @login_required
 def add(request, object_id=None):
     if request.method == "POST":
+        print request.POST
         files = file_list(request.POST)
         if len(files) > 0:
             new_fileset = insert_fileset(request.POST)
@@ -58,7 +60,7 @@ def add(request, object_id=None):
     lforms = [ forms.FileSetForm(prefix="fileset") ]
     lformsets = [ forms.FilePathForm(prefix="filepath") ]
     formset = forms.FilesFormSet()
-    content = {'title':u'Criar Sistema de Arquivos',
+    content = {'title':u'Criar conjunto de arquivos',
                'forms':lforms,
                'formsets':lformsets,
                'computer_id':object_id,

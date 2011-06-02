@@ -13,7 +13,7 @@ from django.template import RequestContext
 from pybacula import BConsoleInitError
 
 from nimbus.bacula.models import Job
-from nimbus.procedures.models import Procedure, Profile
+from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
@@ -23,20 +23,26 @@ from nimbus.pools.models import Pool
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
-from nimbus.procedures.forms import ProfileForm, ProcedureForm
+from nimbus.procedures.forms import ProcedureForm, ProcedureEditForm
 
+def procedure2dict(procedure):
+    return {'name': procedure.name,
+            'computer': procedure.computer,
+            'pool_retention_time': procedure.pool_retention_time,
+            'active': procedure.active,
+            'schedule': procedure.schedule,
+            'fileset': procedure.fileset,
+            'storage': procedure.storage}
 
 @login_required
 def add(request):
     title = u"Adicionar backup"
     lforms = [ProcedureForm(prefix="procedure")]
-    content = {'title':u'Criar Backup',
+    content = {'title': title,
               'forms':lforms}
     if request.method == "POST":
         print request.POST
         lforms = [ProcedureForm(request.POST, prefix="procedure")]
-        content = {'title':u'Criar Backup',
-                  'forms':lforms}
         data = copy(request.POST)
         procedure_form = ProcedureForm(data, prefix="procedure")
         if procedure_form.is_valid():
@@ -45,6 +51,7 @@ def add(request):
             return redirect('/procedures/list')
         else:
             messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
+            content['forms'] = [procedure_form]
             return render_to_response(request, "add_procedure.html", content)
     return render_to_response(request, "add_procedure.html", content)
 
@@ -52,26 +59,37 @@ def add(request):
 @login_required
 def edit(request, procedure_id):
     p = get_object_or_404(Procedure, pk=procedure_id)
-    return render_to_response(request, 'add_procedure.html', {'procedure': p})
+    title = u"Editando %s" % p.name
+    lforms = [ProcedureEditForm(prefix="procedure", initial=procedure2dict(p))]
+    content = {'title': title,
+              'forms':lforms,
+              'id': procedure_id,
+              'schedule': p.schedule.name,
+              'fileset': p.fileset.name}
+    if request.method == "POST":
+        print request.POST
+        data = copy(request.POST)
+        procedure_form = ProcedureEditForm(data, instance=p, prefix="procedure")
+        if procedure_form.is_valid():
+            procedure_form.save()
+            messages.success(request, "Procedimento alterado com sucesso")
+            return redirect('/procedures/list')
+        else:
+            messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
+            content['forms'] = [procedure_form]
+            return render_to_response(request, "edit_procedure.html", content)
 
+    return render_to_response(request, 'edit_procedure.html', content)
 
-
-
-# @login_required
-# def edit(request, object_id):
-#     extra_context = {'title': u"Editar procedimento"}
-#     return create_update.update_object(request, 
-#                                        object_id = object_id,
-#                                        model = Procedure,
-#                                        form_class = form(Procedure),
-#                                        template_name = "base_procedures.html",
-#                                        extra_context = extra_context,
-#                                        post_save_redirect = "/procedures/list")
 
 @login_required
 def delete(request, object_id):
     if request.method == "POST":
         procedure = Procedure.objects.get(id=object_id)
+        if not procedure.schedule.is_model:
+            procedure.schedule.delete()
+        if not procedure.fileset.is_model:
+            procedure.fileset.delete()
         procedure.delete()
         messages.success(request, u"Procedimento removido com sucesso.")
         return redirect('/procedures/list')
@@ -88,14 +106,14 @@ def execute(request, object_id):
         messages.success(request, u"Procedimento em execução.")
     except BConsoleInitError, error:
         messages.error(request, u"Servidor de backup inativo, impossível realizar operação.")
-    return redirect('nimbus.procedures.views.list')
+    return redirect('/procedures/list')
 
 @login_required
 def list_all(request):
     procedures = Procedure.objects.filter(id__gt=1)
     offsite = Offsite.get_instance()
     offsite_on = offsite.active
-    title = u"Procedimentos"
+    title = u"Procedimentos de backup"
     running_status = ('R','p','j','c','d','s','M','m','s','F','B')
     running_jobs = Job.objects.filter(jobstatus__in=running_status)\
                                           .order_by('-starttime').distinct()[:5]

@@ -15,7 +15,7 @@ class ProfileForm(forms.ModelForm):
 
 class ProcedureForm(forms.ModelForm):
 
-    pool_retention_time = forms.IntegerField(widget=forms.HiddenInput())
+    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"), min_value=1, max_value=3650, widget=forms.HiddenInput())
 
     class Meta:
         model = Procedure
