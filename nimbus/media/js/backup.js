@@ -208,13 +208,58 @@ $(document).ready(function(){
 });
 /* Slider */
 $(document).ready(function(){
+	var maximun = 121;
+	$(".pool_new_value").hide();
+	$(".add_new_pool").hide();
 	$("#slider_value").html("10");
 	$("#slider").slider({ 
-		animate: true, step: 1, max: 31, min: 0, value: 10
+		animate: true, step: 1, max: maximun, min: 0, value: 10
 	});
 	$("#slider").bind("slide", function(){
 		var value = $("#slider").slider("option", "value");
 		$("#slider_value").html(value);
 		$("#id_procedure-pool_retention_time").val(value);
+		if (value > (maximun-20))
+		{
+			$(".add_new_pool").show();
+		}
+		else if (value <= (maximun-20))
+		{
+			$(".add_new_pool").hide();
+		}
+	});
+	
+	$(".add_new_pool").click(function(){
+		$(".pool_value").hide();
+		$(".pool_new_value").show();
+		$("#pool_retention_alt").focus();
+	});
+	
+	$("#pool_retention_alt").keyup(function(){
+		var value = this.value;
+		//alert(value);
+		$("#id_procedure-pool_retention_time").val(value);
 	});
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,11 +2,11 @@
 
 {% block headtags %}
 
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<link href="/media/css/backup.css" rel="stylesheet" type="text/css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/media/js/backup.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
-
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 
 {% endblock %}
 
@@ -31,10 +31,10 @@
                 {% endif %}
                 <p><label>{{ field.label }}:</label><br />
                     {% if field.label == 'Schedule' %}
-                        <a href="/schedules/add" class="submit tiny schedules">Criar um agendamento</a> ou escolher um modelo:
+                        <a href="/schedules/add" class="schedules">Criar um agendamento</a> ou escolher um modelo:
                     {% endif %}
                     {% if field.label == 'Fileset' %}
-                        <a href="/filesets/add" class="submit tiny filesets">Criar um conjunto de arquivos</a> ou escolher um modelo:
+                        <a href="/filesets/add" class="filesets">Criar um conjunto de arquivos</a> ou escolher um modelo:
                     {% endif %}
                     {{ field }}
                     {% if field.label == 'Computer' %}
@@ -46,12 +46,19 @@
                 {{ hidden }}
             {% endfor %}
         {% endfor %}
+        <div class="pool_value">
+	        <label>Tempo de retencao (em dias):</label> <label id="slider_value"></label><br />
+	        <div id="slider"></div>
+	        <div class="add_new_pool"><a href="#">Adicionar Outro Valor</a></div>
+	        <div class="clear">&nbsp;</div>
+	    </div>
+	    <div class="pool_new_value">
+	    	<label>Tempo de retencao (em dias):</label><br />
+	        <input type="text" name="pool_retention_alt" id="pool_retention_alt" value="" class="text small" /><br />
+	    </div>
+	    <hr />
         <p>
-        <label>Tempo de reten&ccedil;&atilde;o (em dias):</label> <label id="slider_value"></label>
-        <div id="slider" style="width: 200px;"></div>
-        </p>
-        <p>
-            <input type="submit" class="submit small" value="Criar" />
+            <input type="submit" class="submit" value="Criar" />
         </p>
         </form>
     </div>
