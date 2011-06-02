@@ -35,29 +35,30 @@ class DailyForm(forms.ModelForm):
         model = models.Day
 
 
-class MonthlyForm(forms.ModelForm):
+class MonthForm(forms.ModelForm):
+    hour = forms.CharField(label="Hora", widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
     class Meta:
         model = models.Month
 
-
-class HourlyForm(forms.ModelForm):
+class HourForm(forms.ModelForm):
+    minute = forms.CharField(label=u'Minuto', widget=forms.TextInput(attrs={'class':'text small mascara_minuto'}))
     class Meta:
         model = models.Hour
 
-
-class WeeklyForm(forms.ModelForm):
+class WeekForm(forms.ModelForm):
+    hour = forms.CharField(label=u'Hora', widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
     class Meta:
         model = models.Week
 
 class DayForm(forms.ModelForm):
-    hour = forms.CharField(label=u'Hora', widget=forms.TextInput(attrs={'class':'text small'}))
+    hour = forms.CharField(label=u'Hora', widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
     class Meta:
         model = models.Day
 
-MonthForm = make_form(models.Month)
+#MonthForm = make_form(models.Month)
 #DayForm = make_form(models.Day)
-HourForm = make_form(models.Hour)
-WeekForm = make_form(models.Week)
+#HourForm = make_form(models.Hour)
+#WeekForm = make_form(models.Week)
 
 class FormContainer(object):
 

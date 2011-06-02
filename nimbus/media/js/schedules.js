@@ -40,6 +40,4 @@ $(document).ready(function(){
         commit_settings("True");
         jQuery.facebox( ajax : "/schedules/add/" )
     });
-    
-    
 });

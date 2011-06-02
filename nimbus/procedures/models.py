@@ -42,7 +42,7 @@ class Procedure(BaseModel):
     pool_size = models.FloatField(blank=False, null=False, default=5242880,
                                   editable=False)
     pool_retention_time = models.IntegerField(verbose_name=_("Retention Time (days)"),
-                                              blank=False, null=False,
+                                              blank=False, null=False, 
                                               default=30)
     computer = models.ForeignKey(Computer, verbose_name=_("Computer"),
                                  blank=False, null=False)

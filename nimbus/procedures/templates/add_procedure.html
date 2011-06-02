@@ -1,11 +1,33 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<link type="text/css" rel="stylesheet" href="/media/css/backup.css"/>
-<link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
 
 <script type="text/javascript" src="/media/js/backup.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<style type="text/css">
+/*
+.slider{
+	padding-left: 2px;
+}
+*/
+</style>
+<script type="text/javascript">
+/* Slider */
+$(document).ready(function(){
+	$("#slider_value").html("10");
+	$("#slider").slider({ 
+		animate: true, step: 1, max: 31, min: 0, value: 10
+	});
+	$("#slider").bind("slide", function(){
+		var value = $("#slider").slider("option", "value");
+		$("#slider_value").html(value);
+		$("#id_procedure-pool_retention_time").val(value);
+	});
+});
+</script>
 
 {% endblock %}
 
@@ -30,10 +52,10 @@
                 {% endif %}
                 <p><label>{{ field.label }}:</label><br />
                     {% if field.label == 'Schedule' %}
-                        <a href="/schedules/add" class="side_link schedules">Criar um agendamento</a> ou escolher um modelo:
+                        <a href="/schedules/add" class="submit tiny schedules">Criar um agendamento</a> ou escolher um modelo:
                     {% endif %}
                     {% if field.label == 'Fileset' %}
-                        <a href="/filesets/add" class="side_link filesets">Criar um conjunto de arquivos</a> ou escolher um modelo:
+                        <a href="/filesets/add" class="submit tiny filesets">Criar um conjunto de arquivos</a> ou escolher um modelo:
                     {% endif %}
                     {{ field }}
                     {% if field.label == 'Computer' %}
@@ -45,6 +67,10 @@
                 {{ hidden }}
             {% endfor %}
         {% endfor %}
+        <p>
+        <label>Tempo de reten&ccedil;&atilde;o (em dias):</label> <label id="slider_value"></label>
+        <div id="slider" style="width: 200px;"></div>
+        </p>
         <p>
             <input type="submit" class="submit small" value="Criar" />
         </p>
