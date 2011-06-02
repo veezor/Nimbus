@@ -32,6 +32,9 @@ class ProcedureForm(forms.ModelForm):
                   'name')
         exclude = ('active', 'pool_size', 'pool_name')
 
+
+class ProcedureEditForm(forms.ModelForm):
+
     def __init__(self, data=None, *args, **kwargs):
         super(ProcedureEditForm, self).__init__(data, *args, **kwargs)
         instance = kwargs.get("instance")
@@ -60,7 +63,8 @@ class ProcedureForm(forms.ModelForm):
                   'storage',
                   'pool_retention_time')
         exclude = ('pool_size', 'pool_name')
-    
+
+
 def remove_null_choice(current_form, fields):
     for field in fields:
         choices = []
