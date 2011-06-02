@@ -16,7 +16,10 @@ class ProcedureForm(forms.ModelForm):
                 if len(self.fields[field].choices) == 1:
                     remove_null_choice(self, [field])
 
-    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"), min_value=1, max_value=3650, widget=forms.HiddenInput())
+    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
+                                                initial=10,
+                                                min_value=1, max_value=3650,
+                                                widget=forms.HiddenInput())
     fileset = forms.models.ModelChoiceField(label=_("Fileset"),
                                 queryset=FileSet.objects.filter(is_model=True))
     schedule = forms.models.ModelChoiceField(label=_("Schedule"),
@@ -51,7 +54,9 @@ class ProcedureEditForm(forms.ModelForm):
         remove_null_choice(self, ['schedule', 'fileset', 'storage', 'computer'])
                                                 
     pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
-                                             min_value=1, max_value=3650, widget=forms.HiddenInput())
+                                             min_value=1, max_value=3650, 
+                                             widget=forms.HiddenInput(),
+                                             initial=10)
                                 
     class Meta:
         model = Procedure
