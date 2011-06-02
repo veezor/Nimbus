@@ -28,7 +28,7 @@ from nimbus.offsite.models import (Volume,
                                    DownloadTransferredData,
                                    DeleteRequest)
 
-from nimbus.offsite.queue import get_queue_service_manager
+from nimbus.offsite.queue_service import get_queue_service_manager
 
 from nimbusgateway import Api, File
 from django.contrib.contenttypes.models import ContentType
