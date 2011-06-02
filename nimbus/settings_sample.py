@@ -198,7 +198,7 @@ INSTALLED_APPS = (
     'nimbus.schedules',
     'nimbus.filesets',
     'nimbus.storages',
-    'nimbus.pools',
+    # 'nimbus.pools',
     'nimbus.procedures',
     'nimbus.timezone',
     'nimbus.offsite',

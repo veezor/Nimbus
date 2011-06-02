@@ -4,8 +4,6 @@ from django.db.models import Q
 from nimbus.procedures.models import *
 from django import forms
 from django.utils.translation import ugettext as _
-from nimbus.schedules.models import Schedule
-from nimbus.filesets.models import FileSet
 
 
 class ProcedureForm(forms.ModelForm):
@@ -18,9 +16,7 @@ class ProcedureForm(forms.ModelForm):
                 if len(self.fields[field].choices) == 1:
                     remove_null_choice(self, [field])
 
-    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
-                                                    min_value=1, max_value=3650)
-    # limita a exibicao apenas aos objetos que forem Modelo (is_model=True)
+    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"), min_value=1, max_value=3650, widget=forms.HiddenInput())
     fileset = forms.models.ModelChoiceField(label=_("Fileset"),
                                 queryset=FileSet.objects.filter(is_model=True))
     schedule = forms.models.ModelChoiceField(label=_("Schedule"),
@@ -36,9 +32,6 @@ class ProcedureForm(forms.ModelForm):
                   'name')
         exclude = ('active', 'pool_size', 'pool_name')
 
-
-class ProcedureEditForm(forms.ModelForm):
-    
     def __init__(self, data=None, *args, **kwargs):
         super(ProcedureEditForm, self).__init__(data, *args, **kwargs)
         instance = kwargs.get("instance")
@@ -55,7 +48,7 @@ class ProcedureEditForm(forms.ModelForm):
         remove_null_choice(self, ['schedule', 'fileset', 'storage', 'computer'])
                                                 
     pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
-                                             min_value=1, max_value=3650)
+                                             min_value=1, max_value=3650, widget=forms.HiddenInput())
                                 
     class Meta:
         model = Procedure

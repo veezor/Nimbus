@@ -39,6 +39,4 @@ $(document).ready(function(){
     $(".use_and_save_it").click(function(){
         commit_settings(1);
     });
-    
-    
 });

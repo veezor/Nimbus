@@ -63,8 +63,8 @@ def edit(request, procedure_id):
     content = {'title': title,
               'forms':lforms,
               'id': procedure_id,
-              'schedule': p.schedule.name,
-              'fileset': p.fileset.name}
+              'schedule': p.schedule,
+              'fileset': p.fileset}
     if request.method == "POST":
         data = copy(request.POST)
         if data['procedure-schedule'] == u"":
@@ -74,7 +74,7 @@ def edit(request, procedure_id):
         procedure_form = ProcedureEditForm(data, instance=p, prefix="procedure")
         if procedure_form.is_valid():
             procedure_form.save()
-            messages.success(request, "Procedimento alterado com sucesso")
+            messages.success(request, "Procedimento '%s' alterado com sucesso" % p.name)
             return redirect('/procedures/list')
         else:
             messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")

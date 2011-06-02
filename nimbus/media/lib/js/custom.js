@@ -9,7 +9,6 @@ $(document).ready(function(){
 	jQuery('.block_head ul').each(function() { jQuery('li:first', this).addClass('nobg'); });
 	jQuery('.block table tr:odd').css('background-color', '#fbfbfb');
 	jQuery('.block form input[type=file]').addClass('file');
-	$(':checkbox').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 			
 	
 	// Web stats
@@ -201,7 +200,8 @@ $(document).ready(function(){
 		setTimeout(update_time, 1000);
 	}
 	
-	$('input:checkbox:not(#schedule input:checkbox):not(#fileset input:checkbox):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
+	//$(':checkbox').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
+	$('input:checkbox:not(:checkbox.schedule):not(input:checkbox.no-style):not(input:checkbox.fileset):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
 	$('.filetree').each(function(){
 		var script = $(this).attr("ref");
 		$(this).fileTree({ root: '/media/lib/demo/', script: script }, function(file) { 

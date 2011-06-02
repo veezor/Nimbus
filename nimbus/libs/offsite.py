@@ -19,13 +19,17 @@ from nimbus.base.models import UUIDBaseModel
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
 from nimbus.pools.models import Pool
-from nimbus.offsite.models import (Volume, 
+from nimbus.offsite.models import (Volume,
+                                   UploadRequest,
                                    RemoteUploadRequest,
                                    LocalUploadRequest,
                                    DownloadRequest,
                                    UploadTransferredData,
                                    DownloadTransferredData,
                                    DeleteRequest)
+
+from nimbus.offsite.queue import get_queue_service_manager
+
 from nimbusgateway import Api, File
 from django.contrib.contenttypes.models import ContentType
 
@@ -176,6 +180,36 @@ class BaseManager(object):
         pass
 
 
+
+
+def process_request(self, request, process_function, ratelimit, max_retry):
+    logger = logging.getLogger(__name__)
+    request.last_attempt = datetime.now()
+    retry = 0
+    while True:
+        try:
+            request.attempts += 1
+            request.last_update = time.time()
+            if isinstance(request, UploadRequest): # no resume
+                request.transferred_bytes = 0
+            initialbytes = request.transferred_bytes
+            request.save()
+            process_function(request.volume.path, request.volume.filename,
+                             ratelimit=ratelimit, callback=request.update)
+            request.finish()
+            logger.info("%s processado com sucesso" % request)
+            break
+        except pycurl.error, e:
+            retry += 1
+            register_transferred_data(request, initialbytes)
+            if retry >= max_retry:
+                logger.error("Erro ao processar %s" % request)
+                raise
+            logger.error("Erro ao processar %s. Tentando novamente..." % request)
+
+
+
+
 class RemoteManager(BaseManager):
 
     MAX_RETRY = 3
@@ -192,8 +226,10 @@ class RemoteManager(BaseManager):
 
     def process_pending_upload_requests(self):
         requests = self.get_upload_requests()
-        self.process_requests(requests, self.api.upload_file,
-                              ratelimit=self.upload_rate)
+        queue_manager = get_queue_service_manager()
+        for request in requests:
+            queue.add_volume(request.job, request.volume.path)
+
 
     def get_remote_volumes_list(self):
         return [f[0] for f in self.api.list_all_files() if filename_is_volumename(f[0])]
@@ -214,27 +250,10 @@ class RemoteManager(BaseManager):
         self.process_requests(requests, self._download_file, self.upload_rate)
 
     def process_requests(self, requests, process_function, ratelimit=None):
-        logger = logging.getLogger(__name__)
-        for req in requests:
-            req.last_attempt = datetime.now()
-            retry = 0
-            while retry < self.MAX_RETRY:
-                try:
-                    req.attempts += 1
-                    req.last_update = time.time()
-                    if isinstance(req, self.UploadRequestClass): # no resume
-                        req.transferred_bytes = 0
-                    initialbytes = req.transferred_bytes
-                    req.save()
-                    process_function(req.volume.path, req.volume.filename,
-                                     ratelimit=ratelimit, callback=req.update)
-                    req.finish()
-                    logger.info("%s processado com sucesso" % req)
-                    break
-                except pycurl.error, e:
-                    retry += 1
-                    register_transferred_data(req, initialbytes)
-                    logger.error("Erro ao processar %s" % req)
+
+        for request in requests:
+            process_request(request, process_function, ratelimit, self.MAX_RETRY)
+
 
     def delete_volume(self, volume):
         try:

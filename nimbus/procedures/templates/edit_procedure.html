@@ -31,10 +31,10 @@
                 <p><label>{{ field.label }}:</label><br />
                     {{ field }}
                     {% if field.label == 'Schedule' %}
-                        ou modifique o atual: <a href="/schedules/add" class="side_link schedules">[{{schedule}}]</a>
+                        ou modifique o atual: <a href="/schedules/{{schedule.id}}/edit" class="side_link schedules">[{{schedule.name}}]</a>
                     {% endif %}
                     {% if field.label == 'Fileset' %}
-                        ou modifique o atual: <a href="/filesets/add" class="side_link filesets">[{{fileset}}]</a>
+                        ou modifique o atual: <a href="/filesets/{{fileset.id}}/edit" class="side_link filesets">[{{fileset.name}}]</a>
                     {% endif %}
                 </p>
             {% endfor %}

@@ -5,49 +5,65 @@ import traceback
 import simplejson
 import socket
 
+from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from nimbus.computers.models import Computer
 from nimbus.schedules import forms
 from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_range
-from nimbus.schedules.models import Schedule as Schedule_obj
+from nimbus.schedules.models import Schedule
 
-
-# def add(request):
+# def edit_do_(request, procedure_id):
+#     p = get_object_or_404(Procedure, pk=procedure_id)
+#     title = u"Editando '%s'" % p.name
+#     partial_form = ProcedureEditForm(prefix="procedure", instance=p)
+#     lforms = [partial_form]
+#     content = {'title': title,
+#               'forms':lforms,
+#               'id': procedure_id,
+#               'schedule': p.schedule,
+#               'fileset': p.fileset}
 #     if request.method == "POST":
-#         print "#############################################################"
-#         pass
-#     lforms = [forms.ScheduleForm(prefix="schedule")]
-#     schedule_forms = forms.make_schedule_form_container()
-#     schedule_forms.get()
-#     content = {'title':u'Criar Agendamento',
-#                'levels':levels,
-#                'forms':lforms,
-#                'formset':schedule_forms,
-#                'days':days_range,
-#                'end_days':end_days_range,
-#                'weekdays':weekdays_range,
-#                'messages': {
-#                    'Mensagem teste':u'Mensagem teste'
-#                }}
-#     return render_to_response('add_schedules.html', content)
+#         data = copy(request.POST)
+#         if data['procedure-schedule'] == u"":
+#             data['procedure-schedule'] = u"%d" % p.schedule.id
+#         if data['procedure-fileset'] == u"":
+#             data['procedure-fileset'] = u"%d" % p.fileset.id
+#         procedure_form = ProcedureEditForm(data, instance=p, prefix="procedure")
+#         if procedure_form.is_valid():
+#             procedure_form.save()
+#             messages.success(request, "Procedimento alterado com sucesso")
+#             return redirect('/procedures/list')
+#         else:
+#             messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
+#             content['forms'] = [procedure_form]
+#             return render_to_response(request, "edit_procedure.html", content)
+#     return render_to_response(request, 'edit_procedure.html', content)
 
 def edit(request, object_id):
-    print object_id
-    schedule = Schedule_obj.objects.get(id=object_id)
-    template = 'base_schedules.html'
-    lforms = [forms.ScheduleForm(prefix="schedule", instance=schedule)]
-    schedule_forms = forms.make_schedule_form_container(schedule)
+    s = get_object_or_404(Schedule, pk=object_id)
+    title = u"Editando '%s'" % s.name
+    lforms = forms.ScheduleForm(prefix="schedule", instance=s)
+    schedule_forms = forms.make_schedule_form_container()
     schedule_forms.get()
-    extra_content = {'title':u'Editar Agendamento',
-                     'levels':levels,
-                     'forms':lforms,
-                     'formset':schedule_forms,
-                     'days':days_range,
-                     'end_days':end_days_range,
-                     'weekdays':weekdays_range}
-    return render_to_response(template, extra_content)
+    days_range = range(1, 32)
+    weekdays_range = {0:'Domingo',
+                      1:'Segunda',
+                      2:'Terca',
+                      3:'Quarta',
+                      4:'Quinta',
+                      5:'Sexta',
+                      6:'Sabado'}
+    end_days_range = [5, 10, 15, 20, 25, 30]
+    extra_content = {'title': title,
+                     'levels': levels,
+                     'forms': [lforms],
+                     'formset': schedule_forms,
+                     'days': days_range,
+                     'end_days': end_days_range,
+                     'weekdays': weekdays_range}
+    return render_to_response('edit_schedules.html', extra_content)
 
 def render(request, object_id=0):
     lforms = [ forms.ScheduleForm(prefix="schedules", initial={'computer':object_id}) ]
@@ -55,12 +71,6 @@ def render(request, object_id=0):
                'forms':lforms,
                'computer_id':object_id}
     return render_to_response("backup_add.html", content)
-
-def profile_new(request):
-    lforms = [forms.ProfileForm(prefix="profile")]
-    content = {'title':u'Criar Perfil de Backup',
-               'forms':lforms}
-    return render_to_response("profile_new.html", content)
 
 def insert_schedule(POST_data):
     if POST_data.has_key('schedule-name') and (POST_data['schedule-name'] != ''):
@@ -160,7 +170,6 @@ def insert_hourly(data, schedule):
         return None
 
 def add_schedule(request):
-    print "##################################################################"
     lforms = [forms.ScheduleForm(prefix="schedule")]
     schedule_forms = forms.make_schedule_form_container()
     schedule_forms.get()
@@ -201,91 +210,6 @@ def add_schedule(request):
     return render_to_response("add_schedule.html", content)
 
 
-# def fileset_new(request, object_id):
-#     # apenas teste, remover em modo de produção
-#     if request.method == "POST":
-#         print request.POST
-#     lforms = [forms.FileSetForm(prefix="fileset")]
-#     lformsets = [forms.FilePathForm(prefix="filepath")]
-#     formset = forms.FilesFormSet()
-#     content = {'title':u'Criar Sistema de Arquivos',
-#                'forms':lforms,
-#                'formsets':lformsets,
-#                'computer_id':object_id,
-#                'formset' : formset}
-#     return render_to_response("fileset_new.html", content)
-
-
-# def get_tree(request):
-#     if request.method == "POST":
-#         try:
-#             path = request.POST['path']
-#             computer_id = request.POST['computer_id']
-#             try:
-#                 computer = Computer.objects.get(id=computer_id)
-#                 files = computer.get_file_tree(path)
-#                 response = simplejson.dumps(files)
-#             except socket.error, error:
-#                 response = simplejson.dumps({"type" : "error",
-#                                              "message" : "Impossível conectar ao cliente"})
-#             except Computer.DoesNotExist, error:
-#                 response = simplejson.dumps({"type" : "error",
-#                                              "message" : "Computador não existe"})
-#             return HttpResponse(response, mimetype="text/plain")
-#         except Exception:
-#             traceback.print_exc()
-
-
-
-
-
-# # -*- coding: utf-8 -*-
-# 
-# from time import strftime, strptime
-# 
-# 
-# from django.shortcuts import redirect
-# from django.core.exceptions import ValidationError
-# from django.contrib.auth.decorators import login_required
-# 
-# from nimbus.schedules.models import Schedule, Hourly
-# from nimbus.schedules.forms import (ScheduleForm, DailyForm, MonthlyForm,
-#                                     HourlyForm, WeeklyForm)
-# from nimbus.schedules.shared import trigger_class, trigger_map
-# from nimbus.shared.views import render_to_response
-# from nimbus.shared import utils
-# from nimbus.libs.db import Session
-# 
-# from django.contrib import messages
-# from nimbus.shared.enums import days, weekdays, levels, operating_systems
-# 
-# 
-# @login_required
-# def add(request):
-#     title = u"Criar agendamento"
-# 
-#     schedule_form = ScheduleForm()
-#     daily_form = DailyForm()
-#     monthly_form = MonthlyForm()
-#     hourly_form = HourlyForm()
-#     weekly_form = WeeklyForm()
-# 
-#     extra_content = {
-#         'days': days,
-#         'weekdays': weekdays,
-#         'levels': levels,
-#         'operating_systems': operating_systems,
-#         'schedule_form': schedule_form
-#     }
-#     extra_content.update(**locals())
-# 
-#     if request.method == 'POST':
-#         # TODO: Save.
-#         pass
-# 
-#     return render_to_response(request, 'add_schedules.html', extra_content)
-# 
-# 
 # @login_required
 # def edit(request, object_id):
 # 
