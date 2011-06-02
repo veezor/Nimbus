@@ -206,3 +206,15 @@ $(document).ready(function(){
     });
 
 });
+/* Slider */
+$(document).ready(function(){
+	$("#slider_value").html("10");
+	$("#slider").slider({ 
+		animate: true, step: 1, max: 31, min: 0, value: 10
+	});
+	$("#slider").bind("slide", function(){
+		var value = $("#slider").slider("option", "value");
+		$("#slider_value").html(value);
+		$("#id_procedure-pool_retention_time").val(value);
+	});
+});

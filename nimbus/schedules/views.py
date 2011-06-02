@@ -110,7 +110,7 @@ def insert_monthly(data, schedule):
         days = data['schedule.monthly.day']
         if (len(days) > 1) and (days[-1] == ","):
             days = days[0:-1]
-        month_form = forms.MonthForm({'schedule': schedule.id,
+        month_form = forms.MonthlyForm({'schedule': schedule.id,
                                         'days': days,
                                         'hour': data['month-hour'],
                                         'level': data['month-level']})
@@ -128,7 +128,7 @@ def insert_weekly(data, schedule):
         days = data['schedule.weekly.day']
         if days[-1] == ",":
             days = days[0:-1]
-        week_form = forms.WeekForm({'schedule': schedule.id,
+        week_form = forms.WeeklyForm({'schedule': schedule.id,
                                       'days': days,
                                       'hour': data['week-hour'],
                                       'level': data['week-level']})
@@ -143,7 +143,7 @@ def insert_weekly(data, schedule):
 
 def insert_daily(data, schedule):
     if data.has_key('schedule.dayly.active'):
-        day_form = forms.DayForm({'schedule': schedule.id,
+        day_form = forms.DailyForm({'schedule': schedule.id,
                                     'hour': data['day-hour'],
                                     'level': data['day-level']})
         if day_form.is_valid():
@@ -157,7 +157,7 @@ def insert_daily(data, schedule):
         
 def insert_hourly(data, schedule):
     if data.has_key('schedule.hourly.active'):
-        hour_form = forms.HourForm({'schedule': schedule.id,
+        hour_form = forms.HourlyForm({'schedule': schedule.id,
                                     'minute': data['hour-minute'],
                                     'level': data['hour-level']})
         if hour_form.is_valid():
