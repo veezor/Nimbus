@@ -95,8 +95,10 @@ class App(object):
         try:
             args = sys.argv[2]
             volumes = args.split('|')
+            volumes = filter(None, volumes)
             volumes = offsite.get_volumes_abspath( volumes )
             manager = offsite.RemoteManager()
+
             for volume in volumes:
                 manager.create_upload_request( volume )
 
