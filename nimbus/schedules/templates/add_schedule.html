@@ -1,11 +1,13 @@
-{% extends "base_async.html" %}
+<!-- {#% extends "base_async.html" %} -->
+{% extends "base.html" %}
 {% block headtags %}
     
 <link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
 <link rel="stylesheet" type="text/css" href="/media/lib/css/style.css" />
 <script type="text/javascript" src="/media/js/backup.js"></script>
 <script type="text/javascript" src="/media/js/schedules.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/media/js/jquery-ui-1.7.2.custom.min.js"></script>
+<!-- <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script> -->
 <style type="text/css">
 td{padding: 50px;}
 </style>
@@ -71,7 +73,7 @@ td{padding: 50px;}
                 {% for day in days %}
 
                 <td style="padding: 8px;"><label for="day_{{day}}">
-                <input type="checkbox" id="day_{{day}}" class="month_checkbox schedule no-style" name="schedule.monthly.day" value="{{day}}" {% if day in schedule_monthly_day %}checked="checked"{% endif %} />
+                <input type="checkbox" id="day_{{day}}" class="month_checkbox schedule no-style" value="{{day}}"/>
                 {{day}}º</label></td>
                     {% if day in end_days %}</tr><tr>{% endif %}
                 {% endfor %}
