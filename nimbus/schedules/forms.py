@@ -30,9 +30,10 @@ class ScheduleForm(forms.ModelForm):
         model = models.Schedule
 
 
-class DailyForm(forms.ModelForm):
-    class Meta:
-        model = models.Day
+# class DailyForm(forms.ModelForm):
+#  
+#     class Meta:
+#         model = models.Day
 
 
 class MonthForm(forms.ModelForm):

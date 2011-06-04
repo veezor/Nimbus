@@ -1,4 +1,50 @@
 $(document).ready(function(){
+	var month_append = "";
+	$(".month_checkbox").click(function(){
+		if (this.checked == true)
+		{
+			var value = this.value;
+			if ($("#id_month-days").val() == "")
+			{
+				month_append = value;
+			}
+			else
+			{
+				month_append = $("#id_month-days").val() + "," + value;
+			}
+			$("#id_month-days").val(month_append);
+		}
+		else
+		{
+			var value = this.value;
+			var month_value = $("#id_month-days").val();
+			var remove = month_value.replace(value+",", "");
+			$("#id_month-days").val(remove);
+		}
+	});
+	var week_append = "";
+	$(".week_checkbox").click(function(){
+		if (this.checked == true)
+		{
+			var value = this.value;
+			if ($("#id_week-days").val() == "")
+			{
+				week_append = value;
+			}
+			else
+			{
+				week_append = $("#id_week-days").val() + "," + value;
+			}
+			$("#id_week-days").val(week_append);
+		}
+		else
+		{
+			var value = this.value;
+			var week_value = $("#id_week-days").val();
+			var remove = week_value.replace(value+",", "");
+			$("#id_week-days").val(remove);
+		}
+	});
     function commit_settings(is_model){
     	console.log(is_model);
         var dataString = "";

@@ -5,6 +5,7 @@
 <link rel="stylesheet" type="text/css" href="/media/lib/css/style.css" />
 <script type="text/javascript" src="/media/js/backup.js"></script>
 <script type="text/javascript" src="/media/js/schedules.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <style type="text/css">
 td{padding: 50px;}
 </style>
@@ -44,25 +45,24 @@ td{padding: 50px;}
                 <li>{{ errors.schedule_hour }}</li>
             </ul>
             {% endif %}
-            {% for form in forms %}
-            {{ form.non_field_errors }}
-            <label>{{ form.name.label }}:</label> {{ form.name }}
-            {% endfor %}
+            {{ schedule_form.non_field_errors }}
+            <label>{{ schedule_form.name.label }}:</label> {{ schedule_form.name }}<br/>
+            <label>Salvar como modelo</label> {{ schedule_form.is_model }}
         </div>
 
         <div class="sidebar">
             <ul class="sidemenu">
-                <li><a href="#mensal" class="monthly active">Mensal</a></li>
-                <li><a href="#semanal" class="weekly">Semanal</a></li>
-                <li><a href="#diario" class="dayly">Diário</a></li>
-                <li><a href="#minuto" class="hourly">Minuto</a></li>
+                <li><a href="#mensal" class="monthly">Mensal</a><input type="checkbox" name="month-active" class="schedule_activate" id="monthly" value="1"/></li>
+                <li><a href="#semanal" class="weekly">Semanal</a><input type="checkbox" name="week-active" class="schedule_activate" id="weekly" value="1"/></li>
+                <li><a href="#diario" class="dayly">Diário</a><input type="checkbox" name="day-active" class="schedule_activate" id="dayly" value="1"/></li>
+                <li><a href="#minuto" class="hourly">Hora em hora</a><input type="checkbox" name="hour-active" class="schedule_activate" id="hourly" value="1"/></li>
             </ul>
             <p>Agende a execução deste backup, é possível ativar mais de um agendamento.</p>
         </div>		<!-- .sidebar ends -->
         <div class="sidebar_content" id="mensal">
-            <p>
-                <input type="checkbox" name="schedule.monthly.active" class="schedule_activate no-style" id="monthly" value="1" {% if schedule_monthly_active %}checked="checked"{% endif %} /> <label for="monthly">Ativar</label>
-            </p>
+            <!-- <p>
+	            <input type="checkbox" name="month-active" class="schedule_activate" id="monthly" value="1"/> <label for="weekly">Ativar</label>
+            </p> -->
             <div class="personal_message"><p>Executa o backup em determinados dias do mês, sempre no horário especificado.</p></div>
             <p>
                 <table border="0" cellpadding="0" cellspacing="0">
@@ -71,7 +71,7 @@ td{padding: 50px;}
                 {% for day in days %}
 
                 <td style="padding: 8px;"><label for="day_{{day}}">
-                <input type="checkbox" id="day_{{day}}" class="schedule" name="schedule.monthly.day" value="{{day}}" {% if day in schedule_monthly_day %}checked="checked"{% endif %} />
+                <input type="checkbox" id="day_{{day}}" class="month_checkbox schedule no-style" name="schedule.monthly.day" value="{{day}}" {% if day in schedule_monthly_day %}checked="checked"{% endif %} />
                 {{day}}º</label></td>
                     {% if day in end_days %}</tr><tr>{% endif %}
                 {% endfor %}
@@ -79,25 +79,33 @@ td{padding: 50px;}
                 </tbody>
                 </table>
             </p>
+			<p>
+				<!-- este paragrafo deve ser hidden -->
+                <label>{{ month_form.days.label }}</label>
+                {{ month_form.days }}<br/>
+			</p>
             <p>
-                <label>{{ formset.month.hour.label }}</label>
-                {{ formset.month.hour }}<br/>
+                <label>{{ month_form.hour.label }}</label>
+                {{ month_form.hour }}<br/>
                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
             </p>
             <p>
-                <label>{{ formset.month.level.label }}:</label>
-                {{ formset.month.level }}<br />
+                <label>{{ month_form.level.label }}:</label>
+                {{ month_form.level }}<br />
                 <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
             </p>
             <p>
-                <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" />
+				<input type="submit" class="submit" value="Criar" />
+                <!-- <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" /> -->
             </p>
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="semanal">
-            <p>
-                <input type="checkbox" name="week.active" class="schedule_activate no-style" id="weekly" value="1" {% if schedule_weekly_active %}checked="checked"{% endif %} /> <label for="weekly">Ativar</label>
-            </p>
+            <!-- <p> -->
+                <!-- <input type="checkbox" name="week-active" class="schedule_activate" id="weekly" value="1" {% if schedule_weekly_active %}checked="checked"{% endif %} /> <label for="weekly">Ativar</label> -->
+				<!-- <label>{{week_form.active.label}}</label>
+				{{week_form.active}} -->
+            <!-- </p> -->
             <div class="personal_message"><p>Executa o backup em determinados dias da semana, sempre no horário especificado.</p></div>
             <p>
                 <table border="0" cellpadding="0" cellspacing="0">
@@ -106,7 +114,7 @@ td{padding: 50px;}
                 {% for key,vlw in weekdays.items %}
 
                 <td style="padding: 8px;"><label for="day_{{day}}">
-                <input type="checkbox" id="day_{{key}}" name="schedule.weekly.day" value="{{key}}" class="no-style" {% if key in schedule_weekly_day %}checked="checked"{% endif %} />
+                <input type="checkbox" id="day_{{key}}" name="schedule.weekly.day" value="{{key}}" class="week_checkbox no-style" {% if key in schedule_weekly_day %}checked="checked"{% endif %} />
                 {{vlw}}</label></td>
                     </tr><tr>
                 {% endfor %}
@@ -114,58 +122,70 @@ td{padding: 50px;}
                 </tbody>
                 </table>
             </p>
+			<p>
+				<!-- este paragrafo deve ser hidden -->
+                <label>{{ week_form.days.label }}</label>
+                {{ week_form.days }}<br/>
+			</p>
             <p>
-                <label>{{ formset.week.hour.label }}:</label>
-                {{ formset.week.hour }}<br />
+                <label>{{ week_form.hour.label }}:</label>
+                {{ week_form.hour }}<br />
                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
             </p>
             <p>
-                <label>{{ formset.week.level.label }}:</label>
-                {{ formset.week.level }}<br />
+                <label>{{ week_form.level.label }}:</label>
+                {{ week_form.level }}<br />
                 <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
             </p>
             <p>
-                <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" />
+				<input type="submit" class="submit" value="Criar" />
+                <!-- <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" /> -->
             </p>
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="diario">
-            <p>
-                <input type="checkbox" name="schedule.dayly.active" class="schedule_activate no-style" id="dayly" value="1" {% if schedule_dayly_active %}checked="checked"{% endif %} /> <label for="dayly">Ativar</label>
-            </p>
+            <!-- <p> -->
+                <!-- <input type="checkbox" name="day-active" class="schedule_activate" id="dayly" value="1" {% if schedule_dayly_active %}checked="checked"{% endif %} /> <label for="dayly">Ativar</label> -->
+				<!-- <label>{{day_form.active.label}}</label>
+				{{day_form.active}} -->
+            <!-- </p> -->
             <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
             <p>
-                <label>{{ formset.day.hour.label }}:</label>
-                {{ formset.day.hour }}<br />
+                <label>{{ day_form.hour.label }}:</label>
+                {{ day_form.hour }}<br />
                 <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
             </p>
             <p>
-                <label>{{ formset.day.level.label }}:</label>
-                {{ formset.day.level }}<br />
+                <label>{{ day_form.level.label }}:</label>
+                {{ day_form.level }}<br />
                 <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
             </p>
             <p>
-                <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" />
+				<input type="submit" class="submit" value="Criar" />
+                <!-- <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" /> -->
             </p>
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="minuto">
-            <p>
-                <input type="checkbox" name="schedule.hourly.active" class="schedule_activate no-style" id="hourly" value="1" {% if schedule_hourly_active %}checked="checked"{% endif %} /> <label for="hourly">Ativar</label>
-            </p>
+            <!-- <p> -->
+                <!-- <input type="checkbox" name="hour-active" class="schedule_activate" id="hourly" value="1" {% if schedule_hourly_active %}checked="checked"{% endif %} /> <label for="hourly">Ativar</label> -->
+				<!-- <label>{{hour_form.active.label}}</label>
+				{{hour_form.active}} -->
+            <!-- </p> -->
             <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
             <p>
-                <label>{{ formset.hour.minute.label }}:</label>
-                {{ formset.hour.minute }}<br />
+                <label>{{ hour_form.minute.label }}:</label>
+                {{ hour_form.minute }}<br />
                 <small>Exemplo: 20, 35 ou 08.</small>
             </p>
             <p>
-                <label>{{ formset.hour.level.label }}:</label>
-                {{ formset.hour.level }}<br />
+                <label>{{ hour_form.level.label }}:</label>
+                {{ hour_form.level }}<br />
                 <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
             </p>
             <p>
-                <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" />
+				<input type="submit" class="submit" value="Criar" />
+                <!-- <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" /> -->
             </p>
         </div>
         </form>
