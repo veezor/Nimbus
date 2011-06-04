@@ -37,6 +37,7 @@ class ScheduleForm(forms.ModelForm):
 
 
 class MonthForm(forms.ModelForm):
+    active = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class':'schedule_activate', 'id': 'monthly'}))
     hour = forms.CharField(label="Hora", widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
     days = forms.CharField(widget=forms.HiddenInput())
     
@@ -44,11 +45,13 @@ class MonthForm(forms.ModelForm):
         model = models.Month
 
 class HourForm(forms.ModelForm):
+    active = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class':'schedule_activate', 'id': 'hourly'}))
     minute = forms.CharField(label=u'Minuto', widget=forms.TextInput(attrs={'class':'text small mascara_minuto'}))
     class Meta:
         model = models.Hour
 
 class WeekForm(forms.ModelForm):
+    active = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class':'schedule_activate', 'id': 'weekly'}))
     hour = forms.CharField(label=u'Hora', widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
     days = forms.CharField(widget=forms.HiddenInput())
 
@@ -56,6 +59,7 @@ class WeekForm(forms.ModelForm):
         model = models.Week
 
 class DayForm(forms.ModelForm):
+    active = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class':'schedule_activate', 'id': 'daily'}))
     hour = forms.CharField(label=u'Hora', widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
     class Meta:
         model = models.Day

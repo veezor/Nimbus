@@ -54,10 +54,10 @@ td{padding: 50px;}
 
         <div class="sidebar">
             <ul class="sidemenu">
-                <li><a href="#mensal" class="monthly">Mensal</a><input type="checkbox" name="month-active" class="schedule_activate" id="monthly" value="1"/></li>
-                <li><a href="#semanal" class="weekly">Semanal</a><input type="checkbox" name="week-active" class="schedule_activate" id="weekly" value="1"/></li>
-                <li><a href="#diario" class="dayly">Diário</a><input type="checkbox" name="day-active" class="schedule_activate" id="dayly" value="1"/></li>
-                <li><a href="#minuto" class="hourly">Hora em hora</a><input type="checkbox" name="hour-active" class="schedule_activate" id="hourly" value="1"/></li>
+                <li><a href="#mensal" class="monthly">Mensal</a>{{ month_form.active }}</li>
+                <li><a href="#semanal" class="weekly">Semanal</a>{{ week_form.active }}</li>
+                <li><a href="#diario" class="daily">Diário</a>{{ day_form.active }}</li>
+                <li><a href="#minuto" class="hourly">Hora em hora</a>{{ hour_form.active }}</li>
             </ul>
             <p>Agende a execução deste backup, é possível ativar mais de um agendamento.</p>
         </div>		<!-- .sidebar ends -->
