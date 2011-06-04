@@ -228,12 +228,14 @@ def add_schedule(request):
                     to_validate_forms.append(hour_form)
                 if all([f.is_valid() for f in to_validate_forms]):
                     [f.save() for f in to_validate_forms]
-                    content['messages'] = [u"Agendamento '%s' criado com sucesso" % schedule.name]
+                    # content['messages'] = [u"Agendamento '%s' criado com sucesso" % schedule.name]
+                    messages.sucess(request, "Agendamento '%s' criado com sucesso" % schedule.name)
                 else:
                     schedule.delete()
-                    content['messages'] = [u"Nenhum agendamento foi criado"]
+                    messages.error(request, "Nenhum agendamento foi criado")
+                    # content['messages'] = [u"Nenhum agendamento foi criado"]
         else:
-            content['messages'] = [u"Nenhum agendamento foi selecionado"]
+            messages.error(request, "Nenhum agendamento foi selecionado")
     return render_to_response(request, "add_schedule.html", content)
 
 
