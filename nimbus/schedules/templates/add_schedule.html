@@ -73,7 +73,7 @@ td{padding: 50px;}
                 {% for day in days %}
 
                 <td style="padding: 8px;"><label for="day_{{day}}">
-                <input type="checkbox" id="day_{{day}}" class="month_checkbox schedule no-style" value="{{day}}"/>
+                <input type="checkbox" id="month_day_{{day}}" class="month_checkbox schedule no-style" value="{{day}}"/>
                 {{day}}º</label></td>
                     {% if day in end_days %}</tr><tr>{% endif %}
                 {% endfor %}
@@ -81,11 +81,7 @@ td{padding: 50px;}
                 </tbody>
                 </table>
             </p>
-			<p>
-				<!-- este paragrafo deve ser hidden -->
-                <label>{{ month_form.days.label }}</label>
-                {{ month_form.days }}<br/>
-			</p>
+                {{ month_form.days }}
             <p>
                 <label>{{ month_form.hour.label }}</label>
                 {{ month_form.hour }}<br/>
@@ -116,7 +112,7 @@ td{padding: 50px;}
                 {% for key,vlw in weekdays.items %}
 
                 <td style="padding: 8px;"><label for="day_{{day}}">
-                <input type="checkbox" id="day_{{key}}" name="schedule.weekly.day" value="{{key}}" class="week_checkbox no-style" {% if key in schedule_weekly_day %}checked="checked"{% endif %} />
+                <input type="checkbox" id="week_day_{{key}}" name="schedule.weekly.day" value="{{key}}" class="week_checkbox no-style" {% if key in schedule_weekly_day %}checked="checked"{% endif %} />
                 {{vlw}}</label></td>
                     </tr><tr>
                 {% endfor %}
@@ -124,11 +120,7 @@ td{padding: 50px;}
                 </tbody>
                 </table>
             </p>
-			<p>
-				<!-- este paragrafo deve ser hidden -->
-                <label>{{ week_form.days.label }}</label>
                 {{ week_form.days }}<br/>
-			</p>
             <p>
                 <label>{{ week_form.hour.label }}:</label>
                 {{ week_form.hour }}<br />

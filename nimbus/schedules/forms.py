@@ -38,6 +38,8 @@ class ScheduleForm(forms.ModelForm):
 
 class MonthForm(forms.ModelForm):
     hour = forms.CharField(label="Hora", widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
+    days = forms.CharField(widget=forms.HiddenInput())
+    
     class Meta:
         model = models.Month
 
@@ -48,6 +50,8 @@ class HourForm(forms.ModelForm):
 
 class WeekForm(forms.ModelForm):
     hour = forms.CharField(label=u'Hora', widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
+    days = forms.CharField(widget=forms.HiddenInput())
+
     class Meta:
         model = models.Week
 
