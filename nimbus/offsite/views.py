@@ -10,7 +10,6 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-import nimbusgateway
 from nimbus.libs import offsite, systemprocesses
 from nimbus.offsite.models import (LocalUploadRequest, 
                                    RemoteUploadRequest, 
@@ -38,15 +37,12 @@ def detail(request):
                                    'content': content}]
     offsite = Offsite.get_instance()
     if offsite.active:
-        api = nimbusgateway.Api(offsite.username,
-                                offsite.password,
-                                offsite.gateway_url)
         try:
             graph_data_manager = GraphDataManager()
             data = graph_data_manager.list_offsite_measures()
             if data:
                 usage = graph_data_manager.list_offsite_measures()[-1][-1]
-                ocupacao_offsite =  usage / float(api.get_plan_size())
+                ocupacao_offsite =  usage / float(offsite.plan_size)
                 # [(date, value),...]
             else:
                 ocupacao_offsite = 0.0

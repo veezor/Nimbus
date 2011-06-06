@@ -15,7 +15,6 @@ import pycurl
 from django.conf import settings
 from django.db.models import Max
 
-import nimbusgateway
 from nimbus.offsite.models import (Offsite,
                                    RemoteUploadRequest)
 
@@ -43,7 +42,7 @@ class QueueServiceManager(object):
     @property
     def ratelimit(self):
         offsite = Offsite.get_instance()
-        return offsite.upload_rate
+        return offsite.rate_limit
 
     def increase_concurrent_workers(self):
         with self.lock:
@@ -61,7 +60,10 @@ class QueueServiceManager(object):
 
 
     def get_worker_ratelimit(self):
-        return self.ratelimit / float(self.get_concurrent_workers())
+        if self.get_concurrent_workers():
+            return self.ratelimit / float(self.get_concurrent_workers())
+        else:
+            return 0
 
 
     def _get_max_volume_size(self):
@@ -114,6 +116,9 @@ class QueueServiceManager(object):
 
         queue_manager = self.requests[request_id]
         queue_manager.cancel_request(request)
+
+        del self.requests[request_id]
+        request.delete()
 
 
     def set_request_as_done(self, request_id):
@@ -176,10 +181,11 @@ class PriorityQueueManager(Thread):
         self._stop_current_worker()
 
 
-    def _stop_current_worker(self):
+    def _stop_current_worker(self, cancel_current_request=False):
         if self.current_worker:
             self.current_worker.terminate()
-            self.add_request(self.current_worker.request)
+            if not cancel_current_request:
+                self.add_request(self.current_worker.request)
 
 
     def add_request(self, request):
@@ -188,7 +194,7 @@ class PriorityQueueManager(Thread):
 
     def cancel_request(self, request):
         if request == self.current_request:
-            self._stop_current_worker()
+            self._stop_current_worker(cancel_current_request=True)
         else:
             self.queue.remove(request)
 
@@ -250,21 +256,24 @@ class Worker(Process):
     def __init__(self, request):
         super(Worker, self).__init__()
         self.request = request
-        offsite = Offsite.get_instance()
-        self.api = nimbusgateway.Api(username=offsite.username,
-                       password=offsite.password,
-                       gateway_url=offsite.gateway_url)
+        self.s3 = Offsite.get_s3_interface()
 
 
     def run(self):
         from nimbus.libs.offsite import process_request
         try:
             request_id = self.request.id
-            process_request(self.request, self.api.upload_file,
+            process_request(self.request, self._upload_file,
                             get_worker_ratelimit(), self.MAX_RETRY)
             set_request_as_done(request_id)
-        except pycurl.error:
+        except IOError, error:
             sys.exit(2)
+
+
+    def _upload_file(self, filename, dest, callback=None, userdata=None):
+        self.s3.multipart_status_callbacks.add_callback( userdata.increment_part )
+        self.s3.upload_file(filename, dest, part=userdata.part, callback=callback)
+        self.s3.multipart_status_callbacks.remove_callback( userdata.increment_part )
 
 
 
@@ -278,7 +287,7 @@ def _start_queue_manager_service():
 
 
 def _get_queue_service_manager():
-    proxy = xmlrpclib.ServerProxy(settings.QUEUE_MANAGER_SERVICE_URL)
+    proxy = xmlrpclib.ServerProxy(settings.QUEUE_SERVICE_MANAGER_URL)
     proxy.check_service()
     return proxy
 
@@ -301,6 +310,8 @@ def get_worker_ratelimit():
     ratelimit = service_manager.get_worker_ratelimit()
     if ratelimit < 0:
         return -1
+
+    return ratelimit
 
 
 

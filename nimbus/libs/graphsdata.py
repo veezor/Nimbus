@@ -10,7 +10,6 @@ from urllib2 import URLError
 from django.conf import settings
 
 import systeminfo
-import nimbusgateway
 from nimbus.offsite.models import Offsite
 
 
@@ -53,13 +52,10 @@ class GraphDataManager(object):
             pickle.dump(data, fileobj)
 
     def get_offsite_data(self):
-        offsite = Offsite.get_instance()
+        s3 = Offsite.get_s3_interface()
         if offsite.active:
-            api = nimbusgateway.Api(offsite.username,
-                                    offsite.password,
-                                    offsite.gateway_url)
             try:
-                return api.get_size()
+                return s3.get_usage()
             except URLError, error:
                 return 0.0
         else:

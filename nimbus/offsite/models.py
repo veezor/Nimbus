@@ -3,41 +3,103 @@
 
 
 import os
+import json
 import logging
+import urllib2
 from time import time
 from datetime import datetime
-from urllib2 import URLError
 
 from django.db import models
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 
-from nimbus.base.models import UUIDSingletonModel as BaseModel
+
+from nimbus.libs.S3 import S3, S3AuthError
 from nimbus.shared import fields, signals
-from nimbusgateway import Api
+from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 
 class Offsite(BaseModel):
     username = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
-    gateway_url = models.CharField(max_length=255, editable=False,
-                                   default="http://www.veezor.com:8080")
-    upload_rate = models.IntegerField(default=-1)
+    access_key = models.CharField(max_length=255, blank=True, 
+                                  null=True, editable=False)
+    secret_key = models.CharField(max_length=255, blank=True, 
+                                  null=True, editable=False)
+    rate_limit = models.IntegerField(default=-1)
+    plan_size = models.IntegerField(default=0, editable=False)
     active = models.BooleanField()
 
     def clean(self):
         if self.active:
+
+            logger = logging.getLogger(__name__)
+
             try:
-                api = Api(username=self.username,
-                          password=self.password,
-                          gateway_url=self.gateway_url)
-                api.check_auth()
-            except URLError, error:
-                logger = logging.getLogger(__name__)
-                logger.exception("Auth error")
-                raise ValidationError("Impossível autenticar. Login ou senha não confere")
+                nimbus_central_data = self._get_nimbus_central_data()
+                if nimbus_central_data['status'] != 1:
+                    logger.error("Status da conta do usuário inválido")
+                    raise ValidationError("Sua assinatura está com problemas, verifique situação na central de atendimento")
+            except urllib2.HTTPError, error:
+                if error.getcode() == 401:
+                    logger.error("Username or password error")
+                    raise ValidationError("Usuário ou senha incorretos")
+                else:
+                    raise ValidationError("Impossível conectar. Tente novamente mais tarde")
 
 
+            self.plan_size = nimbus_central_data['quota']
+            self.access_key = nimbus_central_data['accesskey']['id']
+            self.secret_key = nimbus_central_data['accesskey']['secret']
+
+
+            try:
+                s3 = S3(username=self.username,
+                        access_key=self.access_key,
+                        secret_key=self.secret_key,
+                        rate_limit=self.rate_limit)
+            except S3AuthError, error:
+                logger.exception("nimbus central keys error")
+                raise ValidationError("Erro de configuração. Contactar o suporte. Chaves não conferem")
+
+
+
+    def _get_nimbus_central_data(self):
+
+        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        url = settings.NIMBUS_CENTRAL_USER_DATA_URL 
+        password_mgr.add_password(None, url, self.username, self.password)
+
+        handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+        opener = urllib2.build_opener(handler)
+
+        content = opener.open(url)
+        data = content.read()
+        content.close()
+
+        return json.loads(data)
+    
+
+    @classmethod
+    def get_s3_interface(cls):
+        config = cls.get_instance()
+        
+        
+        if config.rate_limit == -1:
+            rate_limit = None
+        else:
+            rate_limit = config.rate_limit * 1024 #kb
+
+        s3 = S3(username=config.username,
+                 access_key=config.access_key,
+                 secret_key=config.secret_key,
+                 rate_limit=rate_limit)
+
+        return s3
+
+
+    
 class Volume(models.Model):
 
     path = fields.ModelPathField(max_length=2048, null=False)
@@ -69,6 +131,7 @@ class DownloadedVolume(OffSiteVolume):
     # WTF
     pass
 
+
 class Request(models.Model):
     UPDATE_DIFF_SIZE_100_KB = 102400
     KB = 1024
@@ -93,24 +156,28 @@ class Request(models.Model):
             self.transferred_bytes = new_bytes_size
             self.save()
 
+
     @property
     def remaining_bytes(self):
         return self.volume.size - self.transferred_bytes
 
+
     @property
     def estimated_transfer_time(self):
-        if self.rate == 0:
+        if not self.rate:
             return "stalled"
         time = self.remaining_bytes / self.rate
         hours,seconds = divmod(time, self.HOURS)
         minutes,seconds = divmod(seconds, self.MINUTES)
         return "%dh%dm%ds" % (hours, minutes, seconds)
 
+
     @property
     def finished_percent(self):
-        if self.volume.size == 0:
+        if not self.volume.size:
             return 100
         return "%.1f" % (float(self.transferred_bytes * 100) / self.volume.size)
+
 
     @property
     def friendly_rate(self):
@@ -140,9 +207,17 @@ class UploadRequest(Request):
         abstract = True
 
 class RemoteUploadRequest(UploadRequest):
+    part = models.IntegerField(default=0, editable=False)
+
+
+    def increment_part(self, filename, part):
+        self.part += 1
+        self.save()
     
     def __unicode__(self):
         return u"RemoteUploadRequest(path=%s)" % self.volume.path
+
+
 
 class LocalUploadRequest(UploadRequest):
 

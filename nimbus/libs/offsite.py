@@ -3,16 +3,18 @@
 
 import os
 import bz2
-import subprocess
-import time
-from os.path import join, exists, isfile, isabs
-import logging
-from datetime import datetime
 import stat
+import time
+import logging
+import subprocess
 from pwd import getpwnam
-import pycurl
+from hashlib import md5
+from datetime import datetime
+from os.path import join, exists, isfile, isabs
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+
 from devicemanager import StorageDeviceManager
 
 from nimbus.base.models import UUIDBaseModel
@@ -30,12 +32,29 @@ from nimbus.offsite.models import (Volume,
 
 from nimbus.offsite.queue_service import get_queue_service_manager
 
-from nimbusgateway import Api, File
-from django.contrib.contenttypes.models import ContentType
+
+
 
 DISK_LABELS_PATH = "/dev/disk/by-label/"
 NIMBUS_DUMP = "/var/nimbus/nimbus-sql.bz2"
 BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
+
+
+
+class Md5CheckError(Exception):
+    pass
+
+def md5_for_large_file(filename, block_size=2**20):                                                                                                               
+    fileobj = file(filename, 'rb')
+    filemd5 = md5()
+    while True:
+        data = fileobj.read(block_size)
+        if not data:
+            break
+        filemd5.update(data)
+    fileobj.close()
+    return filemd5.digest()
+
 
 def list_disk_labels():
     try:
@@ -87,12 +106,42 @@ def filename_is_volumename(filename):
     except Pool.DoesNotExist, error:
         return False
 
-def get_offsite_interface():
-    config = Offsite.get_instance()
-    api = Api(username=config.username,
-              password=config.password,
-              gateway_url=config.gateway_url)
-    return api
+
+class File(object):
+
+    def __init__(self, filename, mode, callback):
+        self.fileobj = file(filename, mode)
+        self.callback = callback
+        self.filesize = os.path.getsize(filename)
+        self.read_bytes = 0
+        self.written_bytes = 0
+
+
+    def read(self, size):
+        r =  self.fileobj.read(size)
+        self.read_bytes += size
+        self.progress_upload( )
+        return r
+
+    def write(self, content):
+        size = len(content)
+        r = self.fileobj.write(content)
+        self.written_bytes += size
+        self.progress_download( )
+        return r
+
+    def progress_download(self):
+        if self.callback:
+            self.callback( self.written_bytes, self.filesize )
+
+
+    def progress_upload(self):
+        if self.callback:
+            self.callback( self.read_bytes, self.filesize )
+
+    def close(self):
+        self.fileobj.close()
+
 
 
 class BaseManager(object):
@@ -195,11 +244,11 @@ def process_request(request, process_function, ratelimit, max_retry=3):
             initialbytes = request.transferred_bytes
             request.save()
             process_function(request.volume.path, request.volume.filename,
-                             ratelimit=ratelimit, callback=request.update)
+                             callback=request.update, userdata=request)
             request.finish()
             logger.info("%s processado com sucesso" % request)
             break
-        except pycurl.error, e:
+        except IOError, e:
             retry += 1
             register_transferred_data(request, initialbytes)
             if retry >= max_retry:
@@ -215,39 +264,41 @@ class RemoteManager(BaseManager):
     MAX_RETRY = 3
 
     def __init__(self):
-        settings = Offsite.get_instance()
-        self.api = Api(username=settings.username,
-                       password=settings.password,
-                       gateway_url=settings.gateway_url)
-        if settings.upload_rate > 0:
-            self.upload_rate = settings.upload_rate * 1024 #kb
-        else:
-            self.upload_rate = None
+        self.s3 = Offsite.get_s3_interface()
+
 
     def process_pending_upload_requests(self):
         requests = self.get_upload_requests()
         queue_manager = get_queue_service_manager()
         for request in requests:
-            queue.add_volume(request.job, request.volume.path)
+            queue_manager.add_request(request.id)
+
+
 
 
     def get_remote_volumes_list(self):
-        return [f[0] for f in self.api.list_all_files() if filename_is_volumename(f[0])]
+        return [ f[0] for f in self.s3.list_files() if filename_is_volumename(f[0]) ]
 
-    def _download_file(self, filename, dest, ratelimit=None, callback=None):
+
+    def _download_file(self, filename, dest, callback=None, userdata=None):
+
         device = Device.objects.all()[0]
         if isabs(filename):
             destfilename = filename
         else:
             destfilename = join(device.archive, filename)
-        self.api.download_file(filename, destfilename, ratelimit, callback,
-                               True)
-        os.chmod(destfilename, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
-        os.chown(destfilename, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
+
+        self.s3.download_file( filename, destfilename, callback=callback)
+
+        os.chmod( destfilename, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
+        os.chown( destfilename, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
+
 
     def process_pending_download_requests(self):
         requests = self.get_download_requests()
-        self.process_requests(requests, self._download_file, self.upload_rate)
+        self.process_requests( requests, self._download_file,
+                               self.s3.rate_limit)
+
 
     def process_requests(self, requests, process_function, ratelimit=None):
 
@@ -255,13 +306,11 @@ class RemoteManager(BaseManager):
             process_request(request, process_function, ratelimit, self.MAX_RETRY)
 
 
+
     def delete_volume(self, volume):
-        try:
-            self.api.delete_file(volume)
-            DeleteRequest.objects.filter(volume__path=volume).delete()
-        except pycurl.error, error:
-            # TODO: TRATAR
-            pass
+        self.s3.delete_file(volume)
+        DeleteRequest.objects.filter(volume__path=volume).delete()
+
 
 
 class LocalManager(BaseManager):
@@ -314,14 +363,18 @@ class LocalManager(BaseManager):
             if not data:
                 break
             dest.write(data)
+        
+        ori.close()
+        dest.close()
+
         try:
             os.chmod(destination, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
             os.chown(destination, getpwnam("nimbus").pw_uid, getpwnam("bacula").pw_gid)
         except (OSError, IOError), error:
-            # TODO: Tratar
-            pass
-        ori.close()
-        dest.close()
+            pass #FIX
+
+        if md5_for_large_file(destination) != md5_for_large_file(origin):
+            raise Md5CheckError("md5 mismatch")
 
     def finish(self):
         self.device_manager.umount()
