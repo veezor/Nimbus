@@ -54,9 +54,6 @@ td{padding: 50px;}
             <p>Agende a execução deste backup, é possível ativar mais de um agendamento.</p>
         </div>		<!-- .sidebar ends -->
         <div class="sidebar_content" id="mensal">
-            <!-- <p>
-	            <input type="checkbox" name="month-active" class="schedule_activate" id="monthly" value="1"/> <label for="weekly">Ativar</label>
-            </p> -->
             <div class="personal_message"><p>Executa o backup em determinados dias do mês, sempre no horário especificado.</p></div>
             <p>
                 <table border="0" cellpadding="0" cellspacing="0">
@@ -89,16 +86,10 @@ td{padding: 50px;}
             </p>
             <p>
 				<input type="submit" class="submit" value="Salvar" /><a href="/procedures/list" class="submit small">Cancelar</a>
-                <!-- <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" /> -->
             </p>
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="semanal">
-            <!-- <p> -->
-                <!-- <input type="checkbox" name="week-active" class="schedule_activate" id="weekly" value="1" {% if schedule_weekly_active %}checked="checked"{% endif %} /> <label for="weekly">Ativar</label> -->
-				<!-- <label>{{week_form.active.label}}</label>
-				{{week_form.active}} -->
-            <!-- </p> -->
             <div class="personal_message"><p>Executa o backup em determinados dias da semana, sempre no horário especificado.</p></div>
             <p>
                 <table border="0" cellpadding="0" cellspacing="0">
@@ -131,16 +122,10 @@ td{padding: 50px;}
             </p>
             <p>
 				<input type="submit" class="submit" value="Salvar" /><a href="/procedures/list" class="submit small">Cancelar</a>
-                <!-- <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" /> -->
             </p>
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="diario">
-            <!-- <p> -->
-                <!-- <input type="checkbox" name="day-active" class="schedule_activate" id="dayly" value="1" {% if schedule_dayly_active %}checked="checked"{% endif %} /> <label for="dayly">Ativar</label> -->
-				<!-- <label>{{day_form.active.label}}</label>
-				{{day_form.active}} -->
-            <!-- </p> -->
             <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
             <p>
 				<div class="day_error">{{ day_form.hour.errors }}</div>
@@ -156,16 +141,10 @@ td{padding: 50px;}
             </p>
             <p>
 				<input type="submit" class="submit" value="Salvar" /><a href="/procedures/list" class="submit small">Cancelar</a>
-                <!-- <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" /> -->
             </p>
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="minuto">
-            <!-- <p> -->
-                <!-- <input type="checkbox" name="hour-active" class="schedule_activate" id="hourly" value="1" {% if schedule_hourly_active %}checked="checked"{% endif %} /> <label for="hourly">Ativar</label> -->
-				<!-- <label>{{hour_form.active.label}}</label>
-				{{hour_form.active}} -->
-            <!-- </p> -->
             <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
             <p>
 				<div class="hour_error">{{ hour_form.minute.errors }}</div>
@@ -181,7 +160,6 @@ td{padding: 50px;}
             </p>
             <p>
 				<input type="submit" class="submit" value="Salvar" /><a href="/procedures/list" class="submit small">Cancelar</a>
-                <!-- <input type="button" class="use_it submit" value="Usar" /><input type="button" class="use_and_save_it submit" value="Salvar como modelo" /> -->
             </p>
         </div>
         </form>
