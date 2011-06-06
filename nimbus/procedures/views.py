@@ -25,14 +25,6 @@ from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
 from nimbus.procedures.forms import ProcedureForm, ProcedureEditForm
 
-def procedure2dict(procedure):
-    return {'name': procedure.name,
-            'computer': procedure.computer,
-            'pool_retention_time': procedure.pool_retention_time,
-            'active': procedure.active,
-            'schedule': procedure.schedule,
-            'fileset': procedure.fileset,
-            'storage': procedure.storage}
 
 @login_required
 def add(request):
@@ -45,7 +37,7 @@ def add(request):
         procedure_form = ProcedureForm(data, prefix="procedure")
         if procedure_form.is_valid():
             procedure = procedure_form.save()
-            messages.success(request, "Procedimento de backup criado com sucesso")
+            messages.success(request, "Procedimento de backup '%s' criado com sucesso" % procedure.name)
             return redirect('/procedures/list')
         else:
             messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
