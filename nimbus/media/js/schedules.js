@@ -1,4 +1,27 @@
 $(document).ready(function(){
+	var append = "";
+	$(".schedule_checkbox").click(function(){
+		if (this.checked == true)
+		{
+			var value = this.value;
+			if ($("#id_month-days").val() == "")
+			{
+				append = value;
+			}
+			else
+			{
+				append = $("#id_month-days").val() + "," + value;
+			}
+			$("#id_month-days").val(append);
+		}
+		else
+		{
+			var value = this.value;
+			var month_value = $("#id_month-days").val();
+			var remove = month_value.replace(value+",", "");
+			$("#id_month-days").val(remove);
+		}
+	});
     function commit_settings(is_model){
     	console.log(is_model);
         var dataString = "";
