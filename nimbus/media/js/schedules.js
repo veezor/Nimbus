@@ -1,10 +1,45 @@
 $(document).ready(function(){
+<<<<<<< HEAD
+	var append = "";
+	$(".schedule_checkbox").click(function(){
+		if (this.checked == true)
+		{
+			var value = this.value;
+			if ($("#id_month-days").val() == "")
+			{
+				append = value;
+			}
+			else
+			{
+				append = $("#id_month-days").val() + "," + value;
+			}
+			$("#id_month-days").val(append);
+		}
+		else
+		{
+			var value = this.value;
+			var month_value = $("#id_month-days").val();
+			var remove = month_value.replace(value+",", "");
+			$("#id_month-days").val(remove);
+		}
+	});
+    function commit_settings(is_model){
+    	console.log(is_model);
+        var dataString = "";
+        var month_days = "";
+        var week_days = "";
+        $.each($('#schedule_new').serializeArray(), function(i, field) {
+            if (field.name == 'schedule.monthly.day')
+            {
+                month_days += field.value+",";
+=======
 	$(".month_checkbox").click(function(){
     	var month_array = new Array();
 	    var month_days = $(".month_checkbox");
 	    for (var i = 0; i < 31; i++) {
 	        if (month_days[i].checked == true) {
                 month_array.push(i+1)
+>>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
             }
             $("#id_month-days").val(month_array);
         }
