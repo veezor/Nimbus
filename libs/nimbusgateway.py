@@ -189,7 +189,7 @@ class Api(object):
             curl.setopt(pycurl.RESUME_FROM_LARGE, resume_index)
 
 
-        if ratelimit:
+        if ratelimit and ratelimit != -1:
             curl.setopt(pycurl.MAX_RECV_SPEED_LARGE, ratelimit)
 
         try:

@@ -29,6 +29,7 @@ class QueueServiceManager(object):
 
         self.lock = RLock()
         self.concurrent_workers = 0
+        self.requests = {}
 
         self._load_database_requests()
 
@@ -36,7 +37,7 @@ class QueueServiceManager(object):
         self.middle_priority_queue_manager.start()
         self.min_priority_queue_manager.start()
 
-        self.requests = {}
+
 
 
     @property
@@ -87,11 +88,11 @@ class QueueServiceManager(object):
 
     def _load_database_requests(self):
         for request in RemoteUploadRequest.objects.all():
-            self.add_request(request)
+            self.add_request(request.id)
 
 
     def _get_request(self, request_id):
-        return RemoteUploadRequest.objects.get(request_id)
+        return RemoteUploadRequest.objects.get(id=request_id)
 
 
     def add_request(self, request_id):
@@ -258,9 +259,10 @@ class Worker(Process):
     def run(self):
         from nimbus.libs.offsite import process_request
         try:
+            request_id = self.request.id
             process_request(self.request, self.api.upload_file,
                             get_worker_ratelimit(), self.MAX_RETRY)
-            set_request_as_done(self.request.id)
+            set_request_as_done(request_id)
         except pycurl.error:
             sys.exit(2)
 

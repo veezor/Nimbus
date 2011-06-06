@@ -32,6 +32,31 @@ class Schedule(BaseModel):
     def __unicode__(self):
         return self.name
 
+    def if_month(self):
+        try:
+            return self.month
+        except:
+            return None
+
+    def if_week(self):
+        try:
+            return self.week
+        except:
+            return None
+
+    def if_day(self):
+        try:
+            return self.day
+        except:
+            return None
+
+    def if_hour(self):
+        try:
+            return self.hour
+        except:
+            return None
+
+
 
 class Month(BaseModel):
     schedule = models.OneToOneField(Schedule)

@@ -1,4 +1,5 @@
 $(document).ready(function(){
+<<<<<<< HEAD
 	var append = "";
 	$(".schedule_checkbox").click(function(){
 		if (this.checked == true)
@@ -31,35 +32,36 @@ $(document).ready(function(){
             if (field.name == 'schedule.monthly.day')
             {
                 month_days += field.value+",";
+=======
+	$(".month_checkbox").click(function(){
+    	var month_array = new Array();
+	    var month_days = $(".month_checkbox");
+	    for (var i = 0; i < 31; i++) {
+	        if (month_days[i].checked == true) {
+                month_array.push(i+1)
+>>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
             }
-            else if (field.name == 'schedule.weekly.day')
-            {
-                week_days += field.value+",";
+            $("#id_month-days").val(month_array);
+        }
+	});
+	$(".week_checkbox").click(function(){
+    	var week_array = new Array();
+	    var week_days = $(".week_checkbox");
+	    for (var i = 0; i < 7; i++) {
+	        if (week_days[i].checked == true) {
+                week_array.push(i)
             }
-            else
-            {
-                dataString += field.name+"="+field.value+"&";
-            }
-        });
-        dataString += "schedule.monthly.day="+month_days+"&schedule.weekly.day="+week_days+"&schedule-is_model="+is_model;
-        $.ajax({
-            type: "POST",
-            url: "/schedules/add/",
-            data: dataString,
-            success: function() {
-                alert("Cadastro efetuado com MUITO MUITO sucesso!");
-                //$(document).trigger('close.facebox');
-            },
-            error: function(){
-                alert('Houve um problema com a requisição');
-                //$(document).trigger('close.facebox');
-            }
-        });
+            $("#id_week-days").val(week_array);
+        }
+	});
+    var selected_month_days = $("#id_month-days").val().split(",");
+    for (month_day in selected_month_days) {
+        month_day_id = "#month_day_" + selected_month_days[month_day];
+        $(month_day_id).attr('checked', true);
     };
-    $(".use_it").click(function(){
-        commit_settings(0);
-    });
-    $(".use_and_save_it").click(function(){
-        commit_settings(1);
-    });
+    var selected_week_days = $("#id_week-days").val().split(",");
+    for (week_day in selected_week_days) {
+        week_day_id = "#week_day_" + selected_week_days[week_day];
+        $(week_day_id).attr('checked', true);
+    } 
 });

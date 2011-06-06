@@ -60,10 +60,13 @@ $(document).ready(function(){
     $('.schedule_activate').change(function(){
         _checked = $(this).attr('checked');
         _class = $(this).attr('id');
+        console.log(_class)
         if (_checked) {
             $('.' + _class).addClass('active');
+            $('.' + _class + '_error').show();
         } else {
             $('.' + _class).removeClass('active');
+            $('.' + _class + '_error').hide();
         }
     });
     $('.schedule_activate').change();

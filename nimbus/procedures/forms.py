@@ -36,6 +36,7 @@ class ScheduleForm(forms.ModelForm):
 #         model = models.Day
 
 
+<<<<<<< HEAD
 class MonthForm(forms.ModelForm):
     active = forms.BooleanField(label="Ativo", widget=forms.CheckboxInput(
                                     attrs={'class': 'schedule_activate',
@@ -43,6 +44,16 @@ class MonthForm(forms.ModelForm):
     hour = forms.CharField(label="Hora", widget=forms.TextInput(attrs={'class':'text small mascara_hora'}))
     class Meta:
         model = models.Month
+=======
+    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
+                                             min_value=1, max_value=3650,
+                                             initial=10,
+                                             widget=forms.HiddenInput())
+    fileset = forms.models.ModelChoiceField(label=_("Fileset"),
+                                queryset=FileSet.objects.filter(is_model=True))
+    schedule = forms.models.ModelChoiceField(label=_("Schedule"),
+                                queryset=Schedule.objects.filter(is_model=True))
+>>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
 
 class HourForm(forms.ModelForm):
     active = forms.BooleanField(label="Ativo", widget=forms.CheckboxInput(

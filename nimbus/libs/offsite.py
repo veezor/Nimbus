@@ -182,7 +182,7 @@ class BaseManager(object):
 
 
 
-def process_request(self, request, process_function, ratelimit, max_retry):
+def process_request(request, process_function, ratelimit, max_retry=3):
     logger = logging.getLogger(__name__)
     request.last_attempt = datetime.now()
     retry = 0
