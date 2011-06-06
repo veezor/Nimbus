@@ -142,7 +142,6 @@
         "pk": 1,
         "model": "schedules.backuplevel",
         "fields": {
-            "uuid": 6,
             "name": "Full"
         }
     },
@@ -150,7 +149,6 @@
         "pk": 2,
         "model": "schedules.backuplevel",
         "fields": {
-            "uuid": 7,
             "name": "Incremental"
         }
     },
@@ -167,7 +165,6 @@
         "model": "schedules.day",
         "fields": {
             "level": 1,
-            "uuid": 9,
             "hour": "00:00:00",
             "schedule": 1
         }
@@ -177,7 +174,6 @@
         "model": "schedules.hour",
         "fields": {
             "level": 2,
-            "uuid": 10,
             "minute": 0,
             "schedule": 1
         }

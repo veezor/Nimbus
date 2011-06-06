@@ -18,7 +18,7 @@ WEEKDAYS = tuple( (d,d) for d in enums.weekdays )
 MONTHDAYS = tuple( (d,d) for d in enums.days )
 
 
-class BackupLevel(BaseModel):
+class BackupLevel(models.Model):
     name = models.CharField(max_length=255, unique=True, null=False)
 
     def __unicode__(self):
@@ -58,7 +58,7 @@ class Schedule(BaseModel):
 
 
 
-class Month(BaseModel):
+class Month(models.Model):
     active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
@@ -69,7 +69,7 @@ class Month(BaseModel):
         return self.schedule.name
 
 
-class Week(BaseModel):
+class Week(models.Model):
     active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
@@ -80,7 +80,7 @@ class Week(BaseModel):
         return self.schedule.name
 
 
-class Day(BaseModel):
+class Day(models.Model):
     active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
     hour = models.TimeField()
@@ -90,7 +90,7 @@ class Day(BaseModel):
         return self.schedule.name
 
 
-class Hour(BaseModel):
+class Hour(models.Model):
     active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
     minute = models.PositiveSmallIntegerField()
