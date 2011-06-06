@@ -3,12 +3,14 @@
 
 
 import os
+import json
 import logging
+import urllib2
 from time import time
 from datetime import datetime
-from urllib2 import URLError
 
 from django.db import models
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 
@@ -22,23 +24,67 @@ from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 class Offsite(BaseModel):
     username = models.CharField(max_length=255, blank=True, null=True)
+    password = models.CharField(max_length=255, blank=True, null=True)
     access_key = models.CharField(max_length=255, blank=True, null=True)
     secret_key = models.CharField(max_length=255, blank=True, null=True)
     rate_limit = models.IntegerField(default=-1)
+    plan_size = models.IntegerField(default=0)
     active = models.BooleanField()
 
 
 
     def clean(self):
         if self.active:
+
+            logger = logging.getLogger(__name__)
+
             try:
-                s3 = self.get_s3_interface()
+                nimbus_central_data = self._get_nimbus_central_data()
+                if nimbus_central_data['status'] != 1:
+                    logger.error("Status da conta do usuário inválido")
+                    raise ValidationError("Sua assinatura está com problemas, verifique situação na central de atendimento")
+            except urllib2.HTTPError, error:
+                if error.getcode() == 401:
+                    logger.error("Username or password error")
+                    raise ValidationError("Usuário ou senha incorretos")
+                else:
+                    raise ValidationError("Impossível conectar. Tente novamente mais tarde")
+
+
+            self.plan_size = nimbus_central_data['quota']
+            self.access_key = nimbus_central_data['accesskey']['id']
+            self.secret_key = nimbus_central_data['accesskey']['secret']
+
+
+            try:
+                s3 = S3(username=self.username,
+                        access_key=self.access_key,
+                        secret_key=self.secret_key,
+                        rate_limit=self.rate_limit)
             except S3AuthError, error:
-                logger = logging.getLogger(__name__)
-                logger.exception("Auth error")
-                raise ValidationError("Impossível autenticar. Login e chaves de acesso não conferem")
+                logger.exception("nimbus central keys error")
+                raise ValidationError("Erro de configuração. Contactar o suporte. Chaves não conferem")
 
 
+
+
+
+
+    def _get_nimbus_central_data(self):
+
+        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        url = settings.NIMBUS_CENTRAL_USER_DATA_URL 
+        password_mgr.add_password(None, url, self.username, self.password)
+
+        handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+        opener = urllib2.build_opener(handler)
+
+        content = opener.open(url)
+        data = content.read()
+        content.close()
+
+        return json.loads(data)
+    
 
     @classmethod
     def get_s3_interface(cls):
