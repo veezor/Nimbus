@@ -44,16 +44,9 @@ td{padding: 50px;}
             <p>Agende a execução deste backup, é possível ativar mais de um agendamento.</p>
         </div>		<!-- .sidebar ends -->
         <div class="sidebar_content" id="mensal">
-<<<<<<< HEAD
-            <p>
-				<label>{{formset.month.active.label}}</label>
-				{{formset.month.active}}
-            </p>
-=======
             <!-- <p>
 	            <input type="checkbox" name="month-active" class="schedule_activate" id="monthly" value="1"/> <label for="weekly">Ativar</label>
             </p> -->
->>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
             <div class="personal_message"><p>Executa o backup em determinados dias do mês, sempre no horário especificado.</p></div>
             <p>
                 <table border="0" cellpadding="0" cellspacing="0">
@@ -63,26 +56,14 @@ td{padding: 50px;}
                 {% for day in days %}
 
                 <td style="padding: 8px;"><label for="day_{{day}}">
-<<<<<<< HEAD
-                <input type="checkbox" id="day_{{day}}" class="schedule_checkbox schedule no-style" name="schedule.monthly.day" value="{{day}}" {% if day in schedule_monthly_day %}checked="checked"{% endif %} />
-=======
                 <input type="checkbox" id="month_day_{{day}}" class="month_checkbox schedule no-style" value="{{day}}"/>
->>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
                 {{day}}º</label></td>
                     {% if day in end_days %}</tr><tr>{% endif %}
                 {% endfor %}
                     <td colspan="5">&nbsp;</td></tr>
                 </tbody>
                 </table>
-<<<<<<< HEAD
-            </p>
-			<p>
-				<!-- este paragrafo deve ser hidden -->
-                <label>{{ formset.month.days.label }}</label>
-                {{ formset.month.days }}<br/>
-=======
                 {{ month_form.days }}
->>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
 			</p>
             <p>
 				<div class="month_error">{{ month_form.hour.errors }}</div>
@@ -103,19 +84,11 @@ td{padding: 50px;}
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="semanal">
-<<<<<<< HEAD
-            <p>
-                <!-- <input type="checkbox" name="week.active" class="schedule_activate no-style" id="weekly" value="1" {% if schedule_weekly_active %}checked="checked"{% endif %} /> <label for="weekly">Ativar</label> -->
-				<label>{{formset.week.active.label}}</label>
-				{{formset.week.active}}
-            </p>
-=======
             <!-- <p> -->
                 <!-- <input type="checkbox" name="week-active" class="schedule_activate" id="weekly" value="1" {% if schedule_weekly_active %}checked="checked"{% endif %} /> <label for="weekly">Ativar</label> -->
 				<!-- <label>{{week_form.active.label}}</label>
 				{{week_form.active}} -->
             <!-- </p> -->
->>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
             <div class="personal_message"><p>Executa o backup em determinados dias da semana, sempre no horário especificado.</p></div>
             <p>
                 <table border="0" cellpadding="0" cellspacing="0">
@@ -133,15 +106,7 @@ td{padding: 50px;}
                 </tbody>
                 </table>
             </p>
-<<<<<<< HEAD
-			<p>
-				<!-- este paragrafo deve ser hidden -->
-                <label>{{ formset.week.days.label }}</label>
-                {{ formset.week.days }}<br/>
-			</p>
-=======
                 {{ week_form.days }}<br/>
->>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
             <p>
 				<div class="week_error">{{ week_form.hour.errors }}</div>
                 <label>{{ week_form.hour.label }}:</label>
@@ -161,19 +126,11 @@ td{padding: 50px;}
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="diario">
-<<<<<<< HEAD
-            <p>
-                <!-- <input type="checkbox" name="schedule.dayly.active" class="schedule_activate no-style" id="dayly" value="1" {% if schedule_dayly_active %}checked="checked"{% endif %} /> <label for="dayly">Ativar</label> -->
-				<label>{{formset.day.active.label}}</label>
-				{{formset.day.active}}
-            </p>
-=======
             <!-- <p> -->
                 <!-- <input type="checkbox" name="day-active" class="schedule_activate" id="dayly" value="1" {% if schedule_dayly_active %}checked="checked"{% endif %} /> <label for="dayly">Ativar</label> -->
 				<!-- <label>{{day_form.active.label}}</label>
 				{{day_form.active}} -->
             <!-- </p> -->
->>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
             <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
             <p>
 				<div class="day_error">{{ day_form.hour.errors }}</div>
@@ -194,19 +151,11 @@ td{padding: 50px;}
         </div>		<!-- .sidebar_content ends -->
 
         <div class="sidebar_content" id="minuto">
-<<<<<<< HEAD
-            <p>
-                <!-- <input type="checkbox" name="schedule.hourly.active" class="schedule_activate no-style" id="hourly" value="1" {% if schedule_hourly_active %}checked="checked"{% endif %} /> <label for="hourly">Ativar</label> -->
-				<label>{{formset.hour.active.label}}</label>
-				{{formset.hour.active}}
-            </p>
-=======
             <!-- <p> -->
                 <!-- <input type="checkbox" name="hour-active" class="schedule_activate" id="hourly" value="1" {% if schedule_hourly_active %}checked="checked"{% endif %} /> <label for="hourly">Ativar</label> -->
 				<!-- <label>{{hour_form.active.label}}</label>
 				{{hour_form.active}} -->
             <!-- </p> -->
->>>>>>> 20564a8f0783193bf00e6d2e73541b40f718f947
             <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
             <p>
 				<div class="hour_error">{{ hour_form.minute.errors }}</div>

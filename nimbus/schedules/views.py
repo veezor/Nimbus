@@ -15,6 +15,7 @@ from nimbus.schedules import forms
 from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_range
 from nimbus.shared.views import render_to_response
 from nimbus.schedules.models import Schedule
+from nimbus.procedures.models import Procedure
 
 # def edit_do_(request, procedure_id):
 #     p = get_object_or_404(Procedure, pk=procedure_id)
@@ -46,12 +47,17 @@ from nimbus.schedules.models import Schedule
 
 def edit(request, object_id):
     s = get_object_or_404(Schedule, pk=object_id)
-    print s.if_week()
+    procedures = Procedure.objects.filter(schedule=s.id)
+    month_instance = s.if_month()
+    week_instance = s.if_week()
+    day_instance = s.if_day()
+    hour_instance = s.if_hour()
     schedule_form = forms.ScheduleForm(prefix="schedule", instance=s)
-    month_form = forms.MonthForm(prefix="month", instance=s.if_month())
-    week_form = forms.WeekForm(prefix="week", instance=s.if_week())
-    day_form = forms.DayForm(prefix="day", instance=s.if_day())
-    hour_form = forms.HourForm(prefix="hour", instance=s.if_hour())
+#    schedule_form.fields['is_model'].widget.attrs['disabled'] = "disabled"
+    month_form = forms.MonthForm(prefix="month", instance=month_instance)
+    week_form = forms.WeekForm(prefix="week", instance=week_instance)
+    day_form = forms.DayForm(prefix="day", instance=day_instance)
+    hour_form = forms.HourForm(prefix="hour", instance=hour_instance)
     days_range = range(1, 32)
     weekdays_range = {0:'Domingo', 1:'Segunda-feira', 2:'Terça-feira',
                       3:'Quarta-feira', 4:'Quinta-feira', 5:'Sexta-feira',
@@ -66,9 +72,62 @@ def edit(request, object_id):
                'days':days_range,
                'end_days':end_days_range,
                'weekdays':weekdays_range,
+               'schedule': s,
+               'month': month_instance,
+               'week': week_instance,
+               'day': day_instance,
+               'hour': hour_instance,
+               'procedures': procedures,
                'messages':[]
               }
-    return render_to_response(request, 'add_schedule.html', content)
+    if request.method == "POST":
+        print request.POST
+        data = copy(request.POST)
+        for data_key in ['month', 'week', 'day', 'hour']:
+            data['%s-schedule' % data_key] = s.id
+        schedule_form = forms.ScheduleForm(data, prefix="schedule", instance=s)
+        month_form = forms.MonthForm(data, prefix="month", instance=month_instance)
+        week_form = forms.WeekForm(data, prefix="week", instance=week_instance)
+        day_form = forms.DayForm(data, prefix="day", instance=day_instance)
+        hour_form = forms.HourForm(data, prefix="hour", instance=hour_instance)
+        content['schedule_form'] = schedule_form
+        content['month_form'] = month_form
+        content['week_form'] = week_form
+        content['day_form'] = day_form
+        content['hour_form'] = hour_form
+        if any([data.has_key("%s-active" % data_key) for data_key in ['month', 'week', 'day', 'hour']]):
+            to_validate_forms = []
+            to_remove_forms = []
+            to_validate_forms.append(schedule_form)
+            if data.has_key('month-active'):
+                to_validate_forms.append(month_form)
+            elif month_instance:
+                to_remove_forms.append(s.month)
+            if data.has_key('week-active'):
+                to_validate_forms.append(week_form)
+            elif week_instance:
+                to_remove_forms.append(s.week)
+            if data.has_key('day-active'):
+                to_validate_forms.append(day_form)
+            elif day_instance:
+                to_remove_forms.append(s.day)
+            if data.has_key('hour-active'):
+                to_validate_forms.append(hour_form)
+            elif hour_instance:
+                to_remove_forms.append(s.hour)
+            print [f.is_valid() for f in to_validate_forms]
+            if all([f.is_valid() for f in to_validate_forms]):
+                [f.delete() for f in to_remove_forms]
+                [f.save() for f in to_validate_forms]
+                content['messages'] = [u"Agendamento '%s' alterado com sucesso" % s.name]
+            else:
+                print [(f, f.errors) for f in to_validate_forms]
+                content['messages'] = [u"Nenhum agendamento foi criado"]
+        else:
+            content['messages'] = ["Nenhum agendamento foi selecionado"]
+    content['schedule_form'].fields['is_model'].widget.attrs['disabled'] = "disabled"
+    return render_to_response(request, "edit_schedule.html", content)
+    
 
 
 def edit___(request, procedure_id):

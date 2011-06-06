@@ -59,6 +59,7 @@ class Schedule(BaseModel):
 
 
 class Month(BaseModel):
+    active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
     hour = models.TimeField()
@@ -69,6 +70,7 @@ class Month(BaseModel):
 
 
 class Week(BaseModel):
+    active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
     hour = models.TimeField()
@@ -79,6 +81,7 @@ class Week(BaseModel):
 
 
 class Day(BaseModel):
+    active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
     hour = models.TimeField()
     level = models.ForeignKey(BackupLevel)
@@ -88,6 +91,7 @@ class Day(BaseModel):
 
 
 class Hour(BaseModel):
+    active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
     minute = models.PositiveSmallIntegerField()
     level = models.ForeignKey(BackupLevel)

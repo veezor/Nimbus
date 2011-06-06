@@ -31,13 +31,17 @@ td{padding: 50px;}
             {{ hour_form.non_field_errors }}
             {{ schedule_form.name.errors }}
             <label>{{ schedule_form.name.label }}:</label> {{ schedule_form.name }}<br/>
-            <label>Salvar como modelo</label> {{ schedule_form.is_model }}
 			{% if schedule.is_model %}
-				Atenção. Este agendamento é um modelo. Sua alteração afetará os seguintes backups:
-				{% for procedure in procedures %}
-					<li>{{procedure.name}}</li>
-				{% endfor %}
+            <label>Este agendamento é um modelo</label><br/>
+				<input type="hidden" name="schedule-is_model" value="1"/>
+				Atenção. Sua alteração afetará os seguintes backups:
+			{% else %}
+				<label> Este agendamento é utilizado por:</label><br/>
 			{% endif %}
+			{% for procedure in procedures %}
+				<li>{{procedure.name}}</li>
+			{% endfor %}
+
         </div>
 
         <div class="sidebar">
