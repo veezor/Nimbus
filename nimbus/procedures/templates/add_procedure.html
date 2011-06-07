@@ -3,9 +3,8 @@
 {% block headtags %}
 
 <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-<link href="/media/css/backup.css" rel="stylesheet" type="text/css" />
+<link href="/media/css/procedures.css" rel="stylesheet" type="text/css" />
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-<script type="text/javascript" src="/media/js/backup.js"></script>
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 
@@ -36,20 +35,15 @@
 							[{{selected_schedule.name}}]
 							<input type="hidden" name="procedure-schedule" value="{{selected_schedule.id}}" />
 						{% else %}
-	                        <label id="schedule_button">Criar um agendamento</label> ou escolher um modelo:
+	                        <a href="#" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a> ou escolher um modelo:
 							{{ field }}
 						{% endif %}
                     {% else %}
 						{%if field.label == 'Fileset' %}
-	                        <a href="/filesets/add" class="filesets">Criar um conjunto de arquivos</a> ou escolher um modelo:
+	                        <a href="/filesets/add" class="filesets minibutton"><span>Criar um conjunto de arquivos</span></a> ou escolher um modelo:
 							{{ field }}
                    		{% else %}
-							{%if field.label == 'Computer' %}
-								{{ field }}
-		                        <a href="/computers/add" class="side_link">Adicionar computador</a>
-							{% else %}
-								{{ field }}
-							{% endif %}
+				            {{ field }}
 						{% endif %}
                     {% endif %}
 					
