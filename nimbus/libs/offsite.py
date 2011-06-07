@@ -6,6 +6,7 @@ import bz2
 import stat
 import time
 import logging
+import tempfile
 import subprocess
 from pwd import getpwnam
 from hashlib import md5
@@ -44,7 +45,7 @@ BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
 class Md5CheckError(Exception):
     pass
 
-def md5_for_large_file(filename, block_size=2**20):                                                                                                               
+def md5_for_large_file(filename, block_size=2**20):
     fileobj = file(filename, 'rb')
     filemd5 = md5()
     while True:
@@ -397,17 +398,46 @@ class RecoveryManager(object):
         self.manager.create_download_request(bacula_db)
         self.manager.process_pending_download_requests()
 
-    def recovery_database(self, dumpfile, name, user, password):
-        fileobj = bz2.BZ2File(dumpfile)
-        content = fileobj.read()
-        fileobj.close()
-        cmd = subprocess.Popen(["/usr/bin/mysql",
-                                "-u" + user,
-                                "-p" + password,
-                                "-D" + name ],
+
+    def recovery_database(self, bziped_dumpfile, name, user, password):
+
+        bziped = bz2.BZ2File(bziped_dumpfile)
+        dump_filename = tempfile.mktemp()
+
+
+        with file(dump_filename, 'w') as dump:
+
+
+            while True:
+                content = bziped.read(256 * 1024) #256kb
+
+                if not content:
+                    break
+
+                dump.write(content)
+
+
+        bziped.close()
+
+
+        env = os.environ.copy()
+        env['PGPASSWORD'] = password
+        cmd = subprocess.Popen(["/usr/bin/psql",
+                                "-U",user,
+                                "-d",name,
+                                "-f",dump_filename,
+                                "--no-password"],
                                 stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE)
-        cmd.communicate(content)
+                                stderr=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                env=env)
+        cmd.communicate()
+
+        if cmd.returncode != 0:
+            raise subprocess.CalledProcessError()
+
+
+
 
     def recovery_nimbus_dabatase(self):
         nimbus_file = os.path.split(NIMBUS_DUMP)[-1]
