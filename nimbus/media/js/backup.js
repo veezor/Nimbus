@@ -1,21 +1,21 @@
 // open async windows
-$(document).ready(function(){
-    $('.schedules').click(function(){
-        jQuery.facebox({ ajax: '/schedules/add/' });
-        return false;
-    });
-    $('.filesets').click(function(){
-        if ($('#id_procedure-computer').val())
-        {
-            jQuery.facebox({ ajax: '/filesets/add/'+$('#id_procedure-computer').val() });
-        }
-        else
-        {
-            jQuery.facebox('Você precisa esolher um computador');
-        }
-        return false;
-    });
-});
+// $(document).ready(function(){
+//     $('.schedules').click(function(){
+//         jQuery.facebox({ ajax: '/schedules/add/' });
+//         return false;
+//     });
+//     $('.filesets').click(function(){
+//         if ($('#id_procedure-computer').val())
+//         {
+//             jQuery.facebox({ ajax: '/filesets/add/'+$('#id_procedure-computer').val() });
+//         }
+//         else
+//         {
+//             jQuery.facebox('Você precisa esolher um computador');
+//         }
+//         return false;
+//     });
+// });
 // new document.ready to organize
 $(document).ready(function(){
     $('.toggle').click(function(){
@@ -214,9 +214,9 @@ $(document).ready(function(){
 	var maximun = 121;
 	$(".pool_new_value").hide();
 	$(".add_new_pool").hide();
-	$("#slider_value").html("10");
+	$("#slider_value").html($("#id_procedure-pool_retention_time").val());
 	$("#slider").slider({ 
-		animate: true, step: 1, max: maximun, min: 0, value: 10
+		animate: true, step: 1, max: maximun, min: 0, value: $("#id_procedure-pool_retention_time").val()
 	});
 	$("#slider").bind("slide", function(){
 		var value = $("#slider").slider("option", "value");
