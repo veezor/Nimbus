@@ -6,6 +6,7 @@
 <link href="/media/css/backup.css" rel="stylesheet" type="text/css" />
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/media/js/backup.js"></script>
+<script type="text/javascript" src="/media/js/procedures.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 
 {% endblock %}
@@ -31,15 +32,27 @@
                 {% endif %}
                 <p><label>{{ field.label }}:</label><br />
                     {% if field.label == 'Schedule' %}
-                        <a href="/schedules/add">Criar um agendamento</a> ou escolher um modelo:
+						{%if selected_schedule%}
+							[{{selected_schedule.name}}]
+							<input type="hidden" name="procedure-schedule" value="{{selected_schedule.id}}" />
+						{% else %}
+	                        <label id="schedule_button">Criar um agendamento</label> ou escolher um modelo:
+							{{ field }}
+						{% endif %}
+                    {% else %}
+						{%if field.label == 'Fileset' %}
+	                        <a href="/filesets/add" class="filesets">Criar um conjunto de arquivos</a> ou escolher um modelo:
+							{{ field }}
+                   		{% else %}
+							{%if field.label == 'Computer' %}
+								{{ field }}
+		                        <a href="/computers/add" class="side_link">Adicionar computador</a>
+							{% else %}
+								{{ field }}
+							{% endif %}
+						{% endif %}
                     {% endif %}
-                    {% if field.label == 'Fileset' %}
-                        <a href="/filesets/add" class="filesets">Criar um conjunto de arquivos</a> ou escolher um modelo:
-                    {% endif %}
-                    {{ field }}
-                    {% if field.label == 'Computer' %}
-                        <a href="/computers/add" class="side_link">Adicionar computador</a>
-                    {% endif %}
+					
                 </p>
             {% endfor %}
             {% for hidden in form.hidden_fields %}
@@ -61,6 +74,7 @@
             <input type="submit" class="submit" value="Criar" />
         </p>
         </form>
+		<form action="/schedules/add/" method="POST" id="to_schedule_form"></form>
     </div>
 </div>
 

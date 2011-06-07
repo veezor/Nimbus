@@ -24,10 +24,26 @@ from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
 from nimbus.procedures.forms import ProcedureForm, ProcedureEditForm
-
+from nimbus.schedules.models import Schedule
 
 @login_required
-def add(request):
+def resume_add(request, computer_id, schedule_id, fileset_id, storage_id, 
+               retention_time, name):
+    schedule = Schedule.objects.get(id=schedule_id)
+    form_data = {'computer': computer_id,
+                 'schedule': schedule_id,
+                 'fileset': fileset_id,
+                 'storage': storage_id,
+                 'pool_retention_time': retention_time,
+                 'name': name}
+    lforms = ProcedureForm(prefix="procedure", initial=form_data)
+    content = {'title': u"Adicionar backup",
+              'forms':[lforms],
+              'selected_schedule': schedule}
+    return render_to_response(request, "add_procedure.html", content)
+
+@login_required
+def add(request, teste=None):
     title = u"Adicionar backup"
     lforms = ProcedureForm(prefix="procedure")
     content = {'title': title,
