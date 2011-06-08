@@ -24,6 +24,8 @@ class ProcedureForm(forms.ModelForm):
                                 queryset=FileSet.objects.filter(is_model=True))
     schedule = forms.models.ModelChoiceField(label=_("Schedule"),
                                 queryset=Schedule.objects.filter(is_model=True))
+    fileset.empty_label = u"-ou escolha um modelo-"
+    schedule.empty_label = u"-ou escolha um modelo-"
 
     class Meta:
         model = Procedure

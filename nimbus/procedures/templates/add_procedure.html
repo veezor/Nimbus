@@ -35,13 +35,11 @@
 							[{{selected_schedule.name}}]
 							<input type="hidden" name="procedure-schedule" value="{{selected_schedule.id}}" />
 						{% else %}
-	                        <a href="#" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a> ou escolher um modelo:
-							{{ field }}
+	                        <a href="#" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a>{{ field }}
 						{% endif %}
                     {% else %}
 						{%if field.label == 'Fileset' %}
-	                        <a href="/filesets/add" class="filesets minibutton"><span>Criar um conjunto de arquivos</span></a> ou escolher um modelo:
-							{{ field }}
+	                        <a href="/filesets/add" class="filesets minibutton"><span>Criar um conjunto de arquivos</span></a>{{ field }}
                    		{% else %}
 				            {{ field }}
 						{% endif %}
