@@ -9,6 +9,19 @@ from itertools import izip
 
 from django.conf import settings
 
+class Referer(object):
+    def __init__(self, request):
+        self.raw = request.META.get('HTTP_REFERER')
+        if self.raw:
+            self.local = self.local_address()
+        else:
+            self.local = None
+    
+    def local_address(self):
+        if self.raw.startswith('http://'):
+            return '/' + '/'.join(self.raw.replace('http://','').split('/')[1:])
+    
+
 def filesizeformat(bytes):
     bytes = float(bytes)
 

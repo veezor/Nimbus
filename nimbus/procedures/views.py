@@ -71,6 +71,7 @@ def edit(request, procedure_id):
     content = {'title': title,
               'forms':lforms,
               'id': procedure_id,
+              'procedure': p,
               'schedule': p.schedule,
               'fileset': p.fileset}
     if request.method == "POST":
