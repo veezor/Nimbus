@@ -5,7 +5,7 @@ import socket
 import simplejson
 from django.http import HttpResponse
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from nimbus.filesets.models import FileSet, FilePath
 from nimbus.computers.models import Computer
@@ -43,7 +43,7 @@ def file_list(POST_data):
     return files
 
 @login_required
-def add(request, object_id=None):
+def add(request, computer_id=None):
     if request.method == "POST":
         print request.POST
         files = file_list(request.POST)
@@ -63,51 +63,72 @@ def add(request, object_id=None):
     content = {'title':u'Criar conjunto de arquivos',
                'forms':lforms,
                'formsets':lformsets,
-               'computer_id':object_id,
+               'computer_id':computer_id,
                'formset' : formset}
     return render_to_response(request, "add.html", content)
 
 
 @login_required
-def edit(request, object_id):
-    title = u"Editar conjunto de arquivos"
-    computers = Computer.objects.filter(active=True,id__gt=1)
-    filesets = FileSet.objects.get(id=object_id)
-    lforms = [forms.FileSetForm(prefix="fileset")]
-    lformsets = [forms.FilePathForm(prefix="filepath")]
-    content = {'forms':lforms,
-               'formsets':lformsets,
-               'title':u"Editar Conjunto de Arquivos",
-               'computers':computers,
-               'filesets':filesets}
-    if request.method == "POST":
-        with Session() as session:
-            filesetform = form_mapping(FileSet, request.POST, object_id=object_id)
-            paths = request.POST.getlist('path')
-            if filesetform.is_valid():
-                fileset = filesetform.save()
-                session.add(fileset)
-                paths_to_remove = fileset.files.exclude(path__in=paths)
-                for path_to_remove in paths_to_remove:
-                    fileset.files.remove(path_to_remove)
-                    session.delete(path_to_remove)
-                for path in paths:
-                    pathmodel, created = FilePath.objects.get_or_create(path=path)
-                    pathmodel.filesets.add(fileset)
-                    session.add(pathmodel)
-                    form = form_from_model(pathmodel)
-                    if form.is_valid():
-                        pathmodel.save()
-            if filesetform.errors:
-                session.rollback()
-                extra_content = {"title" : title, "errors" : filesetform.errors}
-                extra_content.update(utils.dict_from_querydict(request.POST,
-                                                               lists=("path",))) 
-                return render_to_response(request, 'edit_filesets.html', extra_content)
-            else:
-                messages.success(request, u"Conjunto de arquivos atualizado com sucesso.")
-                return redirect('nimbus.filesets.views.edit', object_id)
-    return render_to_response(request, 'edit_filesets.html', content)
+def edit(request, fileset_id, computer_id):
+    fileset = get_object_or_404(FileSet, pk=fileset_id)
+    computer = get_object_or_404(Computer, pk=computer_id)
+    fileset_form = forms.FileSetForm(instance=fileset, prefix="fileset")
+    deletes_form = forms.FilesToDeleteForm(instance=fileset)
+    content = {'title': u"Editar Conjunto de Arquivos '%s'" % fileset.name,
+               'computer': computer,
+               'fileset': fileset,
+               'fileset_form': fileset_form,
+               'deletes_form': deletes_form}
+    if request.method == 'POST':
+        data = request.POST
+        deletes_form = forms.FilesToDeleteForm(data, instance=fileset)
+        print deletes_form.is_valid()
+        if deletes_form.is_valid():
+            deletes_form.save()
+    return render_to_response(request, "edit_fileset.html", content)
+
+
+
+# @login_required
+# def edit(request, fileset_id, computer_id):
+#     title = u"Editar conjunto de arquivos"
+#     computers = Computer.objects.filter(active=True,id__gt=1)
+#     filesets = FileSet.objects.get(id=fileset_id)
+#     lforms = [forms.FileSetForm(prefix="fileset")]
+#     lformsets = [forms.FilePathForm(prefix="filepath")]
+#     content = {'forms':lforms,
+#                'formsets':lformsets,
+#                'title':u"Editar Conjunto de Arquivos",
+#                'computers':computers,
+#                'filesets':filesets}
+#     if request.method == "POST":
+#         with Session() as session:
+#             filesetform = form_mapping(FileSet, request.POST, object_id=object_id)
+#             paths = request.POST.getlist('path')
+#             if filesetform.is_valid():
+#                 fileset = filesetform.save()
+#                 session.add(fileset)
+#                 paths_to_remove = fileset.files.exclude(path__in=paths)
+#                 for path_to_remove in paths_to_remove:
+#                     fileset.files.remove(path_to_remove)
+#                     session.delete(path_to_remove)
+#                 for path in paths:
+#                     pathmodel, created = FilePath.objects.get_or_create(path=path)
+#                     pathmodel.filesets.add(fileset)
+#                     session.add(pathmodel)
+#                     form = form_from_model(pathmodel)
+#                     if form.is_valid():
+#                         pathmodel.save()
+#             if filesetform.errors:
+#                 session.rollback()
+#                 extra_content = {"title" : title, "errors" : filesetform.errors}
+#                 extra_content.update(utils.dict_from_querydict(request.POST,
+#                                                                lists=("path",))) 
+#                 return render_to_response(request, 'edit_filesets.html', extra_content)
+#             else:
+#                 messages.success(request, u"Conjunto de arquivos atualizado com sucesso.")
+#                 return redirect('nimbus.filesets.views.edit', object_id)
+#     return render_to_response(request, 'edit_filesets.html', content)
 
 def get_tree(request):
     if request.method == "POST":

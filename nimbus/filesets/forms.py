@@ -18,3 +18,7 @@ class FilePathForm(forms.ModelForm):
     
 
 FilesFormSet = forms.models.inlineformset_factory(FileSet, FilePath, can_delete=False, extra=1)
+
+class FilesToDeleteForm(FilesFormSet):
+    can_delete = True
+    extra = 0
