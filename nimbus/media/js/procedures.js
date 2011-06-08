@@ -238,7 +238,7 @@ $(document).ready(function(){
 	$("#slider").slider({ 
 		animate: true, step: 1, max: maximun, min: 0, value: 10
 	});
-	$("#slider").bind("slide", function(){
+	$("#slider").bind("slide slidechange", function(){
 		var value = $("#slider").slider("option", "value");
 		$("#slider_value").html(value);
 		$("#id_procedure-pool_retention_time").val(value);
