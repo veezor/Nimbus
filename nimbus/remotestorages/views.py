@@ -19,6 +19,7 @@ def view(request, object_id):
 def render(request):
     storage = models.RemoteStorageConf()
     extra_content = {
+        'num_rows':range(4),
         'storage':storage,
         'title': u"Storages Adicionais"
     }

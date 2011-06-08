@@ -4,6 +4,8 @@ $(document).ready(function(){
     ];
     var plot1 = jQuery.jqplot ('chart1', [data], 
     { 
+        title: "Espa&ccedil;o em Disco",
+        seriesColors: [ "#EAA228", "#579575"],
         seriesDefaults: {
             // Make this a pie chart.
             renderer: jQuery.jqplot.PieRenderer, 
