@@ -8,4 +8,4 @@ then
 fi
 
 # sobrescrevendo PYTHONPATH
-export PYTHONPATH=$PYTHONPATH:$(pwd)/libs:$(pwd)/webservices/manager
+export PYTHONPATH=$PYTHONPATH:$(pwd)/libs:$(pwd)/webservices/manager:$(pwd)/apps
