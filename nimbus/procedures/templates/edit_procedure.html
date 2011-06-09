@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-<link type="text/css" rel="stylesheet" href="/media/css/backup.css"/>
-<link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
-<script type="text/javascript" src="/media/js/backup.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 
-<!-- <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script> -->
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<link href="/media/css/procedures.css" rel="stylesheet" type="text/css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/media/js/procedures.js"></script>
+<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 
 {% endblock %}
 
@@ -31,13 +30,13 @@
                 </ul>
                 {% endif %}
                 <p><label>{{ field.label }}:</label><br />
-                    {{ field }}
                     {% if field.label == 'Schedule' %}
-                        ou modifique o atual: <a href="/schedules/{{schedule.id}}/edit">[{{schedule.name}}]</a>
+                        <a href="/schedules/{{schedule.id}}/edit" class="minibutton"><span>Modifique [{{schedule.name}}]</span></a> ou escolha um modelo:
                     {% endif %}
                     {% if field.label == 'Fileset' %}
-                        ou modifique o atual: <a href="/filesets/{{fileset.id}}/edit/{{procedure.computer.id}}">[{{fileset.name}}]</a>
+                        <a href="/filesets/{{fileset.id}}/edit/{{procedure.computer.id}}" class="minibutton"><span>Modifique [{{fileset.name}}]</span></a> ou escolha um modelo:
                     {% endif %}
+                    {{ field }}
                 </p>
             {% endfor %}
             {% for hidden in form.hidden_fields %}
