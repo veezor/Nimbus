@@ -16,56 +16,29 @@ from nimbus.shared import utils
 from nimbus.filesets import forms
 # import pdb
 
-def name_sugestion(computer_id):
-    computer = Computer.objects.get(id=computer_id)
-    return "Arquivos de %s" % computer.name
-
-def insert_fileset(POST_data):
-    if POST_data.has_key('fileset-name') and (POST_data['fileset-name'] != ''):
-        fileset_data = {'fileset-name': POST_data['fileset-name']}
-    else:
-        fileset_data = {'fileset-name': name_sugestion(POST_data['computer_id'])}
-    fileset_data["fileset-is_model"] = POST_data["fileset-is_model"]
-    fileset_form = forms.FileSetForm(fileset_data, prefix="fileset")
-    if fileset_form.is_valid():
-        new_fileset = fileset_form.save()
-        return new_fileset
-    else:
-        # tratar na interface
-        print fileset_form.errors
-        return False
-
-def file_list(POST_data):
-    files = []
-    for key in POST_data:
-        if key.startswith("path"):
-            files.append(POST_data[key])
-    return files
-
 @login_required
 def add(request, computer_id=None):
-    if request.method == "POST":
-        print request.POST
-        files = file_list(request.POST)
-        if len(files) > 0:
-            new_fileset = insert_fileset(request.POST)
-            if new_fileset:
-                for path in files:
-                    filepath_form = forms.FilePathForm({"fileset": new_fileset.id,"path": path})
-                    if filepath_form.is_valid():
-                        filepath_form.save()
-                    else:
-                        # tratar na interface
-                        print filepath_form.errors
-    lforms = [ forms.FileSetForm(prefix="fileset") ]
-    lformsets = [ forms.FilePathForm(prefix="filepath") ]
-    formset = forms.FilesFormSet()
-    content = {'title':u'Criar conjunto de arquivos',
-               'forms':lforms,
-               'formsets':lformsets,
-               'computer_id':computer_id,
-               'formset' : formset}
-    return render_to_response(request, "add.html", content)
+    fileset_form = forms.FileSetForm(prefix="fileset")
+    computer = get_object_or_404(Computer, pk=computer_id)
+    if request.method == 'POST':
+        data = request.POST
+        print data
+        fileset_form = forms.FileSetForm(data, prefix="fileset")
+        if fileset_form.is_valid():
+            new_fileset = fileset_form.save()
+            filepaths_form = forms.FilesFormSet(data, instance=new_fileset)
+            if filepaths_form.is_valid():
+                filepaths_form.save()
+                messages.success(request, "Conjunto de arquivos '%s' criado com sucesso" % new_fileset.name)
+            else:
+                new_fileset.delete()
+                messages.error(request, "O conjunto de arquivos não pode ser criado. Problemas nos arquivos escolhidos")
+        else:
+            messages.error(request, "O conjunto de arquivos não foi criado. Verifique os erros abaixo.")
+    content = {'title': u"Criar conjunto de arquivos",
+               'computer': computer,
+               'fileset_form': fileset_form}
+    return render_to_response(request, "add_fileset.html", content)
 
 
 @login_required

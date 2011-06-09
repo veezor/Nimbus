@@ -1,4 +1,3 @@
-GLOBAL_COUNTER = 0;
 function mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name, depends) {
 
 
@@ -48,8 +47,8 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
         root_path_re = new RegExp("^" + root_path, "g");
         path_name = path.replace(root_path_re, '');
 
-        var input = $("<input>").attr("type", input_type).attr("name", input_name+GLOBAL_COUNTER).val(path);
-        GLOBAL_COUNTER = GLOBAL_COUNTER + 1;
+        var input = $("<input>").attr("type", input_type).attr("class", "full_path").val(path);
+        // var input = $("<input>").attr("type", input_type).attr("name", input_name).attr("class", "full_path").val(path);
         
         // If is a directory.
         if (path.match("/$") == "/" || path.match("\\$") == "\\") {
@@ -130,7 +129,7 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
         input_type = 'checkbox';
     }
     if (!input_name) {
-        input_name = 'path[]';
+        input_name = 'path';
     }
     attributes = {path: root_path};
     

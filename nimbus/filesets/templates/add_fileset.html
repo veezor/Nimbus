@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block headtags %}
+<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript" src="/media/js/filesets.js"></script>
+{% endblock %}
+
+{% block page %}
+<div id="fileset" class="block">
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{ title }}</h2>
+	</div>		<!-- .block_head ends -->
+	<div class="block_content">
+        <form action="" method="post" id="main_form">
+			<input type="hidden" name="files-TOTAL_FORMS" value="0" id="id_files-TOTAL_FORMS">
+			<input type="hidden" name="files-INITIAL_FORMS" value="0" id="id_files-INITIAL_FORMS">
+			<input type="hidden" name="files-MAX_NUM_FORMS" id="id_files-MAX_NUM_FORMS">
+			<input type="hidden" value="{{ computer.id }}" id="computer_id" />
+			<ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
+            {{ fileset_form }}
+			<p>
+                <input type="button" class="submit mid" id="submit_button" value="Salvar"/>
+            </p>
+        </form>
+	</div>		<!-- .block_content ends -->
+	<div class="bendl"></div>
+	<div class="bendr"></div>
+</div>		<!-- .block ends -->
+
+{% endblock %}

@@ -60,3 +60,28 @@ $(document).ready(function(){
     
     
 });
+$(document).ready(function(){
+    $('#submit_button').click(function(){
+		var all_paths = $('.full_path');
+		var checked_paths = new Array()
+		for (var i = 0; i < all_paths.length; i++) {
+			if (all_paths[i].checked == true) {
+				checked_paths.push(all_paths[i].value);
+			};
+		};
+		console.log(checked_paths);
+		$('#id_files-TOTAL_FORMS').val(checked_paths.length);
+		for (var n = 0; n < checked_paths.length; n++) {
+			var new_path_field = '\n' + 
+			'<input id="id_files-'+ n + '-path" type="hidden" name="files-'+ n +'-path" maxlength="2048" class="text" value="' + checked_paths[n] + '">\n' +
+			'<input type="hidden" name="files-' + n + '-fileset" id="id_files-' + n + '-fileset">\n' +
+			'<input type="hidden" name="files-' + n + '-id" id="id_files-' + n + '-id">\n';
+			$('#main_form').append(new_path_field);
+		};
+		if (checked_paths.length > 0) {
+		    $('#main_form').submit();
+        } else {
+            alert('Você deve escolher algum arquivo');
+        }
+	});
+});

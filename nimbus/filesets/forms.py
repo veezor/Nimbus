@@ -5,6 +5,7 @@ from django import forms
 from django.forms import widgets
 from nimbus.shared import forms as nimbus_forms
 
+
 class FileSetForm(forms.ModelForm):
     name = forms.CharField(label=u"Nome", widget=widgets.TextInput(attrs={'class': 'text small'}))
     class Meta:
@@ -17,8 +18,4 @@ class FilePathForm(forms.ModelForm):
         model = FilePath
     
 
-FilesFormSet = forms.models.inlineformset_factory(FileSet, FilePath, can_delete=False, extra=1)
-
-class FilesToDeleteForm(FilesFormSet):
-    can_delete = True
-    extra = 0
+FilesFormSet = forms.models.inlineformset_factory(FileSet, FilePath, can_delete=False, extra=0)
