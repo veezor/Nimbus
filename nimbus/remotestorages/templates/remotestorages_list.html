@@ -6,7 +6,28 @@
 <script type="text/javascript" src="/media/js/remotestorages.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/remotestorages.css" />
 <link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.jqplot.css" />
-
+<script type="text/javascript">
+$(document).ready(function(){
+    var data = [
+        ['Ocupado', {{ used_space }}],['Livre', {{ free_space }}]
+    ];
+    var plot1 = jQuery.jqplot ('chart1', [data], 
+    { 
+        title: "Espa&ccedil;o em Disco",
+        seriesColors: [ "#EAA228", "#579575"],
+        seriesDefaults: {
+            // Make this a pie chart.
+            renderer: jQuery.jqplot.PieRenderer, 
+            rendererOptions: {
+                // Put data labels on the pie slices.
+                // By default, labels show the percentage of the slice.
+                showDataLabels: true
+            }
+        }, 
+        legend: { show:true, location: 'e' }
+    });
+});
+</script>
 {% endblock %}
 
 {% block page %}
@@ -20,30 +41,49 @@
 	</div>
 
     <div class="block_content">
+        <div class="half">
+        <form name="remotestorages_list" id="remotestorages_list" action="/remotestorages/do_connect/" method="post">
+            <label>Armazenamento Conectado</label>
+            <input type="checkbox" name="do_connect" value="1" {% if storage_info.active %}checked="checked"{% endif %} id="do_connect" /> 
+        </form>
+        </div>
+        <div class="half last">
+            {% if status.status == "OK" %}
+            <div class="message success"><p>Status do Storage: OK</p></div>
+            {% endif %}
+            {% if status.status == "WARNNING" %}
+            <div class="message warning"><p>Status do Storage: ALERTA</p></div>
+            {% endif %}
+            {% if status.status == "CRITICAL" %}
+            <div class="message error"><p>Status do Storage: CRITICO</p></div>
+            {% endif %}
+        </div>
         <div class="clear"></div>
         <div id="chart1" class="half"></div>
         <div class="half last">
+        {% if not profiles %}
+        <div class="message warning"><p>Sem procedimentos relacionados.</p></div>
+        {% else %}
         <table cellpadding="0" cellspacing="0" style="width: 100%;">
             <thead>
             <tr>
                 <th>Nome</th>
-                <th>Endere&ccedil;o</th>
-                <th>&Uacute;tima Atividade</th>
-                <th>Ativo</th>
+                <th>Fileset</th>
+                <th>Schedule</th>
             </tr>
             </thead>
             <tbody>
-            {% for row in num_rows %}
+            {% for profile in profiles %}
             <tr>
-                <td><a href="#">Storage 01</a></td>
-                <td>192.168.50.21</td>
-                <td>S&aacute;bado, 4 de maio de 2011</td>
-                <td><img src="/media/icons/ok.png" alt="Sim" /></td>
+                <td>{{ profile.name }}</td>
+                <td>{{ profile.fileset }}</td>
+                <td>{{ profile.schedule }}</td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
         <a href="#" class="minibutton"><span>Adicionar Storage</span></a>
+        {% endif %}
         </div>
         <div class="clear"></div>
     </div>

@@ -37,7 +37,7 @@ class RemoteStorageStatus(models.Model):
                              choices=REMOTE_STORAGE_STATUS_CHOICES,
                              blank=False, null=False, unique=False)
 
-    disk_usage = models.IntegerField(null=False,unique=False)
+    disk_usage = models.IntegerField(null=False,unique=False, default=0)
     online = models.BooleanField(default=False, null=False,unique=False)
 
 
