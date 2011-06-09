@@ -11,7 +11,7 @@ from django.db.models.signals import post_save
 
 
 from nimbus.base.models import UUIDSingletonModel as BaseModel
-from nimbus.network.models import get_nimbus_address
+from nimbus.network.models import get_raw_network_interface_address
 from nimbus.shared import utils, signals
 from nimbus.libs.template import render_to_file
 
@@ -26,7 +26,7 @@ class Config(BaseModel):
                                           default=utils.random_password,
                                           blank=False, null=False)
     director_address = models.IPAddressField("nimbus address", null=False, blank=False,
-                                             default=get_nimbus_address)
+                                             default=get_raw_network_interface_address)
 
 
 
