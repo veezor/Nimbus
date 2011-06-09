@@ -146,18 +146,20 @@ def view_computer(request, object_id):
 
 @login_required
 def activate(request, object_id):
-    storage = Storage.objects.get(id=object_id)
-    storage.active = True
-    storage.save()
+    if request.method == "POST":        
+        storage = Storage.objects.get(id=object_id)
+        storage.active = True
+        storage.save()
+        messages.success(request, u'Armazenamento ativado com sucesso.')
 
-    messages.success(request, u'Armazenamento ativado com sucesso.')
     return redirect('/storages/list')
 
 
 @login_required
 def deactivate(request, object_id):
-    storage = Storage.objects.get(id=object_id)
-    storage.active = False
-    storage.save()
+    if request.method == "POST":
+        storage = Storage.objects.get(id=object_id)
+        storage.active = False
+        storage.save()
 
     return redirect('/storages/list')
