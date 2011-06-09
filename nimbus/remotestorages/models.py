@@ -3,6 +3,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 import systeminfo
@@ -43,6 +44,7 @@ class RemoteStorageStatus(models.Model):
 
 
 class RemoteStorageConf(SingletonBaseModel):
+    nimbus_address = models.IPAddressField(null=False, blank=False)
     disk_warning_threshold = models.IntegerField(default=-1, blank=False, null=False, unique=False)
     disk_critical_threshold = models.IntegerField(default=-1, blank=False, null=False, unique=False)
     state = models.CharField(max_length=255, default=MANAGED, choices=REMOTE_STORAGE_STATES_CHOICES, 
@@ -65,12 +67,20 @@ class RemoteStorageConf(SingletonBaseModel):
 def send_disk_usage_alert():
     disk_info = systeminfo.DiskInfo(path=settings.DEFAULT_BACULA_ARCHIVE)
     usage = int(disk_info.get_usage())
+    
+    user = User.objects.get(id=1)
+    remote_storage_conf = RemoteStorageConf.get_instance()
+    nimbus_address = remote_storage_conf.nimbus_address
 
     config = RemoteStorageConf.get_instance()
     if usage >= config.disk_critical_threshold:
-        notifier.DiskCriticalNotifier().notify()
+        notifier.DiskCriticalNotifier(user.username,
+                                      user.password,
+                                      nimbus_address).notify()
         return
 
     if usage >= config.disk_warning_threshold:
-        notifier.DiskWarnningNotifier().notify()
+        notifier.DiskWarnningNotifier(user.username,
+                                      user.password,
+                                      nimbus_address).notify()
 
