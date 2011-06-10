@@ -70,18 +70,17 @@ $(document).ready(function(){
 			};
 		};
 		console.log(checked_paths);
-		$('#id_files-TOTAL_FORMS').val(checked_paths.length);
-		for (var n = 0; n < checked_paths.length; n++) {
+		var inicial = parseInt($('#id_files-INITIAL_FORMS')[0].value)
+		var total = inicial + checked_paths.length
+		$('#id_files-TOTAL_FORMS').val(total);
+		for (var i = 0; i < checked_paths.length; i++) {
+		    var n = i + inicial;
 			var new_path_field = '\n' + 
-			'<input id="id_files-'+ n + '-path" type="hidden" name="files-'+ n +'-path" maxlength="2048" class="text" value="' + checked_paths[n] + '">\n' +
+			'<input id="id_files-'+ n + '-path" type="hidden" name="files-'+ n +'-path" maxlength="2048" class="text" value="' + checked_paths[i] + '">\n' +
 			'<input type="hidden" name="files-' + n + '-fileset" id="id_files-' + n + '-fileset">\n' +
 			'<input type="hidden" name="files-' + n + '-id" id="id_files-' + n + '-id">\n';
 			$('#main_form').append(new_path_field);
 		};
-		if (checked_paths.length > 0) {
-		    $('#main_form').submit();
-        } else {
-            alert('Você deve escolher algum arquivo');
-        }
+        $('#main_form').submit();
 	});
 });

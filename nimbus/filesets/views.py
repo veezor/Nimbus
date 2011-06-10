@@ -41,8 +41,35 @@ def add(request, computer_id=None):
     return render_to_response(request, "add_fileset.html", content)
 
 
-@login_required
 def edit(request, fileset_id, computer_id):
+    f = FileSet.objects.get(id=fileset_id)
+    fileset_form = forms.FileSetForm(prefix="fileset", instance=f)
+    deletes_form = forms.FilesToDeleteForm(instance=f)
+    computer = get_object_or_404(Computer, pk=computer_id)
+    if request.method == 'POST':
+        data = request.POST
+        print data
+        fileset_form = forms.FileSetForm(data, prefix="fileset", instance=f)
+        if fileset_form.is_valid():
+            new_fileset = fileset_form.save()
+            deletes_form = forms.FilesToDeleteForm(data, instance=new_fileset)
+            if deletes_form.is_valid():
+                deletes_form.save()
+                messages.success(request, "Conjunto de arquivos '%s' foi alterado" % new_fileset.name)
+            else:
+                messages.error(request, "O conjunto de arquivos não pode ser alterado. Problemas nos arquivos escolhidos")
+                print deletes_form.errors
+        else:
+            messages.error(request, "O conjunto de arquivos não foi alterado. Verifique os erros abaixo.")
+    content = {'title': u"Editar Conjunto de Arquivos '%s'" % f.name,
+               'computer': computer,
+               'fileset_form': fileset_form,
+               'deletes_form': deletes_form}
+    return render_to_response(request, "edit_fileset.html", content)
+
+
+@login_required
+def edit2(request, fileset_id, computer_id):
     fileset = get_object_or_404(FileSet, pk=fileset_id)
     computer = get_object_or_404(Computer, pk=computer_id)
     fileset_form = forms.FileSetForm(instance=fileset, prefix="fileset")
@@ -54,10 +81,12 @@ def edit(request, fileset_id, computer_id):
                'deletes_form': deletes_form}
     if request.method == 'POST':
         data = request.POST
+        print data
         deletes_form = forms.FilesToDeleteForm(data, instance=fileset)
-        print deletes_form.is_valid()
         if deletes_form.is_valid():
             deletes_form.save()
+        else:
+            print deletes_form.errors
     return render_to_response(request, "edit_fileset.html", content)
 
 
