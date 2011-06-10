@@ -1,3 +1,12 @@
+function set_fileset() {
+    if (typeof FILESET_ID != "undefined") {
+        $("#id_procedure-fileset").append("<option value="+FILESET_ID+">"+FILESET_NAME+"</option>");
+        $("#id_procedure-fileset").val(FILESET_ID);
+        $("#uniform-id_procedure-fileset").hide('slow');
+        $("#fileset_button").html("<span>[" + FILESET_NAME + "]</span>");
+        $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");            
+    }
+}
 $(document).ready(function(){
     $('#schedule_button').click(function() {
         var computer_id = $('#id_procedure-computer').val();
@@ -16,18 +25,14 @@ $(document).ready(function(){
         return false;
     });
     $("select").uniform();
+    set_fileset();
 });
-
 // open async windows
 $(document).ready(function(){
-    $('.schedules').click(function(){
-        jQuery.facebox({ ajax: '/schedules/add/' });
-        return false;
-    });
-    $('.filesets').click(function(){
+    $('#fileset_button').click(function(){
         if ($('#id_procedure-computer').val())
         {
-            jQuery.facebox({ ajax: '/filesets/add/'+$('#id_procedure-computer').val() });
+            jQuery.facebox({ ajax: $('#fileset_button')[0].href+$('#id_procedure-computer').val() });
         }
         else
         {

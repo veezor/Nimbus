@@ -13,12 +13,13 @@
 		<h2>{{ title }}</h2>
 	</div>		<!-- .block_head ends -->
 	<div class="block_content">
-        <form action="" method="post" id="main_form">
+        <form action="/filesets/do_add/" method="post" id="main_form">
 			<input type="hidden" name="files-TOTAL_FORMS" value="0" id="id_files-TOTAL_FORMS">
 			<input type="hidden" name="files-INITIAL_FORMS" value="0" id="id_files-INITIAL_FORMS">
 			<input type="hidden" name="files-MAX_NUM_FORMS" id="id_files-MAX_NUM_FORMS">
 			<input type="hidden" value="{{ computer.id }}" id="computer_id" />
 			<ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
+			<span id="field_error_0" class="field_error" style="display: none;">Preencha os campos abaixo corretamente<br/></span>
             {{ fileset_form }}
 			<p>
                 <input type="button" class="submit mid" id="submit_button" value="Salvar"/>

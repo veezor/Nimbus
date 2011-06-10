@@ -61,6 +61,28 @@ $(document).ready(function(){
     
 });
 $(document).ready(function(){
+    function async_submit() {
+        $(".field_error").hide();
+        $.ajax({
+            type: "POST",
+            url: "/filesets/do_add/",
+            data: $('#main_form').serialize(),
+            success: function(j) {
+                var response = jQuery.parseJSON(j);
+                console.log(response);
+                if (response.status == true) {
+                    FILESET_ID = response.fileset_id;
+                    FILESET_NAME = response.fileset_name;
+                    alert(response.message);
+                    $.facebox.close();
+                    set_fileset();
+                } else {
+                    $("#field_error_" + response.error).show();
+                    alert(response.message);
+                }
+            }
+        });  
+    };
     $('#submit_button').click(function(){
 		var all_paths = $('.full_path');
 		var checked_paths = new Array()
@@ -81,6 +103,15 @@ $(document).ready(function(){
 			'<input type="hidden" name="files-' + n + '-id" id="id_files-' + n + '-id">\n';
 			$('#main_form').append(new_path_field);
 		};
-        $('#main_form').submit();
+        // $('#main_form').submit();
+        if (total == 0) {
+            alert("Nenhum arquivo foi selecionado")
+        } else {
+            if (typeof NOT_ASYNC != "undefined") {
+                $('#main_form').submit()
+            } else {
+                async_submit();
+            }
+        }
 	});
 });
