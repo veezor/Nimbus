@@ -7,6 +7,12 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript">
+	{% if fileset %}
+		FILESET_ID = {{fileset.id}};
+		FILESET_NAME = "{{fileset.name}}";
+	{% endif %}
+</script>
 
 {% endblock %}
 
@@ -34,7 +40,7 @@
                         <a href="/schedules/{{schedule.id}}/edit" class="minibutton"><span>Modifique [{{schedule.name}}]</span></a> ou escolha um modelo:
                     {% endif %}
                     {% if field.label == 'Fileset' %}
-                        <a href="/filesets/{{fileset.id}}/edit/{{procedure.computer.id}}" class="minibutton"><span>Modifique [{{fileset.name}}]</span></a> ou escolha um modelo:
+                        <a href="/filesets/{{fileset.id}}/edit/" class="filesets minibutton" id="fileset_button"><span>Modifique [{{fileset.name}}]</span></a><a class="minibutton" id="toggle_fileset_choice"><span>Escolher um modelo</span></a>
                     {% endif %}
                     {{ field }}
                 </p>

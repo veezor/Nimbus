@@ -65,7 +65,7 @@ $(document).ready(function(){
         $(".field_error").hide();
         $.ajax({
             type: "POST",
-            url: "/filesets/do_add/",
+            url: $('#main_form')[0].action,
             data: $('#main_form').serialize(),
             success: function(j) {
                 var response = jQuery.parseJSON(j);

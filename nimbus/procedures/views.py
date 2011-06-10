@@ -45,11 +45,15 @@ def resume_add(request, computer_id, schedule_id, fileset_id, storage_id,
 @login_required
 def add(request, teste=None):
     title = u"Adicionar backup"
-    lforms = ProcedureForm(prefix="procedure")
+    form = ProcedureForm(prefix="procedure")
     content = {'title': title,
-              'forms':[lforms]}
+              'form':form}
     if request.method == "POST":
         data = copy(request.POST)
+        if data.has_key("procedure-fileset"):
+            fileset = FileSet.objects.get(id=data['procedure-fileset'])
+            content['fileset'] = fileset
+        print data
         procedure_form = ProcedureForm(data, prefix="procedure")
         if procedure_form.is_valid():
             procedure = procedure_form.save()
@@ -57,7 +61,7 @@ def add(request, teste=None):
             return redirect('/procedures/list')
         else:
             messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
-            content['forms'] = [procedure_form]
+            content['form'] = procedure_form
             return render_to_response(request, "add_procedure.html", content)
     return render_to_response(request, "add_procedure.html", content)
 

@@ -20,21 +20,6 @@ from nimbus.filesets import forms
 def add(request, computer_id=None):
     fileset_form = forms.FileSetForm(prefix="fileset")
     computer = get_object_or_404(Computer, pk=computer_id)
-    # if request.method == 'POST':
-    #     data = request.POST
-    #     print data
-    #     fileset_form = forms.FileSetForm(data, prefix="fileset")
-    #     if fileset_form.is_valid():
-    #         new_fileset = fileset_form.save()
-    #         filepaths_form = forms.FilesFormSet(data, instance=new_fileset)
-    #         if filepaths_form.is_valid():
-    #             filepaths_form.save()
-    #             messages.success(request, "Conjunto de arquivos '%s' criado com sucesso" % new_fileset.name)
-    #         else:
-    #             new_fileset.delete()
-    #             messages.error(request, "O conjunto de arquivos não pode ser criado. Problemas nos arquivos escolhidos")
-    #     else:
-    #         messages.error(request, "O conjunto de arquivos não foi criado. Verifique os erros abaixo.")
     content = {'title': u"Criar conjunto de arquivos",
                'computer': computer,
                'fileset_form': fileset_form}
@@ -66,26 +51,33 @@ def edit(request, fileset_id, computer_id):
     fileset_form = forms.FileSetForm(prefix="fileset", instance=f)
     deletes_form = forms.FilesToDeleteForm(instance=f)
     computer = get_object_or_404(Computer, pk=computer_id)
+    content = {'title': u"Editar Conjunto de Arquivos '%s'" % f.name,
+               'computer': computer,
+               'fileset_form': fileset_form,
+               'deletes_form': deletes_form,
+               'fileset': f}
+    return render_to_response(request, "edit_fileset.html", content)
+
+
+@login_required
+def do_edit(request, fileset_id):
+    f = FileSet.objects.get(id=fileset_id)
     if request.method == 'POST':
         data = request.POST
         print data
         fileset_form = forms.FileSetForm(data, prefix="fileset", instance=f)
         if fileset_form.is_valid():
             new_fileset = fileset_form.save()
-            deletes_form = forms.FilesToDeleteForm(data, instance=new_fileset)
-            if deletes_form.is_valid():
-                deletes_form.save()
-                messages.success(request, "Conjunto de arquivos '%s' foi alterado" % new_fileset.name)
+            filepaths_form = forms.FilesToDeleteForm(data, instance=new_fileset)
+            if filepaths_form.is_valid():
+                filepaths_form.save()
+                return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi criado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
             else:
-                messages.error(request, "O conjunto de arquivos não pode ser alterado. Problemas nos arquivos escolhidos")
-                print deletes_form.errors
+                new_fileset.delete()
+                return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos arquivos","error":1}')
         else:
-            messages.error(request, "O conjunto de arquivos não foi alterado. Verifique os erros abaixo.")
-    content = {'title': u"Editar Conjunto de Arquivos '%s'" % f.name,
-               'computer': computer,
-               'fileset_form': fileset_form,
-               'deletes_form': deletes_form}
-    return render_to_response(request, "edit_fileset.html", content)
+            return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos fileset","error":0}')
+
 
 
 @login_required

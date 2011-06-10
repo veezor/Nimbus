@@ -77,7 +77,6 @@ class ProcedureEditForm(forms.ModelForm):
 
 def remove_null_choice(field_object):
     current_choices = field_object.choices
-    print len(current_choices)
     if len(current_choices) == 1:
         choices = []
         for choice in current_choices:

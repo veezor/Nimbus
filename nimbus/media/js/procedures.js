@@ -2,11 +2,12 @@ function set_fileset() {
     if (typeof FILESET_ID != "undefined") {
         $("#id_procedure-fileset").append("<option value="+FILESET_ID+">"+FILESET_NAME+"</option>");
         $("#id_procedure-fileset").val(FILESET_ID);
-        $("#uniform-id_procedure-fileset").hide('slow');
-        $("#fileset_button").html("<span>[" + FILESET_NAME + "]</span>");
+        $("#uniform-id_procedure-fileset").hide();
+        $("#fileset_button").html("<span>Modificar [" + FILESET_NAME + "]</span>");
         $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");            
     }
-}
+};
+
 $(document).ready(function(){
     $('#schedule_button').click(function() {
         var computer_id = $('#id_procedure-computer').val();
@@ -26,6 +27,12 @@ $(document).ready(function(){
     });
     $("select").uniform();
     set_fileset();
+    $('#toggle_fileset_choice').click(function() {
+        $("#uniform-id_procedure-fileset").toggle('slow');
+        $('#toggle_fileset_choice').html("<span>N‹o usar modelo</span>");
+        $("#fileset_button").toggle('slow')
+        console.log('teste')
+    });
 });
 // open async windows
 $(document).ready(function(){

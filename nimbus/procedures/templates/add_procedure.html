@@ -7,6 +7,12 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript">
+	{% if fileset %}
+		FILESET_ID = {{fileset.id}};
+		FILESET_NAME = "{{fileset.name}}";
+	{% endif %}
+</script>
 
 {% endblock %}
 
@@ -21,36 +27,34 @@
 	</div>
     <div class="block_content">
         <form action="/procedures/add/" method="post">
-        {% for form in forms %}
-            {{ form.non_field_errors }}
-            {% for field in form.visible_fields %}
-                {% if field.errors %}
-                <ul class="errorlist">
-                    <li>{{ field.errors }}</li>
-                </ul>
-                {% endif %}
-                <p><label>{{ field.label }}:</label><br />
-                    {% if field.label == 'Schedule' %}
-						{%if selected_schedule%}
-							[{{selected_schedule.name}}]
-							<input type="hidden" name="procedure-schedule" value="{{selected_schedule.id}}" />
-						{% else %}
-	                        <a href="#" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a>{{ field }}
-						{% endif %}
-                    {% else %}
-						{%if field.label == 'Fileset' %}
-	                        <a href="/filesets/add/" class="filesets minibutton" id="fileset_button"><span>Criar um conjunto de arquivos</span></a>{{ field }}
-                   		{% else %}
-				            {{ field }}
-						{% endif %}
-                    {% endif %}
-					
-                </p>
-            {% endfor %}
-            {% for hidden in form.hidden_fields %}
-                {{ hidden }}
-            {% endfor %}
-        {% endfor %}
+           {{ form.non_field_errors }}
+           {% for field in form.visible_fields %}
+               {% if field.errors %}
+               <ul class="errorlist">
+                   <li>{{ field.errors }}</li>
+               </ul>
+               {% endif %}
+               <p><label>{{ field.label }}:</label><br />
+                   {% if field.label == 'Schedule' %}
+					{%if selected_schedule%}
+						[{{selected_schedule.name}}]
+						<input type="hidden" name="procedure-schedule" value="{{selected_schedule.id}}" />
+					{% else %}
+                        <a href="#" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a>{{ field }}
+					{% endif %}
+                   {% else %}
+					{%if field.label == 'Fileset' %}
+                        <a href="/filesets/add/" class="filesets minibutton" id="fileset_button"><span>Criar um conjunto de arquivos</span></a>{{ field }}
+                  		{% else %}
+			            {{ field }}
+					{% endif %}
+                   {% endif %}
+				
+               </p>
+           {% endfor %}
+           {% for hidden in form.hidden_fields %}
+               {{ hidden }}
+           {% endfor %}
         <div class="pool_value">
 	        <label>Tempo de retencao: <label id="slider_value"></label> dias</label> <label id="slider_value"></label><br />
 	        <div id="slider"></div>
