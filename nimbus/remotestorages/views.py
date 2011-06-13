@@ -7,6 +7,8 @@ from nimbus.shared.views import render_to_response
 from nimbus.remotestorages import models
 from nimbus.procedures.models import Procedure, Profile
 from nimbus.storages.models import Storage
+from django.views.generic import create_update
+from nimbus.shared.forms import form
 
 @login_required
 def render(request):
@@ -17,7 +19,6 @@ def render(request):
     storage_info = Storage.objects.get(id=1)
     profiles = Profile.objects.filter(storage=storage)
     extra_content = {
-        'num_rows':range(4),
         'storage':storage,
         'title': u"Storages Adicionais",
         'profiles': profiles,
@@ -26,11 +27,10 @@ def render(request):
         'used_space': used_space,
         'free_space': free_space
     }
+    if request.method == "POST":
+        # TODO: gravar no banco
+        pass
     return render_to_response(request, "remotestorages_list.html", extra_content)
-
-@login_required
-def do_connect(request):
-    pass
 
 @login_required
 def warnning_alert(request):

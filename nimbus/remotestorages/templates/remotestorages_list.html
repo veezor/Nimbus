@@ -42,7 +42,7 @@ $(document).ready(function(){
 
     <div class="block_content">
         <div class="half">
-        <form name="remotestorages_list" id="remotestorages_list" action="/remotestorages/do_connect/" method="post">
+        <form name="remotestorages_list" id="remotestorages_list" action="/remotestorages/" method="post">
             <label>Armazenamento Conectado</label>
             <input type="checkbox" name="do_connect" value="1" {% if storage_info.active %}checked="checked"{% endif %} id="do_connect" /> 
         </form>
