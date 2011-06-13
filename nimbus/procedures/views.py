@@ -212,8 +212,12 @@ def deactivate(request, object_id):
 @login_required
 def profile_list(request):
     title = u"Perfis de configuração"
-    profiles = Profile.objects.filter(id__gt=1)
-    return render_to_response(request, "profile_list.html", locals())
+    filesets = FileSet.objects.filter(is_model=True)
+    schedules = Schedule.objects.filter(is_model=True)
+    content = {'title': u"Perfis de configuração",
+               'filesets': filesets,
+               'schedules': schedules}
+    return render_to_response(request, "profile_list.html", content)
 
 @login_required
 def profile_add(request):

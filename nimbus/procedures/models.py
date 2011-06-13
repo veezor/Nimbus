@@ -2,12 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 import logging
+from os import path
 from os.path import join, exists
-from django.utils.translation import ugettext as _
 
+from django.utils.translation import ugettext as _
 from django.db import models, connections
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
+
 from pybacula import BConsoleInitError
 from nimbus.base.models import BaseModel
 from nimbus.computers.models import Computer
@@ -74,7 +76,7 @@ class Procedure(BaseModel):
         # return self.profile.storage.bacula_name
 
     def pool_bacula_name(self):
-        return self.pool_name
+        return '%s_pool' % self.bacula_name
 
     def last_success_date(self):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
@@ -172,6 +174,23 @@ def offsiteconf_check(procedure):
     offsite = Offsite.get_instance()
     if not offsite.active:
         procedure.offsite_on = False
+
+
+def update_pool_file(procedure):
+    """Pool update pool bacula file""" 
+    name = procedure.pool_bacula_name()
+    filename = path.join(settings.NIMBUS_POOLS_DIR, name)
+    render_to_file(filename, "pool", name=name, max_vol_bytes=procedure.pool_size,
+                   days=procedure.pool_retention_time)
+
+def remove_pool_file(procedure):
+    """pool remove file"""
+    name = procedure.pool_bacula_name()
+    filename = path.join(settings.NIMBUS_POOLS_DIR, name)
+    utils.remove_or_leave(filename)
+
+signals.connect_on(update_pool_file, Procedure, post_save)
+signals.connect_on(remove_pool_file, Procedure, post_delete)
 
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)

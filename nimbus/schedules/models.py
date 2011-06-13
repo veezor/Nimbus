@@ -3,6 +3,7 @@
 
 
 from os import path
+from datetime import datetime
 
 from django.db import models
 from django.conf import settings
@@ -26,8 +27,16 @@ class BackupLevel(models.Model):
 
 
 class Schedule(BaseModel):
-    name = models.CharField(u'Nome qualquer', max_length=255, null=False, blank=False)
+    name = models.CharField(u'Nome qualquer', max_length=255, null=False,
+                            blank=False)
     is_model = models.BooleanField(default=False, null=False)
+
+    def get_runs(self):
+        runs = []
+        for obj in [self.if_month(), self.if_week(), self.if_day(), self.if_hour()]:
+            if obj:
+                runs += obj.bacula_config_runs()
+        return runs
 
     def __unicode__(self):
         return self.name
@@ -68,6 +77,15 @@ class Month(models.Model):
     def __unicode__(self):
         return self.schedule.name
 
+    def bacula_config_runs(self):
+        block = []
+        day_list = self.days.split(',')
+        for day in day_list:
+            line = "Run = Level=%s on %s at %s" %(self.level, day, 
+                                                  self.hour.strftime('%H:%M'))
+            block.append(line)
+        return block
+
 
 class Week(models.Model):
     active = models.BooleanField(default=True)
@@ -79,6 +97,16 @@ class Week(models.Model):
     def __unicode__(self):
         return self.schedule.name
 
+    def bacula_config_runs(self):
+        weekdays = enums.week_dict
+        block = []
+        day_list = self.days.split(',')
+        for day in day_list:
+            line = u"Run = Level=%s %s at %s" %(self.level, weekdays[int(day)],
+                                               self.hour.strftime('%H:%M'))
+            block.append(line)
+        return block
+
 
 class Day(models.Model):
     active = models.BooleanField(default=True)
@@ -88,6 +116,11 @@ class Day(models.Model):
 
     def __unicode__(self):
         return self.schedule.name
+        
+    def bacula_config_runs(self):
+        line = u"Run = Level=%s daily at %s" %(self.level,
+                                              self.hour.strftime('%H:%M'))
+        return [line]
 
 
 class Hour(models.Model):
@@ -99,6 +132,9 @@ class Hour(models.Model):
     def __unicode__(self):
         return self.schedule.name
 
+    def bacula_config_runs(self):
+        line = u"Run = Level=%s hourly at 00:%02d" %(self.level, self.minute)
+        return [line]
 
 # class Schedule(BaseModel):
 #     name = models.CharField(max_length=255, unique=True, null=False,
@@ -190,40 +226,33 @@ class Hour(models.Model):
 
 
 def update_schedule_file(schedule):
-
     name = schedule.bacula_name
-
-    filename = path.join( settings.NIMBUS_SCHEDULES_DIR, 
-                          name)
-
-    render_to_file( filename,
-                    "schedule",
-                    name=name,
-                    runs=schedule.get_runs() )
-
+    filename = path.join(settings.NIMBUS_SCHEDULES_DIR, name)
+    render_to_file(filename,
+                   "schedule",
+                   name=name,
+                   runs=schedule.get_runs())
 
 
 def remove_schedule_file(schedule):
     name = schedule.bacula_name
-    filename = path.join( settings.NIMBUS_SCHEDULES_DIR, name)
+    filename = path.join(settings.NIMBUS_SCHEDULES_DIR, name)
     utils.remove_or_leave(filename)
-
 
 
 def update_schedule(trigger):
     update_schedule_file(trigger.schedule)
     
 
-# signals.connect_on( update_schedule_file, Schedule, post_save)
-# signals.connect_on( remove_schedule_file, Schedule, post_delete)
+signals.connect_on(update_schedule_file, Schedule, post_save)
+signals.connect_on(remove_schedule_file, Schedule, post_delete)
 # 
+# signals.connect_on(update_schedule, Month, post_save)
+# signals.connect_on(update_schedule, Day, post_save)
+# signals.connect_on(update_schedule, Week, post_save)
+# signals.connect_on(update_schedule, Hour, post_save)
 # 
-# signals.connect_on( update_schedule, Monthly, post_save)
-# signals.connect_on( update_schedule, Daily, post_save)
-# signals.connect_on( update_schedule, Weekly, post_save)
-# signals.connect_on( update_schedule, Hourly, post_save)
-# 
-# signals.connect_on( update_schedule, Monthly, post_delete)
-# signals.connect_on( update_schedule, Daily, post_delete)
-# signals.connect_on( update_schedule, Weekly, post_delete)
-# signals.connect_on( update_schedule, Hourly, post_delete)
+# signals.connect_on(update_schedule, Month, post_delete)
+# signals.connect_on(update_schedule, Day, post_delete)
+# signals.connect_on(update_schedule, Week, post_delete)
+# signals.connect_on(update_schedule, Hour, post_delete)
