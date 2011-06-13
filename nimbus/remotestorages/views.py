@@ -18,6 +18,11 @@ def render(request):
     free_space = 100 - used_space
     storage_info = Storage.objects.get(id=1)
     profiles = Profile.objects.filter(storage=storage)
+    # save the stuff
+    if request.method == "POST":
+        storage_info.active = int(request.POST.get("active"))
+        storage_info.save()
+    #updated extra content
     extra_content = {
         'storage':storage,
         'title': u"Storages Adicionais",
@@ -27,9 +32,6 @@ def render(request):
         'used_space': used_space,
         'free_space': free_space
     }
-    if request.method == "POST":
-        # TODO: gravar no banco
-        pass
     return render_to_response(request, "remotestorages_list.html", extra_content)
 
 @login_required
