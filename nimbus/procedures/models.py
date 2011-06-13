@@ -26,18 +26,6 @@ from nimbus.libs import offsite
 from nimbus.bacula.models import Job, File
 from nimbus.shared import utils, enums, signals, fields
 
-# Nao serao usados profiles por enquanto. Passei os relacionamentos
-# para Procedures
-# class Profile(models.Model):
-# 
-#     name = models.CharField(max_length=255, unique=True, blank=True, null=False)
-#     # storage = models.ForeignKey(Storage, null=False, blank=False)
-#     # fileset = models.ForeignKey(FileSet, null=False, blank=False)
-#     # schedule = models.ForeignKey(Schedule, null=False, blank=False)
-# 
-#     def __unicode__(self):
-#         return self.name
-
 
 class Procedure(BaseModel):
     pool_name = models.CharField(max_length=255)

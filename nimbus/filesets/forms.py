@@ -13,23 +13,20 @@ class FileSetForm(forms.ModelForm):
 
 
 class FilePathForm(forms.ModelForm):
-    path = forms.CharField(label=u"Arquivo", widget=widgets.TextInput(attrs={'class': 'text small', 'readonly': 'readonly'}))
+    path = forms.CharField(label=u"Arquivo", widget=widgets.TextInput(attrs={'class': 'text small'}))
     class Meta:
         model = FilePath
     
-
 FilesFormSet = forms.models.inlineformset_factory(FileSet, FilePath, can_delete=False, extra=0)
-# FilesToDeleteForm = forms.models.inlineformset_factory(FileSet, FilePath, form=FilePathForm, extra=0)
 
 class FilesToDeleteForm(FilesFormSet):
+    
     def __init__(self, data=None, *args, **kwargs):
         super(FilesToDeleteForm, self).__init__(data, *args, **kwargs)
         for f in self.forms:
             f.fields['DELETE'].widget.attrs = {'class': 'no-style'}
-            # f.fields['path'].widget.attrs = {'disabled': 'disabled'}
+            f.fields['path'].widget.attrs = {'readonly': 'readonly'}
             # f.fields['path'].widget = forms.HiddenInput()
             
-    
-    
     can_delete = True
     form = FilePathForm

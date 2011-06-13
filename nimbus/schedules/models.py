@@ -136,94 +136,6 @@ class Hour(models.Model):
         line = u"Run = Level=%s hourly at 00:%02d" %(self.level, self.minute)
         return [line]
 
-# class Schedule(BaseModel):
-#     name = models.CharField(max_length=255, unique=True, null=False,
-#                              validators=[fields.check_model_name])
-# 
-#     def get_triggers(self):
-#         return list(self.hourly_set.get_query_set()) +\
-#                 list(self.daily_set.get_query_set()) +\
-#                 list(self.monthly_set.get_query_set()) +\
-#                 list(self.weekly_set.get_query_set())
-# 
-# 
-#     def get_monthly_hour(self): #FIX: remove this
-#         if self.monthly_set.count():
-#             return self.monthly_set.all()[0].hour
-# 
-#     def get_weekly_hour(self): #FIX: remove this
-#         if self.weekly_set.count():
-#             return self.weekly_set.all()[0].hour
-# 
-# 
-#     def get_runs(self):
-#         return [ trigger.get_run() for trigger in self.get_triggers() ]
-# 
-# 
-#     def __unicode__(self):
-#         return self.name
-
-
-
-# class TriggerBase(models.Model):
-#     schedule = models.ForeignKey(Schedule, null=False, blank=False)
-#     level = models.CharField(max_length="25", null=False, 
-#                              blank=False, choices=LEVELS)
-#     hour = models.TimeField( null=False, blank = False) 
-# 
-#     @classmethod
-#     def type_name(cls):
-#         return cls.__name__.lower()
-# 
-#     def __unicode__(self):
-#         return self.get_run()
-# 
-#     class Meta:
-#         abstract = True
-# 
-# 
-# class Daily(TriggerBase):
-#     
-#     def get_run(self):
-#         return u"%s at %s" % ( self.type_name(),
-#                                self.hour.strftime("%H:%M") )
-# 
-# 
-# 
-# class Hourly(TriggerBase):
-#     
-#     def get_run(self):
-#         return u"%s at 00:%s" % ( self.type_name(),
-#                                   self.hour.strftime("%M") )
-# 
-# 
-# class Monthly(TriggerBase):
-#     day = models.IntegerField(null=False, blank=False, choices=MONTHDAYS)
-# 
-# 
-#     def get_run(self):
-#         return u"%s %d at %s" % ( self.type_name(), 
-#                                   int(self.day),
-#                                   self.hour.strftime("%H:%M") )
-# 
-# 
-# 
-# class Weekly(TriggerBase):
-#     day = models.CharField(null=False, blank=False,
-#                            max_length=4, choices=WEEKDAYS)
-# 
-# 
-#     def get_run(self):
-#         return u"%s %s at %s" % ( self.type_name(), 
-#                                   self.day,
-#                                   self.hour.strftime("%H:%M") )
-
-
-
-
-
-
-
 
 def update_schedule_file(schedule):
     name = schedule.bacula_name
@@ -246,13 +158,3 @@ def update_schedule(trigger):
 
 signals.connect_on(update_schedule_file, Schedule, post_save)
 signals.connect_on(remove_schedule_file, Schedule, post_delete)
-# 
-# signals.connect_on(update_schedule, Month, post_save)
-# signals.connect_on(update_schedule, Day, post_save)
-# signals.connect_on(update_schedule, Week, post_save)
-# signals.connect_on(update_schedule, Hour, post_save)
-# 
-# signals.connect_on(update_schedule, Month, post_delete)
-# signals.connect_on(update_schedule, Day, post_delete)
-# signals.connect_on(update_schedule, Week, post_delete)
-# signals.connect_on(update_schedule, Hour, post_delete)

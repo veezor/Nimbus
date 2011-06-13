@@ -48,11 +48,3 @@ class DayForm(forms.ModelForm):
     class Meta:
         model = models.Day
 
-# def make_schedule_form_container(instance=None):
-#     return FormContainer(
-#         instance,
-#         week = WeekForm,
-#         month = MonthForm,
-#         day = DayForm,
-#         hour = HourForm
-#     )
