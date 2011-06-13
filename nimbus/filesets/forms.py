@@ -13,7 +13,7 @@ class FileSetForm(forms.ModelForm):
 
 
 class FilePathForm(forms.ModelForm):
-    path = forms.CharField(label=u"Arquivo", widget=widgets.TextInput(attrs={'class': 'text small'}))
+    path = forms.CharField(label=u"Arquivo", widget=widgets.TextInput(attrs={'class': 'text small', 'readonly': 'readonly'}))
     class Meta:
         model = FilePath
     

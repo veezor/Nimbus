@@ -1,6 +1,7 @@
-{% extends "base.html" %}
+{% extends "base_async.html" %}
 
 {% block headtags %}
+<link rel="stylesheet" type="text/css" href="/media/css/filesets.css" media="screen" />
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 <script type="text/javascript" src="/media/js/filesets.js"></script>
 {% endblock %}
@@ -19,8 +20,10 @@
 			<input type="hidden" name="files-MAX_NUM_FORMS" id="id_files-MAX_NUM_FORMS">
 			<input type="hidden" value="{{ computer.id }}" id="computer_id" />
 			<ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
+			<hr />
 			<span id="field_error_0" class="field_error" style="display: none;">Preencha os campos abaixo corretamente<br/></span>
-            {{ fileset_form }}
+            {{ fileset_form.as_p }}
+            <hr />
 			<p>
                 <input type="button" class="submit mid" id="submit_button" value="Salvar"/>
             </p>
