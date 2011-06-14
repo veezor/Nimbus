@@ -86,6 +86,15 @@ class Month(models.Model):
             block.append(line)
         return block
 
+    def human_readable(self):
+        lines = []
+        day_list = self.days.split(',')
+        for day in day_list:
+            line = u"Mensal: Dia %s às %s. Backup %s" %(day, 
+                                                    self.hour.strftime('%H:%M'),
+                                                    self.level)
+            lines.append(line)
+        return lines
 
 class Week(models.Model):
     active = models.BooleanField(default=True)
@@ -107,6 +116,16 @@ class Week(models.Model):
             block.append(line)
         return block
 
+    def human_readable(self):
+        weekdays = enums.weekdays_range
+        lines = []
+        day_list = self.days.split(',')
+        for day in day_list:
+            line = u"Semanal: %s às %s. Backup %s" %(weekdays[int(day)], 
+                                                    self.hour.strftime('%H:%M'),
+                                                    self.level)
+            lines.append(line)
+        return lines
 
 class Day(models.Model):
     active = models.BooleanField(default=True)
@@ -122,6 +141,9 @@ class Day(models.Model):
                                               self.hour.strftime('%H:%M'))
         return [line]
 
+    def human_readable(self):
+        return u"Diário às %s. Backup %s" %(self.hour.strftime('%H:%M'),
+                                            self.level)
 
 class Hour(models.Model):
     active = models.BooleanField(default=True)
@@ -135,6 +157,10 @@ class Hour(models.Model):
     def bacula_config_runs(self):
         line = u"Run = Level=%s hourly at 00:%02d" %(self.level, self.minute)
         return [line]
+
+    def human_readable(self):
+        return u"De hora em hora aos %02d minutos. Backup %s" %(self.minute,
+                                                                self.level)
 
 
 def update_schedule_file(schedule):

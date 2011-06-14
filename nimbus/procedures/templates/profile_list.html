@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block headtags %}
+<script type="text/javascript" src="/media/js/procedures.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
+<style type="text/css">
+ 	.tmp {
+		border: dashed 1px;}
+	}
+</style>
+{% endblock %}
+
+{% block page %}
+
+<div class="block">
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>
+
+    <div class="block_content">
+		FILESETS:
+		<div class="tmp" // bloco com os filesets>
+			{% for fileset in filesets %}
+			<div class="tmp" //bloco de um fileset>
+				<span class="tmp">{{fileset.name}}</span><a href="/filesets/{{fileset.id}}/edit/"><button>Editar</button></a>baseado em
+					<select>
+						{% for computer in computers %}
+						<option>{{computer}}</option>
+						{% endfor %}
+					</select>
+			
+				<table class="tmp" //bloco com os backups - computadores que usam este fileset>
+					<tr><th>Procedimento</th><th>Computador</th></tr>
+					{% for procedure in fileset.procedures.all %}
+					<tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
+					{% endfor %}
+				</table>
+			
+				<div class="tmp" //lista dos arquivos, com rolagem>
+					{% for file in fileset.files.all %}
+						<li>{{file.path}}</li>
+					{% endfor %}
+				</div>
+			
+			</div><br/>
+			{% endfor %}
+		</div><br/>
+
+		AGENDAMENTOS:
+		<div class="tmp" // bloco com os schedules>
+			{% for schedule in schedules %}
+			<div class="tmp" //bloco de um schedule>
+				<span class="tmp">{{schedule.name}}</span><a href="/schedules/{{schedule.id}}/edit/"><button>Editar</button></a>
+			
+				<table class="tmp" //bloco com os backups - computadores que usam este schedule>
+					<tr><th>Procedimento</th><th>Computador</th></tr>
+					{% for procedure in schedule.procedures.all %}
+					<tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
+					{% endfor %}
+				</table>
+			
+				<div class="tmp" //lista dos agendamentos, com rolagem>
+					{% if schedule.if_month %}
+						{% for line in schedule.month.human_readable %}
+							<li>{{ line }}</li>
+						{% endfor %}
+					{% endif %}
+					{% if schedule.if_week %}
+						{% for line in schedule.week.human_readable %}
+							<li>{{ line }}</li>
+						{% endfor %}
+					{% endif %}
+					{% if schedule.if_day %}
+						<li>{{ schedule.day.human_readable }}</li>
+					{% endif %}
+					{% if schedule.if_hour %}
+						<li>{{ schedule.hour.human_readable }}</li>
+					{% endif %}
+
+				</div>
+			
+			</div><br/>
+			{% endfor %}
+		</div>
+    </div>
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+
+</div>
+
+{% endblock %}
