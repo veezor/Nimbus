@@ -21,7 +21,7 @@ from devicemanager import StorageDeviceManager
 from nimbus.base.models import UUIDBaseModel
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
-from nimbus.pools.models import Pool
+#from nimbus.pools.models import Pool
 from nimbus.offsite.models import (Volume,
                                    UploadRequest,
                                    RemoteUploadRequest,

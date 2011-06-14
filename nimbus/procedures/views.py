@@ -19,7 +19,7 @@ from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
 from nimbus.filesets.models import FileSet
 from nimbus.offsite.models import Offsite
-from nimbus.pools.models import Pool
+#from nimbus.pools.models import Pool
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum

@@ -22,7 +22,7 @@ from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
 from nimbus.offsite.models import is_active
-from nimbus.libs import offsite
+#from nimbus.libs import offsite
 from nimbus.bacula.models import Job, File
 from nimbus.shared import utils, enums, signals, fields
 
