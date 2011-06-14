@@ -12,23 +12,23 @@ from nimbus.shared.forms import form
 
 @login_required
 def render(request):
-    storage = models.RemoteStorageConf()
-    status = models.RemoteStorageStatus()
-    used_space = status.disk_usage
-    free_space = 100 - used_space
-    storage_info = Storage.objects.get(id=1)
+    storage = Storage.objects.get(id=1)
     profiles = Profile.objects.filter(storage=storage)
+    storage_conf = models.RemoteStorageConf()
+    storage_status = models.RemoteStorageStatus()
+    used_space = int(storage_status.disk_usage)
+    free_space = 100 - used_space
     # save the stuff
     if request.method == "POST":
-        storage_info.active = int(request.POST.get("active"))
-        storage_info.save()
+        storage.active = int(request.POST.get("active"))
+        storage.save()
     #updated extra content
     extra_content = {
-        'storage':storage,
-        'title': u"Storages Adicionais",
         'profiles': profiles,
-        'storage_info':storage_info,
-        'status': status,
+        'storage': storage,
+        'storage_conf': storage_conf,
+        'storage_status': storage_status,
+        'title': u"Storages Adicionais",
         'used_space': used_space,
         'free_space': free_space
     }

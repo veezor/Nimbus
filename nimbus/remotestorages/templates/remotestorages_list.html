@@ -43,19 +43,19 @@ $(document).ready(function(){
     <div class="block_content">
         <div class="half">
         <form name="remotestorages_list" id="remotestorages_list" action="/remotestorages/" method="post">
-            <label>Armazenamento Conectado</label>
-            <input type="checkbox" name="do_connect" value="1" {% if storage_info.active %}checked="checked"{% endif %} id="do_connect" /> 
-            <input type="hidden" name="active" value="{{ storage_info.active }}" id="active" />
+            <label>Armazenamento Conectado?</label>
+            <input type="checkbox" name="do_connect" value="1" {% if storage.active %}checked="checked"{% endif %} id="do_connect" /> 
+            <input type="hidden" name="active" value="{{ storage.active }}" id="active" />
         </form>
         </div>
         <div class="half last">
-            {% if status.status == "OK" %}
+            {% if storage_status.status == "OK" %}
             <div class="message success"><p>Status do Storage: OK</p></div>
             {% endif %}
-            {% if status.status == "WARNNING" %}
+            {% if storage_status.status == "WARNNING" %}
             <div class="message warning"><p>Status do Storage: ALERTA</p></div>
             {% endif %}
-            {% if status.status == "CRITICAL" %}
+            {% if storage_status.status == "CRITICAL" %}
             <div class="message error"><p>Status do Storage: CRITICO</p></div>
             {% endif %}
         </div>
