@@ -40,9 +40,9 @@ class Procedure(BaseModel):
                                      editable=is_active(Offsite))
     active = models.BooleanField(default=True, blank=True, null=False)
     schedule = models.ForeignKey(Schedule, verbose_name=_("Schedule"),
-                                 related_name='schedule')
+                                 related_name='procedures')
     fileset = models.ForeignKey(FileSet, verbose_name=_("Fileset"),
-                                related_name='fileset')
+                                related_name='procedures')
     storage = models.ForeignKey(Storage, verbose_name=_("Storage"), null=False,
                                 blank=False)
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,

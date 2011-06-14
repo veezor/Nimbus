@@ -214,9 +214,11 @@ def profile_list(request):
     title = u"Perfis de configuração"
     filesets = FileSet.objects.filter(is_model=True)
     schedules = Schedule.objects.filter(is_model=True)
+    computers = Computer.objects.all()
     content = {'title': u"Perfis de configuração",
                'filesets': filesets,
-               'schedules': schedules}
+               'schedules': schedules,
+               'computers': computers}
     return render_to_response(request, "profile_list.html", content)
 
 @login_required
