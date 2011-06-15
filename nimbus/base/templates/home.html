@@ -75,9 +75,14 @@
     			    {% endwith %}
                 </div>
                 <div class="left" id="offsite-use">
+                {% if table6 %}
                     {% with table6 as table %}
     			        {% include "table_chart.html" %}
     			    {% endwith %}
+                {% else %}
+                    <h2>Uso do offsite</h2>
+                    <p><em>Sem uso do offsite</em></p>
+                {% endif %}
                 </div>
 
        		    <div class="clear"></div>

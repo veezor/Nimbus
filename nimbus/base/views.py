@@ -73,20 +73,22 @@ def home(request):
         "Disponível": [cpu_free],
         "Ocupado": [cpu]}}
 
-    offsite_usage = 55 #TODO
-    # offsite_free = 45
+    #offsite_usage = 55 #TODO
+    #offsite_free = 45
 
 
     offsite_data = graph_data_manager.list_offsite_measures()
-
-    if len(offsite_data) == 1: # duplicates first item for area graph
-        offsite_data *= 2
-
-    table6 = {'title': u"Uso do Offsite", 'width': "", 'type': "area", 'height': "130", 'cid': "chart6",
-              'header': [i[0] for i in offsite_data], 'labels': [utils.filesizeformat(i[1]) for i in offsite_data]}
-    # table6['header'] = ["GB"]
-    t6data = [i[1] for i in offsite_data] if len(offsite_data) else [0.0]
-    table6['lines'] = {"Disponível": t6data }
+    print "a" * 200
+    print len(offsite_data)
+    table6 = False
+    if len(offsite_data) > 0:
+        if len(offsite_data) == 1: # duplicates first item for area graph
+            offsite_data *= 2
+        table6 = {'title': u"Uso do Offsite", 'width': "", 'type': "area", 'height': "130", 'cid': "chart6",
+                  'header': [i[0] for i in offsite_data], 'labels': [utils.filesizeformat(i[1]) for i in offsite_data]}
+        # table6['header'] = ["GB"]
+        t6data = [i[1] for i in offsite_data] if len(offsite_data) else [0.0]
+        table6['lines'] = {"Disponível": t6data }
 
     # Dados de content:
     # - type
