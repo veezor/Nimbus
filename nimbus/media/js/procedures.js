@@ -1,3 +1,15 @@
+/* Tables */
+$(document).ready(function(){
+    $("tbody tr").mouseover(function(){
+        $(this).addClass("hvr");
+        $(this).removeClass("nrl");
+    });
+    $("tbody tr").mouseout(function(){
+        $(this).addClass("nrl");
+        $(this).removeClass("hvr");
+    });
+});
+
 function set_fileset() {
     if (typeof FILESET_ID != "undefined") {
         $("#id_procedure-fileset").append("<option value="+FILESET_ID+">"+FILESET_NAME+"</option>");
@@ -275,20 +287,6 @@ $(document).ready(function(){
 		//alert(value);
 		$("#id_procedure-pool_retention_time").val(value);
 	});
-});
-
-jQuery.ready(function() {
-  jQuery('a.minibutton').bind({
-    mousedown: function() {
-      jQuery(this).addClass('mousedown');
-    },
-    blur: function() {
-      jQuery(this).removeClass('mousedown');
-    },
-    mouseup: function() {
-      jQuery(this).removeClass('mousedown');
-    }
-  });
 });
 
 

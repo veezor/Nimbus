@@ -220,4 +220,10 @@ $(document).ready(function(){
 	$('.mascara_hora').mask('99:99');
 	$('.mascara_minuto').mask('99');
 	
+	/* Tables */
+    alert("bah");
+    $("tbody tr").mouseover(function(){
+        alert("valha!!!");
+    });
+	
 });

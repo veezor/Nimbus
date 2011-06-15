@@ -100,3 +100,18 @@ $(document).ready(function() {
     set_schedule_procedure();
     $('input:text').addClass("text");
 });
+
+/* minibuttons */
+jQuery.ready(function() {
+  jQuery('a.minibutton').bind({
+    mousedown: function() {
+      jQuery(this).addClass('mousedown');
+    },
+    blur: function() {
+      jQuery(this).removeClass('mousedown');
+    },
+    mouseup: function() {
+      jQuery(this).removeClass('mousedown');
+    }
+  });
+});

@@ -90,7 +90,7 @@
 }
 
 .fileset {
-    border: 2px solid #498ab9;
+    border: 2px solid #c3d9ff;
     padding: 0;
     background: #fff;
     -moz-border-radius: 5px;
@@ -98,97 +98,48 @@
 }
 
 .fileset .title{
-    background: #498ab9;
-    color: #fff;
-    padding: 5px 15px;
+    background: #c3d9ff;
+    color: #000;
+    padding: 5px;
 }
 .fileset .title .name{
     font-size: 16px;
 }
 .fileset .body{
-    padding: 3px 15px;
+    padding: 8px 15px;
 }
+
+/* fileset tables */
+
+.fileset table tbody tr.hvr{
+    background: #edf0f9;
+}
+
+.fileset table tbody tr.nrl{
+    background: #fff;
+}
+
+.fileset table{
+    width: 100%;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+}
+
+.fileset table thead th{
+    background: #e3e9ff;
+}
+
+.fileset table thead th, .fileset table tbody td{
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
 .half{display: block; width: 48%; float: left;}
 .right{text-align: right;}
 
 .list{
     display: block;
-    height: 120px;
+    height: 200px;
     overflow: auto;
+    border: 1px solid #ccc;
 }
-
-/* button basics */
-a.minibutton {
-	display:inline-block;
-	height:23px;
-	padding:0 0 0 3px;
-	font-size:11px;
-	font-weight:bold;
-	color:#333;
-	text-shadow:1px 1px 0 #fff; 
-	background:url(http://github.com/images/modules/buttons/minibutton_matrix.png) 0 0 no-repeat;
-	white-space:nowrap;
-	border:none;
-	overflow:visible;
-	cursor:pointer;
-	text-decoration:none;
-}
-
-a.minibutton>span {
-	display:block;
-	height:23px;
-	padding:0 10px 0 8px;
-	line-height:23px;
-	background:url(http://github.com/images/modules/buttons/minibutton_matrix.png) 100% 0 no-repeat;
-}
-
-a.minibutton:hover, a.minibutton:focus {
-	color:#fff;
-	text-decoration:none;
-	text-shadow:-1px -1px 0 rgba(0,0,0,0.3);
-	background-position:0 -30px;
-}
-a.minibutton:hover>span, a.minibutton:focus>span {background-position:100% -30px;}
-
-a.minibutton.mousedown{background-position:0 -60px; }
-a.minibutton.mousedown>span{background-position:100% -60px; }
-
-/* with icon */
-a.btn-download .icon {
-	float:left;
-	margin-left:-4px;
-	width:18px;
-	height:22px;
-	background:url(http://github.com/images/modules/buttons/minibutton_icons.png?v20100306) 0 0 no-repeat;
-}
-a.btn-download .icon {background-position:-40px 0;}
-a.btn-download:hover .icon, a.btn-download:focus .icon {background-position:-40px -25px;}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
