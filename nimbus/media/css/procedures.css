@@ -109,6 +109,25 @@
     padding: 8px 15px;
 }
 
+.fileset .body .left{
+    width: 430px; float: left;
+}
+
+.fileset .body .right{
+    width: 430px; float: right;
+}
+
+.list{
+    display: block;
+    height: 200px;
+    overflow: auto;
+    border: 1px solid #ccc;
+}
+
+.no-display{
+    display: none;
+}
+
 /* fileset tables */
 
 .fileset table tbody tr.hvr{
@@ -132,14 +151,4 @@
 .fileset table thead th, .fileset table tbody td{
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
-}
-
-.half{display: block; width: 48%; float: left;}
-.right{text-align: right;}
-
-.list{
-    display: block;
-    height: 200px;
-    overflow: auto;
-    border: 1px solid #ccc;
 }

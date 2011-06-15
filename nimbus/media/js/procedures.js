@@ -1,5 +1,5 @@
-/* Tables */
 $(document).ready(function(){
+    /* Tables */
     $("tbody tr").mouseover(function(){
         $(this).addClass("hvr");
         $(this).removeClass("nrl");
@@ -7,6 +7,13 @@ $(document).ready(function(){
     $("tbody tr").mouseout(function(){
         $(this).addClass("nrl");
         $(this).removeClass("hvr");
+    });
+    /* Sets href as the computer changes */
+    $(".computer-fileset").change(function(){
+        $("a.edit-fileset").attr("href", "/filesets/"+$(this).val()+"/edit/");
+    });
+    $(".computer-schedule").change(function(){
+        $("a.edit-schedule").attr("href", "/filesets/"+$(this).val()+"/edit/");
     });
 });
 

@@ -19,38 +19,40 @@
 		<div class="bheadr"></div>
 		<h2>{{title}}</h2>
 	</div>
-
+    <!-- test env -->
     <div class="block_content">
 		<h2>Filesets</h2>
 		<div class="procedure">
 			<div class="fileset">
                 <div class="title">
-			        <span class="name">Fileset 01</span> | <a class="minibutton" href="/filesets/1/edit/"><span>Editar</span></a> | Baseado em
-                    <select>
+			        <span class="name">Fileset 01</span> | <a class="minibutton edit-fileset" href="/filesets/{{ computer.id }}/edit/"><span>Editar</span></a> | Baseado em
+                    <select class="computer">
                         {% for computer in computers %}
-                        <option>{{computer}}</option>
+                        <option value="{{ computer.id }}">{{computer.name}}</option>
                         {% endfor %}
+                        <option value="2">Outro computador</option>
                     </select>
                 </div><!-- .title -->
                 <div class="body">
-                    <div style="width: 350px; float: left;">
+                    <div class="left">
+                        <h3>Procedimentos</h3>
                         <table cellpadding="0" cellspacing="0">
                             <thead>
-                            <tr><th>Procedimento</th><th>Computador</th></tr>
+                                <tr><th>Procedimento</th><th>Computador</th></tr>
                             </thead>
                             <tbody>
-                            {% for procedure in fileset.procedures.all %}
-                            <tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
-                            {% endfor %}
-                            <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
-                            <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
-                            <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
-                            <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
+                                {% for procedure in fileset.procedures.all %}
+                                <tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
+                                {% endfor %}
+                                <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
+                                <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
+                                <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
+                                <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <div style="width: 500px; float: right;">
-                        <h3 style="float: left;">Lista de arquivos</h3> | <a class="minibutton" href="/filesets/1/edit/"><span>Editar</span></a>
+                    <div class="right">
+                        <h3 class="floatleft">Lista de arquivos</h3> | <a class="minibutton" href="/filesets/1/edit/"><span>Editar</span></a>
                         <div class="clear"></div>
                         <div class="list">
                         <ul>
@@ -70,81 +72,120 @@
                             <li>explicabo veritatis iste aut quasi quasi, laudantium illo natus aperiam dicta ab magni </li>
                             <li>dicta aut voluptas sit perspiciatis perspiciatis magni et et architecto eos magni dolores dolores, sed </li>
                         </ul>
-    			
+                        <!-- lista de arquivos real -->
                         <ul>
                             {% for file in fileset.files.all %}
                             <li>{{file.path}}</li>
                             {% endfor %}
                         </ul>
                         </div>
-                    </div>
+                    </div><!-- .right -->
                     <div class="clear"></div>
                 </div><!-- .body -->
-			</div><br/>
-		</div><br/>
-		<div class="tmp" // bloco com os filesets>
-			{% for fileset in filesets %}
-			<div class="tmp" //bloco de um fileset>
-				<span class="tmp">{{fileset.name}}</span><a href="/filesets/{{fileset.id}}/edit/"><button>Editar</button></a>baseado em
-					<select>
-						{% for computer in computers %}
-						<option>{{computer}}</option>
-						{% endfor %}
-					</select>
-			
-				<table class="tmp" //bloco com os backups - computadores que usam este fileset>
-					<tr><th>Procedimento</th><th>Computador</th></tr>
-					{% for procedure in fileset.procedures.all %}
-					<tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
-					{% endfor %}
-				</table>
-			
-				<div class="tmp" //lista dos arquivos, com rolagem>
-					{% for file in fileset.files.all %}
-						<li>{{file.path}}</li>
-					{% endfor %}
-				</div>
-			
-			</div><br/>
+			</div><!-- .fileset -->
+			<hr />
+		</div><!-- .procedure -->
+		
+		<!-- real env for filesets -->
+		<div class="procedure">
+            {% for fileset in filesets %}
+			<div class="fileset">
+                <div class="title">
+			        <span class="name">{{ fileset.name }}</span> | <a class="minibutton edit-fileset" href="/filesets/1/edit/"><span>Editar</span></a> | Baseado em
+                    <select class="computer-fileset">
+                        {% for computer in computers %}
+                        <option value="{{ computer.id }}">{{ computer.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div><!-- .title -->
+                <div class="body">
+                    <div class="left">
+                        <h3>Procedimentos</h3>
+                        <table cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr><th>Procedimento</th><th>Computador</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for procedure in fileset.procedures.all %}
+                                <tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div><!-- .left -->
+                    <div class="right">
+                        <h3 class="floatleft">Lista de arquivos</h3> | <a class="minibutton" href="/filesets/1/edit/"><span>Editar</span></a>
+                        <div class="clear"></div>
+                        <div class="list">
+                        <ul>
+                            {% for file in fileset.files.all %}
+                            <li>{{file.path}}</li>
+                            {% endfor %}
+                        </ul>
+                        </div>
+                    </div><!-- .right -->
+                    <div class="clear"></div>
+                </div><!-- .body -->
+			</div><!-- .fileset -->
+			<hr />
 			{% endfor %}
-		</div><br/>
+		</div><!-- .procedure -->
 
-		AGENDAMENTOS:
-		<div class="tmp" // bloco com os schedules>
-			{% for schedule in schedules %}
-			<div class="tmp" //bloco de um schedule>
-				<span class="tmp">{{schedule.name}}</span><a href="/schedules/{{schedule.id}}/edit/"><button>Editar</button></a>
-			
-				<table class="tmp" //bloco com os backups - computadores que usam este schedule>
-					<tr><th>Procedimento</th><th>Computador</th></tr>
-					{% for procedure in schedule.procedures.all %}
-					<tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
-					{% endfor %}
-				</table>
-			
-				<div class="tmp" //lista dos agendamentos, com rolagem>
-					{% if schedule.if_month %}
-						{% for line in schedule.month.human_readable %}
-							<li>{{ line }}</li>
-						{% endfor %}
-					{% endif %}
-					{% if schedule.if_week %}
-						{% for line in schedule.week.human_readable %}
-							<li>{{ line }}</li>
-						{% endfor %}
-					{% endif %}
-					{% if schedule.if_day %}
-						<li>{{ schedule.day.human_readable }}</li>
-					{% endif %}
-					{% if schedule.if_hour %}
-						<li>{{ schedule.hour.human_readable }}</li>
-					{% endif %}
-
-				</div>
-			
-			</div><br/>
-			{% endfor %}
-		</div>
+        <!-- real env for schedules -->
+		<div class="schedule">
+            {% for schedule in schedules %}
+			<div class="fileset">
+                <div class="title">
+			        <span class="name">{{ schedule.name }}</span> | <a class="minibutton edit-schedule" href="/filesets/{{ computer.id }}/edit/"><span>Editar</span></a> | Baseado em
+                    <select class="computer-schedule">
+                        {% for computer in computers %}
+                        <option value="{{ computer.id }}">{{ computer.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div><!-- .title -->
+                <div class="body">
+                    <div class="left">
+                        <h3>Procedimentos</h3>
+                        <table cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr><th>Procedimento</th><th>Computador</th></tr>
+                            </thead>
+                            <tbody>
+            					{% for procedure in schedule.procedures.all %}
+            					<tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
+            					{% endfor %}
+            				</tbody>
+                        </table>
+                    </div><!-- .left -->
+                    <div class="right">
+                        <h3 class="floatleft">Lista de arquivos</h3> | <a class="minibutton" href="/filesets/{{ schedule.id }}/edit/"><span>Editar</span></a>
+                        <div class="clear"></div>
+                        <div class="list">
+                        <ul>
+                        {% if schedule.if_month %}
+                            {% for line in schedule.month.human_readable %}
+                            <li>{{ line }}</li>
+                            {% endfor %}
+                            {% endif %}
+                            {% if schedule.if_week %}
+                            {% for line in schedule.week.human_readable %}
+                            <li>{{ line }}</li>
+                            {% endfor %}
+                            {% endif %}
+                            {% if schedule.if_day %}
+                            <li>{{ schedule.day.human_readable }}</li>
+                            {% endif %}
+                            {% if schedule.if_hour %}
+                            <li>{{ schedule.hour.human_readable }}</li>
+                        {% endif %}
+                        </ul>
+                        </div>
+                    </div><!-- .right -->
+                    <div class="clear"></div>
+                </div><!-- .body -->
+			</div><!-- .fileset -->
+			<hr />
+            {% endfor %}
+		</div><!-- .schedule -->
     </div>
     <div class="bendl"></div>
 	<div class="bendr"></div>
