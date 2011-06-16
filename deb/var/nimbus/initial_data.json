@@ -220,6 +220,16 @@
     },
     {
         "pk": 1,
+        "model": "storages.device",
+        "fields": {
+            "archive": "/bacula/",
+            "storage": 1,
+            "uuid": 14,
+            "name": "device default"
+        }
+    },
+    {
+        "pk": 1,
         "model": "storages.storage",
         "fields": {
             "description": "Dispositivo de armazenamento utilizado pelo nimbus backup",
@@ -232,16 +242,6 @@
     },
     {
         "pk": 1,
-        "model": "storages.device",
-        "fields": {
-            "archive": "/bacula/",
-            "storage": 1,
-            "uuid": 14,
-            "name": "device default"
-        }
-    },
-    {
-        "pk": 1,
         "model": "computers.computer",
         "fields": {
             "description": "nimbus",
@@ -249,7 +249,7 @@
             "name": "nimbus",
             "groups": [],
             "address": "127.0.0.1",
-            "active": true,
+            "active": false,
             "operation_system": "unix",
             "password": "isO1gYFdWfoZcpmj9YWo",
             "uuid": 12

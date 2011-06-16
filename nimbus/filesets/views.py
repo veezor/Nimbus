@@ -99,3 +99,11 @@ def get_tree(request):
             return HttpResponse(response, mimetype="text/plain")
         except Exception:
             traceback.print_exc()
+
+@login_required
+def delete(request, fileset_id):
+    f = get_object_or_404(FileSet, pk=fileset_id)
+    name = f.name
+    f.delete()
+    messages.success(request, u"Modelo de conjunto de arquivos '%s' removido com sucesso." % name)
+    return redirect('/procedures/profile/list')

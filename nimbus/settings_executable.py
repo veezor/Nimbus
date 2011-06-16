@@ -16,16 +16,16 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'NAME': 'nimbus',
-        'ENGINE' : 'django.db.backends.mysql',
-        'USER' : 'root',
+        'ENGINE' : 'django.db.backends.postgresql_psycopg2',
+        'USER' : 'nimbus',
         'PASSWORD' : 'n1mbus',
         'HOST' : 'localhost'
     },
     'bacula' : {
         'NAME': 'bacula',
-        'ENGINE' : 'django.db.backends.mysql',
-        'USER' : 'root',
-        'PASSWORD' : 'n1mbus',
+        'ENGINE' : 'django.db.backends.postgresql_psycopg2',
+        'USER' : 'bacula',
+        'PASSWORD' : 'bacula',
         'HOST' : 'localhost'
     }
 }
@@ -210,17 +210,14 @@ INSTALLED_APPS = (
     'nimbus.schedules',
     'nimbus.filesets',
     'nimbus.storages',
-    'nimbus.pools',
     'nimbus.procedures',
     'nimbus.timezone',
     'nimbus.offsite',
     'nimbus.wizard',
     'nimbus.computers',
-    'nimbus.backup',
     'nimbus.restore',
     'nimbus.system',
     'nimbus.security',
-    'south'
 )
 
 if DEBUG:

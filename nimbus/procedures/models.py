@@ -36,8 +36,7 @@ class Procedure(BaseModel):
                                               default=30)
     computer = models.ForeignKey(Computer, verbose_name=_("Computer"),
                                  blank=False, null=False)
-    offsite_on = models.BooleanField(default=False, blank=False, null=False,
-                                     editable=is_active(Offsite))
+    offsite_on = models.BooleanField(default=is_active, blank=False, null=False)
     active = models.BooleanField(default=True, blank=True, null=False)
     schedule = models.ForeignKey(Schedule, verbose_name=_("Schedule"),
                                  related_name='procedures')

@@ -11,8 +11,6 @@ from nimbus.base.models import BaseModel
 from nimbus.shared import utils, signals, fields
 from nimbus.computers import models as computer_models
 from nimbus.libs.template import render_to_file
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^nimbus\.shared\.fields\.ModelPathField"])
 
 class FileSet(BaseModel):
     name = models.CharField(max_length=255, unique=True, null=False)
