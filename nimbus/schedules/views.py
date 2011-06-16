@@ -189,43 +189,44 @@ def add_schedule(request):
 @login_required
 def delete(request, schedule_id):
     s = get_object_or_404(Schedule, pk=schedule_id)
-    for procedure in s.procedures.all():
-        new_schedule = Schedule()
-        new_schedule.name = 'Agendamentos de %s' % procedure.name
-        new_schedule.is_model = True
-        new_schedule.save()
-        month = s.if_month()
-        if month:
-            new_month = Month()
-            new_month.schedule = new_schedule
-            new_month.days = month.days
-            new_month.level = month.level
-            new_month.hour = month.hour
-            new_month.save()
-        week = s.if_week()
-        if week:
-            new_week = Week()
-            new_week.schedule = new_schedule
-            new_week.days = week.days
-            new_week.level = week.level
-            new_week.hour = week.hour
-            new_week.save()
-        day = s.if_day()
-        if day:
-            new_day = Day()
-            new_day.schedule = new_schedule
-            new_day.level = day.level
-            new_day.hour = day.hour
-            new_day.save()
-        hour = s.if_hour()
-        if hour:
-            new_hour = Hour()
-            new_hour.schedule = new_schedule
-            new_hour.level = hour.level
-            new_hour.minute = hour.minute
-            new_hour.save()
-        procedure.schedule = new_schedule
-        procedure.save()
+    if s.is_model:
+        for procedure in s.procedures.all():
+            new_schedule = Schedule()
+            new_schedule.name = 'Agendamentos de %s' % procedure.name
+            new_schedule.is_model = True
+            new_schedule.save()
+            month = s.if_month()
+            if month:
+                new_month = Month()
+                new_month.schedule = new_schedule
+                new_month.days = month.days
+                new_month.level = month.level
+                new_month.hour = month.hour
+                new_month.save()
+            week = s.if_week()
+            if week:
+                new_week = Week()
+                new_week.schedule = new_schedule
+                new_week.days = week.days
+                new_week.level = week.level
+                new_week.hour = week.hour
+                new_week.save()
+            day = s.if_day()
+            if day:
+                new_day = Day()
+                new_day.schedule = new_schedule
+                new_day.level = day.level
+                new_day.hour = day.hour
+                new_day.save()
+            hour = s.if_hour()
+            if hour:
+                new_hour = Hour()
+                new_hour.schedule = new_schedule
+                new_hour.level = hour.level
+                new_hour.minute = hour.minute
+                new_hour.save()
+            procedure.schedule = new_schedule
+            procedure.save()
     name = s.name
     s.delete()
     messages.success(request, u"Modelo de agendamento '%s' removido com sucesso." % name)
