@@ -118,25 +118,28 @@ def create_default_device(storage):
 
 def update_device_file(device):
 
-    if device.storage.active:
+    try:
+        if device.storage.active:
 
-        name = device.bacula_name
-        storagename = device.storage.bacula_name
+            name = device.bacula_name
+            storagename = device.storage.bacula_name
 
-        filename = path.join( settings.NIMBUS_DEVICES_DIR, 
-                              name)
-        
-        storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
-                              storagename)
+            filename = path.join( settings.NIMBUS_DEVICES_DIR, 
+                                  name)
+            
+            storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
+                                  storagename)
 
-        render_to_file( filename,
-                        "device",
-                        name=name,
-                        archive_device=device.archive)
+            render_to_file( filename,
+                            "device",
+                            name=name,
+                            archive_device=device.archive)
 
-        render_to_file( storagefile,
-                        "storages",
-                        devices=Device.objects.all())
+            render_to_file( storagefile,
+                            "storages",
+                            devices=Device.objects.all())
+    except Storage.DoesNotExist:
+        pass #loaddata
 
 
 
