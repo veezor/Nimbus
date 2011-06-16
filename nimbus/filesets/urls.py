@@ -10,4 +10,5 @@ urlpatterns = patterns('nimbus.filesets.views',
                        (r'^add/(?P<computer_id>\d+)$', 'add'),
                        (r'^add/$', 'add'),
                        (r'^get_tree/$', 'get_tree'),
+                       (r'^delete/(?P<fileset_id>\d+)$', 'delete'),
                       )

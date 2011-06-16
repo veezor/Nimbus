@@ -105,34 +105,39 @@ def edit(request, object_id):
 
 @login_required
 def add_schedule(request):
+    schedule_form = forms.ScheduleForm(prefix="schedule")
+    month_form = forms.MonthForm(prefix="month")
+    week_form = forms.WeekForm(prefix="week")
+    day_form = forms.DayForm(prefix="day")
+    hour_form = forms.HourForm(prefix="hour")
+    days_range = range(1, 32)
+    weekdays_range = {0:'Domingo', 1:'Segunda-feira', 2:'Terça-feira',
+                      3:'Quarta-feira', 4:'Quinta-feira', 5:'Sexta-feira',
+                      6:'Sabado'}
+    end_days_range = [5, 10, 15, 20, 25, 30]
+    content = {'title':u'Criar Agendamento',
+               'schedule_form':schedule_form,
+               'month_form': month_form,
+               'week_form': week_form,
+               'day_form': day_form,
+               'hour_form': hour_form,
+               'days': days_range,
+               'end_days': end_days_range,
+               'weekdays': weekdays_range,
+               'computer_id': '',
+               'fileset_id': '',
+               'storage_id': '',
+               'procedure_name': '',
+               'retention_time': '',
+               'messages':[]}
     if request.method == "POST":
         print request.POST
         data = copy(request.POST)
-        schedule_form = forms.ScheduleForm(prefix="schedule")
-        month_form = forms.MonthForm(prefix="month")
-        week_form = forms.WeekForm(prefix="week")
-        day_form = forms.DayForm(prefix="day")
-        hour_form = forms.HourForm(prefix="hour")
-        days_range = range(1, 32)
-        weekdays_range = {0:'Domingo', 1:'Segunda-feira', 2:'Terça-feira',
-                          3:'Quarta-feira', 4:'Quinta-feira', 5:'Sexta-feira',
-                          6:'Sabado'}
-        end_days_range = [5, 10, 15, 20, 25, 30]
-        content = {'title':u'Criar Agendamento',
-                   'schedule_form':schedule_form,
-                   'month_form': month_form,
-                   'week_form': week_form,
-                   'day_form': day_form,
-                   'hour_form': hour_form,
-                   'days': days_range,
-                   'end_days': end_days_range,
-                   'weekdays': weekdays_range,
-                   'computer_id': data['computer_id'],
-                   'fileset_id': data['fileset_id'],
-                   'storage_id': data['storage_id'],
-                   'procedure_name': data['procedure_name'],
-                   'retention_time': data['retention_time'],
-                   'messages':[]}
+        content['computer_id'] = data['computer_id']
+        content['fileset_id'] = data['fileset_id']
+        content['storage_id'] = data['storage_id']
+        content['procedure_name'] = data['procedure_name']
+        content['retention_time'] = data['retention_time']
         if not data.has_key('first_step'):
             schedule_form = forms.ScheduleForm(data, prefix='schedule')
             content['schedule_form'] = schedule_form
@@ -179,3 +184,12 @@ def add_schedule(request):
             else:
                 content['messages'] = ["Nenhum agendamento foi selecionado"]
     return render_to_response(request, "add_schedule.html", content)
+
+
+@login_required
+def delete(request, schedule_id):
+    s = get_object_or_404(Schedule, pk=schedule_id)
+    name = s.name
+    s.delete()
+    messages.success(request, u"Modelo de agendamento '%s' removido com sucesso." % name)
+    return redirect('/procedures/profile/list')

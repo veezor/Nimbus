@@ -222,46 +222,6 @@ def profile_list(request):
     return render_to_response(request, "profile_list.html", content)
 
 @login_required
-def profile_add(request):
-    title = u"Adicionar perfil de configuração"
-    days = days_enum
-    weekdays = weekdays_enum
-    levels = levels_enum
-    errors = {}
-    if request.method == "GET":
-        profile_form = ProfileForm()
-        return render_to_response(request, "profile_add.html", locals())
-    elif request.method == "POST":
-        profile_form = ProfileForm(request.POST)
-        if profile_form.is_valid():
-            profile_form.save()
-            messages.success(request, "Perfil de configuração criado com sucesso")
-            return redirect('nimbus.procedures.views.profile_list')
-        else:
-            return render_to_response(request, "profile_add.html", locals())
-    else:
-        #NOT GET OR POST
-        pass
-        
-@login_required
-def profile_edit(request, object_id):
-    title = u"Editar perfil de configuração"
-    profile = Profile.objects.get(id=object_id)
-    storages = Storage.objects.filter(id__gt=1)
-    schedules = Schedule.objects.filter(id__gt=1)
-    filesets = FileSet.objects.filter(id__gt=1)
-    if request.method == "POST":
-        if request.POST.get('save_as_new'):
-            object_id = None
-        form = form_mapping(Profile, request.POST, object_id=object_id)
-        if form.is_valid():
-            profile = form.save()
-            messages.success(request,
-                u"Perfil de configuração atualizado com sucesso.")
-            return redirect('nimbus.procedures.views.profile_list')
-    return render_to_response(request, "profile_edit.html", locals())
-
-@login_required
 def profile_delete(request, object_id):
     profile = get_object_or_404(Profile, pk=object_id)
     if request.method == "POST":
