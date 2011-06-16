@@ -1502,6 +1502,19 @@ a.minibutton:hover>span, a.minibutton:focus>span {background-position:100% -30px
 a.minibutton.mousedown{background-position:0 -60px; }
 a.minibutton.mousedown>span{background-position:100% -60px; }
 
+/* red buttons */
+
+a.minibutton.red:hover, a.minibutton.red:focus {
+	color:#fff;
+	text-decoration:none;
+	text-shadow:-1px -1px 0 rgba(0,0,0,0.3);
+	background-position:0 -90px;
+}
+a.minibutton.red:hover>span, a.minibutton.red:focus>span {background-position:100% -90px;}
+
+a.minibutton.red.mousedown{background-position:0 -120px; }
+a.minibutton.red.mousedown>span{background-position:100% -120px; }
+
 /* with icon */
 a.btn-download .icon {
 	float:left;

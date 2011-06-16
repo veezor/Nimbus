@@ -152,3 +152,17 @@
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
 }
+
+/* divs at title */
+
+.title-left{
+    display: block; 
+    width: 700px; 
+    float: left;
+}
+.title-right{
+    display: block; 
+    width: 130px; 
+    text-align: right; 
+    float: right;
+}

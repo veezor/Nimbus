@@ -1,4 +1,25 @@
 $(document).ready(function(){
+    /* Sets href at onload */
+    // fileset
+    var href = $("a.edit-fileset").attr("href");
+    $("a.edit-fileset").attr("href", href + $(".computer-fileset").val());
+    // schedule
+    var href = $("a.edit-schedule").attr("href");
+    $("a.edit-schedule").attr("href", href + $(".computer-schedule").val());
+    /* Sets href as the computer changes */
+    $(".computer-fileset").change(function(){
+        var href = $("a.edit-fileset").attr("href");
+        var index = href.indexOf("edit/");
+        href = href.substring(0, index+5);
+        $("a.edit-fileset").attr("href", href + $(this).val());
+    });
+    $(".computer-schedule").change(function(){
+        $("a.edit-schedule").attr("href", "/filesets/"+$(this).val()+"/edit/");
+        var href = $("a.edit-schedule").attr("href");
+        var index = href.indexOf("edit/");
+        href = href.substring(0, index+5);
+        $("a.edit-schedule").attr("href", href + $(this).val());
+    });
     /* Tables */
     $("tbody tr").mouseover(function(){
         $(this).addClass("hvr");
@@ -8,12 +29,10 @@ $(document).ready(function(){
         $(this).addClass("nrl");
         $(this).removeClass("hvr");
     });
-    /* Sets href as the computer changes */
-    $(".computer-fileset").change(function(){
-        $("a.edit-fileset").attr("href", "/filesets/"+$(this).val()+"/edit/");
-    });
-    $(".computer-schedule").change(function(){
-        $("a.edit-schedule").attr("href", "/filesets/"+$(this).val()+"/edit/");
+    /* Asks 'are you sure?' on delete action */
+    $(".red").click(function(){
+        if (!confirm("Tem certeza?"))
+            return false;
     });
 });
 

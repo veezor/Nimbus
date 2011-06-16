@@ -3,12 +3,6 @@
 {% block headtags %}
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
-<style type="text/css">
- 	.tmp {
-		border: dashed 1px;
-		display: none;
-		}
-</style>
 {% endblock %}
 
 {% block page %}
@@ -19,84 +13,28 @@
 		<div class="bheadr"></div>
 		<h2>{{title}}</h2>
 	</div>
-    <!-- test env -->
     <div class="block_content">
-		<h2>Filesets</h2>
-		<div class="procedure">
-			<div class="fileset">
-                <div class="title">
-			        <span class="name">Fileset 01</span> | <a class="minibutton edit-fileset" href="/filesets/{{ computer.id }}/edit/"><span>Editar</span></a> | Baseado em
-                    <select class="computer">
-                        {% for computer in computers %}
-                        <option value="{{ computer.id }}">{{computer.name}}</option>
-                        {% endfor %}
-                        <option value="2">Outro computador</option>
-                    </select>
-                </div><!-- .title -->
-                <div class="body">
-                    <div class="left">
-                        <h3>Procedimentos</h3>
-                        <table cellpadding="0" cellspacing="0">
-                            <thead>
-                                <tr><th>Procedimento</th><th>Computador</th></tr>
-                            </thead>
-                            <tbody>
-                                {% for procedure in fileset.procedures.all %}
-                                <tr><td>{{procedure.name}}</td><td>{{procedure.computer}}</td></tr>
-                                {% endfor %}
-                                <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
-                                <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
-                                <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
-                                <tr><td>Procedimento tal</td><td>Computador 01</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="right">
-                        <h3 class="floatleft">Lista de arquivos</h3> | <a class="minibutton" href="/filesets/1/edit/"><span>Editar</span></a>
-                        <div class="clear"></div>
-                        <div class="list">
-                        <ul>
-                            <li>illo quia voluptatem magni veritatis beatae </li>
-                            <li>ipsam doloremque fugit nemo inventore iste </li>
-                            <li>aut accusantium voluptatem quasi illo </li>
-                            <li>sed enim sit sunt sunt, illo </li>
-                            <li>dicta voluptatem vitae sunt voluptatem fugit </li>
-                            <li>voluptatem aspernatur omnis et dicta sit perspiciatis quia voluptatem </li>
-                            <li>ipsa fugit dicta sit unde explicabo inventore sed sit ipsam perspiciatis </li>
-                            <li>omnis unde aut vitae ipsa eaque sed </li>
-                            <li>dolores eos totam quae natus sit ab </li>
-                            <li>consequuntur omnis totam unde ratione beatae inventore </li>
-                            <li>quia sit vitae veritatis omnis sed sed quae veritatis quia unde eaque aperiam aperiam, sit voluptatem </li>
-                            <li>inventore qui quia beatae architecto quasi quae perspiciatis perspiciatis, aspernatur sed eos dolores consequuntur </li>
-                            <li>architecto fugit dolores aperiam aperiam, aut aspernatur ipsam aperiam dolores et perspiciatis aut et iste </li>
-                            <li>explicabo veritatis iste aut quasi quasi, laudantium illo natus aperiam dicta ab magni </li>
-                            <li>dicta aut voluptas sit perspiciatis perspiciatis magni et et architecto eos magni dolores dolores, sed </li>
-                        </ul>
-                        <!-- lista de arquivos real -->
-                        <ul>
-                            {% for file in fileset.files.all %}
-                            <li>{{file.path}}</li>
-                            {% endfor %}
-                        </ul>
-                        </div>
-                    </div><!-- .right -->
-                    <div class="clear"></div>
-                </div><!-- .body -->
-			</div><!-- .fileset -->
-			<hr />
-		</div><!-- .procedure -->
-		
+		<h2 class="floatleft">Filesets</h2>&nbsp;&nbsp;<a href="#" class="minibutton"><span>Adicionar</span></a>
+		<div class="clear"></div><hr />
 		<!-- real env for filesets -->
 		<div class="procedure">
             {% for fileset in filesets %}
 			<div class="fileset">
                 <div class="title">
-			        <span class="name">{{ fileset.name }}</span> | <a class="minibutton edit-fileset" href="/filesets/1/edit/"><span>Editar</span></a> | Baseado em
-                    <select class="computer-fileset">
-                        {% for computer in computers %}
-                        <option value="{{ computer.id }}">{{ computer.name }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="title-left">
+    			        <span class="name">{{ fileset.name }}</span> | Baseado em
+                        <select class="computer-fileset">
+                            {% for computer in computers %}
+                            <option value="{{ computer.id }}">{{ computer.name }}</option>
+                            {% endfor %}
+                            <option value="2">outra coisa</option>
+                        </select>
+                    </div>
+                    <div class="title-right">
+                        <a class="minibutton edit-fileset" href="/filesets/{{ fileset.id }}/edit/"><span>Editar</span></a>
+                        <a class="minibutton red" href="/filesets/1/edit/"><span>Excluir</span></a>
+                    </div>
+                    <div class="clear"></div>
                 </div><!-- .title -->
                 <div class="body">
                     <div class="left">
@@ -130,18 +68,27 @@
 			{% endfor %}
 		</div><!-- .procedure -->
         
-        <h2>Agendamentos</h2>
+        <h2 class="floatleft">Agendamentos</h2>&nbsp;<a href="#" class="minibutton"><span>Adicionar</span></a>
+		<div class="clear"></div><hr />
         <!-- real env for schedules -->
 		<div class="schedule">
             {% for schedule in schedules %}
 			<div class="fileset">
                 <div class="title">
-			        <span class="name">{{ schedule.name }}</span> | <a class="minibutton edit-schedule" href="/filesets/{{ computer.id }}/edit/"><span>Editar</span></a> | Baseado em
-                    <select class="computer-schedule">
-                        {% for computer in computers %}
-                        <option value="{{ computer.id }}">{{ computer.name }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="title-left">
+    			        <span class="name">{{ schedule.name }}</span> | Baseado em
+                        <select class="computer-schedule">
+                            {% for computer in computers %}
+                            <option value="{{ computer.id }}">{{ computer.name }}</option>
+                            {% endfor %}
+                            <option value="2">outra coisa</option>
+                        </select>
+                    </div>
+                    <div class="title-right">
+                        <a class="minibutton edit-schedule" href="/filesets/{{ schedule.id }}/edit/"><span>Editar</span></a>
+                        <a class="minibutton red" href="/filesets/{{ computer.id }}/edit/"><span>Excluir</span></a>
+                    </div>
+                    <div class="clear"></div>
                 </div><!-- .title -->
                 <div class="body">
                     <div class="left">
