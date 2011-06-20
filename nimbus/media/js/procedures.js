@@ -1,4 +1,12 @@
 $(document).ready(function(){
+    $('.job_line').click(function(){
+        var job_id = $(this)[0].id;
+        job_details = $('#' + job_id + '_details')[0];
+        $('#status_box')[0].innerHTML = job_details.innerHTML;
+    });
+});
+
+$(document).ready(function(){
     /* Sets href at onload */
     // fileset
     var href = $("a.edit-fileset").attr("href");

@@ -113,6 +113,29 @@ class Job(models.Model):
     purgedfiles = models.IntegerField(null=True, db_column='PurgedFiles', blank=True)
     hasbase = models.IntegerField(null=True, db_column='HasBase', blank=True)
 
+    @property
+    def backup_level(self):
+        if self.level == 'F':
+            return 'Full'
+        elif self.level == 'I':
+            return 'Incremental'
+
+    @property
+    def end_time(self):
+        return self.endtime.strftime('%H:%M:%S - %d/%m')
+
+    @property
+    def schedule_time(self):
+        return self.schedtime.strftime('%H:%M - %d/%m')
+
+    @property
+    def start_time(self):
+        return self.starttime.strftime('%H:%M:%S - %d/%m')
+
+    @property
+    def real_end_time(self):
+        return self.realendtime.strftime('%H:%M:%S - %d/%m')
+
 
     @classmethod
     def get_jobs_by_day(cls, date):

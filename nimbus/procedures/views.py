@@ -135,34 +135,17 @@ def list_all(request):
     running_procedures_content = []
     try:
         for job in running_jobs:
-            running_procedures_content.append({
-                    'type' : 'ok',
-                    'label' : job.procedure.name,
-                    'date' : job.starttime,
-                    'tooltip' : job.status_message,
-                    'message' : u'Computador : %s' % job.client.computer.name
-                    })
+            running_procedures_content.append({'job': job})
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
         # TODO: Tratar
         pass
 
     last_procedures_content = []
     for job in last_jobs:
-        last_procedures_content.append({
-                'job': job,
-                'type' : job.status_friendly,
-                'procedure' : job.procedure,
-                'date' : job.endtime,
-                'tooltip' : job.status_message,
-                'message' : u'Computador : %s' % job.client.computer.name
-                })
-    procedimentos_em_execucao_executados = [{
-                                'title': u'Procedimentos em execução',
-                                'content': running_procedures_content
-                               },{
-                                'title': u'Últimos procedimentos executados',
-                                'content': last_procedures_content   
-                               }]
+        last_procedures_content.append({'job': job})
+        
+    jobs_history = [running_procedures_content,
+                    last_procedures_content]
     return render_to_response(request, "procedures_list.html", locals())
 
 @login_required

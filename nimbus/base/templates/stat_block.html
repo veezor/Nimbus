@@ -1,20 +1,46 @@
-{% if item %}
 {% comment %}
 Tipos possíveis: ok, warn, error
 {% endcomment %}
 <div class="content_block cols_{{item|length}}">
-    {% for i in item %}
-    <div class="inner_block {% if forloop.last %}last{% endif %} {% if forloop.first %}first{% endif %}">
-        <h3>{{i.title}}</h3>
-        <div>
-            {% for c in i.content %}
-            <div class="inner_message {% cycle "odd" "even" %}" title="{{ c.tooltip }}"><img src="/media/icons/{{c.type}}.png" /> {% if c.date %}<small>{{c.date}}</small> -{% endif %} {{c.label}} {% if c.message %}<small>({{c.message}})</small>{% endif %}</div>
-            {% empty %}
-            <div>Não há dado para ser exibido.</div>
-            {% endfor %}
-        </div>
-        <p></p>
-    </div>
-    {% endfor %}
+	<h3>Histórico</h3>
+	{% for job_line in last_procedures_content %}
+	<!-- <div class="inner_message {% cycle "odd" "even" %}" title="{{ job_line.tooltip }}"><img src="/media/icons/{{job_line.type}}.png" /> {% if job_line.date %}<small>{{job_line.date}}</small> -{% endif %} {{job_line.label}} {% if job_line.message %}<small>({{job_line.message}})</small>{% endif %}</div> -->
+
+	<div id="job_{{job_line.job.jobid}}" class="job_line">
+		!Icone de encerrado!<a>{{job_line.job.end_time}}:
+		Backup {{job_line.job.backup_level}} de '{{job_line.job.client.computer.name}}'</a>
+		<div id="job_{{job_line.job.jobid}}_details" class="hidden">
+			Procedimento:
+			{% if job_line.job.procedure %}
+			{{job_line.job.procedure}}
+			{% else %}
+			Este procedimento não existe mais.
+			{% endif %}<br/>
+			Computador: {{job_line.job.client.computer.name}} ({{job_line.job.client.computer.address}})<br/>
+			Tipo de backup: {{job_line.job.backup_level}}<br/>
+			Agendado para: {{job_line.job.schedule_time}}<br/>
+			Inicio: {{job_line.job.start_time}}<br/>
+			Término: {{job_line.job.end_time}}<br/>
+			Duração: {{job_line.job.duration}}<br/>
+			Arquivos copiados: {{job_line.job.jobfiles}} ({{job_line.job.jobbytes}} Bytes)<br/>
+
+			Resultado: {{job_line.job.status_message}}<br/>
+			Erros: {{job_line.job.joberrors}}<br/>
+		</div>
+	</div>
+	{% endfor %}
+
+
+
+<div id="status_box" style="border: dashed 1px;">
+	Procedimento:<br />
+	Computador:<br />
+	Tipo de backup:<br />
+	Agendado para:<br />
+	Inicio:<br />
+	Término:<br />
+	Duração:<br />
+	Arquivos copiados:<br />
+	Resultado:<br />
+	Erros:<br />
 </div>
-{% endif %}
