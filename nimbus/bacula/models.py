@@ -114,6 +114,38 @@ class Job(models.Model):
     hasbase = models.IntegerField(null=True, db_column='HasBase', blank=True)
 
     @property
+    def human_readable_size(self):
+        size = float(self.jobbytes)
+        if size > 1073741824:
+            size = size/1073741824.0
+            unit = 'GB'
+        elif size > 1048576:
+            size = size/1048576.0
+            unit = 'MB'
+        elif size > 1024:
+            size = size/1024.0
+            unit = 'KB'
+        else:
+            unit = 'B'
+        return {'size': '%.2f' % size,
+                'raw_size': size,
+                'unit': unit}
+
+
+    @property
+    def general_status(self):
+        if self.jobstatus in ['R', 'i', 'a']:
+            return 'running'
+        elif self.jobstatus in ['F', 'S', 'm', 'M', 's', 'j', 'c', 'd', 't', 'p']:
+            return 'waiting'
+        elif self.jobstatus in ['E', 'e', 'D', 'A']:
+            return 'warning'
+        elif self.jobstatus in ['B', 'f']:
+            return 'error'
+        else:
+            return 'ok'
+
+    @property
     def backup_level(self):
         if self.level == 'F':
             return 'Full'

@@ -96,55 +96,7 @@ def home(request):
     # - date
     # - message
 
-
-
-    last_jobs = Job.objects.all()\
-                    .order_by('-endtime').distinct()[:5]
-
-
-    last_procedures_content = []
-    try:
-        for job in last_jobs:
-            last_procedures_content.append({
-                'type' : job.status_friendly,
-                'label' : job.procedure.name,
-                'date' : job.endtime,
-                'tooltip' : job.status_message,
-                'message' : u'Computador : %s' % job.client.computer.name
-            })
-    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
-        pass
-
-
-    errors_jobs = Job.objects.filter(jobstatus__in=('e','E','f'))\
-                    .order_by('-endtime').distinct()[:5]
-
-
-    errors_procedures_content = []
-    try:
-        for job in errors_jobs:
-            errors_procedures_content.append({
-                'type' : job.status_friendly,
-                'label' : job.procedure.name,
-                'date' : job.endtime,
-                'tooltip' : job.status_message,
-                'message' : u'Computador : %s' % job.client.computer.name
-            })
-    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
-        pass
-
-
-
-    backups_com_falhas = [{
-        'title': u'Últimos backups executados',
-        'content': last_procedures_content  }, {
-        'title': u'Backups com falha',
-        'content': errors_procedures_content
-    }]
-
-
-    # extra_content = {'table1': table1, 'table2': table2}
-
+    last_jobs = Job.objects.all().order_by('-starttime').distinct()[:5]
 
     return render_to_response(request, "home.html", locals())
 

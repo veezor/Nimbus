@@ -1,3 +1,4 @@
+// JavaScript para mostrar os status dos jobs nos hist—rico
 $(document).ready(function(){
     $('.job_line').click(function(){
         var job_id = $(this)[0].id;

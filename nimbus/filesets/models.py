@@ -33,8 +33,10 @@ def update_fileset_file(fileset):
     """FileSet update filesets to a procedure instance"""
     name = fileset.bacula_name
     filename = path.join(settings.NIMBUS_FILESETS_DIR, name)
+    files = [f.path for f in fileset.files.all()]
+    print files
     render_to_file(filename, "fileset", name=name,
-                   files=[f.path for f in fileset.files.all()])
+                   files=files)
 
 
 def remove_fileset_file(fileset):

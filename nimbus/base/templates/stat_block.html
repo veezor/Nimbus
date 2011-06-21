@@ -3,29 +3,38 @@ Tipos possíveis: ok, warn, error
 {% endcomment %}
 <div class="content_block cols_{{item|length}}">
 	<h3>Histórico</h3>
-	{% for job_line in last_procedures_content %}
+	{% for job in last_jobs %}
 	<!-- <div class="inner_message {% cycle "odd" "even" %}" title="{{ job_line.tooltip }}"><img src="/media/icons/{{job_line.type}}.png" /> {% if job_line.date %}<small>{{job_line.date}}</small> -{% endif %} {{job_line.label}} {% if job_line.message %}<small>({{job_line.message}})</small>{% endif %}</div> -->
 
-	<div id="job_{{job_line.job.jobid}}" class="job_line">
-		!Icone de encerrado!<a>{{job_line.job.end_time}}:
-		Backup {{job_line.job.backup_level}} de '{{job_line.job.client.computer.name}}'</a>
-		<div id="job_{{job_line.job.jobid}}_details" class="hidden">
+	<div id="job_{{job.jobid}}" class="job_line status_{{job.general_status}}">
+		!Status {{job.general_status}}!<a>{{job.start_time}}:
+		Backup {{job.backup_level}} de '{{job.client.computer.name}}'</a>
+		<div id="job_{{job.jobid}}_details" class="hidden">
 			Procedimento:
-			{% if job_line.job.procedure %}
-			{{job_line.job.procedure}}
+			{% if job.procedure %}
+			{{job.procedure}}
 			{% else %}
 			Este procedimento não existe mais.
 			{% endif %}<br/>
-			Computador: {{job_line.job.client.computer.name}} ({{job_line.job.client.computer.address}})<br/>
-			Tipo de backup: {{job_line.job.backup_level}}<br/>
-			Agendado para: {{job_line.job.schedule_time}}<br/>
-			Inicio: {{job_line.job.start_time}}<br/>
-			Término: {{job_line.job.end_time}}<br/>
-			Duração: {{job_line.job.duration}}<br/>
-			Arquivos copiados: {{job_line.job.jobfiles}} ({{job_line.job.jobbytes}} Bytes)<br/>
+			{% if job.client.computer %}
+			Computador: {{job.client.computer.name}} ({{job.client.computer.address}})
+			{% else %}
+			Computador: Computador não encontrado
+			{% endif %}<br/>
+			Tipo de backup: {{job.backup_level}}<br/>
+			Agendado para: {{job.schedule_time}}<br/>
+			Inicio: {{job.start_time}}<br/>
+			{% if job.end_time %}
+			Término: {{job.end_time}}<br/>
+			Duração: {{job.duration}}<br/>
+			{% else %}
+			Término: O procedimento ainda não foi concluído<br/>
+			Duração: O procedimento ainda não foi concluído<br/>
+			{% endif %}
+			Arquivos copiados: {{job.jobfiles}} ({{job.human_readable_size.size}} {{job.human_readable_size.unit}})<br/>
 
-			Resultado: {{job_line.job.status_message}}<br/>
-			Erros: {{job_line.job.joberrors}}<br/>
+			Status: {{job.status_message}}<br/>
+			Erros: {{job.joberrors}}<br/>
 		</div>
 	</div>
 	{% endfor %}
