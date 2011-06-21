@@ -41,14 +41,7 @@ $(document).ready(function(){
 	</div>
 
     <div class="block_content">
-        <div class="half">
-        <form name="remotestorages_list" id="remotestorages_list" action="/remotestorages/" method="post">
-            <label>Armazenamento Conectado?</label>
-            <input type="checkbox" name="do_connect" value="1" {% if storage.active %}checked="checked"{% endif %} id="do_connect" /> 
-            <input type="hidden" name="active" value="{{ storage.active }}" id="active" />
-        </form>
-        </div>
-        <div class="half last">
+        <div class="messages">
             {% if storage_status.status == "OK" %}
             <div class="message success"><p>Status do Storage: OK</p></div>
             {% endif %}
@@ -59,7 +52,35 @@ $(document).ready(function(){
             <div class="message error"><p>Status do Storage: CRITICO</p></div>
             {% endif %}
         </div>
+        <div class="status">
+            <h2 class="floatleft">Status do dispositivo</h2>&nbsp;&nbsp;<a href="#" class="show-form">Editar</a><div class="clear"></div> 
+            <ul>
+                <li>Armazenamento conectado: <strong>
+                {% if storage.active %}Sim{% endif %}
+                {% if not storage.active %}Nao{% endif %}
+                </strong>
+                </li>
+                <li>Contato: <strong>{{ email }}</strong></li>
+            </ul>
+        </div>
+        <div class="form">
+        <form name="remotestorages_list" id="remotestorages_list" action="/remotestorages/" method="post">
+            <p>
+                <label>Armazenamento Conectado?</label>
+                <input type="checkbox" name="do_connect" value="1" {% if storage.active %}checked="checked"{% endif %} id="do_connect" /> 
+                <input type="hidden" name="active" value="{{ storage.active }}" id="active" />
+            </p>
+            <p>
+                <label>Email para contato:</label><br />
+                <input type="text" class="text" name="email" value="{{ email }}" />
+            </p>
+            <p>
+                <input type="submit" class="submit mid" value="Cadastrar" />
+            </p>
+        </form>
+        </div>
         <div class="clear"></div>
+        <hr />
         <div id="chart1" class="half"></div>
         <div class="half last">
         {% if not profiles %}

@@ -1,6 +1,7 @@
 $(document).ready(function(){
     //alert("bla");
-    $("#do_connect").change(function(){
+    /*
+$("#do_connect").change(function(){
         //alert(this.checked);
         if (this.checked)
         {
@@ -13,5 +14,11 @@ $(document).ready(function(){
             $("#active").val("0");
         }
         $("#remotestorages_list").submit();
+    });
+*/
+    $(".form").slideToggle();
+    $(".show-form").click(function(){
+        $(".form").slideToggle();
+        return false;
     });
 });
