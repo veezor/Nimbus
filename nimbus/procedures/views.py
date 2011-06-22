@@ -50,7 +50,7 @@ def add(request, teste=None):
               'form':form}
     if request.method == "POST":
         data = copy(request.POST)
-        if data.has_key("procedure-fileset"):
+        if data["procedure-fileset"]:
             fileset = FileSet.objects.get(id=data['procedure-fileset'])
             content['fileset'] = fileset
         procedure_form = ProcedureForm(data, prefix="procedure")
