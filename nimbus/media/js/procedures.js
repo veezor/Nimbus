@@ -1,26 +1,27 @@
+// JavaScript para mostrar os status dos jobs nos hist—rico
 $(document).ready(function(){
-    /* Sets href at onload */
-    // fileset
-    var href = $("a.edit-fileset").attr("href");
-    $("a.edit-fileset").attr("href", href + $(".computer-fileset").val());
-    // schedule
-    var href = $("a.edit-schedule").attr("href");
-    $("a.edit-schedule").attr("href", href + $(".computer-schedule").val());
-    /* Sets href as the computer changes */
-    $(".computer-fileset").change(function(){
-        var href = $("a.edit-fileset").attr("href");
-        var index = href.indexOf("edit/");
-        href = href.substring(0, index+5);
-        $("a.edit-fileset").attr("href", href + $(this).val());
+    $('.job_line').click(function(){
+        var job_id = $(this)[0].id;
+        var job_details = $('#' + job_id + '_details')[0];
+        $('#status_box')[0].innerHTML = job_details.innerHTML;
     });
-    $(".computer-schedule").change(function(){
-        $("a.edit-schedule").attr("href", "/filesets/"+$(this).val()+"/edit/");
-        var href = $("a.edit-schedule").attr("href");
-        var index = href.indexOf("edit/");
-        href = href.substring(0, index+5);
-        $("a.edit-schedule").attr("href", href + $(this).val());
+});
+
+$(document).ready(function(){
+    $('.edit-fileset').click(function(){
+        var fileset_id = $(this)[0].id;
+        selected_val = $('#select_' + fileset_id)[0].value;
+        console.log(selected_val);
+        if (selected_val == "") {
+            alert("Escolha um computador para usar como base de arquivos");
+            return false;
+        }
+        locattion = $(this)[0].href;
+        $(this)[0].href = locattion + selected_val;
     });
-    /* Tables */
+});
+
+$(document).ready(function(){
     $("tbody tr").mouseover(function(){
         $(this).addClass("hvr");
         $(this).removeClass("nrl");

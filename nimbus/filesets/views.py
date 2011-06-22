@@ -3,6 +3,7 @@
 import traceback
 import socket
 import simplejson
+from copy import copy
 from django.http import HttpResponse
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -83,6 +84,7 @@ def do_edit(request, fileset_id):
 @login_required
 def get_tree(request):
     if request.method == "POST":
+        print request.POST
         try:
             path = request.POST['path']
             computer_id = request.POST['computer_id']
@@ -103,6 +105,18 @@ def get_tree(request):
 @login_required
 def delete(request, fileset_id):
     f = get_object_or_404(FileSet, pk=fileset_id)
+    if f.is_model:
+        for procedure in f.procedures.all():
+            novo_fileset = FileSet()
+            novo_fileset.name = 'Arquivos de %s' % procedure.name
+            novo_fileset.save()
+            for file in f.files.all():
+                novo_arquivo = FilePath()
+                novo_arquivo.fileset = novo_fileset
+                novo_arquivo.path = file.path
+                novo_arquivo.save()
+            procedure.fileset = novo_fileset
+            procedure.save()
     name = f.name
     f.delete()
     messages.success(request, u"Modelo de conjunto de arquivos '%s' removido com sucesso." % name)

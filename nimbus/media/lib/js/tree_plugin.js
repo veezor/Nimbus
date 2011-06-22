@@ -2,6 +2,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
 
 
     if (data.type = 'error' && data.message) {
+        alert(data.message)
         $('#mensagem_erro_fileset').html(data.message).show();
         $(".wait").remove();
         return false;

@@ -31,6 +31,7 @@ from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
 from nimbus.shared.middlewares import LogSetup
+from nimbus.security.models import register_administrative_nimbus_models
 
 
 
@@ -74,9 +75,8 @@ class App(object):
             computer = Computer.objects.get(id=1)
             computer.activate()
 
+            register_administrative_nimbus_models()
 
-            call_command('loaddata',
-                          settings.ADMINISTRATIVE_MODELS_DATA_FILE)
 
 
     def update_graphs_data(self):

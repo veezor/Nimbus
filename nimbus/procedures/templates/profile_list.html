@@ -14,7 +14,15 @@
 		<h2>{{title}}</h2>
 	</div>
     <div class="block_content">
-		<h2 class="floatleft">Filesets</h2>&nbsp;&nbsp;<a href="#" class="minibutton"><span>Adicionar</span></a>
+		<h2 class="floatleft">Conjuntos de arquivos</h2>
+		&nbsp;&nbsp;<a href="/filesets/add/" class="minibutton edit-fileset" id="fileset_new"><span>Novo</span></a>
+		<select class="computer-fileset" id="select_fileset_new">
+			<option value="">a partir do computador:</option>
+            {% for computer in computers %}
+            <option value="{{ computer.id }}">{{ computer.name }}</option>
+            {% endfor %}
+        </select>
+		
 		<div class="clear"></div><hr />
 		<!-- real env for filesets -->
 		<div class="procedure">
@@ -22,23 +30,23 @@
 			<div class="fileset">
                 <div class="title">
                     <div class="title-left">
-    			        <span class="name">{{ fileset.name }}</span> | Baseado em
-                        <select class="computer-fileset">
+    			        <span class="name">{{ fileset.name }}</span>
+                    </div>
+                    <div class="title-right">
+						<select class="computer-fileset" id="select_fileset_{{fileset.id}}">
+							<option value="">Escolha um computador:</option>
                             {% for computer in computers %}
                             <option value="{{ computer.id }}">{{ computer.name }}</option>
                             {% endfor %}
-                            <option value="2">outra coisa</option>
                         </select>
-                    </div>
-                    <div class="title-right">
-                        <a class="minibutton edit-fileset" href="/filesets/{{ fileset.id }}/edit/"><span>Editar</span></a>
-                        <a class="minibutton red" href="/filesets/1/edit/"><span>Excluir</span></a>
+                        <a class="minibutton edit-fileset" id="fileset_{{fileset.id}}" href="/filesets/{{ fileset.id }}/edit/"><span>Editar</span></a>
+                        <a class="minibutton red" href="/filesets/delete/{{fileset.id}}"><span>Excluir</span></a>
                     </div>
                     <div class="clear"></div>
                 </div><!-- .title -->
                 <div class="body">
                     <div class="left">
-                        <h3>Procedimentos</h3>
+                        <h3>Utilizado por:</h3>
                         <table cellpadding="0" cellspacing="0">
                             <thead>
                                 <tr><th>Procedimento</th><th>Computador</th></tr>
@@ -51,7 +59,7 @@
                         </table>
                     </div><!-- .left -->
                     <div class="right">
-                        <h3 class="floatleft">Lista de arquivos</h3> | <a class="minibutton" href="/filesets/1/edit/"><span>Editar</span></a>
+                        <h3 class="floatleft">Lista de arquivos</h3>
                         <div class="clear"></div>
                         <div class="list">
                         <ul>
@@ -68,7 +76,7 @@
 			{% endfor %}
 		</div><!-- .procedure -->
         
-        <h2 class="floatleft">Agendamentos</h2>&nbsp;<a href="#" class="minibutton"><span>Adicionar</span></a>
+        <h2 class="floatleft">Agendamentos</h2>&nbsp;<a href="/schedules/add/" class="minibutton"><span>Adicionar</span></a>
 		<div class="clear"></div><hr />
         <!-- real env for schedules -->
 		<div class="schedule">
@@ -76,23 +84,17 @@
 			<div class="fileset">
                 <div class="title">
                     <div class="title-left">
-    			        <span class="name">{{ schedule.name }}</span> | Baseado em
-                        <select class="computer-schedule">
-                            {% for computer in computers %}
-                            <option value="{{ computer.id }}">{{ computer.name }}</option>
-                            {% endfor %}
-                            <option value="2">outra coisa</option>
-                        </select>
+    			        <span class="name">{{ schedule.name }}</span>
                     </div>
                     <div class="title-right">
-                        <a class="minibutton edit-schedule" href="/filesets/{{ schedule.id }}/edit/"><span>Editar</span></a>
-                        <a class="minibutton red" href="/filesets/{{ computer.id }}/edit/"><span>Excluir</span></a>
+                        <a class="minibutton edit-schedule" href="/schedules/{{schedule.id}}/edit/"><span>Editar</span></a>
+                        <a class="minibutton red" href="/schedules/delete/{{schedule.id}}"><span>Excluir</span></a>
                     </div>
                     <div class="clear"></div>
                 </div><!-- .title -->
                 <div class="body">
                     <div class="left">
-                        <h3>Procedimentos</h3>
+                        <h3>Utilizado por:</h3>
                         <table cellpadding="0" cellspacing="0">
                             <thead>
                                 <tr><th>Procedimento</th><th>Computador</th></tr>
@@ -105,7 +107,7 @@
                         </table>
                     </div><!-- .left -->
                     <div class="right">
-                        <h3 class="floatleft">Lista de arquivos</h3> | <a class="minibutton" href="/filesets/{{ schedule.id }}/edit/"><span>Editar</span></a>
+                        <h3 class="floatleft">Lista de arquivos</h3>
                         <div class="clear"></div>
                         <div class="list">
                         <ul>

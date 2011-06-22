@@ -157,12 +157,12 @@
 
 .title-left{
     display: block; 
-    width: 700px; 
+    width: 130px; 
     float: left;
 }
 .title-right{
     display: block; 
-    width: 130px; 
+    width: 700px; 
     text-align: right; 
     float: right;
 }

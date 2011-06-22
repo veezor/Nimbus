@@ -128,44 +128,7 @@ def list_all(request):
     offsite = Offsite.get_instance()
     offsite_on = offsite.active
     title = u"Procedimentos de backup"
-    running_status = ('R','p','j','c','d','s','M','m','s','F','B')
-    running_jobs = Job.objects.filter(jobstatus__in=running_status)\
-                                          .order_by('-starttime').distinct()[:5]
-    last_jobs = Job.objects.all().order_by('-endtime').distinct()[:5]
-    running_procedures_content = []
-    try:
-        for job in running_jobs:
-            running_procedures_content.append({
-                    'type' : 'ok',
-                    'label' : job.procedure.name,
-                    'date' : job.starttime,
-                    'tooltip' : job.status_message,
-                    'message' : u'Computador : %s' % job.client.computer.name
-                    })
-    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
-        # TODO: Tratar
-        pass
-
-    last_procedures_content = []
-    try:
-        for job in last_jobs:
-            last_procedures_content.append({
-                    'type' : job.status_friendly,
-                    'label' : job.procedure.name,
-                    'date' : job.endtime,
-                    'tooltip' : job.status_message,
-                    'message' : u'Computador : %s' % job.client.computer.name
-                    })
-    except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
-        # TODO: Tratar
-        pass
-    procedimentos_em_execucao_executados = [{
-                                'title': u'Procedimentos em execução',
-                                'content': running_procedures_content
-                               },{
-                                'title': u'Últimos procedimentos executados',
-                                'content': last_procedures_content   
-                               }]
+    last_jobs = Job.objects.all().order_by('-starttime').distinct()
     return render_to_response(request, "procedures_list.html", locals())
 
 @login_required
