@@ -218,6 +218,10 @@ $(document).ready(function(){
 	data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
 	update_time();
 	
+	$(".date_picker").mask('99/99/9999');
+	$(".date_picker").bind("blur focus change click keyup", function(){
+	   $(this).mask('99/99/9999');
+	});
 	$('.mascara_hora').mask('99:99');
 	$('.mascara_minuto').mask('99');
 });

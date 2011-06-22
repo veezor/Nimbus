@@ -35,7 +35,7 @@ def view(request, object_id=None):
         except Computer.DoesNotExist, error:
             return redirect('nimbus.restore.views.view')
     else:
-        computer = None
+        computer = Computer.objects.get(active=True)
 
     computers = Computer.objects.filter(active=True,id__gt=1)
     
