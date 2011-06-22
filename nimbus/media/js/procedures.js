@@ -11,6 +11,11 @@ $(document).ready(function(){
     $('.edit-fileset').click(function(){
         var fileset_id = $(this)[0].id;
         selected_val = $('#select_' + fileset_id)[0].value;
+        console.log(selected_val);
+        if (selected_val == "") {
+            alert("Escolha um computador para usar como base de arquivos");
+            return false;
+        }
         locattion = $(this)[0].href;
         $(this)[0].href = locattion + selected_val;
     });

@@ -14,7 +14,15 @@
 		<h2>{{title}}</h2>
 	</div>
     <div class="block_content">
-		<h2 class="floatleft">Conjuntos de arquivos</h2>&nbsp;&nbsp;<a href="/filesets/add/1" class="minibutton"><span>Adicionar</span></a>
+		<h2 class="floatleft">Conjuntos de arquivos</h2>
+		&nbsp;&nbsp;<a href="/filesets/add/" class="minibutton edit-fileset" id="fileset_new"><span>Novo</span></a>
+		<select class="computer-fileset" id="select_fileset_new">
+			<option value="">a partir do computador:</option>
+            {% for computer in computers %}
+            <option value="{{ computer.id }}">{{ computer.name }}</option>
+            {% endfor %}
+        </select>
+		
 		<div class="clear"></div><hr />
 		<!-- real env for filesets -->
 		<div class="procedure">
@@ -22,14 +30,15 @@
 			<div class="fileset">
                 <div class="title">
                     <div class="title-left">
-    			        <span class="name">{{ fileset.name }}</span> | Baseado em
-                        <select class="computer-fileset" id="select_fileset_{{fileset.id}}">
+    			        <span class="name">{{ fileset.name }}</span>
+                    </div>
+                    <div class="title-right">
+						<select class="computer-fileset" id="select_fileset_{{fileset.id}}">
+							<option value="">Escolha um computador:</option>
                             {% for computer in computers %}
                             <option value="{{ computer.id }}">{{ computer.name }}</option>
                             {% endfor %}
                         </select>
-                    </div>
-                    <div class="title-right">
                         <a class="minibutton edit-fileset" id="fileset_{{fileset.id}}" href="/filesets/{{ fileset.id }}/edit/"><span>Editar</span></a>
                         <a class="minibutton red" href="/filesets/delete/{{fileset.id}}"><span>Excluir</span></a>
                     </div>
