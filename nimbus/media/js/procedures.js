@@ -22,18 +22,6 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
-    /* Sets href at onload */
-    // fileset
-    // var href = $("a.edit-fileset").attr("href");
-    // $("a.edit-fileset").attr("href", href + $(".computer-fileset").val());
-    // /* Sets href as the computer changes */
-    // $(".computer-fileset").change(function(){
-    //     var href = $("a.edit-fileset").attr("href");
-    //     var index = href.indexOf("edit/");
-    //     href = href.substring(0, index+5);
-    //     $("a.edit-fileset").attr("href", href + $(this).val());
-    // });
-    /* Tables */
     $("tbody tr").mouseover(function(){
         $(this).addClass("hvr");
         $(this).removeClass("nrl");

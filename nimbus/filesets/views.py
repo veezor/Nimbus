@@ -84,6 +84,7 @@ def do_edit(request, fileset_id):
 @login_required
 def get_tree(request):
     if request.method == "POST":
+        print request.POST
         try:
             path = request.POST['path']
             computer_id = request.POST['computer_id']
