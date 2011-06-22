@@ -2,23 +2,32 @@
 $(document).ready(function(){
     $('.job_line').click(function(){
         var job_id = $(this)[0].id;
-        job_details = $('#' + job_id + '_details')[0];
+        var job_details = $('#' + job_id + '_details')[0];
         $('#status_box')[0].innerHTML = job_details.innerHTML;
+    });
+});
+
+$(document).ready(function(){
+    $('.edit-fileset').click(function(){
+        var fileset_id = $(this)[0].id;
+        selected_val = $('#select_' + fileset_id)[0].value;
+        locattion = $(this)[0].href;
+        $(this)[0].href = locattion + selected_val;
     });
 });
 
 $(document).ready(function(){
     /* Sets href at onload */
     // fileset
-    var href = $("a.edit-fileset").attr("href");
-    $("a.edit-fileset").attr("href", href + $(".computer-fileset").val());
-    /* Sets href as the computer changes */
-    $(".computer-fileset").change(function(){
-        var href = $("a.edit-fileset").attr("href");
-        var index = href.indexOf("edit/");
-        href = href.substring(0, index+5);
-        $("a.edit-fileset").attr("href", href + $(this).val());
-    });
+    // var href = $("a.edit-fileset").attr("href");
+    // $("a.edit-fileset").attr("href", href + $(".computer-fileset").val());
+    // /* Sets href as the computer changes */
+    // $(".computer-fileset").change(function(){
+    //     var href = $("a.edit-fileset").attr("href");
+    //     var index = href.indexOf("edit/");
+    //     href = href.substring(0, index+5);
+    //     $("a.edit-fileset").attr("href", href + $(this).val());
+    // });
     /* Tables */
     $("tbody tr").mouseover(function(){
         $(this).addClass("hvr");

@@ -23,14 +23,14 @@
                 <div class="title">
                     <div class="title-left">
     			        <span class="name">{{ fileset.name }}</span> | Baseado em
-                        <select class="computer-fileset">
+                        <select class="computer-fileset" id="select_fileset_{{fileset.id}}">
                             {% for computer in computers %}
                             <option value="{{ computer.id }}">{{ computer.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="title-right">
-                        <a class="minibutton edit-fileset" href="/filesets/{{ fileset.id }}/edit/"><span>Editar</span></a>
+                        <a class="minibutton edit-fileset" id="fileset_{{fileset.id}}" href="/filesets/{{ fileset.id }}/edit/"><span>Editar</span></a>
                         <a class="minibutton red" href="/filesets/delete/{{fileset.id}}"><span>Excluir</span></a>
                     </div>
                     <div class="clear"></div>
