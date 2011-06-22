@@ -3,7 +3,8 @@ $(document).ready(function(){
 	// Preload images
     // jQuery.preloadCssImages();
 
-
+    // uniform select fields
+	$("select").uniform();
 	// CSS tweaks
 	jQuery('#header #nav li:last').addClass('nobg');
 	jQuery('.block_head ul').each(function() { jQuery('li:first', this).addClass('nobg'); });
@@ -170,7 +171,8 @@ $(document).ready(function(){
 			alert(file);
 		});
 	})
-	$(".iPhoneCheckContainer").css("width", "85px");
+	//$(".iPhoneCheckContainer").css("width", "85px");
 	// $(".sparklines").sparkline('html', {width: "300", height: "150px" });
+	
 
 });

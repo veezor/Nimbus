@@ -63,7 +63,6 @@ $(document).ready(function(){
         form.submit();
         return false;
     });
-    $("select").uniform();
     set_fileset();
     $('#toggle_fileset_choice').click(function() {
         $("#uniform-id_procedure-fileset").toggle('slow');

@@ -3,7 +3,8 @@ $(document).ready(function(){
 	// Preload images
     // jQuery.preloadCssImages();
 	
-	
+	// uniform select fields
+	$("select").uniform();
 	// CSS tweaks
 	jQuery('#header #nav li:last').addClass('nobg');
 	jQuery('.block_head ul').each(function() { jQuery('li:first', this).addClass('nobg'); });

@@ -6,7 +6,7 @@
             <p class="error">{{ error }}</p>
         {% endfor %}
     {% endif %}
-    <p>{{ field.label_tag }}<br/>{{ field }}</p>
+    <p><label>{{ field.label_tag }}</label><br/>{{ field }}</p>
 {% endfor %}
 {% for hidden in form.hidden_fields %}
     {{ hidden }}
