@@ -8,6 +8,8 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.forms import widgets
+
 from nimbus.filesets.models import FileSet, FilePath
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
@@ -19,11 +21,20 @@ from nimbus.filesets import forms
 
 @login_required
 def add(request, computer_id=None):
-    fileset_form = forms.FileSetForm(prefix="fileset")
     computer = get_object_or_404(Computer, pk=computer_id)
+    referer = utils.Referer(request)
+    fileset_form = forms.FileSetForm(prefix="fileset")
+    hide_name = False
+    if referer.local == '/procedures/profile/list/':
+        fileset_form.initial = {'is_model': True}
+    elif referer.local == '/procedures/add/':
+        # tmp = FileSet.objects.filter(name__startswith='Conjunto de arquivos de %s' % computer.name).all()
+        fileset_form.initial = {'name': 'Conjunto de arquivos de %s' % computer.name}
+        hide_name = True
     content = {'title': u"Criar conjunto de arquivos",
                'computer': computer,
-               'fileset_form': fileset_form}
+               'fileset_form': fileset_form,
+               'hide_name': hide_name}
     return render_to_response(request, "add_fileset.html", content)
 
 

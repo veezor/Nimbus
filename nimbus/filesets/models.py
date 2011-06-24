@@ -13,8 +13,8 @@ from nimbus.computers import models as computer_models
 from nimbus.libs.template import render_to_file
 
 class FileSet(BaseModel):
-    name = models.CharField(max_length=255, unique=True, null=False)
-    is_model = models.BooleanField(default=False, null=False)
+    name = models.CharField(max_length=255, null=False)
+    is_model = models.BooleanField(default=False, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -35,8 +35,7 @@ def update_fileset_file(fileset):
     filename = path.join(settings.NIMBUS_FILESETS_DIR, name)
     files = [f.path for f in fileset.files.all()]
     print files
-    render_to_file(filename, "fileset", name=name,
-                   files=files)
+    render_to_file(filename, "fileset", name=name, files=files)
 
 
 def remove_fileset_file(fileset):

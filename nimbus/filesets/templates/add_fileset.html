@@ -22,7 +22,12 @@
 			<ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
 			<hr />
 			<span id="field_error_0" class="field_error" style="display: none;">Preencha os campos abaixo corretamente<br/></span>
-            {{ fileset_form.as_p }}
+			<p {% if hide_name %}class="hidden"{% endif %}>
+			<label>{{fileset_form.name.label}}: </label>{{ fileset_form.name }}
+			</p>
+			<p class="hidden">
+			<label>{{fileset_form.is_model.label}}: </label>{{ fileset_form.is_model }}
+			</p>
             <hr />
 			<p>
                 <input type="button" class="submit mid" id="submit_button" value="Salvar"/>
