@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash 
 
 . /usr/share/debconf/confmodule
 set -e
