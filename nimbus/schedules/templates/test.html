@@ -1,0 +1,232 @@
+{% extends "base_async.html" %}
+{% block headtags %}
+	<link rel="stylesheet" type="text/css" href="/media/css/overcast/jquery-ui-1.8.13.custom.css" />
+	<script type="text/javascript" src="/media/lib/js/jquery-1.5.1.min.js"></script>
+	<script type="text/javascript" src="/media/lib/js/jquery-ui-1.8.13.custom.min.js"></script>
+	<script>
+		$(function() {
+			$( ".checkboxes" ).buttonset();
+		});
+	</script>
+	
+	<script>
+		SCHEDULES = new Array()
+		
+		$(document).ready(function(){
+			$('#month_button').click(function(){
+				var month_days = $('.month')
+				var month_array = new Array()
+				for (var i = 0; i < 31; i++) {
+			        if (month_days[i].checked == true) {
+		                month_array.push(i+1)
+		            }
+		        }
+	        	// $("#id_month-days").val(month_array);
+				console.log(month_array);
+				var hours = $('.hours')
+				var hours_array = new Array()
+				for (var i = 0; i < 24; i++) {
+			        if (hours[i].checked == true) {
+		                hours_array.push(i)
+		            }
+		        }
+	        	// $("#id_month-days").val(month_array);
+				console.log(hours_array);
+				var minutes = $('.minutes')
+				var minutes_array = new Array()
+				for (var i = 0; i < 60; i++) {
+			        if (minutes[i].checked == true) {
+		                minutes_array.push(i)
+		            }
+		        }
+	        	// $("#id_month-days").val(month_array);
+				console.log(minutes_array);
+				if (month_array.length == 0) {
+					alert("Você deve escolher ao menos um dia do mês para executar o backup")
+				} else if (hours_array.length == 0) {
+					alert("Você deve escolher ao menos uma hora para iniciar o backup")
+				} else if (minutes_array.length == 0) {
+					alert("Você deve escolher ao menos um hora e minuto para iniciar o backup")
+				} else {
+					alert("OK")
+				}
+		    });
+		});
+	</script
+	
+	
+{% endblock %}
+
+{% block page %}
+<table style="border: solid 1px;">
+	<tr>
+		<td>
+			<div id="month" class="checkboxes">
+				<h3>Dia do mês:</h3>
+				<input type="checkbox" class="month" id="month_01" name="01"/><label for="month_01">01</label>
+				<input type="checkbox" class="month" id="month_02" name="02"/><label for="month_02">02</label>
+				<input type="checkbox" class="month" id="month_03" name="03"/><label for="month_03">03</label>
+				<input type="checkbox" class="month" id="month_04" name="04"/><label for="month_04">04</label>
+				<input type="checkbox" class="month" id="month_05" name="05"/><label for="month_05">05</label>
+				<input type="checkbox" class="month" id="month_06" name="06"/><label for="month_06">06</label>
+				<input type="checkbox" class="month" id="month_07" name="07"/><label for="month_07">07</label>
+				<input type="checkbox" class="month" id="month_08" name="08"/><label for="month_08">08</label>
+				<input type="checkbox" class="month" id="month_09" name="09"/><label for="month_09">09</label>
+				<input type="checkbox" class="month" id="month_10" name="10"/><label for="month_10">10</label>
+				<input type="checkbox" class="month" id="month_11" name="11"/><label for="month_11">11</label>
+				<input type="checkbox" class="month" id="month_12" name="12"/><label for="month_12">12</label><br/>
+				<input type="checkbox" class="month" id="month_13" name="13"/><label for="month_13">13</label>
+				<input type="checkbox" class="month" id="month_14" name="14"/><label for="month_14">14</label>
+				<input type="checkbox" class="month" id="month_15" name="15"/><label for="month_15">15</label>
+				<input type="checkbox" class="month" id="month_16" name="16"/><label for="month_16">16</label>
+				<input type="checkbox" class="month" id="month_17" name="17"/><label for="month_17">17</label>
+				<input type="checkbox" class="month" id="month_18" name="18"/><label for="month_18">18</label>
+				<input type="checkbox" class="month" id="month_19" name="19"/><label for="month_19">19</label>
+				<input type="checkbox" class="month" id="month_20" name="20"/><label for="month_20">20</label>
+				<input type="checkbox" class="month" id="month_21" name="21"/><label for="month_21">21</label>
+				<input type="checkbox" class="month" id="month_22" name="22"/><label for="month_22">22</label>
+				<input type="checkbox" class="month" id="month_23" name="23"/><label for="month_23">23</label>
+				<input type="checkbox" class="month" id="month_24" name="24"/><label for="month_24">24</label><br/>
+				<input type="checkbox" class="month" id="month_25" name="25"/><label for="month_25">25</label>
+				<input type="checkbox" class="month" id="month_26" name="26"/><label for="month_26">26</label>
+				<input type="checkbox" class="month" id="month_27" name="27"/><label for="month_27">27</label>
+				<input type="checkbox" class="month" id="month_28" name="28"/><label for="month_28">28</label>
+				<input type="checkbox" class="month" id="month_29" name="29"/><label for="month_29">29</label>
+				<input type="checkbox" class="month" id="month_30" name="30"/><label for="month_30">30</label>
+				<input type="checkbox" class="month" id="month_31" name="31"/><label for="month_31">31</label>
+			</div>
+		</td>
+		<td>
+			<a class="minibutton" id="month_button"><span>Agendamento Mensal</span></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="week" class="checkboxes">
+				<h3>Dia da semana:</h3>
+				<input type="checkbox" class="week" id="week_0" value="0" /><label for="week_0">Domingo</label>
+				<input type="checkbox" class="week" id="week_1" value="0" /><label for="week_1">Segunda-feira</label>
+				<input type="checkbox" class="week" id="week_2" value="0" /><label for="week_2">Terça-feira</label>
+				<input type="checkbox" class="week" id="week_3" value="0" /><label for="week_3">Quarta-feira</label>
+				<input type="checkbox" class="week" id="week_4" value="0" /><label for="week_4">Quinta-feira</label>
+				<input type="checkbox" class="week" id="week_5" value="0" /><label for="week_5">Sexta-feira</label>
+				<input type="checkbox" class="week" id="week_6" value="0" /><label for="week_6">Sábado</label>
+			</div>
+		</td>
+		<td>
+			<a class="minibutton"><span>Agendamento Semanal</span></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="hours" class="checkboxes">
+				<h3>Hora:</h3>
+				<input type="checkbox" class="hours" id="hour_00" /><label for="hour_00">00</label>
+				<input type="checkbox" class="hours" id="hour_01" /><label for="hour_01">01</label>
+				<input type="checkbox" class="hours" id="hour_02" /><label for="hour_02">02</label>
+				<input type="checkbox" class="hours" id="hour_03" /><label for="hour_03">03</label>
+				<input type="checkbox" class="hours" id="hour_04" /><label for="hour_04">04</label>
+				<input type="checkbox" class="hours" id="hour_05" /><label for="hour_05">05</label>
+				<input type="checkbox" class="hours" id="hour_06" /><label for="hour_06">06</label>
+				<input type="checkbox" class="hours" id="hour_07" /><label for="hour_07">07</label>
+				<input type="checkbox" class="hours" id="hour_08" /><label for="hour_08">08</label>
+				<input type="checkbox" class="hours" id="hour_09" /><label for="hour_09">09</label>
+				<input type="checkbox" class="hours" id="hour_10" /><label for="hour_10">10</label>
+				<input type="checkbox" class="hours" id="hour_11" /><label for="hour_11">11</label></br>
+				<input type="checkbox" class="hours" id="hour_12" /><label for="hour_12">12</label>
+				<input type="checkbox" class="hours" id="hour_13" /><label for="hour_13">13</label>
+				<input type="checkbox" class="hours" id="hour_14" /><label for="hour_14">14</label>
+				<input type="checkbox" class="hours" id="hour_15" /><label for="hour_15">15</label>
+				<input type="checkbox" class="hours" id="hour_16" /><label for="hour_16">16</label>
+				<input type="checkbox" class="hours" id="hour_17" /><label for="hour_17">17</label>
+				<input type="checkbox" class="hours" id="hour_18" /><label for="hour_18">18</label>
+				<input type="checkbox" class="hours" id="hour_19" /><label for="hour_19">19</label>
+				<input type="checkbox" class="hours" id="hour_20" /><label for="hour_20">20</label>
+				<input type="checkbox" class="hours" id="hour_21" /><label for="hour_21">21</label>
+				<input type="checkbox" class="hours" id="hour_22" /><label for="hour_22">22</label>
+				<input type="checkbox" class="hours" id="hour_23" /><label for="hour_23">23</label>
+			</div>
+		</td>
+		<td>
+			<a class="minibutton"><span>Agendamento Diário</span></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="minutes" class="checkboxes">
+				<h3>Minuto:</h3>
+				<input type="checkbox" class="minutes" id="minute_00" /><label for="minute_00">00</label>
+				<input type="checkbox" class="minutes" id="minute_01" /><label for="minute_01">01</label>
+				<input type="checkbox" class="minutes" id="minute_02" /><label for="minute_02">02</label>
+				<input type="checkbox" class="minutes" id="minute_03" /><label for="minute_03">03</label>
+				<input type="checkbox" class="minutes" id="minute_04" /><label for="minute_04">04</label>
+				<input type="checkbox" class="minutes" id="minute_05" /><label for="minute_05">05</label>
+				<input type="checkbox" class="minutes" id="minute_06" /><label for="minute_06">06</label>
+				<input type="checkbox" class="minutes" id="minute_07" /><label for="minute_07">07</label>
+				<input type="checkbox" class="minutes" id="minute_08" /><label for="minute_08">08</label>
+				<input type="checkbox" class="minutes" id="minute_09" /><label for="minute_09">09</label>
+				<input type="checkbox" class="minutes" id="minute_10" /><label for="minute_10">10</label>
+				<input type="checkbox" class="minutes" id="minute_11" /><label for="minute_11">11</label><br/>
+				<input type="checkbox" class="minutes" id="minute_12" /><label for="minute_12">12</label>
+				<input type="checkbox" class="minutes" id="minute_13" /><label for="minute_13">13</label>
+				<input type="checkbox" class="minutes" id="minute_14" /><label for="minute_14">14</label>
+				<input type="checkbox" class="minutes" id="minute_15" /><label for="minute_15">15</label>
+				<input type="checkbox" class="minutes" id="minute_16" /><label for="minute_16">16</label>
+				<input type="checkbox" class="minutes" id="minute_17" /><label for="minute_17">17</label>
+				<input type="checkbox" class="minutes" id="minute_18" /><label for="minute_18">18</label>
+				<input type="checkbox" class="minutes" id="minute_19" /><label for="minute_19">19</label>
+				<input type="checkbox" class="minutes" id="minute_20" /><label for="minute_20">20</label>
+				<input type="checkbox" class="minutes" id="minute_21" /><label for="minute_21">21</label>
+				<input type="checkbox" class="minutes" id="minute_22" /><label for="minute_22">22</label>
+				<input type="checkbox" class="minutes" id="minute_23" /><label for="minute_23">23</label><br/>
+				<input type="checkbox" class="minutes" id="minute_24" /><label for="minute_24">24</label>
+				<input type="checkbox" class="minutes" id="minute_25" /><label for="minute_25">25</label>
+				<input type="checkbox" class="minutes" id="minute_26" /><label for="minute_26">26</label>
+				<input type="checkbox" class="minutes" id="minute_27" /><label for="minute_27">27</label>
+				<input type="checkbox" class="minutes" id="minute_28" /><label for="minute_28">28</label>
+				<input type="checkbox" class="minutes" id="minute_29" /><label for="minute_29">29</label>
+				<input type="checkbox" class="minutes" id="minute_30" /><label for="minute_30">30</label>
+				<input type="checkbox" class="minutes" id="minute_31" /><label for="minute_31">31</label>
+				<input type="checkbox" class="minutes" id="minute_32" /><label for="minute_32">32</label>
+				<input type="checkbox" class="minutes" id="minute_33" /><label for="minute_33">33</label>
+				<input type="checkbox" class="minutes" id="minute_34" /><label for="minute_34">34</label>
+				<input type="checkbox" class="minutes" id="minute_35" /><label for="minute_35">35</label><br/>
+				<input type="checkbox" class="minutes" id="minute_36" /><label for="minute_36">36</label>
+				<input type="checkbox" class="minutes" id="minute_37" /><label for="minute_37">37</label>
+				<input type="checkbox" class="minutes" id="minute_38" /><label for="minute_38">38</label>
+				<input type="checkbox" class="minutes" id="minute_39" /><label for="minute_39">39</label>
+				<input type="checkbox" class="minutes" id="minute_40" /><label for="minute_40">40</label>
+				<input type="checkbox" class="minutes" id="minute_41" /><label for="minute_41">41</label>
+				<input type="checkbox" class="minutes" id="minute_42" /><label for="minute_42">42</label>
+				<input type="checkbox" class="minutes" id="minute_43" /><label for="minute_43">43</label>
+				<input type="checkbox" class="minutes" id="minute_44" /><label for="minute_44">44</label>
+				<input type="checkbox" class="minutes" id="minute_45" /><label for="minute_45">45</label>
+				<input type="checkbox" class="minutes" id="minute_46" /><label for="minute_46">46</label>
+				<input type="checkbox" class="minutes" id="minute_47" /><label for="minute_47">47</label><br/>
+				<input type="checkbox" class="minutes" id="minute_48" /><label for="minute_48">48</label>
+				<input type="checkbox" class="minutes" id="minute_49" /><label for="minute_49">49</label>
+				<input type="checkbox" class="minutes" id="minute_50" /><label for="minute_50">50</label>
+				<input type="checkbox" class="minutes" id="minute_51" /><label for="minute_51">51</label>
+				<input type="checkbox" class="minutes" id="minute_52" /><label for="minute_52">52</label>
+				<input type="checkbox" class="minutes" id="minute_53" /><label for="minute_53">53</label>
+				<input type="checkbox" class="minutes" id="minute_54" /><label for="minute_54">54</label>
+				<input type="checkbox" class="minutes" id="minute_55" /><label for="minute_55">55</label>
+				<input type="checkbox" class="minutes" id="minute_56" /><label for="minute_56">56</label>
+				<input type="checkbox" class="minutes" id="minute_57" /><label for="minute_57">57</label>
+				<input type="checkbox" class="minutes" id="minute_58" /><label for="minute_58">58</label>
+				<input type="checkbox" class="minutes" id="minute_59" /><label for="minute_59">59</label>
+			</div>
+		</td>
+		<td>
+			<a class="minibutton"><span>Agendamento de hora em hora</span></a>
+		</td>
+	</tr>
+</table>
+<h3>Agendamentos selecionados</h3>
+<div style="border: solid 1px; width: 400px; height: 200px">
+	<table id="inventory">
+
+	<table>
+</div>
+
+{% endblock %}

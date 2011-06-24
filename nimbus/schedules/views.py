@@ -20,6 +20,11 @@ from nimbus.schedules.models import Schedule, Month, Week, Day, Hour
 from nimbus.procedures.models import Procedure
 from nimbus.procedures.views import resume_add as procedure_view_resume_add
 
+def test(request):
+    content = {'nada': None}
+    return render_to_response(request, "test.html", content)
+    
+
 @login_required
 def edit(request, object_id):
     s = get_object_or_404(Schedule, pk=object_id)
