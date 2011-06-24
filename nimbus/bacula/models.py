@@ -5,14 +5,16 @@ from datetime import datetime, timedelta
 from django.db import models
 
 class Client(models.Model):
-    clientid = models.IntegerField(primary_key=True, db_column='ClientId')
-    name = models.TextField(unique=True, db_column='Name')
-    uname = models.TextField(db_column='Uname')
-    autoprune = models.IntegerField(null=True, db_column='AutoPrune', blank=True)
-    fileretention = models.BigIntegerField(null=True, db_column='FileRetention', blank=True)
-    jobretention = models.BigIntegerField(null=True, db_column='JobRetention', blank=True)
+    clientid = models.IntegerField(primary_key=True)
+    name = models.TextField(unique=True)
+    uname = models.TextField()
+    autoprune = models.IntegerField(null=True, blank=True)
+    fileretention = models.BigIntegerField(null=True, blank=True)
+    jobretention = models.BigIntegerField(null=True, blank=True)
+
+
     class Meta:
-        db_table = u'Client'
+        db_table = u'client'
 
     @property
     def computer(self):
@@ -22,16 +24,19 @@ class Client(models.Model):
 
 
 class File(models.Model):
-    fileid = models.BigIntegerField(primary_key=True, db_column='FileId')
-    fileindex = models.IntegerField(null=True, db_column='FileIndex', blank=True)
-    job = models.ForeignKey('Job',db_column='JobId')
-    path = models.ForeignKey('Path',db_column='PathId')
-    filename = models.ForeignKey('Filename', db_column='FilenameId')
-    markid = models.IntegerField(null=True, db_column='MarkId', blank=True)
-    lstat = models.TextField(db_column='LStat')
-    md5 = models.TextField(db_column='MD5', blank=True)
+    fileid = models.BigIntegerField(primary_key=True)
+    fileindex = models.IntegerField(null=True, blank=True)
+    job = models.ForeignKey('Job', db_column='jobid')
+    path = models.ForeignKey('Path', db_column='pathid')
+    filename = models.ForeignKey('Filename', db_column='filenameid')
+    markid = models.IntegerField(null=True, blank=True)
+    lstat = models.TextField()
+    md5 = models.TextField(blank=True)
+
+
     class Meta:
-        db_table = u'File'
+        db_table = u'file'
+
 
     @property
     def fullname(self):
@@ -39,18 +44,23 @@ class File(models.Model):
 
 
 class Fileset(models.Model):
-    filesetid = models.IntegerField(primary_key=True, db_column='FileSetId')
-    fileset = models.TextField(db_column='FileSet')
-    md5 = models.TextField(db_column='MD5', blank=True)
-    createtime = models.DateTimeField(null=True, db_column='CreateTime', blank=True)
+    filesetid = models.IntegerField(primary_key=True)
+    fileset = models.TextField()
+    md5 = models.TextField(blank=True)
+    createtime = models.DateTimeField(null=True, blank=True)
+
+
     class Meta:
-        db_table = u'FileSet'
+        db_table = u'fileset'
+
 
 class Filename(models.Model):
-    filenameid = models.IntegerField(primary_key=True, db_column='FilenameId')
-    name = models.TextField(db_column='Name')
+    filenameid = models.IntegerField(primary_key=True)
+    name = models.TextField()
+
+
     class Meta:
-        db_table = u'Filename'
+        db_table = u'filename'
 
 class Job(models.Model):
     MESSAGES = ['Criado mas sem executar ainda.',
@@ -88,30 +98,34 @@ class Job(models.Model):
                                'p': 'Waiting on higher priority jobs',
                                'i': 'Doing batch insert file records',
                                'a': 'SD despooling attributes'}
-    jobid = models.IntegerField(primary_key=True, db_column='JobId')
-    job = models.TextField(db_column='Job')
-    name = models.TextField(db_column='Name')
-    type = models.CharField(max_length=1, db_column='Type')
-    level = models.CharField(max_length=1, db_column='Level')
-    client = models.ForeignKey(Client, null=True, db_column='ClientId', blank=True)
-    jobstatus = models.CharField(max_length=1, db_column='JobStatus')
-    schedtime = models.DateTimeField(null=True, db_column='SchedTime', blank=True)
-    starttime = models.DateTimeField(null=True, db_column='StartTime', blank=True)
-    endtime = models.DateTimeField(null=True, db_column='EndTime', blank=True)
-    realendtime = models.DateTimeField(null=True, db_column='RealEndTime', blank=True)
-    jobtdate = models.BigIntegerField(null=True, db_column='JobTDate', blank=True)
-    volsessionid = models.IntegerField(null=True, db_column='VolSessionId', blank=True)
-    volsessiontime = models.IntegerField(null=True, db_column='VolSessionTime', blank=True)
-    jobfiles = models.IntegerField(null=True, db_column='JobFiles', blank=True)
-    jobbytes = models.BigIntegerField(null=True, db_column='JobBytes', blank=True)
-    readbytes = models.BigIntegerField(null=True, db_column='ReadBytes', blank=True)
-    joberrors = models.IntegerField(null=True, db_column='JobErrors', blank=True)
-    jobmissingfiles = models.IntegerField(null=True, db_column='JobMissingFiles', blank=True)
-    pool = models.ForeignKey('Pool', null=True, db_column='PoolId', blank=True)
-    fileset = models.ForeignKey('FileSet', null=True, db_column='FileSetId', blank=True)
-    priorjobid = models.IntegerField(null=True, db_column='PriorJobId', blank=True)
-    purgedfiles = models.IntegerField(null=True, db_column='PurgedFiles', blank=True)
-    hasbase = models.IntegerField(null=True, db_column='HasBase', blank=True)
+    jobid = models.IntegerField(primary_key=True )
+    job = models.TextField()
+    name = models.TextField()
+    type = models.CharField(max_length=1)
+    level = models.CharField(max_length=1)
+    client = models.ForeignKey(Client, null=True, blank=True, db_column='clientid')
+    jobstatus = models.CharField(max_length=1)
+    schedtime = models.DateTimeField(null=True, blank=True)
+    starttime = models.DateTimeField(null=True, blank=True)
+    endtime = models.DateTimeField(null=True, blank=True)
+    realendtime = models.DateTimeField(null=True, blank=True)
+    jobtdate = models.BigIntegerField(null=True, blank=True)
+    volsessionid = models.IntegerField(null=True, blank=True)
+    volsessiontime = models.IntegerField(null=True, blank=True)
+    jobfiles = models.IntegerField(null=True, blank=True)
+    jobbytes = models.BigIntegerField(null=True, blank=True)
+    readbytes = models.BigIntegerField(null=True, blank=True)
+    joberrors = models.IntegerField(null=True, blank=True)
+    jobmissingfiles = models.IntegerField(null=True, blank=True)
+    pool = models.ForeignKey('Pool', null=True, blank=True, db_column='poolid')
+    fileset = models.ForeignKey('FileSet', null=True, blank=True, db_column='filesetid')
+    priorjobid = models.IntegerField(null=True, blank=True)
+    purgedfiles = models.IntegerField(null=True, blank=True)
+    hasbase = models.IntegerField(null=True, blank=True)
+
+
+    class Meta:
+        db_table = u'job'
 
     @property
     def human_readable_size(self):
@@ -247,131 +261,108 @@ class Job(models.Model):
         else:
             datetime.now() - self.starttime
 
-    class Meta:
-        db_table = u'Job'
 
 
 class JobMedia(models.Model):
-    jobmediaid = models.IntegerField(primary_key=True, db_column='JobMediaId')
-    job = models.ForeignKey(Job, db_column='JobId')
-    media = models.ForeignKey('Media', db_column='MediaId')
-    firstindex = models.IntegerField(null=True, db_column='FirstIndex', blank=True)
-    lastindex = models.IntegerField(null=True, db_column='LastIndex', blank=True)
-    startfile = models.IntegerField(null=True, db_column='StartFile', blank=True)
-    endfile = models.IntegerField(null=True, db_column='EndFile', blank=True)
-    startblock = models.IntegerField(null=True, db_column='StartBlock', blank=True)
-    endblock = models.IntegerField(null=True, db_column='EndBlock', blank=True)
-    volindex = models.IntegerField(null=True, db_column='VolIndex', blank=True)
-    copy = models.IntegerField(null=True, db_column='Copy', blank=True)
-    stripe = models.IntegerField(null=True, db_column='Stripe', blank=True)
-    class Meta:
-        db_table = u'JobMedia'
+    jobmediaid = models.IntegerField(primary_key=True)
+    job = models.ForeignKey(Job, db_column='jobid')
+    media = models.ForeignKey('Media', db_column='mediaid')
+    firstindex = models.IntegerField(null=True, blank=True)
+    lastindex = models.IntegerField(null=True, blank=True)
+    startfile = models.IntegerField(null=True, blank=True)
+    endfile = models.IntegerField(null=True, blank=True)
+    startblock = models.IntegerField(null=True, blank=True)
+    endblock = models.IntegerField(null=True, blank=True)
+    volindex = models.IntegerField(null=True, blank=True)
+    copy = models.IntegerField(null=True, blank=True)
+    stripe = models.IntegerField(null=True, blank=True)
 
+    class Meta:
+        db_table = u'jobmedia'
 
 class Media(models.Model):
-    mediaid = models.IntegerField(primary_key=True, db_column='MediaId')
-    volumename = models.TextField(unique=True, db_column='VolumeName')
-    slot = models.IntegerField(null=True, db_column='Slot', blank=True)
-    pool = models.ForeignKey("Pool", null=True, db_column='PoolId', blank=True)
-    mediatype = models.TextField(db_column='MediaType')
-    mediatypeid = models.IntegerField(null=True, db_column='MediaTypeId', blank=True)
-    labeltype = models.IntegerField(null=True, db_column='LabelType', blank=True)
-    firstwritten = models.DateTimeField(null=True, db_column='FirstWritten', blank=True)
-    lastwritten = models.DateTimeField(null=True, db_column='LastWritten', blank=True)
-    labeldate = models.DateTimeField(null=True, db_column='LabelDate', blank=True)
-    voljobs = models.IntegerField(null=True, db_column='VolJobs', blank=True)
-    volfiles = models.IntegerField(null=True, db_column='VolFiles', blank=True)
-    volblocks = models.IntegerField(null=True, db_column='VolBlocks', blank=True)
-    volmounts = models.IntegerField(null=True, db_column='VolMounts', blank=True)
-    volbytes = models.BigIntegerField(null=True, db_column='VolBytes', blank=True)
-    volparts = models.IntegerField(null=True, db_column='VolParts', blank=True)
-    volerrors = models.IntegerField(null=True, db_column='VolErrors', blank=True)
-    volwrites = models.IntegerField(null=True, db_column='VolWrites', blank=True)
-    volcapacitybytes = models.BigIntegerField(null=True, db_column='VolCapacityBytes', blank=True)
-    volstatus = models.CharField(max_length=27, db_column='VolStatus')
-    enabled = models.IntegerField(null=True, db_column='Enabled', blank=True)
-    recycle = models.IntegerField(null=True, db_column='Recycle', blank=True)
-    actiononpurge = models.IntegerField(null=True, db_column='ActionOnPurge', blank=True)
-    volretention = models.BigIntegerField(null=True, db_column='VolRetention', blank=True)
-    voluseduration = models.BigIntegerField(null=True, db_column='VolUseDuration', blank=True)
-    maxvoljobs = models.IntegerField(null=True, db_column='MaxVolJobs', blank=True)
-    maxvolfiles = models.IntegerField(null=True, db_column='MaxVolFiles', blank=True)
-    maxvolbytes = models.BigIntegerField(null=True, db_column='MaxVolBytes', blank=True)
-    inchanger = models.IntegerField(null=True, db_column='InChanger', blank=True)
-    storageid = models.IntegerField(null=True, db_column='StorageId', blank=True)
-    deviceid = models.IntegerField(null=True, db_column='DeviceId', blank=True)
-    mediaaddressing = models.IntegerField(null=True, db_column='MediaAddressing', blank=True)
-    volreadtime = models.BigIntegerField(null=True, db_column='VolReadTime', blank=True)
-    volwritetime = models.BigIntegerField(null=True, db_column='VolWriteTime', blank=True)
-    endfile = models.IntegerField(null=True, db_column='EndFile', blank=True)
-    endblock = models.IntegerField(null=True, db_column='EndBlock', blank=True)
-    locationid = models.IntegerField(null=True, db_column='LocationId', blank=True)
-    recyclecount = models.IntegerField(null=True, db_column='RecycleCount', blank=True)
-    initialwrite = models.DateTimeField(null=True, db_column='InitialWrite', blank=True)
-    scratchpoolid = models.IntegerField(null=True, db_column='ScratchPoolId', blank=True)
-    recyclepoolid = models.IntegerField(null=True, db_column='RecyclePoolId', blank=True)
-    comment = models.TextField(db_column='Comment', blank=True)
+    mediaid = models.IntegerField(primary_key=True)
+    volumename = models.TextField(unique=True)
+    slot = models.IntegerField(null=True, blank=True)
+    pool = models.ForeignKey("Pool", null=True, blank=True, db_column='poolid')
+    mediatype = models.TextField()
+    mediatypeid = models.IntegerField(null=True, blank=True)
+    labeltype = models.IntegerField(null=True, blank=True)
+    firstwritten = models.DateTimeField(null=True, blank=True)
+    lastwritten = models.DateTimeField(null=True, blank=True)
+    labeldate = models.DateTimeField(null=True, blank=True)
+    voljobs = models.IntegerField(null=True, blank=True)
+    volfiles = models.IntegerField(null=True, blank=True)
+    volblocks = models.IntegerField(null=True, blank=True)
+    volmounts = models.IntegerField(null=True, blank=True)
+    volbytes = models.BigIntegerField(null=True, blank=True)
+    volparts = models.IntegerField(null=True, blank=True)
+    volerrors = models.IntegerField(null=True, blank=True)
+    volwrites = models.IntegerField(null=True, blank=True)
+    volcapacitybytes = models.BigIntegerField(null=True, blank=True)
+    volstatus = models.CharField(max_length=27)
+    enabled = models.IntegerField(null=True, blank=True)
+    recycle = models.IntegerField(null=True, blank=True)
+    actiononpurge = models.IntegerField(null=True, blank=True)
+    volretention = models.BigIntegerField(null=True, blank=True)
+    voluseduration = models.BigIntegerField(null=True, blank=True)
+    maxvoljobs = models.IntegerField(null=True, blank=True)
+    maxvolfiles = models.IntegerField(null=True, blank=True)
+    maxvolbytes = models.BigIntegerField(null=True, blank=True)
+    inchanger = models.IntegerField(null=True, blank=True)
+    storageid = models.IntegerField(null=True, blank=True)
+    deviceid = models.IntegerField(null=True, blank=True)
+    mediaaddressing = models.IntegerField(null=True, blank=True)
+    volreadtime = models.BigIntegerField(null=True, blank=True)
+    volwritetime = models.BigIntegerField(null=True, blank=True)
+    endfile = models.IntegerField(null=True, blank=True)
+    endblock = models.IntegerField(null=True, blank=True)
+    locationid = models.IntegerField(null=True, blank=True)
+    recyclecount = models.IntegerField(null=True, blank=True)
+    initialwrite = models.DateTimeField(null=True, blank=True)
+    scratchpoolid = models.IntegerField(null=True, blank=True)
+    recyclepoolid = models.IntegerField(null=True, blank=True)
+    comment = models.TextField(blank=True)
+    
     class Meta:
-        db_table = u'Media'
+        db_table = u'media'
 
 
 class Path(models.Model):
-    pathid = models.IntegerField(primary_key=True, db_column='PathId')
-    path = models.TextField(db_column='Path')
-    class Meta:
-        db_table = u'Path'
+    pathid = models.IntegerField(primary_key=True)
+    path = models.TextField()
 
+    class Meta:
+        db_table = u'path'
 
 class Pool(models.Model):
-    poolid = models.IntegerField(primary_key=True, db_column='PoolId')
-    name = models.TextField(unique=True, db_column='Name')
-    numvols = models.IntegerField(null=True, db_column='NumVols', blank=True)
-    maxvols = models.IntegerField(null=True, db_column='MaxVols', blank=True)
-    useonce = models.IntegerField(null=True, db_column='UseOnce', blank=True)
-    usecatalog = models.IntegerField(null=True, db_column='UseCatalog', blank=True)
-    acceptanyvolume = models.IntegerField(null=True, db_column='AcceptAnyVolume', blank=True)
-    volretention = models.BigIntegerField(null=True, db_column='VolRetention', blank=True)
-    voluseduration = models.BigIntegerField(null=True, db_column='VolUseDuration', blank=True)
-    maxvoljobs = models.IntegerField(null=True, db_column='MaxVolJobs', blank=True)
-    maxvolfiles = models.IntegerField(null=True, db_column='MaxVolFiles', blank=True)
-    maxvolbytes = models.BigIntegerField(null=True, db_column='MaxVolBytes', blank=True)
-    autoprune = models.IntegerField(null=True, db_column='AutoPrune', blank=True)
-    recycle = models.IntegerField(null=True, db_column='Recycle', blank=True)
-    actiononpurge = models.IntegerField(null=True, db_column='ActionOnPurge', blank=True)
-    pooltype = models.CharField(max_length=27, db_column='PoolType')
-    labeltype = models.IntegerField(null=True, db_column='LabelType', blank=True)
-    labelformat = models.TextField(db_column='LabelFormat', blank=True)
-    enabled = models.IntegerField(null=True, db_column='Enabled', blank=True)
-    scratchpoolid = models.IntegerField(null=True, db_column='ScratchPoolId', blank=True)
-    recyclepoolid = models.IntegerField(null=True, db_column='RecyclePoolId', blank=True)
-    nextpoolid = models.IntegerField(null=True, db_column='NextPoolId', blank=True)
-    migrationhighbytes = models.BigIntegerField(null=True, db_column='MigrationHighBytes', blank=True)
-    migrationlowbytes = models.BigIntegerField(null=True, db_column='MigrationLowBytes', blank=True)
-    migrationtime = models.BigIntegerField(null=True, db_column='MigrationTime', blank=True)
+    poolid = models.IntegerField(primary_key=True)
+    name = models.TextField(unique=True)
+    numvols = models.IntegerField(null=True, blank=True)
+    maxvols = models.IntegerField(null=True, blank=True)
+    useonce = models.IntegerField(null=True, blank=True)
+    usecatalog = models.IntegerField(null=True, blank=True)
+    acceptanyvolume = models.IntegerField(null=True, blank=True)
+    volretention = models.BigIntegerField(null=True, blank=True)
+    voluseduration = models.BigIntegerField(null=True, blank=True)
+    maxvoljobs = models.IntegerField(null=True, blank=True)
+    maxvolfiles = models.IntegerField(null=True, blank=True)
+    maxvolbytes = models.BigIntegerField(null=True, blank=True)
+    autoprune = models.IntegerField(null=True, blank=True)
+    recycle = models.IntegerField(null=True, blank=True)
+    actiononpurge = models.IntegerField(null=True, blank=True)
+    pooltype = models.CharField(max_length=27)
+    labeltype = models.IntegerField(null=True, blank=True)
+    labelformat = models.TextField(blank=True)
+    enabled = models.IntegerField(null=True, blank=True)
+    scratchpoolid = models.IntegerField(null=True, blank=True)
+    recyclepoolid = models.IntegerField(null=True, blank=True)
+    nextpoolid = models.IntegerField(null=True, blank=True)
+    migrationhighbytes = models.BigIntegerField(null=True, blank=True)
+    migrationlowbytes = models.BigIntegerField(null=True, blank=True)
+    migrationtime = models.BigIntegerField(null=True, blank=True)
+
     class Meta:
-        db_table = u'Pool'
+        db_table = u'pool'
 
 
-# TODO: Dar um nome melhor a esta classe
-class Temp(models.Model):
-    jobid = models.ForeignKey(Job, db_column='JobId', primary_key=True)
-    jobtdate = models.BigIntegerField(null=True, db_column='JobTDate', blank=True)
-    client = models.ForeignKey(Client, db_column='ClientId')
-    level = models.CharField(max_length=3, db_column='Level')
-    jobfiles = models.IntegerField(null=True, db_column='JobFiles', blank=True)
-    jobbytes = models.BigIntegerField(null=True, db_column='JobBytes', blank=True)
-    starttime = models.DateTimeField(null=True, db_column='StartTime', blank=True)
-    volumename = models.CharField(max_length=384, db_column='VolumeName')
-    startfile = models.IntegerField(null=True, db_column='StartFile', blank=True)
-    volsessionid = models.IntegerField(null=True, db_column='VolSessionId', blank=True)
-    volsessiontime = models.IntegerField(null=True, db_column='VolSessionTime', blank=True)
-    class Meta:
-        db_table = u'temp'
-
-
-# TODO: Dar um nome melhor a esta classe também
-class Temp1(models.Model):
-    job = models.ForeignKey(Job, db_column='JobId', primary_key=True)
-    jobtdate = models.BigIntegerField(null=True, db_column='JobTDate', blank=True)
-    class Meta:
-        db_table = u'temp1'
