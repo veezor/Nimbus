@@ -17,7 +17,8 @@ $(document).ready(function(){
             return false;
         }
         locattion = $(this)[0].href;
-        $(this)[0].href = locattion + selected_val;
+        jQuery.facebox({ ajax: locattion + selected_val });
+        return false;
     });
 });
 

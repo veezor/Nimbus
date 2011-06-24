@@ -8,6 +8,7 @@ from nimbus.shared import forms as nimbus_forms
 
 class FileSetForm(forms.ModelForm):
     name = forms.CharField(label=u"Nome", widget=widgets.TextInput(attrs={'class': 'text small'}))
+    # is_model = forms.BooleanField(widget=widgets.HiddenInput(attrs={'value': '0'}))
     class Meta:
         model = FileSet
 
