@@ -65,7 +65,6 @@ $(document).ready(function(){
         form.submit();
         return false;
     });
-    $("select").uniform();
     set_fileset();
     $('#toggle_fileset_choice').click(function() {
         $("#uniform-id_procedure-fileset").toggle('slow');
@@ -308,6 +307,7 @@ $(document).ready(function(){
 		$(".pool_value").hide();
 		$(".pool_new_value").show();
 		$("#pool_retention_alt").focus();
+		return false;
 	});
 	
 	$("#pool_retention_alt").keyup(function(){

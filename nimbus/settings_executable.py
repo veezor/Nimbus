@@ -73,8 +73,6 @@ BACULAFD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-fd.conf")
 BACULASD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-sd.conf")
 LOGGING_CONF = join(NIMBUS_ETC_DIR, "logging.conf")
 INITIALDATA_FILE = join(NIMBUS_HOME_DIR, "initial_data.json")
-ADMINISTRATIVE_MODELS_DATA_FILE = join(NIMBUS_HOME_DIR, 
-                                        "administrative_models_data.json")
 PYBACULA_TEST = False
 
 

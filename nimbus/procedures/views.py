@@ -50,12 +50,15 @@ def add(request, teste=None):
               'form':form}
     if request.method == "POST":
         data = copy(request.POST)
-        if data.has_key("procedure-fileset"):
+        if data["procedure-fileset"]:
             fileset = FileSet.objects.get(id=data['procedure-fileset'])
             content['fileset'] = fileset
-        print data
         procedure_form = ProcedureForm(data, prefix="procedure")
-        if procedure_form.is_valid():
+        if len(data['procedure-pool_retention_time']) > 4:
+            messages.error(request, "O tempo de retenção é muito alto, por favor escolha um valor menor")
+            content['form'] = procedure_form
+            return render_to_response(request, "add_procedure.html", content)
+        elif procedure_form.is_valid():
             procedure = procedure_form.save()
             messages.success(request, "Procedimento de backup '%s' criado com sucesso" % procedure.name)
             return redirect('/procedures/list')
