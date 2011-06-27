@@ -7,52 +7,171 @@
 		$(function() {
 			$( ".checkboxes" ).buttonset();
 		});
-	</script>
-	
-	<script>
-		SCHEDULES = new Array()
+
+		SCHEDULES = new Array();
+		WEEK = {0: 'Domingo',
+				1: 'Segunda-feira',
+				2: 'Terça-feira',
+				3: 'Quarta-feira',
+				4: 'Quinta-feira',
+				5: 'Sexta-feira',
+				6: 'Sabado'};
 		
 		$(document).ready(function(){
+			// Inicio do adicionar mensal
 			$('#month_button').click(function(){
-				var month_days = $('.month')
-				var month_array = new Array()
+				var month_days = $('.month');
+				var month_array = new Array();
 				for (var i = 0; i < 31; i++) {
 			        if (month_days[i].checked == true) {
-		                month_array.push(i+1)
+		                month_array.push(i+1);
 		            }
 		        }
-	        	// $("#id_month-days").val(month_array);
 				console.log(month_array);
-				var hours = $('.hours')
-				var hours_array = new Array()
-				for (var i = 0; i < 24; i++) {
-			        if (hours[i].checked == true) {
-		                hours_array.push(i)
-		            }
-		        }
-	        	// $("#id_month-days").val(month_array);
+				var hours_array = get_hours()
 				console.log(hours_array);
-				var minutes = $('.minutes')
-				var minutes_array = new Array()
-				for (var i = 0; i < 60; i++) {
-			        if (minutes[i].checked == true) {
-		                minutes_array.push(i)
-		            }
-		        }
-	        	// $("#id_month-days").val(month_array);
+				var minutes_array = get_minutes();
 				console.log(minutes_array);
 				if (month_array.length == 0) {
-					alert("Você deve escolher ao menos um dia do mês para executar o backup")
-				} else if (hours_array.length == 0) {
-					alert("Você deve escolher ao menos uma hora para iniciar o backup")
-				} else if (minutes_array.length == 0) {
-					alert("Você deve escolher ao menos um hora e minuto para iniciar o backup")
+					alert("Você deve escolher ao menos um dia do mês para executar o backup");
+				} else if ($('#id_month-level').val() == 'None'){
+					alert("Escolha o tipo de backup que deseja realizar");
 				} else {
-					alert("OK")
+					var level = $('#id_month-level')[0].options[$('#id_month-level')[0].value -1].text;
+					for (var day = 0; day < month_array.length; day++) {
+						for (var hour = 0; hour < hours_array.length; hour++) {
+							for (var minute = 0; minute < minutes_array.length; minute++) {
+								SCHEDULES.push({'kind': 'Mensal', 'level': level, 'day': month_array[day], 'hour': pad(hours_array[hour], 2), 'minute': pad(minutes_array[minute],2)});
+							}
+						}
+					}
+					update_inventory();
 				}
 		    });
+			// fim do adicionar mensal
+		
+			// inicio do adicionar semanal
+			$('#week_button').click(function(){
+				var week_days = $('.week');
+				var week_array = new Array();
+				for (var i = 0; i < 7; i++) {
+			        if (week_days[i].checked == true) {
+		                week_array.push(i);
+		            }
+		        }
+				console.log(week_array);
+				var hours_array = get_hours()
+				console.log(hours_array);
+				var minutes_array = get_minutes();
+				console.log(minutes_array);
+				if (week_array.length == 0) {
+					alert("Você deve escolher ao menos um dia da semana para executar o backup");
+				} else if ($('#id_week-level').val() == 'None'){
+					alert("Escolha o tipo de backup que deseja realizar");
+				} else {
+					var level = $('#id_week-level')[0].options[$('#id_week-level')[0].value -1].text;
+					for (var day = 0; day < week_array.length; day++) {
+						for (var hour = 0; hour < hours_array.length; hour++) {
+							for (var minute = 0; minute < minutes_array.length; minute++) {
+								SCHEDULES.push({'kind': 'Semanal', 'level': level, 'day': WEEK[week_array[day]], 'hour': pad(hours_array[hour], 2), 'minute': pad(minutes_array[minute],2)});
+							}
+						}
+					}
+					update_inventory();
+				}
+		    });
+			// fim do adicionar semanal
+			
+			// inicio do adicionar diário
+			$('#day_button').click(function(){
+				var hours_array = get_hours()
+				console.log(hours_array);
+				var minutes_array = get_minutes();
+				console.log(minutes_array);
+				if ($('#id_day-level').val() == 'None'){
+					alert("Escolha o tipo de backup que deseja realizar")
+				} else {
+					var level = $('#id_day-level')[0].options[$('#id_day-level')[0].value -1].text;
+					for (var hour = 0; hour < hours_array.length; hour++) {
+						for (var minute = 0; minute < minutes_array.length; minute++) {
+							SCHEDULES.push({'kind': 'Diário', 'level': level, 'day': 'Todos', 'hour': pad(hours_array[hour], 2), 'minute': pad(minutes_array[minute],2)});
+						}
+					}
+					update_inventory();
+				}
+		    });
+			// fim do adicionar diário
+			
+			// inicio do adicionar de hora em hora
+			$('#hour_button').click(function(){
+				var minutes_array = get_minutes();
+				console.log(minutes_array);
+				if ($('#id_hour-level').val() == 'None'){
+					alert("Escolha o tipo de backup que deseja realizar")
+				} else {
+					var level = $('#id_hour-level')[0].options[$('#id_hour-level')[0].value -1].text;
+					for (var minute = 0; minute < minutes_array.length; minute++) {
+						SCHEDULES.push({'kind': 'Hora em hora', 'level': level, 'day': 'Todos', 'hour': '##', 'minute': pad(minutes_array[minute],2)});
+					}
+					update_inventory();
+				}
+		    });
+			// fim do adicionar de hora em hora
 		});
-	</script
+		function update_inventory() {
+			$("#inventory")[0].innerHTML = "<thead><tr><th>Remover</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Horas</th></tr></thead>";
+			for (var index in SCHEDULES) {
+				var ob = SCHEDULES[index];
+				var line = '<tr><td><span onclick="remove_schedule(' + index + ')" class="remove_schedule" >Icone</span></td><td>' + ob['level'] + '</td><td>' + ob['kind'] + '</td><td>' + ob['day'] + '</td><td>' + ob['hour'] + ':' + ob['minute'] + '</td></tr>';
+				$("#inventory").append(line);
+			};
+			uncheck_all();
+		};
+		function remove_schedule(id) {
+			SCHEDULES.splice(id, 1);
+			update_inventory()
+		};
+		function pad(number, length) {
+		    var str = '' + number;
+		    while (str.length < length) {
+		        str = '0' + str;
+		    }
+		    return str;
+		}
+		function get_hours() {
+			var hours = $('.hours');
+			var hours_array = new Array();
+			for (var i = 0; i < 24; i++) {
+		        if (hours[i].checked == true) {
+	                hours_array.push(i)
+	            }
+	        };
+			if (hours_array.length == 0) {
+				hours_array = [0];
+			}
+			return hours_array;
+		}
+		function get_minutes() {
+			var minutes = $('.minutes');
+			var minutes_array = new Array();
+			for (var i = 0; i < 60; i++) {
+		        if (minutes[i].checked == true) {
+	                minutes_array.push(i)
+	            }
+	        };
+			if (minutes_array.length == 0) {
+				minutes_array = [0];
+			}
+			return minutes_array;
+		}
+		function uncheck_all() {
+			$('.month').attr('checked', false).button('refresh');
+			$('.week').attr('checked', false).button('refresh');
+			$('.hours').attr('checked', false).button('refresh');
+			$('.minutes').attr('checked', false).button('refresh');			
+		}
+	</script>
+
 	
 	
 {% endblock %}
@@ -97,6 +216,12 @@
 			</div>
 		</td>
 		<td>
+			<select name="month-level" id="id_month-level">
+				<option value="None">- Escolha o tipo de backup: -</option>
+				{% for level in levels %}
+				<option value="{{level.id}}">{{level.name}}</option>
+				{% endfor %}
+			</select><br />
 			<a class="minibutton" id="month_button"><span>Agendamento Mensal</span></a>
 		</td>
 	</tr>
@@ -108,13 +233,19 @@
 				<input type="checkbox" class="week" id="week_1" value="0" /><label for="week_1">Segunda-feira</label>
 				<input type="checkbox" class="week" id="week_2" value="0" /><label for="week_2">Terça-feira</label>
 				<input type="checkbox" class="week" id="week_3" value="0" /><label for="week_3">Quarta-feira</label>
-				<input type="checkbox" class="week" id="week_4" value="0" /><label for="week_4">Quinta-feira</label>
+				<input type="checkbox" class="week" id="week_4" value="0" /><label for="week_4">Quinta-feira</label><br/>
 				<input type="checkbox" class="week" id="week_5" value="0" /><label for="week_5">Sexta-feira</label>
 				<input type="checkbox" class="week" id="week_6" value="0" /><label for="week_6">Sábado</label>
 			</div>
 		</td>
 		<td>
-			<a class="minibutton"><span>Agendamento Semanal</span></a>
+			<select name="week-level" id="id_week-level">
+				<option value="None">- Escolha o tipo de backup: -</option>
+				{% for level in levels %}
+				<option value="{{level.id}}">{{level.name}}</option>
+				{% endfor %}
+			</select><br />
+			<a class="minibutton" id="week_button"><span>Agendamento Semanal</span></a>
 		</td>
 	</tr>
 	<tr>
@@ -148,7 +279,13 @@
 			</div>
 		</td>
 		<td>
-			<a class="minibutton"><span>Agendamento Diário</span></a>
+			<select name="day-level" id="id_day-level">
+				<option value="None">- Escolha o tipo de backup: -</option>
+				{% for level in levels %}
+				<option value="{{level.id}}">{{level.name}}</option>
+				{% endfor %}
+			</select><br />
+			<a class="minibutton" id="day_button"><span>Agendamento Diário</span></a>
 		</td>
 	</tr>
 	<tr>
@@ -218,15 +355,21 @@
 			</div>
 		</td>
 		<td>
-			<a class="minibutton"><span>Agendamento de hora em hora</span></a>
+			<select name="hour-level" id="id_hour-level">
+				<option value="None">- Escolha o tipo de backup: -</option>
+				{% for level in levels %}
+				<option value="{{level.id}}">{{level.name}}</option>
+				{% endfor %}
+			</select><br />
+			<a class="minibutton" id="hour_button"><span>Agendamento de hora em hora</span></a>
 		</td>
 	</tr>
 </table>
 <h3>Agendamentos selecionados</h3>
-<div style="border: solid 1px; width: 400px; height: 200px">
-	<table id="inventory">
-
-	<table>
-</div>
+<table id="inventory" style="border: solid 1px; width: 400px;">
+	<thead>
+		<tr><th>Remover</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Horas</th></tr>
+	</thead>
+</table>
 
 {% endblock %}

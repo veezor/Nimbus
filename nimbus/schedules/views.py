@@ -16,12 +16,14 @@ from nimbus.computers.models import Computer
 from nimbus.schedules import forms
 from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_range
 from nimbus.shared.views import render_to_response
-from nimbus.schedules.models import Schedule, Month, Week, Day, Hour
+from nimbus.schedules.models import Schedule, Month, Week, Day, Hour, BackupLevel
 from nimbus.procedures.models import Procedure
 from nimbus.procedures.views import resume_add as procedure_view_resume_add
 
 def test(request):
-    content = {'nada': None}
+    levels = BackupLevel.objects.all()
+    content = {'nada': None,
+               'levels': levels}
     return render_to_response(request, "test.html", content)
     
 
