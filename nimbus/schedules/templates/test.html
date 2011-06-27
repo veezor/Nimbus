@@ -37,7 +37,7 @@
 				} else if ($('#id_month-level').val() == 'None'){
 					alert("Escolha o tipo de backup que deseja realizar");
 				} else {
-					var level = $('#id_month-level')[0].options[$('#id_month-level')[0].value -1].text;
+					var level = $('#id_month-level')[0].options[$('#id_month-level')[0].value].text;
 					for (var day = 0; day < month_array.length; day++) {
 						for (var hour = 0; hour < hours_array.length; hour++) {
 							for (var minute = 0; minute < minutes_array.length; minute++) {
@@ -69,7 +69,7 @@
 				} else if ($('#id_week-level').val() == 'None'){
 					alert("Escolha o tipo de backup que deseja realizar");
 				} else {
-					var level = $('#id_week-level')[0].options[$('#id_week-level')[0].value -1].text;
+					var level = $('#id_week-level')[0].options[$('#id_week-level')[0].value].text;
 					for (var day = 0; day < week_array.length; day++) {
 						for (var hour = 0; hour < hours_array.length; hour++) {
 							for (var minute = 0; minute < minutes_array.length; minute++) {
@@ -91,7 +91,7 @@
 				if ($('#id_day-level').val() == 'None'){
 					alert("Escolha o tipo de backup que deseja realizar")
 				} else {
-					var level = $('#id_day-level')[0].options[$('#id_day-level')[0].value -1].text;
+					var level = $('#id_day-level')[0].options[$('#id_day-level')[0].value].text;
 					for (var hour = 0; hour < hours_array.length; hour++) {
 						for (var minute = 0; minute < minutes_array.length; minute++) {
 							SCHEDULES.push({'kind': 'Diário', 'level': level, 'day': 'Todos', 'hour': pad(hours_array[hour], 2), 'minute': pad(minutes_array[minute],2)});
@@ -109,7 +109,7 @@
 				if ($('#id_hour-level').val() == 'None'){
 					alert("Escolha o tipo de backup que deseja realizar")
 				} else {
-					var level = $('#id_hour-level')[0].options[$('#id_hour-level')[0].value -1].text;
+					var level = $('#id_hour-level')[0].options[$('#id_hour-level')[0].value].text;
 					for (var minute = 0; minute < minutes_array.length; minute++) {
 						SCHEDULES.push({'kind': 'Hora em hora', 'level': level, 'day': 'Todos', 'hour': '##', 'minute': pad(minutes_array[minute],2)});
 					}
