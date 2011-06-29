@@ -20,6 +20,11 @@ $(document).ready(function(){
         jQuery.facebox({ ajax: locattion + selected_val });
         return false;
     });
+    $('.edit-schedule').click(function(){
+        locattion = $(this)[0].href;
+        jQuery.facebox({ ajax: locattion });
+        return false;
+    });
 });
 
 $(document).ready(function(){
@@ -47,34 +52,44 @@ function set_fileset() {
         $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");            
     }
 };
+function set_schedule() {
+    if (typeof SCHEDULE_ID != "undefined") {
+        $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">"+SCHEDULE_ID+"</option>");
+        $("#id_procedure-schedule").val(SCHEDULE_ID);
+        $("#uniform-id_procedure-schedule").hide();
+        $("#schedule_button").html("<span>Modificar</span>");
+        $("#schedule_button").attr('href', "/schedules/" + SCHEDULE_ID + "/edit/");            
+    }
+};
 
-$(document).ready(function(){
-    $('#schedule_button').click(function() {
-        var computer_id = $('#id_procedure-computer').val();
-        var fileset_id = $('#id_procedure-fileset').val();
-        var storage_id = $('#id_procedure-storage').val();
-        var retention_time = $('#id_procedure-pool_retention_time').val()
-        var name = $('#id_procedure-name').val();
-        var form = $('#to_schedule_form');
-        form.append('<input type="hidden" name="computer_id" value="' + computer_id + '"/>');
-        form.append('<input type="hidden" name="fileset_id" value="' + fileset_id + '"/>');
-        form.append('<input type="hidden" name="storage_id" value="' + storage_id + '"/>');
-        form.append('<input type="hidden" name="retention_time" value="' + retention_time + '"/>');
-        form.append('<input type="hidden" name="procedure_name" value="' + name + '"/>');
-        form.append('<input type="hidden" name="first_step" value="true"/>');
-        form.submit();
-        return false;
-    });
-    set_fileset();
-    $('#toggle_fileset_choice').click(function() {
-        $("#uniform-id_procedure-fileset").toggle('slow');
-        $('#toggle_fileset_choice').html("<span>N‹o usar modelo</span>");
-        $("#fileset_button").toggle('slow')
-        console.log('teste')
-    });
-});
+// $(document).ready(function(){
+//     $('#schedule_button').click(function() {
+//         var computer_id = $('#id_procedure-computer').val();
+//         var fileset_id = $('#id_procedure-fileset').val();
+//         var storage_id = $('#id_procedure-storage').val();
+//         var retention_time = $('#id_procedure-pool_retention_time').val()
+//         var name = $('#id_procedure-name').val();
+//         var form = $('#to_schedule_form');
+//         form.append('<input type="hidden" name="computer_id" value="' + computer_id + '"/>');
+//         form.append('<input type="hidden" name="fileset_id" value="' + fileset_id + '"/>');
+//         form.append('<input type="hidden" name="storage_id" value="' + storage_id + '"/>');
+//         form.append('<input type="hidden" name="retention_time" value="' + retention_time + '"/>');
+//         form.append('<input type="hidden" name="procedure_name" value="' + name + '"/>');
+//         form.append('<input type="hidden" name="first_step" value="true"/>');
+//         form.submit();
+//         return false;
+//     });
+//     set_fileset();
+//     $('#toggle_fileset_choice').click(function() {
+//         $("#uniform-id_procedure-fileset").toggle('slow');
+//         $('#toggle_fileset_choice').html("<span>N‹o usar modelo</span>");
+//         $("#fileset_button").toggle('slow')
+//         console.log('teste')
+//     });
+// });
 // open async windows
 $(document).ready(function(){
+    $.facebox.settings.opacity = 0.7;
     $('#fileset_button').click(function(){
         if ($('#id_procedure-computer').val())
         {
@@ -86,6 +101,11 @@ $(document).ready(function(){
         }
         return false;
     });
+    $('#schedule_button').click(function(){
+        jQuery.facebox({ ajax: $('#schedule_button')[0].href});
+        return false;
+    });
+
 });
 // new document.ready to organize
 $(document).ready(function(){

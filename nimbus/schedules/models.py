@@ -25,6 +25,12 @@ class BackupLevel(models.Model):
     def __unicode__(self):
         return self.name
 
+class BackupKind(models.Model):
+    name = models.CharField(max_length=255, unique=True, null=False)
+    name_pt = models.CharField(max_length=255, unique=True, null=False)
+
+    def __unicode__(self):
+        return self.name
 
 class Schedule(BaseModel):
     name = models.CharField(u'Nome qualquer', max_length=255, null=False,
@@ -65,12 +71,26 @@ class Schedule(BaseModel):
         except:
             return None
 
-
+class Run(models.Model):
+    schedule = models.ForeignKey(Schedule, related_name="runs", null=False,
+                                 blank=False)
+    day = models.PositiveSmallIntegerField(null=False, max_length=2)
+    hour = models.CharField(null=False, max_length=2)
+    minute = models.CharField(null=False, max_length=2)
+    level = models.ForeignKey(BackupLevel)
+    kind = models.ForeignKey(BackupKind)
+    
+    def __unicode__(self):
+        return "%s - %s - %s - %s - %s:%s" % (self.schedule.name, self.kind.name,
+                                      self.day, self.level.name, self.hour, self.minute)
 
 class Month(models.Model):
     active = models.BooleanField(default=True)
-    schedule = models.OneToOneField(Schedule)
+    # schedule = models.ForeignKey(Schedule, related_name="months", null=False,
+    #                              blank=False)
+    # day = models.PositiveSmallIntegerField(null=False, max_length=2)
     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
+    schedule = models.OneToOneField(Schedule)
     hour = models.TimeField()
     level = models.ForeignKey(BackupLevel)
 
@@ -98,6 +118,9 @@ class Month(models.Model):
 
 class Week(models.Model):
     active = models.BooleanField(default=True)
+    # schedule = models.ForeignKey(Schedule, related_name="weeks", null=False,
+    #                              blank=False)
+    # day = models.PositiveSmallIntegerField(null=False, max_length=1)
     schedule = models.OneToOneField(Schedule)
     days = models.CommaSeparatedIntegerField(null=False, max_length=255)
     hour = models.TimeField()
@@ -130,6 +153,8 @@ class Week(models.Model):
 class Day(models.Model):
     active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
+    # schedule = models.ForeignKey(Schedule, related_name="days", null=False,
+    #                              blank=False)
     hour = models.TimeField()
     level = models.ForeignKey(BackupLevel)
 
@@ -148,6 +173,8 @@ class Day(models.Model):
 class Hour(models.Model):
     active = models.BooleanField(default=True)
     schedule = models.OneToOneField(Schedule)
+    # schedule = models.ForeignKey(Schedule, related_name="hours", null=False,
+    #                              blank=False)
     minute = models.PositiveSmallIntegerField()
     level = models.ForeignKey(BackupLevel)
 

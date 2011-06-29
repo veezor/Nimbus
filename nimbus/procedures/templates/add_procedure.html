@@ -7,12 +7,6 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
-<script type="text/javascript">
-	{% if fileset %}
-		FILESET_ID = {{fileset.id}};
-		FILESET_NAME = "{{fileset.name}}";
-	{% endif %}
-</script>
 
 {% endblock %}
 
@@ -40,7 +34,7 @@
 						[{{selected_schedule.name}}]
 						<input type="hidden" name="procedure-schedule" value="{{selected_schedule.id}}" />
 					{% else %}
-                        <a href="#" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a>{{ field }}
+                        <a href="/schedules/add/" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a>{{ field }}
 					{% endif %}
                    {% else %}
 					{%if field.label == 'Fileset' %}
