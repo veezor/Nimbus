@@ -154,6 +154,38 @@
     },
     {
         "pk": 1,
+        "model": "schedules.backupkind",
+        "fields": {
+            "name": "monthly",
+			"name_pt": "mensal"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "schedules.backupkind",
+        "fields": {
+            "name": "weekly",
+			"name_pt": "semanal"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "schedules.backupkind",
+        "fields": {
+            "name": "daily",
+			"name_pt": "diario"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "schedules.backupkind",
+        "fields": {
+            "name": "hourly",
+			"name_pt": "hora em hora"
+        }
+    },
+    {
+        "pk": 1,
         "model": "schedules.schedule",
         "fields": {
             "uuid": 8,
@@ -162,20 +194,26 @@
     },
     {
         "pk": 1,
-        "model": "schedules.day",
+        "model": "schedules.run",
         "fields": {
             "level": 1,
-            "hour": "00:00:00",
+            "hour": "00",
+			"minute": "00",
+			"kind": 3,
+			"day": 0,
             "schedule": 1
         }
     },
     {
-        "pk": 1,
-        "model": "schedules.hour",
+        "pk": 2,
+        "model": "schedules.run",
         "fields": {
-            "level": 2,
-            "minute": 0,
-            "schedule": 1
+	        "level": 2,
+	        "hour": "##",
+			"minute": "00",
+			"kind": 4,
+			"day": 0,
+	        "schedule": 1
         }
     },
     {
