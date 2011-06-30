@@ -94,6 +94,19 @@ class Run(models.Model):
         else:
             return self.day
 
+    @property
+    def bacula_config(self):
+        if self.kind.name == 'monthly':
+            return u"Run = Level=%s on %s at %s:%s" %(self.level, self.day, self.hour, self.minute)
+        elif self.kind.name == 'weekly':
+            return u"Run = Level=%s %s at %s:%s" %(self.level, enums.week_dict[int(self.day)], self.hour, self.minute)
+        elif self.kind.name == 'daily':
+            return u"Run = Level=%s daily at %s:%s" %(self.level, self.hour, self.minute)
+        elif self.kind.name == 'hourly':
+            return u"Run = Level=%s hourly at 00:%s" %(self.level, self.minute)
+
+
+
 # class Month(models.Model):
 #     active = models.BooleanField(default=True)
 #     # schedule = models.ForeignKey(Schedule, related_name="months", null=False,
@@ -206,7 +219,7 @@ def update_schedule_file(schedule):
     render_to_file(filename,
                    "schedule",
                    name=name,
-                   runs=schedule.get_runs())
+                   runs=schedule.runs.all())
 
 
 def remove_schedule_file(schedule):
