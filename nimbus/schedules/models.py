@@ -84,6 +84,15 @@ class Run(models.Model):
         return "%s - %s - %s - %s - %s:%s" % (self.schedule.name, self.kind.name,
                                       self.day, self.level.name, self.hour, self.minute)
 
+    @property
+    def day_string(self):
+        if self.kind.name == 'weekly':
+            return enums.weekdays_range[self.day]
+        elif (self.kind.name == 'daily') or (self.kind.name == 'hourly'):
+            return 'Todos'
+        else:
+            return self.day
+
 class Month(models.Model):
     active = models.BooleanField(default=True)
     # schedule = models.ForeignKey(Schedule, related_name="months", null=False,

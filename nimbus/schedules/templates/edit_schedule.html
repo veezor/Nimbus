@@ -3,27 +3,11 @@
 	<script type="text/javascript" src="/media/js/schedules.js"></script>
 	<script type="text/javascript">
 		// ESTE CODIGO TEM QUE FICAR AQUI
-		WEEK = {0: 'Domingo',
-				1: 'Segunda-feira',
-				2: 'Terça-feira',
-				3: 'Quarta-feira',
-				4: 'Quinta-feira',
-				5: 'Sexta-feira',
-				6: 'Sabado'};
 		EDITING = true;
 		EDITED_SCHEDULE_ID = {{schedule.id}};
 		SCHEDULES = new Array();
 		{% for run in runs %}
-			{% if run.kind.id == 1 %}
-		SCHEDULES.push({'id': '{{run.id}}', 'status': 'old', 'kind_id': '{{run.kind.id}}', 'kind': '{{run.kind.name_pt}}', 'level_id': '{{run.level.id}}', 'level': '{{run.level.name}}', 'day_num': '{{run.day}}', 'day': {{run.day}}, 'hour': '{{run.hour}}', 'minute': '{{run.minute}}'});		
-			{% endif %}
-			{% if run.kind.id == 2 %}
-		SCHEDULES.push({'id': '{{run.id}}', 'status': 'old', 'kind_id': '{{run.kind.id}}', 'kind': '{{run.kind.name_pt}}', 'level_id': '{{run.level.id}}', 'level': '{{run.level.name}}', 'day_num': '{{run.day}}', 'day': WEEK[{{run.day}}], 'hour': '{{run.hour}}', 'minute': '{{run.minute}}'});		
-			{% endif %}
-			{% if run.kind.id > 2 %}
-		SCHEDULES.push({'id': '{{run.id}}', 'status': 'old', 'kind_id': '{{run.kind.id}}', 'kind': '{{run.kind.name_pt}}', 'level_id': '{{run.level.id}}', 'level': '{{run.level.name}}', 'day_num': '{{run.day}}', 'day': 'Todos', 'hour': '{{run.hour}}', 'minute': '{{run.minute}}'});		
-			{% endif %}
-
+		SCHEDULES.push({'id': '{{run.id}}', 'status': 'old', 'kind_id': '{{run.kind.id}}', 'kind': '{{run.kind.name_pt}}', 'level_id': '{{run.level.id}}', 'level': '{{run.level.name}}', 'day_num': '{{run.day}}', 'day': '{{run.day_string}}', 'hour': '{{run.hour}}', 'minute': '{{run.minute}}'});		
 		{% endfor %}
 		update_inventory();
 		{% if schedule.is_model %}
@@ -249,6 +233,6 @@
 <input type="hidden" id="schedule_name" value="Apenas para este procedimento"/>
 {% endif %}
 
-<button onclick="create_schedule()">Salvar</button>
+<button onclick="if (create_schedule() == true) {window.location.reload()}">Salvar</button>
 
 {% endblock %}

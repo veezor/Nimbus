@@ -227,5 +227,6 @@ function create_schedule() {
 	if (status == true) {
 		$.facebox.close();
 		set_schedule();
-	}
+	};
+	return status;
 }
