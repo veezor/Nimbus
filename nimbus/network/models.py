@@ -88,7 +88,8 @@ def update_networks_file(interface):
         except Exception, error:
             logger = logging.getLogger(__name__)
             logger.exception("Conexao com nimbus-manager falhou")
-    if not bacula.bacula_is_locked():
+
+    if interface.address != get_raw_network_interface_address():
         systemprocesses.norm_priority_job("Generate network conf files and restart networking", 
                                          callable, interface)
 
