@@ -27,8 +27,7 @@ def add(request, computer_id=None):
     hide_name = False
     if referer.local == '/procedures/profile/list/':
         fileset_form.initial = {'is_model': True}
-    elif referer.local == '/procedures/add/':
-        # tmp = FileSet.objects.filter(name__startswith='Conjunto de arquivos de %s' % computer.name).all()
+    elif referer.local.startswith('/procedures/'):
         fileset_form.initial = {'name': 'Conjunto de arquivos de %s' % computer.name}
         hide_name = True
     content = {'title': u"Criar conjunto de arquivos",
@@ -130,5 +129,5 @@ def delete(request, fileset_id):
             procedure.save()
     name = f.name
     f.delete()
-    messages.success(request, u"Modelo de conjunto de arquivos '%s' removido com sucesso." % name)
+    messages.success(request, u"Perfil de conjunto de arquivos '%s' removido com sucesso." % name)
     return redirect('/procedures/profile/list')

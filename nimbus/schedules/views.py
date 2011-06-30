@@ -18,7 +18,6 @@ from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_ran
 from nimbus.shared.views import render_to_response
 from nimbus.schedules.models import Schedule, Month, Week, Day, Hour, BackupLevel, Run, BackupKind
 from nimbus.procedures.models import Procedure
-from nimbus.procedures.views import resume_add as procedure_view_resume_add
 from nimbus.shared import utils
 
 @login_required
@@ -124,5 +123,5 @@ def delete(request, schedule_id):
             procedure.save()
     name = s.name
     s.delete()
-    messages.success(request, u"Modelo de agendamento '%s' removido com sucesso." % name)
+    messages.success(request, u"Perfil de agendamento '%s' removido com sucesso." % name)
     return redirect('/procedures/profile/list')

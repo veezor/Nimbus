@@ -73,12 +73,12 @@
                             Offsite ativado: <strong>{{procedure.offsite_on|yesno:"Sim,Não"}}</strong><br/>
                             Conjunto de arquivos: <strong>{{procedure.fileset.name}}</strong>
 							{% if procedure.fileset.is_model %}
-								[Modelo]
+								[Perfil]
 							{% endif %}
 							<br/>
                             Agendamento: <strong>{{procedure.schedule.name}}</strong>
 							{% if procedure.schedule.is_model %}
-								[Modelo]
+								[Perfil]
 							{% endif %}
 							<br/>
                             Tempo de retenção dos arquivos: <strong>{{procedure.pool_retention_time}}</strong>

@@ -17,7 +17,7 @@ class ProcedureForm(forms.ModelForm):
                 if field not in ['schedule', 'fileset']:
                     remove_null_choice(self.fields[field])
                 else:
-                    self.fields[field].empty_label = u"-ou escolha um modelo-"
+                    self.fields[field].empty_label = u"-ou escolha um perfil-"
 
     pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
                                              min_value=1, max_value=3650,
@@ -25,10 +25,10 @@ class ProcedureForm(forms.ModelForm):
                                              widget=forms.HiddenInput())
     fileset = forms.models.ModelChoiceField(label=_("Fileset"),
                                             queryset=FileSet.objects.all(),
-                                            empty_label = u"-ou escolha um modelo-")
+                                            empty_label = u"-ou escolha um perfil-")
     schedule = forms.models.ModelChoiceField(label=_("Schedule"),
                                              queryset=Schedule.objects.all(),
-                                             empty_label = u"-ou escolha um modelo-")
+                                             empty_label = u"-ou escolha um perfil-")
     # fileset.empty_label = u"-ou escolha um modelo-"
     # schedule.empty_label = u"-ou escolha um modelo-"
 

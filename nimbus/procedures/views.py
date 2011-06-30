@@ -26,21 +26,6 @@ from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, le
 from nimbus.procedures.forms import ProcedureForm, ProcedureEditForm
 from nimbus.schedules.models import Schedule
 
-@login_required
-def resume_add(request, computer_id, schedule_id, fileset_id, storage_id, 
-               retention_time, name):
-    schedule = Schedule.objects.get(id=schedule_id)
-    form_data = {'computer': computer_id,
-                 'schedule': schedule_id,
-                 'fileset': fileset_id,
-                 'storage': storage_id,
-                 'pool_retention_time': retention_time,
-                 'name': name}
-    lforms = ProcedureForm(prefix="procedure", initial=form_data)
-    content = {'title': u"Adicionar backup",
-              'forms':[lforms],
-              'selected_schedule': schedule}
-    return render_to_response(request, "add_procedure.html", content)
 
 @login_required
 def add(request, teste=None):
@@ -73,7 +58,7 @@ def add(request, teste=None):
 def edit(request, procedure_id):
     p = get_object_or_404(Procedure, pk=procedure_id)
     title = u"Editando '%s'" % p.name
-    partial_form = ProcedureEditForm(prefix="procedure", instance=p)
+    partial_form = ProcedureForm(prefix="procedure", instance=p)
     lforms = [partial_form]
     content = {'title': title,
               'forms':lforms,
@@ -87,7 +72,7 @@ def edit(request, procedure_id):
             data['procedure-schedule'] = u"%d" % p.schedule.id
         if data['procedure-fileset'] == u"":
             data['procedure-fileset'] = u"%d" % p.fileset.id
-        procedure_form = ProcedureEditForm(data, instance=p, prefix="procedure")
+        procedure_form = ProcedureForm(data, instance=p, prefix="procedure")
         if procedure_form.is_valid():
             procedure_form.save()
             messages.success(request, "Procedimento '%s' alterado com sucesso" % p.name)

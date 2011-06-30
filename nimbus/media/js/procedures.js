@@ -45,49 +45,39 @@ $(document).ready(function(){
 
 function set_fileset() {
     if (typeof FILESET_ID != "undefined") {
-        $("#id_procedure-fileset").append("<option value="+FILESET_ID+">"+FILESET_NAME+"</option>");
+        $("#id_procedure-fileset").append("<option value="+FILESET_ID+">Usar o fileset criado</option>");
         $("#id_procedure-fileset").val(FILESET_ID);
-        $("#uniform-id_procedure-fileset").hide();
-        $("#fileset_button").html("<span>Modificar [" + FILESET_NAME + "]</span>");
+        $("#uniform-id_procedure-fileset").hide('slow');
+        $("#discard_fileset").show('slow')
+        $("#fileset_button").html("<span>Modificar</span>");
         $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");            
     }
 };
 function set_schedule() {
     if (typeof SCHEDULE_ID != "undefined") {
-        $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">"+SCHEDULE_ID+"</option>");
+        $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">Usar o agendamento criado</option>");
         $("#id_procedure-schedule").val(SCHEDULE_ID);
-        $("#uniform-id_procedure-schedule").hide();
+        $("#uniform-id_procedure-schedule").hide('slow');
+        $("#discard_schedule").show('slow')
         $("#schedule_button").html("<span>Modificar</span>");
         $("#schedule_button").attr('href', "/schedules/" + SCHEDULE_ID + "/edit/");            
     }
 };
+function unset_schedule() {
+    $("#uniform-id_procedure-schedule").show('slow');
+    $("#discard_schedule").hide('slow')
+    $("#schedule_button").html("<span>Criar outro agendamento</span>");
+    $("#schedule_button").attr('href', "/schedules/add/");            
+};
+function unset_fileset() {
+    $("#uniform-id_procedure-fileset").show('slow');
+    $("#discard_fileset").hide('slow')
+    $("#fileset_button").html("<span>Criar outro fileset</span>");
+    $("#fileset_button").attr('href', "/filesets/add/");            
+};
 
-// $(document).ready(function(){
-//     $('#schedule_button').click(function() {
-//         var computer_id = $('#id_procedure-computer').val();
-//         var fileset_id = $('#id_procedure-fileset').val();
-//         var storage_id = $('#id_procedure-storage').val();
-//         var retention_time = $('#id_procedure-pool_retention_time').val()
-//         var name = $('#id_procedure-name').val();
-//         var form = $('#to_schedule_form');
-//         form.append('<input type="hidden" name="computer_id" value="' + computer_id + '"/>');
-//         form.append('<input type="hidden" name="fileset_id" value="' + fileset_id + '"/>');
-//         form.append('<input type="hidden" name="storage_id" value="' + storage_id + '"/>');
-//         form.append('<input type="hidden" name="retention_time" value="' + retention_time + '"/>');
-//         form.append('<input type="hidden" name="procedure_name" value="' + name + '"/>');
-//         form.append('<input type="hidden" name="first_step" value="true"/>');
-//         form.submit();
-//         return false;
-//     });
-//     set_fileset();
-//     $('#toggle_fileset_choice').click(function() {
-//         $("#uniform-id_procedure-fileset").toggle('slow');
-//         $('#toggle_fileset_choice').html("<span>N‹o usar modelo</span>");
-//         $("#fileset_button").toggle('slow')
-//         console.log('teste')
-//     });
-// });
-// open async windows
+
+
 $(document).ready(function(){
     $.facebox.settings.opacity = 0.7;
     $('#fileset_button').click(function(){
