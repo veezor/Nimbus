@@ -27,6 +27,9 @@ def add(request):
     content = {'levels': levels}
     if referer.local == '/procedures/profile/list/':
         content['is_model'] = True
+        content['reload'] = True
+    else:
+        content['reload'] = False
     return render_to_response(request, "add_schedule.html", content)
 
 
@@ -60,7 +63,7 @@ def do_add(request):
 
 @login_required
 def edit(request, object_id):
-    referer = utils.Referer(request)
+    referer = utils.Referer(request)    
     s = get_object_or_404(Schedule, pk=object_id)
     levels = BackupLevel.objects.all()
     content = {'levels': levels,
@@ -68,6 +71,9 @@ def edit(request, object_id):
                'runs': s.runs.all()}
     if referer.local == '/procedures/profile/list/':
         content['is_model'] = True
+        content['reload'] = True
+    elif referer.local.startswith('/procedures'):
+        content['reload'] = False
     return render_to_response(request, "edit_schedule.html", content)
 
 @login_required

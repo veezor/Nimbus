@@ -232,7 +232,9 @@
 {% else %}
 <input type="hidden" id="schedule_name" value="Apenas para este procedimento"/>
 {% endif %}
-
+{% if reload %}
 <button onclick="if (create_schedule() == true) {window.location.reload()}">Salvar</button>
-
+{% else %}
+<button onclick="create_schedule()">Salvar</button>
+{% endif %}
 {% endblock %}
