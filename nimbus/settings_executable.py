@@ -214,6 +214,7 @@ INSTALLED_APPS = (
     'nimbus.wizard',
     'nimbus.computers',
     'nimbus.restore',
+    'nimbus.recovery',
     'nimbus.system',
     'nimbus.security',
 )

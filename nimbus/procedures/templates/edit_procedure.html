@@ -8,10 +8,21 @@
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 <script type="text/javascript">
-	{% if fileset %}
+	$(document).ready(function(){
 		FILESET_ID = {{fileset.id}};
 		FILESET_NAME = "{{fileset.name}}";
-	{% endif %}
+		SCHEDULE_ID = {{schedule.id}};
+		{% if fileset.is_model %}
+		unset_fileset();
+		{% else %}
+		set_fileset();
+		{% endif %}
+		{% if schedule.is_model %}
+		unset_schedule();
+		{% else %}
+		set_schedule();
+		{% endif %}
+	});
 </script>
 
 {% endblock %}
@@ -35,14 +46,15 @@
                     <li>{{ field.errors }}</li>
                 </ul>
                 {% endif %}
-                <p><label>{{ field.label }}:</label><br />
-                    {% if field.label == 'Schedule' %}
-                        <a href="/schedules/{{schedule.id}}/edit" class="minibutton"><span>Modifique [{{schedule.name}}]</span></a> ou escolha um modelo:
-                    {% endif %}
-                    {% if field.label == 'Fileset' %}
-                        <a href="/filesets/{{fileset.id}}/edit/" class="filesets minibutton" id="fileset_button"><span>Modifique [{{fileset.name}}]</span></a><a class="minibutton" id="toggle_fileset_choice"><span>Escolher um modelo</span></a>
-                    {% endif %}
-                    {{ field }}
+                <p>
+					<label>{{ field.label }}:</label><br />
+					{% if field.label == 'Schedule' %}
+					<a href="/schedules/add/" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a><span id="discard_schedule" class="hidden"> ou <a class="minibutton" onClick="unset_schedule()"><span>Descartar e escolher um perfil</span></a></span>
+					{% endif %}
+					{%if field.label == 'Fileset' %}
+					<a href="/filesets/add/" class="filesets minibutton" id="fileset_button"><span>Criar um conjunto de arquivos</span></a><span id="discard_fileset" class="hidden"> ou <a class="minibutton" onClick="unset_fileset()"><span>Descartar e escolher um perfil</span></a></span>
+					{% endif %}
+					{{ field }}
                 </p>
             {% endfor %}
             {% for hidden in form.hidden_fields %}

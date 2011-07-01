@@ -18,6 +18,7 @@ from nimbus.offsite.models import DownloadRequest
 from nimbus.offsite.forms import OffsiteRecoveryForm
 from nimbus.offsite.models import Offsite
 from nimbus.wizard.models import Wizard
+from nimbus.wizard.views import only_wizard
 
 #def start(request):
 #    extra_content = {
@@ -25,6 +26,7 @@ from nimbus.wizard.models import Wizard
 #    }
 #    return render_to_response(request, "recovery_start.html", extra_content)
 
+@only_wizard
 def select_source(request):
     extra_content = {'wizard_title': u'Selecionar origem',
                      'title': u"Recuperação do sistema"}
@@ -36,26 +38,14 @@ def select_source(request):
         if source == "offsite":
             extra_context = {'wizard_title': u'Configuração do Offsite',
                              'page_name': u'offsite'}
-            return redirect('nimbus.recovery.views.offsite_recovery')
+            return redirect('nimbus.recovery.views.recover_databases')
         else:
             return redirect('nimbus.recovery.views.select_storage')
     else:
         raise Http404()
 
-def offsite_recovery(request):
-    extra_context = {'wizard_title': u'Configurar Offsite',
-                     'title': u'Recuperação do sistema',
-                     'page_name': u'offsite',
-                     'next': 'nimbus.recovery.views.recover_databases'}
-    if request.method == "GET":
-        offsite = Offsite.get_instance()
-        offsite.active = True
-        offsite.save()
-    return edit_singleton_model(request, "generic.html",
-                                "nimbus.recovery.views.recover_databases",
-                                formclass = OffsiteRecoveryForm,
-                                extra_context = extra_context)
 
+@only_wizard
 def select_storage(request):
     if request.method == "GET":
         extra_content = {'wizard_title': u'Selecione o armazenamento',
@@ -66,11 +56,15 @@ def select_storage(request):
     else:
         raise Http404()
 
+
+@only_wizard
 def check_database_recover(request):
     count = DownloadRequest.objects.count()
     has_finished = systemprocesses.has_pending_jobs()
     return HttpResponse(simplejson.dumps({"count": count,
                                           "has_finished" : has_finished}))
+
+
 
 def recover_databases_worker(manager):
     logger = logging.getLogger(__name__)
@@ -84,6 +78,9 @@ def recover_databases_worker(manager):
     manager.generate_conf_files()
     logger.info("geracao dos arquivos de configuracao realizada com sucesso")
 
+
+
+@only_wizard
 def recover_databases(request):
     logger = logging.getLogger(__name__)
     extra_content = {'wizard_title': u'Recuperação do sistema',
@@ -121,12 +118,16 @@ def recover_volumes_worker(manager):
     logger.info("download dos volumes efetuado com sucesso")
     manager.finish()
 
+
+
+@only_wizard
 def check_volume_recover(request):
     count = DownloadRequest.objects.count()
     has_finished = systemprocesses.has_pending_jobs()
     return HttpResponse(simplejson.dumps({"count": count,
                                           "has_finished" : has_finished}))
 
+@only_wizard
 def recover_volumes(request):
     extra_content = {'wizard_title': u'Recuperando arquivos',
                      'title': u"Recuperação do sistema"}
@@ -148,6 +149,9 @@ def recover_volumes(request):
     else:
         raise Http404()
 
+
+
+@only_wizard
 def finish(request):
     extra_content = {'title': u"Recuperação do sistema"}
     if request.method == "GET":

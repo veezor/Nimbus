@@ -2,6 +2,7 @@
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/procedures.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
 {% endblock %}
 
@@ -76,7 +77,7 @@
 			{% endfor %}
 		</div><!-- .procedure -->
         
-        <h2 class="floatleft">Agendamentos</h2>&nbsp;<a href="/schedules/add/" class="minibutton"><span>Adicionar</span></a>
+        <h2 class="floatleft">Agendamentos</h2>&nbsp;<a href="/schedules/add/" class="minibutton edit-schedule"><span>Adicionar</span></a>
 		<div class="clear"></div><hr />
         <!-- real env for schedules -->
 		<div class="schedule">
@@ -107,28 +108,20 @@
                         </table>
                     </div><!-- .left -->
                     <div class="right">
-                        <h3 class="floatleft">Lista de arquivos</h3>
+                        <h3 class="floatleft">Agendamentos</h3>
                         <div class="clear"></div>
-                        <div class="list">
-                        <ul>
-                        {% if schedule.if_month %}
-                            {% for line in schedule.month.human_readable %}
-                            <li>{{ line }}</li>
-                            {% endfor %}
-                            {% endif %}
-                            {% if schedule.if_week %}
-                            {% for line in schedule.week.human_readable %}
-                            <li>{{ line }}</li>
-                            {% endfor %}
-                            {% endif %}
-                            {% if schedule.if_day %}
-                            <li>{{ schedule.day.human_readable }}</li>
-                            {% endif %}
-                            {% if schedule.if_hour %}
-                            <li>{{ schedule.hour.human_readable }}</li>
-                        {% endif %}
-                        </ul>
-                        </div>
+						<div class="list">
+                        <table cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr>
+                            </thead>
+                            <tbody>
+            					{% for run in schedule.runs.all %}
+								<tr><th>{{run.level}}</th><th>{{run.kind.name_pt}}</th><th>{{run.day_string}}</th><th>{{run.hour}}:{{run.minute}}</th></tr>
+            					{% endfor %}
+            				</tbody>
+                        </table>
+						</div>
                     </div><!-- .right -->
                     <div class="clear"></div>
                 </div><!-- .body -->

@@ -1,173 +1,240 @@
-<!-- {#% extends "base_async.html" %} -->
-{% extends "base.html" %}
 {% block headtags %}
-    
-<link rel="stylesheet" type="text/css" href="/media/css/schedules.css" />
-<link rel="stylesheet" type="text/css" href="/media/lib/css/style.css" />
-<script type="text/javascript" src="/media/js/procedures.js"></script>
-<script type="text/javascript" src="/media/js/schedules.js"></script>
-<script type="text/javascript" src="/media/js/jquery-ui-1.7.2.custom.min.js"></script>
-<!-- <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script> -->
-<style type="text/css">
-td{padding: 50px;}
-</style>
+	<link rel="stylesheet" type="text/css" href="/media/css/overcast/jquery-ui-1.8.13.custom.css" />
+	<script type="text/javascript" src="/media/js/schedules.js"></script>
+	<script type="text/javascript">
+		// ESTE CODIGO TEM QUE FICAR AQUI
+		EDITING = true;
+		EDITED_SCHEDULE_ID = {{schedule.id}};
+		SCHEDULES = new Array();
+		{% for run in runs %}
+		SCHEDULES.push({'id': '{{run.id}}', 'status': 'old', 'kind_id': '{{run.kind.id}}', 'kind': '{{run.kind.name_pt}}', 'level_id': '{{run.level.id}}', 'level': '{{run.level.name}}', 'day_num': '{{run.day}}', 'day': '{{run.day_string}}', 'hour': '{{run.hour}}', 'minute': '{{run.minute}}'});		
+		{% endfor %}
+		update_inventory();
+		{% if schedule.is_model %}
+		IS_MODEL = true
+		{% else %}
+		IS_MODEL = false
+		{% endif %}
+	</script>
+	<style type="text/css">
+		.new_run {
+			color: #FF0000;
+		}
+		.old_run {
+			color: #0000FF;
+		}
+		.deleted_run {
+			color: #AAAAAA;
+		}
+	</style>
 {% endblock %}
 
 {% block page %}
-<!-- TODO: Prever um agendamento já definido. -->
-<div class="block withsidebar" id="schedule" style="margin: 0;">
-    <div class="block_head">
-        <div class="bheadl"></div>
-        <div class="bheadr"></div>
-        <h2>{{ title }}</h2>
-    </div>		<!-- .block_head ends -->
-    <div class="block_content">
-        <form name="schedule_new" action="/schedules/{{schedule.id}}/edit/" method="post" id="schedule_new">
-        <div id="error-box">
-            {{ schedule_form.non_field_errors }}
-            {{ month_form.non_field_errors }}
-            {{ week_form.non_field_errors }}
-            {{ day_form.non_field_errors }}
-            {{ hour_form.non_field_errors }}
-            {{ schedule_form.name.errors }}
-            <label>{{ schedule_form.name.label }}:</label> {{ schedule_form.name }}<br/>
-			{% if schedule.is_model %}
-            <label>Este agendamento é um modelo</label><br/>
-				<input type="hidden" name="schedule-is_model" value="1"/>
-				Atenção. Sua alteração afetará os seguintes backups:
-			{% else %}
-				<label> Este agendamento é utilizado por:</label><br/>
-			{% endif %}
-			{% for procedure in procedures %}
-				<li>{{procedure.name}}</li>
-			{% endfor %}
-
-        </div>
-
-        <div class="sidebar">
-            <ul class="sidemenu">
-                <li><a href="#mensal" class="month">Mensal</a>{{ month_form.active }}</li>
-                <li><a href="#semanal" class="week">Semanal</a>{{ week_form.active }}</li>
-                <li><a href="#diario" class="day">Diário</a>{{ day_form.active }}</li>
-                <li><a href="#minuto" class="hour">Hora em hora</a>{{ hour_form.active }}</li>
-            </ul>
-            <p>Agende a execução deste backup, é possível ativar mais de um agendamento.</p>
-        </div>		<!-- .sidebar ends -->
-        <div class="sidebar_content" id="mensal">
-            <div class="personal_message"><p>Executa o backup em determinados dias do mês, sempre no horário especificado.</p></div>
-            <p>
-                <table border="0" cellpadding="0" cellspacing="0">
-                <tbody>
-					<div class="month_error">{{ month_form.days.errors }}</div>
-                    <tr><th colspan="5">Dias do Mês</th></tr><tr>
-                {% for day in days %}
-
-                <td style="padding: 8px;"><label for="day_{{day}}">
-                <input type="checkbox" id="month_day_{{day}}" class="month_checkbox schedule no-style" value="{{day}}"/>
-                {{day}}º</label></td>
-                    {% if day in end_days %}</tr><tr>{% endif %}
-                {% endfor %}
-                    <td colspan="5">&nbsp;</td></tr>
-                </tbody>
-                </table>
-                {{ month_form.days }}
-			</p>
-            <p>
-				<div class="month_error">{{ month_form.hour.errors }}</div>
-                <label>{{ month_form.hour.label }}</label>
-                {{ month_form.hour }}<br/>
-                <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
-            </p>
-            <p>
-				<div class="month_error">{{ month_form.level.errors }}</div>
-                <label>{{ month_form.level.label }}:</label>
-                {{ month_form.level }}<br />
-                <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
-            </p>
-            <p>
-				<input type="submit" class="submit" value="Salvar" /><a href="/procedures/list" class="submit small">Cancelar</a>
-            </p>
-        </div>		<!-- .sidebar_content ends -->
-
-        <div class="sidebar_content" id="semanal">
-            <div class="personal_message"><p>Executa o backup em determinados dias da semana, sempre no horário especificado.</p></div>
-            <p>
-                <table border="0" cellpadding="0" cellspacing="0">
-                <tbody>
-					<div class="week_error">{{ week_form.days.errors }}</div>
-                    <tr><th colspan="5">Dias da Semana</th></tr><tr>
-                {% for key,vlw in weekdays.items %}
-
-                <td style="padding: 8px;"><label for="day_{{day}}">
-                <input type="checkbox" id="week_day_{{key}}" name="schedule.weekly.day" value="{{key}}" class="week_checkbox no-style" {% if key in schedule_weekly_day %}checked="checked"{% endif %} />
-                {{vlw}}</label></td>
-                    </tr><tr>
-                {% endfor %}
-                    <td colspan="5">&nbsp;</td></tr>
-                </tbody>
-                </table>
-            </p>
-                {{ week_form.days }}<br/>
-            <p>
-				<div class="week_error">{{ week_form.hour.errors }}</div>
-                <label>{{ week_form.hour.label }}:</label>
-                {{ week_form.hour }}<br />
-                <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
-            </p>
-            <p>
-				<div class="week_error">{{ week_form.level.errors }}</div>
-                <label>{{ week_form.level.label }}:</label>
-                {{ week_form.level }}<br />
-                <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
-            </p>
-            <p>
-				<input type="submit" class="submit" value="Salvar" /><a href="/procedures/list" class="submit small">Cancelar</a>
-            </p>
-        </div>		<!-- .sidebar_content ends -->
-
-        <div class="sidebar_content" id="diario">
-            <div class="personal_message"><p>Executa o backup todos os dias, sempre no horário especificado.</p></div>
-            <p>
-				<div class="day_error">{{ day_form.hour.errors }}</div>
-                <label>{{ day_form.hour.label }}:</label>
-                {{ day_form.hour }}<br />
-                <small>Exemplo: 10:20, 21:35 ou 07:08.</small>
-            </p>
-            <p>
-				<div class="day_error">{{ day_form.level.errors }}</div>
-                <label>{{ day_form.level.label }}:</label>
-                {{ day_form.level }}<br />
-                <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
-            </p>
-            <p>
-				<input type="submit" class="submit" value="Salvar" /><a href="/procedures/list" class="submit small">Cancelar</a>
-            </p>
-        </div>		<!-- .sidebar_content ends -->
-
-        <div class="sidebar_content" id="minuto">
-            <div class="personal_message"><p>Executa o backup todas as horas do dia, sempre no minuto especificado.</p></div>
-            <p>
-				<div class="hour_error">{{ hour_form.minute.errors }}</div>
-                <label>{{ hour_form.minute.label }}:</label>
-                {{ hour_form.minute }}<br />
-                <small>Exemplo: 20, 35 ou 08.</small>
-            </p>
-            <p>
-				<div class="hour_error">{{ hour_form.level.errors }}</div>
-                <label>{{ hour_form.level.label }}:</label>
-                {{ hour_form.level }}<br />
-                <small>No backup full é feita uma cópia completa de todos os arquivos "marcados" para backup. No incremental é feita uma cópia apenas das modificações. É importamente sempre manter uma política mista de backups.</small>
-            </p>
-            <p>
-				<input type="submit" class="submit" value="Salvar" /><a href="/procedures/list" class="submit small">Cancelar</a>
-            </p>
-        </div>
-        </form>
-    </div>		<!-- .block_content ends -->
-
-
-    <div class="bendl"></div>
-    <div class="bendr"></div>
-
-</div>		<!-- .block .schedule ends -->
+<table>
+	<tr>
+		<td>
+			<div id="month" class="checkboxes">
+				<h3>Dia do mês:</h3>
+				<input type="checkbox" class="month" id="month_01" name="01"/><label for="month_01">01</label>
+				<input type="checkbox" class="month" id="month_02" name="02"/><label for="month_02">02</label>
+				<input type="checkbox" class="month" id="month_03" name="03"/><label for="month_03">03</label>
+				<input type="checkbox" class="month" id="month_04" name="04"/><label for="month_04">04</label>
+				<input type="checkbox" class="month" id="month_05" name="05"/><label for="month_05">05</label>
+				<input type="checkbox" class="month" id="month_06" name="06"/><label for="month_06">06</label>
+				<input type="checkbox" class="month" id="month_07" name="07"/><label for="month_07">07</label>
+				<input type="checkbox" class="month" id="month_08" name="08"/><label for="month_08">08</label>
+				<input type="checkbox" class="month" id="month_09" name="09"/><label for="month_09">09</label>
+				<input type="checkbox" class="month" id="month_10" name="10"/><label for="month_10">10</label>
+				<input type="checkbox" class="month" id="month_11" name="11"/><label for="month_11">11</label>
+				<input type="checkbox" class="month" id="month_12" name="12"/><label for="month_12">12</label><br/>
+				<input type="checkbox" class="month" id="month_13" name="13"/><label for="month_13">13</label>
+				<input type="checkbox" class="month" id="month_14" name="14"/><label for="month_14">14</label>
+				<input type="checkbox" class="month" id="month_15" name="15"/><label for="month_15">15</label>
+				<input type="checkbox" class="month" id="month_16" name="16"/><label for="month_16">16</label>
+				<input type="checkbox" class="month" id="month_17" name="17"/><label for="month_17">17</label>
+				<input type="checkbox" class="month" id="month_18" name="18"/><label for="month_18">18</label>
+				<input type="checkbox" class="month" id="month_19" name="19"/><label for="month_19">19</label>
+				<input type="checkbox" class="month" id="month_20" name="20"/><label for="month_20">20</label>
+				<input type="checkbox" class="month" id="month_21" name="21"/><label for="month_21">21</label>
+				<input type="checkbox" class="month" id="month_22" name="22"/><label for="month_22">22</label>
+				<input type="checkbox" class="month" id="month_23" name="23"/><label for="month_23">23</label>
+				<input type="checkbox" class="month" id="month_24" name="24"/><label for="month_24">24</label><br/>
+				<input type="checkbox" class="month" id="month_25" name="25"/><label for="month_25">25</label>
+				<input type="checkbox" class="month" id="month_26" name="26"/><label for="month_26">26</label>
+				<input type="checkbox" class="month" id="month_27" name="27"/><label for="month_27">27</label>
+				<input type="checkbox" class="month" id="month_28" name="28"/><label for="month_28">28</label>
+				<input type="checkbox" class="month" id="month_29" name="29"/><label for="month_29">29</label>
+				<input type="checkbox" class="month" id="month_30" name="30"/><label for="month_30">30</label>
+				<input type="checkbox" class="month" id="month_31" name="31"/><label for="month_31">31</label>
+			</div>
+		</td>
+		<td>
+			<select name="month-level" id="id_month-level">
+				<option value="None">- Escolha o tipo de backup: -</option>
+				{% for level in levels %}
+				<option value="{{level.id}}">{{level.name}}</option>
+				{% endfor %}
+			</select><br />
+			<a class="minibutton" id="month_button"><span>Agendamento Mensal</span></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="week" class="checkboxes">
+				<h3>Dia da semana:</h3>
+				<input type="checkbox" class="week" id="week_0" value="0" /><label for="week_0">Domingo</label>
+				<input type="checkbox" class="week" id="week_1" value="0" /><label for="week_1">Segunda-feira</label>
+				<input type="checkbox" class="week" id="week_2" value="0" /><label for="week_2">Terça-feira</label>
+				<input type="checkbox" class="week" id="week_3" value="0" /><label for="week_3">Quarta-feira</label>
+				<input type="checkbox" class="week" id="week_4" value="0" /><label for="week_4">Quinta-feira</label><br/>
+				<input type="checkbox" class="week" id="week_5" value="0" /><label for="week_5">Sexta-feira</label>
+				<input type="checkbox" class="week" id="week_6" value="0" /><label for="week_6">Sábado</label>
+			</div>
+		</td>
+		<td>
+			<select name="week-level" id="id_week-level">
+				<option value="None">- Escolha o tipo de backup: -</option>
+				{% for level in levels %}
+				<option value="{{level.id}}">{{level.name}}</option>
+				{% endfor %}
+			</select><br />
+			<a class="minibutton" id="week_button"><span>Agendamento Semanal</span></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="hours" class="checkboxes">
+				<h3>Hora:</h3>
+				<input type="checkbox" class="hours" id="hour_00" /><label for="hour_00">00</label>
+				<input type="checkbox" class="hours" id="hour_01" /><label for="hour_01">01</label>
+				<input type="checkbox" class="hours" id="hour_02" /><label for="hour_02">02</label>
+				<input type="checkbox" class="hours" id="hour_03" /><label for="hour_03">03</label>
+				<input type="checkbox" class="hours" id="hour_04" /><label for="hour_04">04</label>
+				<input type="checkbox" class="hours" id="hour_05" /><label for="hour_05">05</label>
+				<input type="checkbox" class="hours" id="hour_06" /><label for="hour_06">06</label>
+				<input type="checkbox" class="hours" id="hour_07" /><label for="hour_07">07</label>
+				<input type="checkbox" class="hours" id="hour_08" /><label for="hour_08">08</label>
+				<input type="checkbox" class="hours" id="hour_09" /><label for="hour_09">09</label>
+				<input type="checkbox" class="hours" id="hour_10" /><label for="hour_10">10</label>
+				<input type="checkbox" class="hours" id="hour_11" /><label for="hour_11">11</label></br>
+				<input type="checkbox" class="hours" id="hour_12" /><label for="hour_12">12</label>
+				<input type="checkbox" class="hours" id="hour_13" /><label for="hour_13">13</label>
+				<input type="checkbox" class="hours" id="hour_14" /><label for="hour_14">14</label>
+				<input type="checkbox" class="hours" id="hour_15" /><label for="hour_15">15</label>
+				<input type="checkbox" class="hours" id="hour_16" /><label for="hour_16">16</label>
+				<input type="checkbox" class="hours" id="hour_17" /><label for="hour_17">17</label>
+				<input type="checkbox" class="hours" id="hour_18" /><label for="hour_18">18</label>
+				<input type="checkbox" class="hours" id="hour_19" /><label for="hour_19">19</label>
+				<input type="checkbox" class="hours" id="hour_20" /><label for="hour_20">20</label>
+				<input type="checkbox" class="hours" id="hour_21" /><label for="hour_21">21</label>
+				<input type="checkbox" class="hours" id="hour_22" /><label for="hour_22">22</label>
+				<input type="checkbox" class="hours" id="hour_23" /><label for="hour_23">23</label>
+			</div>
+		</td>
+		<td>
+			<select name="day-level" id="id_day-level">
+				<option value="None">- Escolha o tipo de backup: -</option>
+				{% for level in levels %}
+				<option value="{{level.id}}">{{level.name}}</option>
+				{% endfor %}
+			</select><br />
+			<a class="minibutton" id="day_button"><span>Agendamento Diário</span></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="minutes" class="checkboxes">
+				<h3>Minuto:</h3>
+				<input type="checkbox" class="minutes" id="minute_00" /><label for="minute_00">00</label>
+				<input type="checkbox" class="minutes" id="minute_01" /><label for="minute_01">01</label>
+				<input type="checkbox" class="minutes" id="minute_02" /><label for="minute_02">02</label>
+				<input type="checkbox" class="minutes" id="minute_03" /><label for="minute_03">03</label>
+				<input type="checkbox" class="minutes" id="minute_04" /><label for="minute_04">04</label>
+				<input type="checkbox" class="minutes" id="minute_05" /><label for="minute_05">05</label>
+				<input type="checkbox" class="minutes" id="minute_06" /><label for="minute_06">06</label>
+				<input type="checkbox" class="minutes" id="minute_07" /><label for="minute_07">07</label>
+				<input type="checkbox" class="minutes" id="minute_08" /><label for="minute_08">08</label>
+				<input type="checkbox" class="minutes" id="minute_09" /><label for="minute_09">09</label>
+				<input type="checkbox" class="minutes" id="minute_10" /><label for="minute_10">10</label>
+				<input type="checkbox" class="minutes" id="minute_11" /><label for="minute_11">11</label><br/>
+				<input type="checkbox" class="minutes" id="minute_12" /><label for="minute_12">12</label>
+				<input type="checkbox" class="minutes" id="minute_13" /><label for="minute_13">13</label>
+				<input type="checkbox" class="minutes" id="minute_14" /><label for="minute_14">14</label>
+				<input type="checkbox" class="minutes" id="minute_15" /><label for="minute_15">15</label>
+				<input type="checkbox" class="minutes" id="minute_16" /><label for="minute_16">16</label>
+				<input type="checkbox" class="minutes" id="minute_17" /><label for="minute_17">17</label>
+				<input type="checkbox" class="minutes" id="minute_18" /><label for="minute_18">18</label>
+				<input type="checkbox" class="minutes" id="minute_19" /><label for="minute_19">19</label>
+				<input type="checkbox" class="minutes" id="minute_20" /><label for="minute_20">20</label>
+				<input type="checkbox" class="minutes" id="minute_21" /><label for="minute_21">21</label>
+				<input type="checkbox" class="minutes" id="minute_22" /><label for="minute_22">22</label>
+				<input type="checkbox" class="minutes" id="minute_23" /><label for="minute_23">23</label><br/>
+				<input type="checkbox" class="minutes" id="minute_24" /><label for="minute_24">24</label>
+				<input type="checkbox" class="minutes" id="minute_25" /><label for="minute_25">25</label>
+				<input type="checkbox" class="minutes" id="minute_26" /><label for="minute_26">26</label>
+				<input type="checkbox" class="minutes" id="minute_27" /><label for="minute_27">27</label>
+				<input type="checkbox" class="minutes" id="minute_28" /><label for="minute_28">28</label>
+				<input type="checkbox" class="minutes" id="minute_29" /><label for="minute_29">29</label>
+				<input type="checkbox" class="minutes" id="minute_30" /><label for="minute_30">30</label>
+				<input type="checkbox" class="minutes" id="minute_31" /><label for="minute_31">31</label>
+				<input type="checkbox" class="minutes" id="minute_32" /><label for="minute_32">32</label>
+				<input type="checkbox" class="minutes" id="minute_33" /><label for="minute_33">33</label>
+				<input type="checkbox" class="minutes" id="minute_34" /><label for="minute_34">34</label>
+				<input type="checkbox" class="minutes" id="minute_35" /><label for="minute_35">35</label><br/>
+				<input type="checkbox" class="minutes" id="minute_36" /><label for="minute_36">36</label>
+				<input type="checkbox" class="minutes" id="minute_37" /><label for="minute_37">37</label>
+				<input type="checkbox" class="minutes" id="minute_38" /><label for="minute_38">38</label>
+				<input type="checkbox" class="minutes" id="minute_39" /><label for="minute_39">39</label>
+				<input type="checkbox" class="minutes" id="minute_40" /><label for="minute_40">40</label>
+				<input type="checkbox" class="minutes" id="minute_41" /><label for="minute_41">41</label>
+				<input type="checkbox" class="minutes" id="minute_42" /><label for="minute_42">42</label>
+				<input type="checkbox" class="minutes" id="minute_43" /><label for="minute_43">43</label>
+				<input type="checkbox" class="minutes" id="minute_44" /><label for="minute_44">44</label>
+				<input type="checkbox" class="minutes" id="minute_45" /><label for="minute_45">45</label>
+				<input type="checkbox" class="minutes" id="minute_46" /><label for="minute_46">46</label>
+				<input type="checkbox" class="minutes" id="minute_47" /><label for="minute_47">47</label><br/>
+				<input type="checkbox" class="minutes" id="minute_48" /><label for="minute_48">48</label>
+				<input type="checkbox" class="minutes" id="minute_49" /><label for="minute_49">49</label>
+				<input type="checkbox" class="minutes" id="minute_50" /><label for="minute_50">50</label>
+				<input type="checkbox" class="minutes" id="minute_51" /><label for="minute_51">51</label>
+				<input type="checkbox" class="minutes" id="minute_52" /><label for="minute_52">52</label>
+				<input type="checkbox" class="minutes" id="minute_53" /><label for="minute_53">53</label>
+				<input type="checkbox" class="minutes" id="minute_54" /><label for="minute_54">54</label>
+				<input type="checkbox" class="minutes" id="minute_55" /><label for="minute_55">55</label>
+				<input type="checkbox" class="minutes" id="minute_56" /><label for="minute_56">56</label>
+				<input type="checkbox" class="minutes" id="minute_57" /><label for="minute_57">57</label>
+				<input type="checkbox" class="minutes" id="minute_58" /><label for="minute_58">58</label>
+				<input type="checkbox" class="minutes" id="minute_59" /><label for="minute_59">59</label>
+			</div>
+		</td>
+		<td>
+			<select name="hour-level" id="id_hour-level">
+				<option value="None">- Escolha o tipo de backup: -</option>
+				{% for level in levels %}
+				<option value="{{level.id}}">{{level.name}}</option>
+				{% endfor %}
+			</select><br />
+			<a class="minibutton" id="hour_button"><span>Agendamento de hora em hora</span></a>
+		</td>
+	</tr>
+</table>
+<h3>Agendamentos selecionados</h3>
+<table id="inventory" style="border: solid 1px; width: 400px;">
+	<thead>
+		<tr><th>Remover</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr>
+	</thead>
+</table>
+{% if is_model %}
+<p>
+	<label>Nome:</label>
+	<input type="text" id="schedule_name" value="{{schedule.name}}">
+</p>
+{% else %}
+<input type="hidden" id="schedule_name" value="Apenas para este procedimento"/>
+{% endif %}
+{% if reload %}
+<button onclick="if (create_schedule() == true) {window.location.reload()}">Salvar</button>
+{% else %}
+<button onclick="create_schedule()">Salvar</button>
+{% endif %}
 {% endblock %}

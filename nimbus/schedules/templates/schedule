@@ -1,6 +1,6 @@
 Schedule {
     Name = "{{name}}"
     {%for run in runs%}
-    {{run}}
+    {{run.bacula_config}}
     {%endfor%}
 }

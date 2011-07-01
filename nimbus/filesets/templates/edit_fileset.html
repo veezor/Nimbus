@@ -1,4 +1,4 @@
-{% extends "base_async.html" %}
+
 
 {% block headtags %}
 <link rel="stylesheet" type="text/css" href="/media/css/filesets.css" media="screen" />
@@ -30,7 +30,12 @@
 			<hr />
 			<h2>Adicionar novos aquivos:</h2>
 			<ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
-            {{ fileset_form.as_p }}
+			<p>
+			<label>{{fileset_form.name.label}}: </label>{{ fileset_form.name }}
+			</p>
+			<p class="hidden">
+			<label>{{fileset_form.is_model.label}}: </label>{{ fileset_form.is_model }}
+			</p>
 			<hr />
 			<p>
 				<!-- <input type="submit" class="submit mid" id="submit_button" value="Salvar"/> -->
