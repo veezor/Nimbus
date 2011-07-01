@@ -1,4 +1,22 @@
 $(document).ready(function(){
+    $(".hide").slideUp();
+    $('.job_line').click(function(){
+        $(".hide").slideUp();
+        var next = $(this).next();
+        if (next.css('display') == 'none')
+            next.slideDown();
+        else
+            nex.slideUp();
+    });
+    $('.job_line').mouseover(function(){
+        $(this).addClass('over');
+    });
+    $('.job_line').mouseout(function(){
+        $(this).removeClass('over');
+    });
+});
+
+$(document).ready(function(){
 
     function create_chart(obj_id, data, ticks, chart_type, labels) {
         var fill = false;
