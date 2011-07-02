@@ -8,3 +8,6 @@ deb/var/nimbus/custom
 deb/etc/
 *.deb
 nimbus/settings.py
+.DS_Store
+*.sql
+.gitignore
