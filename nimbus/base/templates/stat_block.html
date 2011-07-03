@@ -1,55 +1,81 @@
 {% comment %}
 Tipos possíveis: ok, warn, error
 {% endcomment %}
+<style type="text/css">
+.job_line{
+    display: block; 
+    padding: 5px;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+}
+.over{
+    background: #f0f0f0;
+}
+.hide{
+    background: #f3f3f3;
+}
+.status_ok, .status_error, .status_warn{
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: black 0.1em 0.1em 0.2em;
+    display: block;
+    float: left;
+    width: 80px;
+    margin-right: 8px;
+}
+.status_error{background-color: #C91A1A;}
+.status_warn{background-color: #E0780F;}
+/* .pri_3{background-color: #CDD800;} */
+.status_ok{background-color: #26BF24;}
+/* .pri_5{background-color: #1A8CA5;} */
+</style>
 <div class="content_block cols_{{item|length}}">
-	<h3>Histórico</h3>
+	<h2>Histórico</h2>
+	<hr />
 	{% for job in last_jobs %}
 	<!-- <div class="inner_message {% cycle "odd" "even" %}" title="{{ job_line.tooltip }}"><img src="/media/icons/{{job_line.type}}.png" /> {% if job_line.date %}<small>{{job_line.date}}</small> -{% endif %} {{job_line.label}} {% if job_line.message %}<small>({{job_line.message}})</small>{% endif %}</div> -->
 
-	<div id="job_{{job.jobid}}" class="job_line status_{{job.general_status}}">
-		!Status {{job.general_status}}!<a>{{job.start_time}}:
-		Backup {{job.backup_level}} de '{{job.client.computer.name}}'</a>
-		<div id="job_{{job.jobid}}_details" class="hidden">
-			Procedimento:
-			{% if job.procedure %}
-			{{job.procedure}}
-			{% else %}
-			Este procedimento não existe mais.
-			{% endif %}<br/>
-			{% if job.client.computer %}
-			Computador: {{job.client.computer.name}} ({{job.client.computer.address}})
-			{% else %}
-			Computador: Computador não encontrado
-			{% endif %}<br/>
-			Tipo de backup: {{job.backup_level}}<br/>
-			Agendado para: {{job.schedule_time}}<br/>
-			Inicio: {{job.start_time}}<br/>
-			{% if job.end_time %}
-			Término: {{job.end_time}}<br/>
-			Duração: {{job.duration}}<br/>
-			{% else %}
-			Término: O procedimento ainda não foi concluído<br/>
-			Duração: O procedimento ainda não foi concluído<br/>
-			{% endif %}
-			Arquivos copiados: {{job.jobfiles}} ({{job.human_readable_size.size}} {{job.human_readable_size.unit}})<br/>
-
-			Status: {{job.status_message}}<br/>
-			Erros: {{job.joberrors}}<br/>
-		</div>
+	<div id="job_{{job.jobid}}" class="job_line minus">
+		<span class="status_{{job.general_status}}">Status {{job.general_status}}</span>
+        {{job.start_time}}: Backup {{job.backup_level}} de '{{job.client.computer.name}}'
+        <div class="clear"></div>
+	</div>
+	<div id="job_{{job.jobid}}_details" class="hide">
+	   <table cellpadding="0" cellspacing="0">
+	   <tbody>
+            <tr><td>Procedimento:</td>
+            {% if job.procedure %}
+            <td>{{job.procedure}}</td>
+            {% else %}
+            <td>Este procedimento não existe mais.</td>
+            {% endif %}
+            </tr>
+            <tr>
+            {% if job.client.computer %}
+            <td>Computador: {{job.client.computer.name}}</td><td>({{job.client.computer.address}})</td>
+            {% else %}
+            <td>Computador:</td> <td>Computador não encontrado</td>
+            {% endif %}</tr>
+            <tr><td>Tipo de backup:</td><td>{{job.backup_level}}</td></tr>
+            <tr><td>Agendado para:</td><td>{{job.schedule_time}}</td></tr>
+            <tr><td>Inicio: </td><td>{{job.start_time}}</td></tr>
+            {% if job.end_time %}
+            <tr><td>Término:</td><td>{{job.end_time}}</td></tr>
+            <tr><td>Duração:</td><td>{{job.duration}}</td></tr>
+            {% else %}
+            <tr><td>Término:</td><td>O procedimento ainda não foi concluído</td></tr>
+            <tr><td>Duração:</td><td>O procedimento ainda não foi concluído</td></tr>
+            {% endif %}
+            <tr><td>Arquivos copiados:</td><td>{{job.jobfiles}} ({{job.human_readable_size.size}} {{job.human_readable_size.unit}})</td></tr>
+            
+            <tr><td>Status:</td><td>{{job.status_message}}</td></tr>
+            <tr><td>Erros:</td><td>{{job.joberrors}}</td></tr>
+		</table>
 	</div>
 	{% endfor %}
-
-
-
-<div id="status_box" style="border: dashed 1px;">
-	Procedimento:<br />
-	Computador:<br />
-	Tipo de backup:<br />
-	Agendado para:<br />
-	Inicio:<br />
-	Término:<br />
-	Duração:<br />
-	Arquivos copiados:<br />
-	Resultado:<br />
-	Erros:<br />
 </div>

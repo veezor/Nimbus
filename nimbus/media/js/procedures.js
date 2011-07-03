@@ -1,13 +1,5 @@
 // JavaScript para mostrar os status dos jobs nos hist—rico
 $(document).ready(function(){
-    $('.job_line').click(function(){
-        var job_id = $(this)[0].id;
-        var job_details = $('#' + job_id + '_details')[0];
-        $('#status_box')[0].innerHTML = job_details.innerHTML;
-    });
-});
-
-$(document).ready(function(){
     $('.edit-fileset').click(function(){
         var fileset_id = $(this)[0].id;
         selected_val = $('#select_' + fileset_id)[0].value;
