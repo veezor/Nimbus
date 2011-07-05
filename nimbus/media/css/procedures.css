@@ -166,3 +166,40 @@
     text-align: right; 
     float: right;
 }
+
+/* procedures history */
+.job_line{
+    display: block; 
+    padding: 5px;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+    font-size: 11px;
+}
+.over{
+    background: #f0f0f0;
+}
+.hide{
+    background: #f3f3f3;
+}
+.hide table thead th, .hide table tbody td{
+    font-size: 11px;
+}
+.status_ok, .status_error, .status_warn{
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: black 0.1em 0.1em 0.2em;
+    display: block;
+    float: left;
+    /* width: 80px; */
+    margin-right: 8px;
+}
+.status_error{background-color: #C91A1A;}
+.status_warn{background-color: #E0780F;}
+/* .pri_3{background-color: #CDD800;} */
+.status_ok{background-color: #26BF24;}
+/* .pri_5{background-color: #1A8CA5;} */

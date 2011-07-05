@@ -1,39 +1,8 @@
 {% comment %}
 Tipos possíveis: ok, warn, error
 {% endcomment %}
-<style type="text/css">
-.job_line{
-    display: block; 
-    padding: 5px;
-    cursor: pointer;
-    border-bottom: 1px solid #ccc;
-}
-.over{
-    background: #f0f0f0;
-}
-.hide{
-    background: #f3f3f3;
-}
-.status_ok, .status_error, .status_warn{
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    padding: 2px 4px;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: black 0.1em 0.1em 0.2em;
-    display: block;
-    float: left;
-    width: 80px;
-    margin-right: 8px;
-}
-.status_error{background-color: #C91A1A;}
-.status_warn{background-color: #E0780F;}
-/* .pri_3{background-color: #CDD800;} */
-.status_ok{background-color: #26BF24;}
-/* .pri_5{background-color: #1A8CA5;} */
-</style>
+<script type="text/javascript" src="/media/js/procedures.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
 <div class="content_block cols_{{item|length}}">
 	<h2>Histórico</h2>
 	<hr />
@@ -76,6 +45,7 @@ Tipos possíveis: ok, warn, error
             <tr><td>Status:</td><td>{{job.status_message}}</td></tr>
             <tr><td>Erros:</td><td>{{job.joberrors}}</td></tr>
 		</table>
+		<hr />
 	</div>
 	{% endfor %}
 </div>

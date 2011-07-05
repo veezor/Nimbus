@@ -69,7 +69,7 @@
                     </div>
                     <h4>CONFIGURAÇÕES DO PROCEDIMENTO</h4>
                     <div class="procedure-config">
-                        <p>
+                        <div style="width: 69%; float: left;">
                             Offsite ativado: <strong>{{procedure.offsite_on|yesno:"Sim,Não"}}</strong><br/>
                             Conjunto de arquivos: <strong>{{procedure.fileset.name}}</strong>
 							{% if procedure.fileset.is_model %}
@@ -82,7 +82,11 @@
 							{% endif %}
 							<br/>
                             Tempo de retenção dos arquivos: <strong>{{procedure.pool_retention_time}}</strong>
-                        </p>
+                        </div>
+                        <div style="width: 29%; float: right;">
+                            Status
+                        </div>
+                        <div class="clear"></div>
                     </div>
                 </div>
                 <div class="clear"></div>

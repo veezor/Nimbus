@@ -1,3 +1,22 @@
+// Accordeon for procedure history
+$(document).ready(function(){
+    $(".hide").slideUp();
+    $('.job_line').click(function(){
+        $(".hide").slideUp();
+        var next = $(this).next();
+        if (next.css('display') == 'none')
+            next.slideDown();
+        else
+            next.slideUp();
+    });
+    $('.job_line').mouseover(function(){
+        $(this).addClass('over');
+    });
+    $('.job_line').mouseout(function(){
+        $(this).removeClass('over');
+    });
+});
+
 // JavaScript para mostrar os status dos jobs nos hist—rico
 $(document).ready(function(){
     $('.edit-fileset').click(function(){
