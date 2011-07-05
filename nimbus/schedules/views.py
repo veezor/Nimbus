@@ -14,7 +14,7 @@ from django.contrib import messages
 
 from nimbus.computers.models import Computer
 from nimbus.schedules import forms
-from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_range
+# from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_range
 from nimbus.shared.views import render_to_response
 from nimbus.schedules.models import Schedule, BackupLevel, Run, BackupKind
 from nimbus.procedures.models import Procedure
