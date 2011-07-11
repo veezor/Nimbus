@@ -4,19 +4,6 @@
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
 
-<!-- Este style deve ser removido. criei só para ilustrar os status de jobs (fabio) -->
-<style type="text/css">
-	div.status_running {
-		color: green;
-		background-color: #88FF88 }
-
-	div.status_ok {
-		color: green;}
-	div.status_error {
-		color: red;}
-
-</style>
-
 {% endblock %}
 
 {% block page %}
@@ -84,7 +71,14 @@
                             Tempo de retenção dos arquivos: <strong>{{procedure.pool_retention_time}}</strong>
                         </div>
                         <div style="width: 29%; float: right;">
-                            <img src="/media/" alt="" />
+                            &nbsp;
+                            <!-- Use this div to display any content you need to. The following images are just for testing.
+<img src="/media/icons/exchange32.png" alt="Running" />
+                            <img src="/media/icons/check32.png" alt="Check" />
+                            <img src="/media/icons/stop32.png" alt="Stop" />
+                            <img src="/media/icons/sleep32.png" alt="Sleep" />
+                            <img src="/media/icons/warning32.png" alt="Warn" />
+-->
                         </div>
                         <div class="clear"></div>
                     </div>
