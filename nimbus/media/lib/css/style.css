@@ -1535,3 +1535,10 @@ ul.styled-list li {
     display: block;
     margin: 0 0 0 20px;
 }
+
+.annoying{
+    display: none;
+    border-width:1px;border-style:solid;padding:0 .6em;-moz-border-radius:3px;-khtml-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+	padding:5px 9px 5px 25px ;margin-bottom:1em; font-weight: bold; /*border-style: solid; border-width: 1px;*/
+	background:#FFF6BF url(/media/icons/error.png) 3px 50% no-repeat;color:#514721;border-color:#FFD324;
+}

@@ -16,12 +16,18 @@
     var ie_error = '/base/ie_error';
     {{ init_message }}
 </script>
+<style type="text/css">{{ annoying_message }}</style>
 {% endblock %}
 
 {% block content %}
 
     	<div class="block">
-
+            <div class="annoying">
+                O seu navegador n&atilde;o &eacute; confi&aacute;vel para o Nimbus. Nosso software &eacute; testado para os browsers 
+                <a href="http://www.mozilla.com/en-US/firefox/new/" target="_blank">Mozilla Firefox</a> e 
+                <a href="http://www.google.com/chrome/intl/en/make/download-mac.html?brand=CHKZ" target="_blank">Google Chrome</a>. Caso deseje reportar
+                erros ou enviar sujest&otilde;es, visite nosso <a href="http://forum.nimbusbackup.com/">f&oacute;rum</a>.
+            </div>
     		<div class="block_head">
     			<div class="bheadl"></div>
     			<div class="bheadr"></div>

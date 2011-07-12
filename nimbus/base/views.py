@@ -10,7 +10,7 @@ import re
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from nimbus.shared import utils
+from nimbus.shared import utils, middlewares
 from nimbus.shared.views import render_to_response
 from nimbus.bacula.models import Job
 from nimbus.libs import graphsdata
@@ -104,8 +104,9 @@ def home(request):
     
     browser = request.META['HTTP_USER_AGENT']
     init_message = ""
-    if re.search("IE", browser):# needs test!
-        init_message = "$(document).ready(function(){$.facebox.settings.opacity = 0.5;jQuery.facebox({ ajax : ie_error});});";
+    if re.search("MSIE", browser):
+        annoying_message = ".annoying{display: block;}"
+        init_message = "$(document).ready(function(){$.facebox.settings.opacity = 0.5;jQuery.facebox({ ajax : ie_error});});"
 
     return render_to_response(request, "home.html", locals())
 
