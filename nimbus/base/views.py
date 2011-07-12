@@ -5,6 +5,8 @@ import operator
 
 import systeminfo
 
+import re
+
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -97,9 +99,18 @@ def home(request):
     # - message
 
     last_jobs = Job.objects.all().order_by('-starttime').distinct()[:5]
+    
+    # detects browser
+    
+    browser = request.META['HTTP_USER_AGENT']
+    init_message = ""
+    if re.search("IE", browser):# needs test!
+        init_message = "$(document).ready(function(){$.facebox.settings.opacity = 0.5;jQuery.facebox({ ajax : ie_error});});";
 
     return render_to_response(request, "home.html", locals())
 
+def ie_error(request):
+    return render_to_response(request, "ie_error.html", locals())
 
 
 

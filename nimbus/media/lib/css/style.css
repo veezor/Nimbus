@@ -1526,3 +1526,12 @@ a.btn-download .icon {
 a.btn-download .icon {background-position:-40px 0;}
 a.btn-download:hover .icon, a.btn-download:focus .icon {background-position:-40px -25px;}
 
+/* general styles */
+ul.styled-list{
+    display: block;
+    list-style: circle;
+}
+ul.styled-list li {
+    display: block;
+    margin: 0 0 0 20px;
+}
