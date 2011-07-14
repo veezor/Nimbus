@@ -80,9 +80,14 @@
     			    {% endwith %}
                 </div>
                 <div class="left" id="disc-use">
+                {% if table3 %}
     			    {% with table3 as table %}
     			        {% include "table_chart.html" %}
     			    {% endwith %}
+                {% else %}
+                    <h2>Ocupação em disco</h2>
+                    <p><em>Sem uso do disco</em></p>
+                {% endif %}
                 </div>
                 <div class="left" id="offsite-use">
                 {% if table6 %}

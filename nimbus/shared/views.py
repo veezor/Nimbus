@@ -30,11 +30,8 @@ def edit_singleton_model(request, templatename, redirect_to,
                               post_save_redirect = reverse(redirect_to),
                               extra_context = extra_context )
 
-
-
 def render_to_response(request, template, dictionary ):
      return _render_to_response( template, dictionary,
                                 context_instance=RequestContext(request))
-
 
 

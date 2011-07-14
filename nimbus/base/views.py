@@ -44,19 +44,20 @@ def home(request):
 
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
-    diskdata = [("13/11", 2), ("13/01", 25), ("13/01", 27), ("13/01", 10), ("16/01", 15), ("16/01", 15),
-                ("16/01", 12), ("16/01", 28)]
+    #diskdata = [("13/11", 2), ("13/01", 25), ("13/01", 27), ("13/01", 10), ("16/01", 15), ("16/01", 15),
+    #            ("16/01", 12), ("16/01", 28)]
     if len(diskdata) == 1: # duplicates first item for area graph
         diskdata *= 2
 
     # TODO: O diskfree deve ser calculado como gráfico de história.
-
-    table3 = {'title': u"Ocupação do disco", 'width': "", 'type': "area", 'cid': "chart3", 'height': "130",
-              'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1]) for i in diskdata]}
-    # table3['header'] = ["Gigabytes"]
-    #setando valor padrao
-    t3data = [i[1] for i in diskdata] if len(diskdata) else [0.0]
-    table3['lines'] = {"Disponível": t3data}
+    table3 = False
+    if (diskdata):
+        table3 = {'title': u"Ocupação do disco", 'width': "", 'type': "area", 'cid': "chart3", 'height': "130",
+                  'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1]) for i in diskdata]}
+        # table3['header'] = ["Gigabytes"]
+        #setando valor padrao
+        t3data = [i[1] for i in diskdata] if len(diskdata) else [0.0]
+        table3['lines'] = {"Disponível": t3data}
 
 
     memory = systeminfo.get_memory_usage()
@@ -107,6 +108,8 @@ def home(request):
     if re.search("MSIE", browser):
         annoying_message = ".annoying{display: block;}"
         init_message = "$(document).ready(function(){$.facebox.settings.opacity = 0.5;jQuery.facebox({ ajax : ie_error});});"
+        
+    message = u'Mensagem dhow!';
 
     return render_to_response(request, "home.html", locals())
 
