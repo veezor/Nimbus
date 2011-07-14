@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import time
 import string
 from random import choice
 from itertools import izip
 
 from django.conf import settings
+from django.contrib import messages
 
 class Referer(object):
     def __init__(self, request):
@@ -133,3 +135,15 @@ def get_filesize_from_lstat(lstat):
 def project_port(request):
     return (':%s' % request.META['SERVER_PORT']) if request.META['SERVER_PORT'] else ''
 
+
+def block_ie_browser(request):
+    # detects browser
+    browser = request.META['HTTP_USER_AGENT']
+    init_message = ""
+    if re.search("Mozilla", browser):
+        #TODO: Insert facebox message on templates
+        init_message = "$(document).ready(function(){\
+                        $.facebox.settings.opacity = 0.5;\
+                        jQuery.facebox({ ajax : ie_error});\
+                        });"
+        return messages.warning(request, "Navegador incompativel com o Nimbus. Sistema testado apenas para Google Chrome e Mozilla Firefox.")
