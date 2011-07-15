@@ -140,7 +140,7 @@ def block_ie_browser(request):
     # detects browser
     browser = request.META['HTTP_USER_AGENT']
     init_message = ""
-    if re.search("Mozilla", browser):
+    if re.search("MSIE", browser):
         #TODO: Insert facebox message on templates
         init_message = "$(document).ready(function(){\
                         $.facebox.settings.opacity = 0.5;\
