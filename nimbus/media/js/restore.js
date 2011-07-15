@@ -80,7 +80,9 @@ $(document).ready(function(){
     
     $('.submit_step_1').click(function(){
         data_inicio = $('#data_inicio').val();
+        data_inicio = data_inicio.replace(/\//gi,"-");
         data_fim = $('#data_fim').val();
+        data_fim = data_fim.replace(/\//gi,"-");
         computer_id = $('#computer_id').val();
         procedure_id = $('#procedure_id').val();
     
@@ -88,8 +90,9 @@ $(document).ready(function(){
         $('.restore_step_3').slideUp();
         $('.restore_step_4').slideUp();
         $('.restore_step_5').slideUp();
-    
+        
         if (data_inicio && data_fim) {
+            //alert('/restore/get_jobs/' + procedure_id + '/' + data_inicio + '/' + data_fim + '/');
             $.getJSON(
                 '/restore/get_jobs/' + procedure_id + '/' + data_inicio + '/' + data_fim + '/',
                 function(data)
@@ -98,6 +101,8 @@ $(document).ready(function(){
                     if (data) {
                         // TODO: Populate the jobs list.
                         $("<option>").val("").text(" - " + data.length + " jobs, selecione um  - ").attr("selected", "selected").appendTo("#jobs_list");
+                        // exemplo
+                        //$("<option>").val("2").text(" Job de exemplo, selecione este ").attr("selected", "selected").appendTo("#jobs_list");
                         for (var i in data) {
                             job = data[i];
                             if (job.fields && job.fields.realendtime) {
@@ -130,6 +135,12 @@ $(document).ready(function(){
             }
         }
     ).click();
+    
+    $(".open_step_4").click(function(){
+        $(".restore_step_4").slideDown();
+        return false;
+    });
+    
     
     $('#pattern').keydown(
         function(e){
