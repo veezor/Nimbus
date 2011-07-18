@@ -1,5 +1,5 @@
-// Accordeon for procedure history
 $(document).ready(function(){
+    // Accordeon for procedure history
     $(".hide").slideUp();
     $('.job_line').click(function(){
         $(".hide").slideUp();
@@ -15,10 +15,7 @@ $(document).ready(function(){
     $('.job_line').mouseout(function(){
         $(this).removeClass('over');
     });
-});
-
-// JavaScript para mostrar os status dos jobs nos histórico
-$(document).ready(function(){
+    // JavaScript para mostrar os status dos jobs nos histórico
     $('.edit-fileset').click(function(){
         var fileset_id = $(this)[0].id;
         selected_val = $('#select_' + fileset_id)[0].value;
@@ -36,9 +33,7 @@ $(document).ready(function(){
         jQuery.facebox({ ajax: locattion });
         return false;
     });
-});
-
-$(document).ready(function(){
+    // table styles
     $("tbody tr").mouseover(function(){
         $(this).addClass("hvr");
         $(this).removeClass("nrl");
@@ -52,45 +47,8 @@ $(document).ready(function(){
         if (!confirm("Tem certeza?"))
             return false;
     });
-});
-
-function set_fileset() {
-    if (typeof FILESET_ID != "undefined") {
-        $("#id_procedure-fileset").append("<option value="+FILESET_ID+">Usar o fileset criado</option>");
-        $("#id_procedure-fileset").val(FILESET_ID);
-        $("#uniform-id_procedure-fileset").hide('slow');
-        $("#discard_fileset").show('slow')
-        $("#fileset_button").html("<span>Modificar</span>");
-        $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");            
-    }
-};
-function set_schedule() {
-    if (typeof SCHEDULE_ID != "undefined") {
-        $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">Usar o agendamento criado</option>");
-        $("#id_procedure-schedule").val(SCHEDULE_ID);
-        $("#uniform-id_procedure-schedule").hide('slow');
-        $("#discard_schedule").show('slow')
-        $("#schedule_button").html("<span>Modificar</span>");
-        $("#schedule_button").attr('href', "/schedules/" + SCHEDULE_ID + "/edit/");            
-    }
-};
-function unset_schedule() {
-    $("#uniform-id_procedure-schedule").show('slow');
-    $("#discard_schedule").hide('slow')
-    $("#schedule_button").html("<span>Criar outro agendamento</span>");
-    $("#schedule_button").attr('href', "/schedules/add/");            
-};
-function unset_fileset() {
-    $("#uniform-id_procedure-fileset").show('slow');
-    $("#discard_fileset").hide('slow')
-    $("#fileset_button").html("<span>Criar outro fileset</span>");
-    $("#fileset_button").attr('href', "/filesets/add/");            
-};
-
-
-
-$(document).ready(function(){
-    $.facebox.settings.opacity = 0.7;
+    // facebox stuff
+    //$.facebox.settings.opacity = 0.3;
     $('#fileset_button').click(function(){
         if ($('#id_procedure-computer').val())
         {
@@ -98,18 +56,22 @@ $(document).ready(function(){
         }
         else
         {
-            jQuery.facebox('Você precisa esolher um computador');
+            jQuery.facebox('Você precisa escolher um computador');
         }
         return false;
     });
     $('#schedule_button').click(function(){
-        jQuery.facebox({ ajax: $('#schedule_button')[0].href});
+        //jQuery.facebox.empty();
+        console.log("facebox");
+
+        $.facebox(function(){
+            $.facebox({ ajax: $('#schedule_button')[0].href});
+        });
+
+        console.log("facebox ativo");
         return false;
     });
 
-});
-// new document.ready to organize
-$(document).ready(function(){
     $('.toggle').click(function(){
         var target = $(this).attr('ref');
         $(this).parent().parent().find('.' + target).slideToggle();
@@ -299,10 +261,7 @@ $(document).ready(function(){
         }
         return false;
     });
-
-});
-/* Slider */
-$(document).ready(function(){
+    /* Slider */
 	var maximun = 121;
 	$(".pool_new_value").hide();
 	$(".add_new_pool").hide();
@@ -338,7 +297,39 @@ $(document).ready(function(){
 	});
 });
 
-
+// default functions
+function set_fileset() {
+    if (typeof FILESET_ID != "undefined") {
+        $("#id_procedure-fileset").append("<option value="+FILESET_ID+">Usar o fileset criado</option>");
+        $("#id_procedure-fileset").val(FILESET_ID);
+        $("#uniform-id_procedure-fileset").hide('slow');
+        $("#discard_fileset").show('slow')
+        $("#fileset_button").html("<span>Modificar</span>");
+        $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");            
+    }
+};
+function set_schedule() {
+    if (typeof SCHEDULE_ID != "undefined") {
+        $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">Usar o agendamento criado</option>");
+        $("#id_procedure-schedule").val(SCHEDULE_ID);
+        $("#uniform-id_procedure-schedule").hide('slow');
+        $("#discard_schedule").show('slow')
+        $("#schedule_button").html("<span>Modificar</span>");
+        $("#schedule_button").attr('href', "/schedules/" + SCHEDULE_ID + "/edit/");            
+    }
+};
+function unset_schedule() {
+    $("#uniform-id_procedure-schedule").show('slow');
+    $("#discard_schedule").hide('slow')
+    $("#schedule_button").html("<span>Criar outro agendamento</span>");
+    $("#schedule_button").attr('href', "/schedules/add/");            
+};
+function unset_fileset() {
+    $("#uniform-id_procedure-fileset").show('slow');
+    $("#discard_fileset").hide('slow')
+    $("#fileset_button").html("<span>Criar outro fileset</span>");
+    $("#fileset_button").attr('href', "/filesets/add/");            
+};
 
 
 
