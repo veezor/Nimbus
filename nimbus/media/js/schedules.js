@@ -1,5 +1,14 @@
 $(function() {
 	$( ".checkboxes" ).buttonset();
+	// table styles
+    $("tbody tr").mouseover(function(){
+        $(this).addClass("hvr");
+        $(this).removeClass("nrl");
+    });
+    $("tbody tr").mouseout(function(){
+        $(this).addClass("nrl");
+        $(this).removeClass("hvr");
+    });
 });
 
 WEEK = {0: 'Domingo',
@@ -107,12 +116,13 @@ $(document).ready(function(){
 	// fim do adicionar de hora em hora
 });
 function update_inventory() {
-	$("#inventory")[0].innerHTML = "<thead><tr><th>Remover</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr></thead>";
+	$("#inventory")[0].innerHTML = "<thead><tr><th>&nbsp;</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr></thead><tbody></tbody>";
 	for (var index in SCHEDULES) {
 		var ob = SCHEDULES[index];
         // if (ob['status'] != 'deleted') {
-		    var line = '<tr class="' + ob['status'] + '_run"><td><span onclick="remove_schedule(' + index + ')" class="remove_schedule" >Icone</span></td><td>' + ob['level'] + '</td><td>' + ob['kind'] + '</td><td>' + ob['day'] + '</td><td>' + ob['hour'] + ':' + ob['minute'] + '</td></tr>';
-		    $("#inventory").append(line);
+		    var line = '<tr class="' + ob['status'] + '_run align-center"><td><span onclick="remove_schedule(' + index + ')" class="remove_schedule"><img src="/media/icons/cross.png" alt="Excluir" /></span></td><td>' + ob['level'] + '</td><td>' + ob['kind'] + '</td><td>' + ob['day'] + '</td><td>' + ob['hour'] + ':' + ob['minute'] + '</td></tr>';
+		    //console.log(line);
+		    $("table#inventory > tbody:last").append(line);
         // };
 	};
 	uncheck_all();
