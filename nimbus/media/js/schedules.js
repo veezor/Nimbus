@@ -1,5 +1,5 @@
-$(function() {
-	$( ".checkboxes" ).buttonset();
+$(document).ready(function(){
+    $( ".checkboxes" ).buttonset();
 	// table styles
     $("tbody tr").mouseover(function(){
         $(this).addClass("hvr");
@@ -9,9 +9,7 @@ $(function() {
         $(this).addClass("nrl");
         $(this).removeClass("hvr");
     });
-});
-
-WEEK = {0: 'Domingo',
+    WEEK = {0: 'Domingo',
 		1: 'Segunda-feira',
 		2: 'Terça-feira',
 		3: 'Quarta-feira',
@@ -19,7 +17,6 @@ WEEK = {0: 'Domingo',
 		5: 'Sexta-feira',
 		6: 'Sabado'};
 
-$(document).ready(function(){
 	// Inicio do adicionar mensal
 	$('#month_button').click(function(){
 		var month_days = $('.month');
@@ -33,11 +30,9 @@ $(document).ready(function(){
 		var minutes_array = get_minutes();
 		if (month_array.length == 0) {
 			alert("Você deve escolher ao menos um dia do mês para executar o backup");
-		} else if ($('#id_month-level').val() == 'None'){
-			alert("Escolha o tipo de backup que deseja realizar");
 		} else {
-			var level_id = $('#id_month-level')[0].value
-			var level = $('#id_month-level')[0].options[level_id].text;
+			var level_id = $('select#id_month-level option:selected').val();
+			var level = $('select#id_month-level option:selected').text();
 			for (var day = 0; day < month_array.length; day++) {
 				for (var hour = 0; hour < hours_array.length; hour++) {
 					for (var minute = 0; minute < minutes_array.length; minute++) {
@@ -63,11 +58,9 @@ $(document).ready(function(){
 		var minutes_array = get_minutes();
 		if (week_array.length == 0) {
 			alert("Você deve escolher ao menos um dia da semana para executar o backup");
-		} else if ($('#id_week-level').val() == 'None'){
-			alert("Escolha o tipo de backup que deseja realizar");
 		} else {
-			var level_id = $('#id_week-level')[0].value
-			var level = $('#id_week-level')[0].options[level_id].text;
+			var level_id = $('select#id_week-level option:selected').val();
+			var level = $('select#id_week-level option:selected').text();
 			for (var day = 0; day < week_array.length; day++) {
 				for (var hour = 0; hour < hours_array.length; hour++) {
 					for (var minute = 0; minute < minutes_array.length; minute++) {
@@ -84,34 +77,26 @@ $(document).ready(function(){
 	$('#day_button').click(function(){
 		var hours_array = get_hours()
 		var minutes_array = get_minutes();
-		if ($('#id_day-level').val() == 'None'){
-			alert("Escolha o tipo de backup que deseja realizar")
-		} else {
-			var level_id = $('#id_day-level')[0].value
-			var level = $('#id_day-level')[0].options[level_id].text;
-			for (var hour = 0; hour < hours_array.length; hour++) {
-				for (var minute = 0; minute < minutes_array.length; minute++) {
-					SCHEDULES.push({'kind_id': 3, 'status': 'new', 'kind': 'Diário', 'level_id': level_id, 'level': level, 'day_num': 0, 'day': 'Todos', 'hour': pad(hours_array[hour], 2), 'minute': pad(minutes_array[minute],2)});
-				}
+		var level_id = $('select#id_day-level option:selected').val();
+		var level = $('select#id_day-level option:selected').text();
+		for (var hour = 0; hour < hours_array.length; hour++) {
+			for (var minute = 0; minute < minutes_array.length; minute++) {
+				SCHEDULES.push({'kind_id': 3, 'status': 'new', 'kind': 'Diário', 'level_id': level_id, 'level': level, 'day_num': 0, 'day': 'Todos', 'hour': pad(hours_array[hour], 2), 'minute': pad(minutes_array[minute],2)});
 			}
-			update_inventory();
 		}
+		update_inventory();
     });
 	// fim do adicionar diário
 	
 	// inicio do adicionar de hora em hora
 	$('#hour_button').click(function(){
 		var minutes_array = get_minutes();
-		if ($('#id_hour-level').val() == 'None'){
-			alert("Escolha o tipo de backup que deseja realizar")
-		} else {
-			var level_id = $('#id_hour-level')[0].value
-			var level = $('#id_hour-level')[0].options[level_id].text;
-			for (var minute = 0; minute < minutes_array.length; minute++) {
-				SCHEDULES.push({'kind_id': 4, 'status': 'new', 'kind': 'Hora em hora', 'level_id': level_id, 'level': level, 'day_num': 0, 'day': 'Todos', 'hour': '##', 'minute': pad(minutes_array[minute],2)});
-			}
-			update_inventory();
+        var level_id = $('select#id_hour-level option:selected').val();
+		var level = $('select#id_hour-level option:selected').text();
+		for (var minute = 0; minute < minutes_array.length; minute++) {
+			SCHEDULES.push({'kind_id': 4, 'status': 'new', 'kind': 'Hora em hora', 'level_id': level_id, 'level': level, 'day_num': 0, 'day': 'Todos', 'hour': '##', 'minute': pad(minutes_array[minute],2)});
 		}
+		update_inventory();
     });
 	// fim do adicionar de hora em hora
 });
