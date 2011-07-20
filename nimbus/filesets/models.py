@@ -34,7 +34,6 @@ def update_fileset_file(fileset):
     name = fileset.bacula_name
     filename = path.join(settings.NIMBUS_FILESETS_DIR, name)
     files = [f.path for f in fileset.files.all()]
-    print files
     render_to_file(filename, "fileset", name=name, files=files)
 
 
@@ -45,16 +44,11 @@ def remove_fileset_file(fileset):
     utils.remove_or_leave(filename)    
 
 
-def update_filepath(obj):
-    if isinstance(obj, FilePath):
-        for fileset in obj.filesets.all():
-            update_fileset_file(fileset)
-    elif isinstance(obj, FileSet):
-        update_fileset_file(obj)
-    else:
-        # TODO: TRATAR
-        pass
+def update_filepath(filepath):
+    update_fileset_file(filepath.fileset)
 
 
 signals.connect_on(update_fileset_file, FileSet, post_save)
+signals.connect_on(update_filepath, FilePath, post_save)
 signals.connect_on(remove_fileset_file, FileSet, post_delete)
+signals.connect_on(update_filepath, FilePath, post_delete)
