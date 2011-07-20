@@ -100,9 +100,9 @@ def list(request):
     if request.method == "GET":
         group = request.GET.get("group")
         if group:
-            computers = Computer.objects.filter(groups__name=group).order_by('groups__name')
+            computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
         else:
-            computers = Computer.objects.order_by('groups__name')
+            computers = Computer.objects.filter(active=True,id__gt=1).order_by('groups__name')
 
         groups = ComputerGroup.objects.order_by('name')
         extra_content = {
