@@ -99,14 +99,18 @@ def delete(request, object_id):
 def list(request):
     if request.method == "GET":
         group = request.GET.get("group")
-        computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
-    else:
-        computers = Computer.objects.filter(active=True).order_by('groups__name')
-    groups = ComputerGroup.objects.order_by('name')
-    extra_content = {'computers': computers,
-                     'title': u"Computadores Ativos",
-                     'groups': groups}
-    return render_to_response(request, "computers_list.html", extra_content)
+        if group:
+            computers = Computer.objects.filter(groups__name=group).order_by('groups__name')
+        else:
+            computers = Computer.objects.order_by('groups__name')
+
+        groups = ComputerGroup.objects.order_by('name')
+        extra_content = {
+                'computers': computers,
+                'title': u"Computadores Ativos",
+                'groups': groups
+        }
+        return render_to_response(request, "computers_list.html", extra_content)
 
 @login_required
 def view(request, object_id):
