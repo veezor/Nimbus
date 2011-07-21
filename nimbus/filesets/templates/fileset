@@ -5,6 +5,8 @@ FileSet {
                 signature = "MD5"
                 compression = "GZIP"
             }
-			{% for file in files %}File = "{{file}}"
-	{%endfor%}}
+			{% for file in files %}
+                File = "{{file}}"
+	        {%endfor%}
+        }
 }
