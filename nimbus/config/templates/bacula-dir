@@ -12,6 +12,7 @@ Director {
 }
 
 Catalog {
+    DB Address = 127.0.0.1
 	dbuser = {{ db_user }}
 	dbpassword = "{{db_password}}"
 	Name = MyCatalog
