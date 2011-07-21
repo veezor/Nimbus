@@ -33,10 +33,29 @@ $(document).ready(function(){
         $('.add_group').slideUp();
         return false;
     });
-    
+    // mostra detalhes do fileset
     $('.toggle').click(function(){
+        console.log("click");
         var target = $(this).attr('ref');
+        console.log(target);
         $(this).parent().parent().find('.' + target).slideToggle();
         return false;
     });
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 });
