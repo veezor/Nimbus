@@ -152,9 +152,9 @@ class Job(models.Model):
             return 'running'
         elif self.jobstatus in ['F', 'S', 'm', 'M', 's', 'j', 'c', 'd', 't', 'p', 'C']:
             return 'waiting'
-        elif self.jobstatus in ['E', 'e', 'D', 'A']:
+        elif self.jobstatus in ['e', 'D']:
             return 'warning'
-        elif self.jobstatus in ['B', 'f']:
+        elif self.jobstatus in ['E','B', 'f','A']:
             return 'error'
         else:
             return 'ok'
