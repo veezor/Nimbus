@@ -105,7 +105,7 @@
     				&nbsp;&nbsp;
     				<label>Data final:</label> 
     				<input type="text" class="text date_picker" id="data_fim" name="data_fim" value="{% now "d-m-Y" %}" />
-    				<input type="submit" class="submit submit_step_1" value="Filtrar" />
+    				<button type="submit" class="css3button big submit_step_1" value="Filtrar">Filtrar</button>
     			</p>
     		</div>
 
@@ -118,8 +118,7 @@
                 </ul>
                 {% endif %}
                 <select name="job_id" class="styled" id="jobs_list">
-                    <option value=""> - Selecioneasas um Job - </option>
-                    <option value="">outro job</option>
+                    <option value=""> - Selecione um Job - </option>
                 </select>
                 <div class="clear"></div>
             </div>
@@ -130,7 +129,7 @@
                 <p>
     				<label>Buscar arquivo:</label>
     				<input type="text" name="pattern" id="pattern" class="text small" />
-    				<input type="button" class="submit small" id="buscar_arquivos" value="Buscar" />
+    				<button type="button" class="css3button big" id="buscar_arquivos" value="Buscar">Buscar</button>
     			</p>
 
                 <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
@@ -144,7 +143,7 @@
                 <ul class="tree_computer"><li class="directory first"><span><a href="#" path="/">Selecione o local para restauração</a></span></li></ul>
                 
     		    <p>
-                    <input type="submit" class="submit mid" value="Restaurar" />
+                    <button type="submit" class="css3button big" value="Restaurar">Restaurar Arquivos</button>
                 </p>
                 <div class="clear"></div>
             </div>

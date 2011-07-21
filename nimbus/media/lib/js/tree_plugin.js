@@ -123,6 +123,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
 }
 
 function update_tree(root_path, get_tree_path, tree_class, input_type, input_name, depends) {
+    console.log("tree");
     if (!tree_class) {
         tree_class = '.tree';
     }
@@ -157,7 +158,7 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     } else {
         $('#mensagem_erro_fileset').html('').hide();
     }
-    
+    console.log($(tree_class));
     link = $(tree_class + " *[path="+root_path+"]");
     link.find(".wait").remove();
     link.append($("<div class='wait'></div>"));

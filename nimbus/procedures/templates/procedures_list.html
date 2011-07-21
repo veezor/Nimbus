@@ -29,28 +29,28 @@
                     <p class="options"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p>
                 </div>
                 <div class="right">
-                    <div class="floatright">
+                    <div class="floatright align-left">
                         <form action="/procedures/{{procedure.id}}/execute/" method="post" class="floatright">
-                            <input type="submit" class="submit tiny" value="Executar agora" />
+                            <button type="submit" class="css3button" value="Executar agora">Executar Agora</button>
                         </form>
                         {%  if offsite_on %}
                             {% if not procedure.offsite_on %}
                             <form action="/procedures/{{procedure.id}}/activate_offsite/" method="post" class="floatright">
-                                <input type="submit" class="submit tiny" value="Ativar Offsite" />
+                                <button type="submit" class="css3button" value="Ativar Offsite">Ativar Offsite</button>
                             </form>
                             {% else %}
                             <form action="/procedures/{{procedure.id}}/deactivate_offsite/" method="post" class="floatright">
-                                <input type="submit" class="submit tiny" value="Desativar Offsite" />
+                                <button type="submit" class="css3button" value="Desativar Offsite">desativar Offsite</button>
                             </form>
                             {% endif %}
                         {% endif %}
                         {% if not procedure.active %}
                         <form action="/procedures/{{procedure.id}}/activate/" method="post" class="floatright">
-                            <input type="submit" class="submit tiny" value="Ativar" />
+                            <button type="submit" class="css3button" value="Ativar">Ativar</button>
                         </form>
                         {% else %}
                         <form action="/procedures/{{procedure.id}}/deactivate/" method="post" class="floatright">
-                            <input type="submit" class="submit tiny" value="Desativar" />
+                            <button type="submit" class="css3button" value="Desativar">Desativar</button>
                         </form>
                         {% endif %}
                     </div>

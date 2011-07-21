@@ -83,13 +83,17 @@ a:hover {
 #header {
 	height: 50px;
 	line-height: 50px;
-	background: url(../images/hdr.gif) 0 0 repeat-x;
+	background: #1b8568; /*url(../images/hdr.gif) 0 0 repeat-x;*/
 	color: #FFF;
 	/*font-weight: bold;*/
 	margin-bottom: 20px;
+	border: 1px solid #1b8568;
+	-webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;
+	padding: 0 20px 0 0;
 	}
 	
 #header .hdrl {
+    display: none;
 	width: 20px;
 	height: 50px;
 	float: left;
@@ -97,10 +101,11 @@ a:hover {
 	}
 
 #header .hdrr {
+display: none;
 	width: 20px;
 	height: 50px;
 	float: right;
-	background: url(../images/hdrr.gif) top right no-repeat;
+	background: #1b8568; /*url(../images/hdrr.gif) top right no-repeat;*/
 	}
 	
 #header a {
@@ -115,7 +120,7 @@ a:hover {
 	float: left;
 	/*margin-right: 60px;*/
 	/*margin-right: 30px;*/
-	margin-left: 40px;
+	margin-left: 60px;
 	}
 
 #header h1 a {
@@ -243,7 +248,7 @@ a:hover {
 	/*color: #999;*/
 	color: #FFF;
 	/*background: url(../images/mbg.png) 0 0 repeat;*/
-	background: #4885B0;
+	background: #1b8568;
 	}
 
 /* 2nd Menu Hover Persistence */
@@ -252,7 +257,7 @@ a:hover {
 #header #nav li.iehover li a:hover,
 #header #nav li.iehover li.iehover a {
 	color: #fff;
-	background: #000;
+	background: #0a3026;
 	}
 
 /* 3rd Menu */
