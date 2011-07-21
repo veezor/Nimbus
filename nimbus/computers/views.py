@@ -99,22 +99,23 @@ def delete(request, object_id):
 def list(request):
     if 'group' in request.GET:
         group = request.GET.get("group")
-        if group:
-            computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
-        else:
-            computers = Computer.objects.filter(active=True,id__gt=1).order_by('groups__name')
+        computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
+    else:
+        computers = Computer.objects.filter(active=True).order_by('groups__name')
 
-        groups = ComputerGroup.objects.order_by('name')
-        extra_content = {
-                'computers': computers,
-                'title': u"Computadores Ativos",
-                'groups': groups
-        }
-        return render_to_response(request, "computers_list.html", extra_content)
+    groups = ComputerGroup.objects.order_by('name')
+    extra_content = {
+            'computers': computers,
+            'title': u"Computadores Ativos",
+            'groups': groups
+    }
+    return render_to_response(request, "computers_list.html", extra_content)
 
 @login_required
 def view(request, object_id):
-    computer = Computer.objects.get(id=object_id,id__gt=1)
+    print "b"*200
+    print object_id
+    computer = Computer.objects.get(id=object_id)
     running_status = ('R','p','j','c','d','s','M','m','s','F','B')
     running_jobs = Job.objects.filter(jobstatus__in=running_status,
                                       client__name=computer.bacula_name)\
