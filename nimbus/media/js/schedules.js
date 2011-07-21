@@ -175,18 +175,20 @@ function submit_all() {
 	    var post_data =  {'main': 'new', 'name': schedule_name, 'is_model': IS_MODEL};
 	}
 	var status = new Array();
+	//console.log(post_url);
 	$.ajax({
         type: "POST",
 		async: false,
         url: post_url,
         data: post_data,
         success: function(j) {
+            console.log("sucess");
             var schedule_response = jQuery.parseJSON(j);
-            console.log(schedule_response);
+            //console.log(schedule_response);
 			if (schedule_response['status'] == 'ok') {
 				TMP_SCHEDULE_ID = schedule_response['new_id'];
 				for (var index in SCHEDULES) {
-					console.log(SCHEDULES[index]);
+					//console.log(SCHEDULES[index]);
 					if (SCHEDULES[index]['status'] != 'old') {
     					SCHEDULES[index]['schedule_id'] = TMP_SCHEDULE_ID; 
     					$.ajax({
@@ -196,6 +198,7 @@ function submit_all() {
     			            data: SCHEDULES[index],
     			            success: function(j) {
     			                var run_response = jQuery.parseJSON(j);
+    			                console.log(run_response);
     							if (run_response['status'] == 'ok') {
     								status.push(true);
     							}
@@ -208,6 +211,7 @@ function submit_all() {
 			}
         }
     });
+    console.log(status);
 	if (status.length == SCHEDULES.length) {
 		alert('Agendamento criado com sucesso');
 		SCHEDULE_ID = TMP_SCHEDULE_ID;

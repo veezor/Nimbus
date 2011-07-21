@@ -37,6 +37,7 @@ def add(request):
 def do_add(request):
     if request.method == 'POST':
         data = request.POST
+        print "a" * 200
         print data
         if data.has_key('main'):
             new = Schedule()

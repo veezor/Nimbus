@@ -61,14 +61,9 @@ $(document).ready(function(){
         return false;
     });
     $('#schedule_button').click(function(){
-        //jQuery.facebox.empty();
-        console.log("facebox");
-
         $.facebox(function(){
             $.facebox({ ajax: $('#schedule_button')[0].href});
         });
-
-        console.log("facebox ativo");
         return false;
     });
 

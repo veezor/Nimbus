@@ -97,7 +97,7 @@ def delete(request, object_id):
 
 @login_required
 def list(request):
-    if request.method == "GET":
+    if 'group' in request.GET:
         group = request.GET.get("group")
         computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
     else:
@@ -207,7 +207,7 @@ def activate(request, object_id):
         return redirect('nimbus.computers.views.list')
     except (socket.error, xmlrpclib.Fault), error:
         messages.error(request, u'Impossível ativar computador, verifique a conexão')
-        return redirect('nimbus.computers.views.add')
+        return redirect('nimbus.computers.views.list')
     messages.success(request, u'Computador ativado com sucesso.')
     return redirect('nimbus.computers.views.list')
 
