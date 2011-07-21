@@ -150,11 +150,11 @@ class Job(models.Model):
     def general_status(self):
         if self.jobstatus in ['R', 'i', 'a']:
             return 'running'
-        elif self.jobstatus in ['F', 'S', 'm', 'M', 's', 'j', 'c', 'd', 't', 'p']:
+        elif self.jobstatus in ['F', 'S', 'm', 'M', 's', 'j', 'c', 'd', 't', 'p', 'C']:
             return 'waiting'
-        elif self.jobstatus in ['E', 'e', 'D', 'A']:
+        elif self.jobstatus in ['e', 'D']:
             return 'warning'
-        elif self.jobstatus in ['B', 'f']:
+        elif self.jobstatus in ['E','B', 'f','A']:
             return 'error'
         else:
             return 'ok'

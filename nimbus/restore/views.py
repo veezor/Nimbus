@@ -29,13 +29,13 @@ from nimbus.libs.bacula import Bacula
 
 @login_required
 def view(request, object_id=None):
+    computer = None
+
     if object_id:
         try:
             computer = Computer.objects.get(id=object_id, active=True)
         except Computer.DoesNotExist, error:
             return redirect('nimbus.restore.views.view')
-    else:
-        computer = Computer.objects.get(active=True)
 
     computers = Computer.objects.filter(active=True,id__gt=1)
     
