@@ -29,10 +29,10 @@
 				{% endif %}
 			<p>
 				<label>{{ field.label }}:</label><br />
-				{% if field.label == 'Schedule' %}
+				{% if field.label == 'Agendamento' %}
 				<a href="/schedules/add/" id="schedule_button" class="minibutton add_schedule_button"><span>Criar um agendamento</span></a><span id="discard_schedule" class="hidden"> ou <a class="minibutton" onClick="unset_schedule()"><span>Descartar e escolher um perfil</span></a></span>
 				{% endif %}
-				{%if field.label == 'Fileset' %}
+				{%if field.label == 'Conjunto de arquivos' %}
 				<a href="/filesets/add/" class="filesets minibutton" id="fileset_button"><span>Criar um conjunto de arquivos</span></a><span id="discard_fileset" class="hidden"> ou <a class="minibutton" onClick="unset_fileset()"><span>Descartar e escolher um perfil</span></a></span>
 				{% endif %}
 				{{ field }}

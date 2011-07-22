@@ -23,10 +23,10 @@ class ProcedureForm(forms.ModelForm):
                                              min_value=1, max_value=3650,
                                              initial=10,
                                              widget=forms.HiddenInput())
-    fileset = forms.models.ModelChoiceField(label=_("Fileset"),
+    fileset = forms.models.ModelChoiceField(label=_("Conjunto de arquivos"),
                                             queryset=FileSet.objects.all(),
                                             empty_label = u"-ou escolha um perfil-")
-    schedule = forms.models.ModelChoiceField(label=_("Schedule"),
+    schedule = forms.models.ModelChoiceField(label=_("Agendamento"),
                                              queryset=Schedule.objects.all(),
                                              empty_label = u"-ou escolha um perfil-")
     # fileset.empty_label = u"-ou escolha um modelo-"

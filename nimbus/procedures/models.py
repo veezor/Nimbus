@@ -34,7 +34,7 @@ class Procedure(BaseModel):
     pool_retention_time = models.IntegerField(verbose_name=_("Retention Time (days)"),
                                               blank=False, null=False,
                                               default=30)
-    computer = models.ForeignKey(Computer, verbose_name=_("Computer"),
+    computer = models.ForeignKey(Computer, verbose_name=_("Computador"),
                                  blank=False, null=False)
     offsite_on = models.BooleanField(default=is_active, blank=False, null=False)
     active = models.BooleanField(default=True, blank=True, null=False)
@@ -42,7 +42,7 @@ class Procedure(BaseModel):
                                  related_name='procedures')
     fileset = models.ForeignKey(FileSet, verbose_name=_("Fileset"),
                                 related_name='procedures')
-    storage = models.ForeignKey(Storage, verbose_name=_("Storage"), null=False,
+    storage = models.ForeignKey(Storage, verbose_name=_("Dispositivo de Armazenamento"), null=False,
                                 blank=False)
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
