@@ -105,7 +105,7 @@
     				&nbsp;&nbsp;
     				<label>Data final:</label> 
     				<input type="text" class="text date_picker" id="data_fim" name="data_fim" value="{% now "d-m-Y" %}" />
-    				<button type="submit" class="css3button big submit_step_1" value="Filtrar">Filtrar</button>
+    				<button type="submit" class="css3button big positive submit_step_1" value="Filtrar">Filtrar</button>
     			</p>
     		</div>
 
@@ -129,13 +129,13 @@
                 <p>
     				<label>Buscar arquivo:</label>
     				<input type="text" name="pattern" id="pattern" class="text small" />
-    				<button type="button" class="css3button big" id="buscar_arquivos" value="Buscar">Buscar</button>
+    				<button type="button" class="css3button big positive" id="buscar_arquivos" value="Buscar">Buscar</button>
     			</p>
 
                 <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
                 
                 <div class="clear"></div><hr />
-                <a href="#" class="minibutton open_step_4"><span>Selecionar local para restauração</span></a>
+                <a href="#" class="css3button positive open_step_4"><span>Selecionar local para restauração</span></a>
             </div>
             <div class="restore_step_4" class="hidden">
                 <h2 class="titulo_step">4. Local para restauração</h2>
@@ -143,7 +143,7 @@
                 <ul class="tree_computer"><li class="directory first"><span><a href="#" path="/">Selecione o local para restauração</a></span></li></ul>
                 
     		    <p>
-                    <button type="submit" class="css3button big" value="Restaurar">Restaurar Arquivos</button>
+                    <button type="submit" class="css3button big positive" value="Restaurar">Restaurar Arquivos</button>
                 </p>
                 <div class="clear"></div>
             </div>

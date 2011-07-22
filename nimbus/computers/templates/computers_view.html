@@ -2,6 +2,8 @@
 
 {% block headtags %}
 <link rel="stylesheet" type="text/css" href="/media/css/computers.css" />
+<script type="text/javascript" src="/media/jquery.js"></script>
+<script type="text/javascript" src="/media/jquery.cookie.js"></script>
 <script type="text/javascript" src="/media/js/computers.js"></script>
 {% endblock %}
 
@@ -16,7 +18,10 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <p><a href="/computers/add">Adicionar computador</a> • <a href="/computers/">Visualizar todos os computadores</a></p>
+        <p>
+            <a href="/computers/add" class="css3button positive">Adicionar computador</a>
+            <a href="/computers/" class="css3button positive">Visualizar todos os computadores</a>
+        </p>
 
         <div class="computer {% if not computer.active %}desativado{% endif %}">
             <div class="left">
@@ -26,24 +31,27 @@
                     <small class="ip">{{computer.address}} - {{computer.operation_system|title}} - {% for g in computer.groups.all %}{{g.name}}{% endfor %}</small>
                 </div>
                 <p class="description">{{computer.description}}</p>
-                <p class="options"><a href="/computers/{{computer.id}}/edit/">Editar</a> -
-				<a href="/computers/{{computer.id}}/delete/">Remover</a></p>
+                <p class="options">
+                    <a href="/computers/{{computer.id}}/edit/" class="css3button positive">Editar</a>
+				    <a href="/computers/{{computer.id}}/delete/" class="css3button negative">Remover</a>
+				</p>
             </div>
             <div class="right">
                 <div class="floatright">
                     {% if not computer.active %}
                     <form action="/computers/{{computer.id}}/activate/" method="post" class="floatright">
-                        <input type="submit" class="submit tiny" value="Ativar"/>
+                        <button type="submit" class="css3button positive" value="Ativar">Ativar</button>
                     </form>
                     {% endif %}
                     {% if computer.procedure_set.count %}
                     <form action="/restore/{{computer.id}}/view/" method="post" class="floatright">
-                        <input type="submit" class="submit tiny" value="Restaurar" />
+                        <button type="submit" class="css3button positive" value="Restaurar">Restaurar</button>
                     </form>
                     {% endif %}
                     <form action="/backup/{{computer.id}}/add/" method="post" class="floatright">
-                        <input type="submit" class="submit tiny" value="Criar backup"/>
+                        <button type="submit" class="css3button positive" value="Criar backup">Criar Backup</button>
                     </form>
+                    <a href="/computers/{{comp.id}}/configure/" class="css3button positive">Reconfigurar</a>
                 </div>
                 {% if not computer.procedure_set.count %}
                     <p>Não existem procedimentos para este computador.</p>

@@ -1497,12 +1497,12 @@ a.minibutton>span {
 }
 
 a.minibutton:hover, a.minibutton:focus {
-	color:#fff;
+	color:#FFF;
 	text-decoration:none;
 	text-shadow:-1px -1px 0 rgba(0,0,0,0.3);
-	background-position:0 -30px;
+	background-position:0 -150px;
 }
-a.minibutton:hover>span, a.minibutton:focus>span {background-position:100% -30px;}
+a.minibutton:hover>span, a.minibutton:focus>span {background-position:100% -150px;}
 
 a.minibutton.mousedown{background-position:0 -60px; }
 a.minibutton.mousedown>span{background-position:100% -60px; }

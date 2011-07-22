@@ -16,7 +16,7 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <p><a href="/computers/list">Listar computadores</a></p>
+        <p><a href="/computers/list" class="css3button positive">Listar computadores</a></p>
         <p>Clique no botão ativar ao lado do computador desejado para torná-lo uma máquina ativa no Nimbus.</p>
         <div class="computers">
         {% for comp in computers %}
@@ -26,15 +26,18 @@
                         <img src="/media/icons/computer.png" alt=""/>
                         <h3 class="name">{{comp.name}}</h3>
                         <small class="ip">{{comp.address}} - {{comp.operation_system|title}}</small>
-                        <p class="options"><a href="/computers/{{comp.id}}/edit_no_active/">Editar</a> - <a href="/computers/{{comp.id}}/delete/">Remover</a></p>
+                        <p class="options">
+                            <a href="/computers/{{comp.id}}/edit_no_active/" class="css3button pill positive">Editar</a>
+                            <a href="/computers/{{comp.id}}/delete/" class="css3button pill negative">Remover</a>
+                        </p>
                     </div>
                 </div>
                 <div class="right">
                     <div class="floatright">
-                        <a href="/computers/{{comp.id}}/activate/" class="submit tiny">Ativar</a><br />
-                        <a href="/computers/{{comp.id}}/configure/" class="submit tiny">Reconfigurar</a>
+                        <a href="/computers/{{comp.id}}/activate/" class="css3button positive big">Ativar</a>
+<!--                         <a href="/computers/{{comp.id}}/configure/" class="css3button positive big">Reconfigurar</a> -->
 {#                        <form action="/computers/{{comp.id}}/activate/" method="post" class="floatright">#}
-{#                            <input type="submit" class="submit tiny" value="Ativar"/>#}
+{#                            <button type="submit" class="css3button positive" value="Ativar">Ativar</button>#}
 {#                        </form>#}
                     </div>
                 </div>

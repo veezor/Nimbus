@@ -16,7 +16,7 @@
 	</div>
 
     <div class="block_content">
-        <p><a href="/storages/add">Adicionar armazenamento</a></p>
+        <p><a href="/storages/add" class="css3button positive">Adicionar armazenamento</a></p>
         <div class="storages">
         {% for storage in storages %}
             <div class="storage {% if not storage.active %}desativado{% endif %}">
@@ -28,14 +28,14 @@
                         <small class="ip">{{storage.address}}</small>
                     </div>
                     <p class="description">{{storage.description}}</p>
-                    <p class="options"><a href="/storages/{{storage.id}}/edit/">Editar</a></p>
+                    <p class="options"><a href="/storages/{{storage.id}}/edit/" class="css3button positive">Editar</a></p>
                     
                 </div>
                 <div class="right">
                     <div class="floatright">
                         {% if not storage.active %}
                         <form action="/storages/{{storage.id}}/activate/" method="post" class="floatright">
-                            <input type="submit" class="submit tiny" value="Ativar"/>
+                            <button type="submit" class="css3button positive" value="Ativar">Ativar</button>
                         </form>
                         {% endif %}
                     </div>

@@ -31,26 +31,26 @@
                 <div class="right">
                     <div class="floatright align-left">
                         <form action="/procedures/{{procedure.id}}/execute/" method="post" class="floatright">
-                            <button type="submit" class="css3button" value="Executar agora">Executar Agora</button>
+                            <button type="submit" class="css3button positive" value="Executar agora">Executar Agora</button>
                         </form>
                         {%  if offsite_on %}
                             {% if not procedure.offsite_on %}
                             <form action="/procedures/{{procedure.id}}/activate_offsite/" method="post" class="floatright">
-                                <button type="submit" class="css3button" value="Ativar Offsite">Ativar Offsite</button>
+                                <button type="submit" class="css3button positive" value="Ativar Offsite">Ativar Offsite</button>
                             </form>
                             {% else %}
                             <form action="/procedures/{{procedure.id}}/deactivate_offsite/" method="post" class="floatright">
-                                <button type="submit" class="css3button" value="Desativar Offsite">desativar Offsite</button>
+                                <button type="submit" class="css3button negative" value="Desativar Offsite">desativar Offsite</button>
                             </form>
                             {% endif %}
                         {% endif %}
                         {% if not procedure.active %}
                         <form action="/procedures/{{procedure.id}}/activate/" method="post" class="floatright">
-                            <button type="submit" class="css3button" value="Ativar">Ativar</button>
+                            <button type="submit" class="css3button positive" value="Ativar">Ativar</button>
                         </form>
                         {% else %}
                         <form action="/procedures/{{procedure.id}}/deactivate/" method="post" class="floatright">
-                            <button type="submit" class="css3button" value="Desativar">Desativar</button>
+                            <button type="submit" class="css3button negative" value="Desativar">Desativar</button>
                         </form>
                         {% endif %}
                     </div>

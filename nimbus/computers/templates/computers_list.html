@@ -2,6 +2,8 @@
 
 {% block headtags %}
 <link rel="stylesheet" type="text/css" href="/media/css/computers.css" />
+<script type="text/javascript" src="/media/jquery.js"></script>
+<script type="text/javascript" src="/media/jquery.cookie.js"></script>
 <script type="text/javascript" src="/media/js/computers.js"></script>
 {% endblock %}
 
@@ -16,7 +18,7 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <div class="left"><a href="/computers/add">Adicionar computador</a></div>
+        <div class="left"><a href="/computers/add" class="css3button positive">Adicionar computador</a></div>
 		
 		<div id="computers-filter">
 			<form action="/computers/list" method="get">
@@ -26,7 +28,7 @@
 					<option value="{{group.name}}">{{group.name}}</option>
 				{% endfor%}
 			</select>
-			<input type="submit" class="submit tiny" value="Filtrar"/>
+			<button type="submit" class="css3button positive" value="Filtrar">Filtrar</button>
 			</form>
 		</div>
 		
@@ -43,7 +45,10 @@
                         <small class="ip">{{comp.address}} - {{comp.operation_system|title}} - {% for g in comp.groups.all %}{{g.name}}{% endfor %}</small>
                     </div>
                     <p class="description">{{comp.description}}</p>
-                    <p class="options"><a href="/computers/{{comp.id}}/edit/">Editar</a> - <a href="/computers/{{comp.id}}/delete/">Remover</a></p>
+                    <p class="options">
+                        <a href="/computers/{{comp.id}}/edit/" class="css3button positive pill">Editar</a>
+                        <a href="/computers/{{comp.id}}/delete/" class="css3button negative pill">Remover</a>
+                    </p>
                 </div>
                 <div class="right">
                     <div class="floatright">
@@ -54,10 +59,11 @@
                         {% endif %}
                         {% if comp.procedure_set.count %}
                         <form action="/restore/{{comp.id}}/view/" method="post" class="floatright">
-                            <input type="submit" class="submit tiny" value="Restaurar" />
+                            <button type="submit" class="css3button positive" value="Restaurar">Restaurar</button>
                         </form>
                         {% endif %}
-                        <a href="/procedures/add/" class="floatright submit tiny">Criar Backup</a>
+                        <a href="/procedures/add/" class="floatright css3button positive">Criar Backup</a>
+                        <a href="/computers/{{comp.id}}/configure/" class="css3button positive">Reconfigurar</a>
                         
                     </div>
                     {% if not comp.procedure_set.count %}
