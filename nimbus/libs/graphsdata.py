@@ -73,10 +73,13 @@ class GraphDataManager(object):
     def _list_measures(self, datatype):
         data = self.data['data']
         measures = []
-        for date in sorted(data, key=_sort_key_function):
-            fmt_date = "/".join([str(x) for x in date])
-            value = data[date][datatype]
-            measures.append((fmt_date, value))
+        try:
+            for date in sorted(data, key=_sort_key_function):
+                fmt_date = "/".join([str(x) for x in date])
+                value = data[date][datatype]
+                measures.append((fmt_date, value))
+        except KeyError:
+            pass
         return measures
 
 #    def _list_days(self):
@@ -97,7 +100,7 @@ class GraphDataManager(object):
     def list_offsite_measures(self):
         return self._list_measures('offsite')
 
-    def update(self):
+    def update(self, offsite=True):
         data = self.data['data']
         last_update = self.data['last_update']
         now = datetime.datetime.now()
@@ -107,12 +110,22 @@ class GraphDataManager(object):
             return
         data_key = (now.day, now.month, now.year)
         if data_key in data:
-            offsite_value = data[data_key]['offsite'] # preserve old measeure on errors
+            if 'offsite' in data[data_key]:
+                old_offsite_value = data[data_key]['offsite'] # preserve old measeure on errors
+            else:
+                old_offsite_value = 0
         else:
-            offsite_value = 0.0
             data[data_key] = {}
+
+
         data[data_key]['disk'] = self.get_disk_data()
-        data[data_key]['offsite'] = self.get_offsite_data() or offsite_value
+
+        if offsite:
+            offsite_value = self.get_offsite_data()
+
+            if offsite_value or old_offsite_value:
+                data[data_key]['offsite'] = offsite_value or old_offsite_value
+
         self.data['last_update'] = now
         self._remove_old_entries()
         self.save(self.data)
@@ -126,3 +139,9 @@ class GraphDataManager(object):
                 extra = days[:-self.MAX_DAYS]
                 for day in extra:
                     del data[day]
+
+
+
+def update_disk_graph():
+    data_manager = GraphDataManager()
+    data_manager.update(offsite=False)
