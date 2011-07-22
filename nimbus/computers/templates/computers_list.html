@@ -63,6 +63,7 @@
                         </form>
                         {% endif %}
                         <a href="/procedures/add/" class="floatright css3button positive">Criar Backup</a>
+                        <a href="/computers/{{comp.id}}/configure/" class="css3button positive">Reconfigurar</a>
                         
                     </div>
                     {% if not comp.procedure_set.count %}
