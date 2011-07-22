@@ -41,12 +41,15 @@ class Offsite(BaseModel):
                 if nimbus_central_data['status'] != 1:
                     logger.error("Status da conta do usuário inválido")
                     raise ValidationError("Sua assinatura está com problemas, verifique situação na central de atendimento")
+            except urllib2.URLError, error:
+                    raise ValidationError("Erro, verifique sua conexão com a rede externa")
             except urllib2.HTTPError, error:
                 if error.getcode() == 401:
                     logger.error("Username or password error")
                     raise ValidationError("Usuário ou senha incorretos")
                 else:
                     raise ValidationError("Impossível conectar. Tente novamente mais tarde")
+
 
 
             self.plan_size = nimbus_central_data['quota']
