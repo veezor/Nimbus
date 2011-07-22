@@ -2,7 +2,7 @@
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/procedures.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/media/jquery-ui-1.7.2.custom.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
 {% endblock %}
 
@@ -16,7 +16,7 @@
 	</div>
     <div class="block_content">
 		<h2 class="floatleft">Conjuntos de arquivos</h2>
-		&nbsp;&nbsp;<a href="/filesets/add/" class="css3button positive edit-fileset" id="fileset_new"><span>Novo</span></a>
+		&nbsp;&nbsp;<a href="/filesets/add/" class="css3button positive edit-fileset" id="fileset_new">Adicionar</a>
 		<select class="computer-fileset" id="select_fileset_new">
 			<option value="">a partir do computador:</option>
             {% for computer in computers %}

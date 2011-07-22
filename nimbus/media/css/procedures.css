@@ -90,7 +90,7 @@
 }
 
 .fileset {
-    border: 2px solid #c3d9ff;
+    border: 2px solid #67c7a1;
     padding: 0;
     background: #fff;
     -moz-border-radius: 5px;
@@ -98,7 +98,7 @@
 }
 
 .fileset .title{
-    background: #c3d9ff;
+    background: #67c7a1;
     color: #000;
     padding: 5px;
 }
@@ -145,7 +145,7 @@
 }
 
 .fileset table thead th{
-    background: #e3e9ff;
+    background: #f0f0f0;
 }
 
 .fileset table thead th, .fileset table tbody td{
