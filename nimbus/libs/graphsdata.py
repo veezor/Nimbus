@@ -52,9 +52,10 @@ class GraphDataManager(object):
             pickle.dump(data, fileobj)
 
     def get_offsite_data(self):
-        s3 = Offsite.get_s3_interface()
+        offsite = Offsite.get_instance()
         if offsite.active:
             try:
+                s3 = Offsite.get_s3_interface()
                 return s3.get_usage()
             except URLError, error:
                 return 0.0
