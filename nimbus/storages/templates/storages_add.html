@@ -16,7 +16,7 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <p><a href="/storages/list">Listar armazenamento</a></p>
+        <p><a href="/storages/list" class="css3button positive">Listar armazenamento</a></p>
         <div class="storages">
         {% for storage in storages %}
             <div class="storage {% if not storage.active %}desativado{% endif %}">
@@ -26,14 +26,17 @@
                         <h3 class="name"><a href="/storages/{{ storage.id }}/view">{{storage.name}}</a></h3>
                         <small class="ip">{{storage.address}}</small>
                     </div>
-                    <p class="options"><a href="/storages/{{storage.id}}/edit/">Editar</a> - <a href="/storages/{{storage.id}}/delete/">Remover</a></p>
+                    <p class="options">
+                        <a href="/storages/{{storage.id}}/edit/" class="css3button positive pill">Editar</a>
+                        <a href="/storages/{{storage.id}}/delete/" class="css3button pill negative">Remover</a>
+                    </p>
                     
                 </div>
                 <div class="right">
                     <div class="floatright">
                         {% if not storage.active %}
                         <form action="/storages/{{storage.id}}/new/" method="post" class="floatright">
-                            <input type="submit" class="submit tiny" value="Ativar"/>
+                            <button type="submit" class="css3button positive big" value="Ativar">Ativar</button>
                         </form>
                         {% endif %}
                     </div>
