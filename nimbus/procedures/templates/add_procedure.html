@@ -29,11 +29,19 @@
 				{% endif %}
 			<p>
 				<label>{{ field.label }}:</label><br />
+<<<<<<< HEAD
 				{% if field.label == 'Schedule' %}
 				<a href="/schedules/add/" id="schedule_button" class="css3button positive add_schedule_button"><span>Criar um agendamento</span></a><span id="discard_schedule" class="hidden"> ou <a class="minibutton" onClick="unset_schedule()"><span>Descartar e escolher um perfil</span></a></span>
 				{% endif %}
 				{%if field.label == 'Fileset' %}
 				<a href="/filesets/add/" class="filesets css3button positive" id="fileset_button"><span>Criar um conjunto de arquivos</span></a><span id="discard_fileset" class="hidden"> ou <a class="minibutton" onClick="unset_fileset()"><span>Descartar e escolher um perfil</span></a></span>
+=======
+				{% if field.label == 'Agendamento' %}
+				<a href="/schedules/add/" id="schedule_button" class="minibutton add_schedule_button"><span>Criar um agendamento</span></a><span id="discard_schedule" class="hidden"> ou <a class="minibutton" onClick="unset_schedule()"><span>Descartar e escolher um perfil</span></a></span>
+				{% endif %}
+				{%if field.label == 'Conjunto de arquivos' %}
+				<a href="/filesets/add/" class="filesets minibutton" id="fileset_button"><span>Criar um conjunto de arquivos</span></a><span id="discard_fileset" class="hidden"> ou <a class="minibutton" onClick="unset_fileset()"><span>Descartar e escolher um perfil</span></a></span>
+>>>>>>> 7b097dcc40a0de201361a12a73c9b2790286e8c9
 				{% endif %}
 				{{ field }}
 			</p>
