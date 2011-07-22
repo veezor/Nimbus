@@ -75,7 +75,7 @@
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="minibutton" id="month_button"><span>Agendamento Mensal</span></a>
+			<a class="css3button positive" id="month_button"><span>Agendamento Mensal</span></a>
 		</td>
 	</tr>
 	<tr class="border">
@@ -97,7 +97,7 @@
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="minibutton" id="week_button"><span>Agendamento Semanal</span></a>
+			<a class="css3button positive" id="week_button"><span>Agendamento Semanal</span></a>
 		</td>
 	</tr>
 	<tr class="border">
@@ -136,7 +136,7 @@
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="minibutton" id="day_button"><span>Agendamento Diário</span></a>
+			<a class="css3button positive" id="day_button"><span>Agendamento Diário</span></a>
 		</td>
 	</tr>
 	<tr class="border">
@@ -212,7 +212,7 @@
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="minibutton" id="hour_button"><span>Agendamento a cada hora</span></a>
+			<a class="css3button positive" id="hour_button"><span>Agendamento a cada hora</span></a>
 		</td>
 	</tr>
 </table>
@@ -232,9 +232,9 @@
 <input type="hidden" id="schedule_name" value="Apenas para este procedimento"/>
 {% endif %}
 {% if reload %}
-<a href="#" onclick="if (create_schedule() == true) {window.location.reload()}" class="minibutton"><span>Criar Agendamento</span></a>
+<a href="#" onclick="if (create_schedule() == true) {window.location.reload()}" class="css3button big positive"><span>Criar Agendamento</span></a>
 {% else %}
-<a href="#" onclick="create_schedule()" class="minibutton"><span>Criar Agendamento</span></a>
+<a href="#" onclick="create_schedule()" class="css3button positive big"><span>Criar Agendamento</span></a>
 {% endif %}
 </div>
 {% endblock %}

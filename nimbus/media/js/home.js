@@ -26,7 +26,8 @@ $(document).ready(function(){
                     labels: labels
                 },
                 fill: true,
-                color: '#95BACB',
+                /* color: '#95BACB', */
+                color: '#67c7a1',
                 markerOptions: {
                     show: true,
                     lineWidth: 5,
