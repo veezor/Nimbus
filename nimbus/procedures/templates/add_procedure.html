@@ -7,6 +7,13 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var field_schedule = "schedule_return";
+    var field_fileset = "fileset_return";
+    {{ init_script }}
+});
+</script>
 
 {% endblock %}
 
@@ -30,10 +37,14 @@
 			<p>
 				<label>{{ field.label }}:</label><br />
 				{% if field.label == 'Agendamento' %}
-				<a href="/schedules/add/" id="schedule_button" class="css3button positive add_schedule_button"><span>Criar um agendamento</span></a><span id="discard_schedule" class="hidden"> ou <a class="minibutton" onClick="unset_schedule()"><span>Descartar e escolher um perfil</span></a></span>
+				<a href="/schedules/add/" id="schedule_button" class="css3button positive add_schedule_button">Criar um agendamento</a>
+				<span id="discard_schedule" class="hidden"> ou <a class="css3button negative" onClick="unset_schedule()">Descartar e escolher um perfil</a></span>
+				<input type="hidden" name="schedule_return" class="schedule_return" value="{{ schedule_return }}" />
 				{% endif %}
 				{%if field.label == 'Conjunto de arquivos' %}
-				<a href="/filesets/add/" class="filesets css3button positive" id="fileset_button"><span>Criar um conjunto de arquivos</span></a><span id="discard_fileset" class="hidden"> ou <a class="minibutton" onClick="unset_fileset()"><span>Descartar e escolher um perfil</span></a></span>
+				<a href="/filesets/add/" class="filesets css3button positive" id="fileset_button">Criar um conjunto de arquivos</a>
+				<span id="discard_fileset" class="hidden"> ou <a class="css3button negative" onClick="unset_fileset()">Descartar e escolher um perfil</a></span>
+				<input type="hidden" name="fileset_return" class="fileset_return" value="{{ fileset_return }}" />
 				{% endif %}
 				{{ field }}
 			</p>
@@ -42,7 +53,7 @@
 			{{ hidden }}
 			{% endfor %}
 			<div class="pool_value">
-				<label>Tempo de retencao: <label id="slider_value"></label> dias</label> <label id="slider_value"></label><br />
+				<label>Tempo de retenção: <label id="slider_value"></label> dias</label> <label id="slider_value"></label><br />
 				<div id="slider"></div>
 				<div class="add_new_pool"><a href="#">Adicionar Outro Valor</a></div>
 				<div class="clear">&nbsp;</div>

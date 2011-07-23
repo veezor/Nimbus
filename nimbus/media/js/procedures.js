@@ -300,7 +300,8 @@ function set_fileset() {
         $("#uniform-id_procedure-fileset").hide('slow');
         $("#discard_fileset").show('slow')
         $("#fileset_button").html("<span>Modificar</span>");
-        $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");            
+        $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");   
+        $(".fileset_return").val(FILESET_ID);         
     }
 };
 function set_schedule() {
@@ -309,15 +310,17 @@ function set_schedule() {
         $("#id_procedure-schedule").val(SCHEDULE_ID);
         $("#uniform-id_procedure-schedule").hide('slow');
         $("#discard_schedule").show('slow')
-        $("#schedule_button").html("<span>Modificar</span>");
-        $("#schedule_button").attr('href', "/schedules/" + SCHEDULE_ID + "/edit/");            
+        $("#schedule_button").html("Modificar");
+        $("#schedule_button").attr('href', "/schedules/" + SCHEDULE_ID + "/edit/"); 
+        $(".schedule_return").val(SCHEDULE_ID);
     }
 };
 function unset_schedule() {
     $("#uniform-id_procedure-schedule").show('slow');
     $("#discard_schedule").hide('slow')
     $("#schedule_button").html("<span>Criar outro agendamento</span>");
-    $("#schedule_button").attr('href', "/schedules/add/");            
+    $("#schedule_button").attr('href', "/schedules/add/");   
+    $(".schedule_return").val("");         
 };
 function unset_fileset() {
     $("#uniform-id_procedure-fileset").show('slow');
@@ -325,24 +328,3 @@ function unset_fileset() {
     $("#fileset_button").html("<span>Criar outro fileset</span>");
     $("#fileset_button").attr('href', "/filesets/add/");            
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -26,12 +26,26 @@
 		.deleted_run {
 			color: #AAAAAA;
 		}
+		.block.async{width: 700px; height: 400px; overflow: auto;}
+		.deleted_run {
+			display: none;
+		}
+		table#inventory{width: 100%;}
+		table#inventory tbody tr td{
+		  padding: 8px;
+		  background: #fafafa;
+		}
+		.remove_schedule{cursor: pointer;}
+		.first_table{width: 100%;}
+		.first_table td{width: 50%; border-bottom: 1px solid #c0c0c0; margin-bottom: 10px;}
+		.border{border-top: 1px solid #c0c0c0;}
 	</style>
 {% endblock %}
 
 {% block page %}
-<table>
-	<tr>
+<div class="block async">
+<table class="first_table">
+	<tr class="border">
 		<td>
 			<div id="month" class="checkboxes">
 				<h3>Dia do mês:</h3>
@@ -46,7 +60,7 @@
 				<input type="checkbox" class="month" id="month_09" name="09"/><label for="month_09">09</label>
 				<input type="checkbox" class="month" id="month_10" name="10"/><label for="month_10">10</label>
 				<input type="checkbox" class="month" id="month_11" name="11"/><label for="month_11">11</label>
-				<input type="checkbox" class="month" id="month_12" name="12"/><label for="month_12">12</label><br/>
+				<input type="checkbox" class="month" id="month_12" name="12"/><label for="month_12">12</label>
 				<input type="checkbox" class="month" id="month_13" name="13"/><label for="month_13">13</label>
 				<input type="checkbox" class="month" id="month_14" name="14"/><label for="month_14">14</label>
 				<input type="checkbox" class="month" id="month_15" name="15"/><label for="month_15">15</label>
@@ -58,7 +72,7 @@
 				<input type="checkbox" class="month" id="month_21" name="21"/><label for="month_21">21</label>
 				<input type="checkbox" class="month" id="month_22" name="22"/><label for="month_22">22</label>
 				<input type="checkbox" class="month" id="month_23" name="23"/><label for="month_23">23</label>
-				<input type="checkbox" class="month" id="month_24" name="24"/><label for="month_24">24</label><br/>
+				<input type="checkbox" class="month" id="month_24" name="24"/><label for="month_24">24</label>
 				<input type="checkbox" class="month" id="month_25" name="25"/><label for="month_25">25</label>
 				<input type="checkbox" class="month" id="month_26" name="26"/><label for="month_26">26</label>
 				<input type="checkbox" class="month" id="month_27" name="27"/><label for="month_27">27</label>
@@ -70,42 +84,40 @@
 		</td>
 		<td>
 			<select name="month-level" id="id_month-level">
-				<option value="None">- Escolha o tipo de backup: -</option>
 				{% for level in levels %}
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="minibutton" id="month_button"><span>Agendamento Mensal</span></a>
+			<a class="css3button positive" id="month_button"><span>Agendamento Mensal</span></a>
 		</td>
 	</tr>
-	<tr>
+	<tr class="border">
 		<td>
 			<div id="week" class="checkboxes">
 				<h3>Dia da semana:</h3>
-				<input type="checkbox" class="week" id="week_0" value="0" /><label for="week_0">Domingo</label>
-				<input type="checkbox" class="week" id="week_1" value="0" /><label for="week_1">Segunda-feira</label>
-				<input type="checkbox" class="week" id="week_2" value="0" /><label for="week_2">Terça-feira</label>
-				<input type="checkbox" class="week" id="week_3" value="0" /><label for="week_3">Quarta-feira</label>
-				<input type="checkbox" class="week" id="week_4" value="0" /><label for="week_4">Quinta-feira</label><br/>
-				<input type="checkbox" class="week" id="week_5" value="0" /><label for="week_5">Sexta-feira</label>
-				<input type="checkbox" class="week" id="week_6" value="0" /><label for="week_6">Sábado</label>
+				<input type="checkbox" class="week" id="week_0" value="0" /><label for="week_0">Dom</label>
+				<input type="checkbox" class="week" id="week_1" value="0" /><label for="week_1">Seg</label>
+				<input type="checkbox" class="week" id="week_2" value="0" /><label for="week_2">Ter</label>
+				<input type="checkbox" class="week" id="week_3" value="0" /><label for="week_3">Qua</label>
+				<input type="checkbox" class="week" id="week_4" value="0" /><label for="week_4">Qui</label>
+				<input type="checkbox" class="week" id="week_5" value="0" /><label for="week_5">Sex</label>
+				<input type="checkbox" class="week" id="week_6" value="0" /><label for="week_6">Sáb</label>
 			</div>
 		</td>
 		<td>
 			<select name="week-level" id="id_week-level">
-				<option value="None">- Escolha o tipo de backup: -</option>
 				{% for level in levels %}
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="minibutton" id="week_button"><span>Agendamento Semanal</span></a>
+			<a class="css3button positive" id="week_button"><span>Agendamento Semanal</span></a>
 		</td>
 	</tr>
-	<tr>
+	<tr class="border">
 		<td>
 			<div id="hours" class="checkboxes">
 				<h3>Hora:</h3>
-				<input type="checkbox" class="hours" id="hour_00" /><label for="hour_00">00</label>
+				<input type="checkbox" class="hours" id="hour_00" checked="checked" /><label for="hour_00">00</label>
 				<input type="checkbox" class="hours" id="hour_01" /><label for="hour_01">01</label>
 				<input type="checkbox" class="hours" id="hour_02" /><label for="hour_02">02</label>
 				<input type="checkbox" class="hours" id="hour_03" /><label for="hour_03">03</label>
@@ -116,7 +128,7 @@
 				<input type="checkbox" class="hours" id="hour_08" /><label for="hour_08">08</label>
 				<input type="checkbox" class="hours" id="hour_09" /><label for="hour_09">09</label>
 				<input type="checkbox" class="hours" id="hour_10" /><label for="hour_10">10</label>
-				<input type="checkbox" class="hours" id="hour_11" /><label for="hour_11">11</label></br>
+				<input type="checkbox" class="hours" id="hour_11" /><label for="hour_11">11</label>
 				<input type="checkbox" class="hours" id="hour_12" /><label for="hour_12">12</label>
 				<input type="checkbox" class="hours" id="hour_13" /><label for="hour_13">13</label>
 				<input type="checkbox" class="hours" id="hour_14" /><label for="hour_14">14</label>
@@ -133,19 +145,18 @@
 		</td>
 		<td>
 			<select name="day-level" id="id_day-level">
-				<option value="None">- Escolha o tipo de backup: -</option>
 				{% for level in levels %}
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="minibutton" id="day_button"><span>Agendamento Diário</span></a>
+			<a class="css3button positive" id="day_button"><span>Agendamento Diário</span></a>
 		</td>
 	</tr>
-	<tr>
+	<tr class="border">
 		<td>
 			<div id="minutes" class="checkboxes">
 				<h3>Minuto:</h3>
-				<input type="checkbox" class="minutes" id="minute_00" /><label for="minute_00">00</label>
+				<input type="checkbox" class="minutes" id="minute_00" checked="checked" /><label for="minute_00">00</label>
 				<input type="checkbox" class="minutes" id="minute_01" /><label for="minute_01">01</label>
 				<input type="checkbox" class="minutes" id="minute_02" /><label for="minute_02">02</label>
 				<input type="checkbox" class="minutes" id="minute_03" /><label for="minute_03">03</label>
@@ -156,7 +167,7 @@
 				<input type="checkbox" class="minutes" id="minute_08" /><label for="minute_08">08</label>
 				<input type="checkbox" class="minutes" id="minute_09" /><label for="minute_09">09</label>
 				<input type="checkbox" class="minutes" id="minute_10" /><label for="minute_10">10</label>
-				<input type="checkbox" class="minutes" id="minute_11" /><label for="minute_11">11</label><br/>
+				<input type="checkbox" class="minutes" id="minute_11" /><label for="minute_11">11</label>
 				<input type="checkbox" class="minutes" id="minute_12" /><label for="minute_12">12</label>
 				<input type="checkbox" class="minutes" id="minute_13" /><label for="minute_13">13</label>
 				<input type="checkbox" class="minutes" id="minute_14" /><label for="minute_14">14</label>
@@ -168,7 +179,7 @@
 				<input type="checkbox" class="minutes" id="minute_20" /><label for="minute_20">20</label>
 				<input type="checkbox" class="minutes" id="minute_21" /><label for="minute_21">21</label>
 				<input type="checkbox" class="minutes" id="minute_22" /><label for="minute_22">22</label>
-				<input type="checkbox" class="minutes" id="minute_23" /><label for="minute_23">23</label><br/>
+				<input type="checkbox" class="minutes" id="minute_23" /><label for="minute_23">23</label>
 				<input type="checkbox" class="minutes" id="minute_24" /><label for="minute_24">24</label>
 				<input type="checkbox" class="minutes" id="minute_25" /><label for="minute_25">25</label>
 				<input type="checkbox" class="minutes" id="minute_26" /><label for="minute_26">26</label>
@@ -180,7 +191,7 @@
 				<input type="checkbox" class="minutes" id="minute_32" /><label for="minute_32">32</label>
 				<input type="checkbox" class="minutes" id="minute_33" /><label for="minute_33">33</label>
 				<input type="checkbox" class="minutes" id="minute_34" /><label for="minute_34">34</label>
-				<input type="checkbox" class="minutes" id="minute_35" /><label for="minute_35">35</label><br/>
+				<input type="checkbox" class="minutes" id="minute_35" /><label for="minute_35">35</label>
 				<input type="checkbox" class="minutes" id="minute_36" /><label for="minute_36">36</label>
 				<input type="checkbox" class="minutes" id="minute_37" /><label for="minute_37">37</label>
 				<input type="checkbox" class="minutes" id="minute_38" /><label for="minute_38">38</label>
@@ -192,7 +203,7 @@
 				<input type="checkbox" class="minutes" id="minute_44" /><label for="minute_44">44</label>
 				<input type="checkbox" class="minutes" id="minute_45" /><label for="minute_45">45</label>
 				<input type="checkbox" class="minutes" id="minute_46" /><label for="minute_46">46</label>
-				<input type="checkbox" class="minutes" id="minute_47" /><label for="minute_47">47</label><br/>
+				<input type="checkbox" class="minutes" id="minute_47" /><label for="minute_47">47</label>
 				<input type="checkbox" class="minutes" id="minute_48" /><label for="minute_48">48</label>
 				<input type="checkbox" class="minutes" id="minute_49" /><label for="minute_49">49</label>
 				<input type="checkbox" class="minutes" id="minute_50" /><label for="minute_50">50</label>
@@ -209,20 +220,21 @@
 		</td>
 		<td>
 			<select name="hour-level" id="id_hour-level">
-				<option value="None">- Escolha o tipo de backup: -</option>
+<!--                 <option value="">- Escolha -</option> -->
 				{% for level in levels %}
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="minibutton" id="hour_button"><span>Agendamento de hora em hora</span></a>
+			<a class="css3button positive" id="hour_button"><span>Agendamento a cada hora</span></a>
 		</td>
 	</tr>
 </table>
 <h3>Agendamentos selecionados</h3>
-<table id="inventory" style="border: solid 1px; width: 400px;">
+<table id="inventory" cellpadding="0" cellspacing="0">
 	<thead>
-		<tr><th>Remover</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr>
+		<tr><th>&nbsp;</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr>
 	</thead>
+	<tbody></tbody>
 </table>
 {% if is_model %}
 <p>
@@ -233,8 +245,9 @@
 <input type="hidden" id="schedule_name" value="Apenas para este procedimento"/>
 {% endif %}
 {% if reload %}
-<button onclick="if (create_schedule() == true) {window.location.reload()}">Salvar</button>
+<button class="css3button positive" onclick="if (create_schedule() == true) {window.location.reload()}">Salvar</button>
 {% else %}
-<button onclick="create_schedule()">Salvar</button>
+<button class="css3button positive" onclick="create_schedule()">Salvar</button>
 {% endif %}
+</div>
 {% endblock %}
