@@ -43,11 +43,12 @@ $(document).ready(function(){
                 },
                 yaxis: {
                     tickOptions:{ formatString:'%.2f' },
-                    min: 0
+                    min: 0,
+                    //max: 2000
                 }
             },
             highlighter: { show:highlighter_show },
-            cursor: { show: cursor_show }
+            cursor: { show: cursor_show },
         });
     };
 
