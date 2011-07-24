@@ -52,7 +52,7 @@ class Storage(BaseModel):
     @property
     def get_computers(self):
         """Computadores que fazem backup neste storage."""
-        computers = Computer.objects.filter(procedure__profile__storage=self).\
+        computers = Computer.objects.filter(procedure__storage=self).\
             order_by('name').distinct()
         
         # computers = []

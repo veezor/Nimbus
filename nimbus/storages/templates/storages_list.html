@@ -39,37 +39,7 @@
                         </form>
                         {% endif %}
                     </div>
-                    {% if not storage.profile_set.count %}
-                        <div class="message warning">
-                            <p>Não existem procedimentos relacionados a este armazenamento.</p>
-                        </div>
-                    {% else %}
-                        <h4>COMPUTADORES RELACIONADOS</h4>
-                        
-                        <div id="computer-list">
-                        {% for computer in storage.get_computers %}
-                            <div class="computers">
-                                <div class="title">
-                                    <a href="#" class="toggle" ref="computer_detail">
-                                        <img src="/media/icons/computer.png"/>
-                                        <h4>{{computer.name}}</h4>
-                                    </a>
-                                </div>
-                                <div class="computer_detail" class="hidden">
-                                    {% for proc in computer.procedure_set.all %}
-                                        <h4 class="name">{{proc.name}} <small><a href="{% url nimbus.procedures.views.edit object_id=proc.id %}">(editar)</a></small></h4>
-                                        Offsite ativado: {% if proc.offsite_on %}Sim{% else %}Não{% endif %}<br/>
-                                        Perfil de configuração: <a href="{% url nimbus.procedures.views.profile_edit object_id=proc.profile.id %}">{{proc.profile.name}}</a><br/>
-                                        Agendamento: <a href="{% url nimbus.schedules.views.edit object_id=proc.profile.schedule.id %}">{{proc.profile.schedule}}</a><br/>
-                                        Conjunto de arquivos: <a href="{% url nimbus.filesets.views.edit object_id=proc.profile.fileset.id %}">{{proc.profile.fileset}}</a>
-                                        <p></p>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
+               </div>
                 <div class="clear"></div>
             </div>
         {% empty %}
