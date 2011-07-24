@@ -16,14 +16,13 @@ from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.filesets.models import FileSet
 from nimbus.schedules.models import Schedule
-from nimbus.bacula.models import Media
+from nimbus.bacula.models import Media, Job, File
 # from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
 from nimbus.offsite.models import is_active
 #from nimbus.libs import offsite
-from nimbus.bacula.models import Job, File
 from nimbus.shared import utils, enums, signals, fields
 
 
@@ -68,6 +67,13 @@ class Procedure(BaseModel):
     def last_success_date(self):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
                 .order_by('-endtime')[0]
+
+    @classmethod
+    def all_jobs(cls):
+        job_names = [ p.bacula_name for p in cls.objects.all() ]
+        jobs = Job.objects.filter(name__in=job_names).order_by('-starttime')
+        return jobs
+
 
     def restore_jobs(self):
         return Job.objects.filter(client__name=self.computer.bacula_name,
