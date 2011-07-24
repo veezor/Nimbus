@@ -15,7 +15,7 @@ $(document).ready(function(){
     $('.job_line').mouseout(function(){
         $(this).removeClass('over');
     });
-    // JavaScript para mostrar os status dos jobs nos histórico
+    // JavaScript para mostrar os status dos jobs nos hist√≥rico
     $('.edit-fileset').click(function(){
         var fileset_id = $(this)[0].id;
         selected_val = $('#select_' + fileset_id)[0].value;
@@ -56,7 +56,7 @@ $(document).ready(function(){
         }
         else
         {
-            jQuery.facebox('Você precisa escolher um computador');
+            jQuery.facebox('Voc√™ precisa escolher um computador');
         }
         return false;
     });
