@@ -228,9 +228,11 @@ def remove_schedule_file(schedule):
     utils.remove_or_leave(filename)
 
 
-def update_schedule(trigger):
-    update_schedule_file(trigger.schedule)
+def update_schedule(run):
+    update_schedule_file(run.schedule)
     
 
 signals.connect_on(update_schedule_file, Schedule, post_save)
+signals.connect_on(update_schedule, Run, post_save)
 signals.connect_on(remove_schedule_file, Schedule, post_delete)
+signals.connect_on(update_schedule, Run, post_delete)

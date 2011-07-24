@@ -1,7 +1,7 @@
 Director {
 	Name = {{ director_name }}
 	Password = "{{director_password}}"
-	Maximum Concurrent Jobs = 100
+	Maximum Concurrent Jobs = 99
 	WorkingDirectory = "/var/bacula/working"
 	DIRport = 9101
 	Messages = Daemon

@@ -126,7 +126,7 @@ def list_all(request):
     offsite = Offsite.get_instance()
     offsite_on = offsite.active
     title = u"Procedimentos de backup"
-    last_jobs = Job.objects.all().order_by('-starttime').distinct()
+    last_jobs = Procedure.all_jobs()
     return render_to_response(request, "procedures_list.html", locals())
 
 @login_required

@@ -70,7 +70,7 @@ def restore_files(request):
         files = request.POST.getlist("path")
 
         bacula = Bacula()
-        bacula.run_restore( computer.bacula_name, jobid, target, files)  
+        bacula.run_restore( computer.bacula_name, jobid, target, files)
 
         messages.success(request, "Recuperação iniciada com sucesso")
     
@@ -131,8 +131,10 @@ def get_jobs(request, procedure_id, data_inicio, data_fim):
 def get_tree(request):
     path = request.POST['path']
     job_id = request.POST['job_id']
+    computer_id = request.POST['computer_id']
+    computer = Computer.objects.get(id=computer_id)
     
-    files = Procedure.list_files(job_id, path)
+    files = Procedure.list_files(job_id, path, computer)
 
     response = simplejson.dumps(files)
     return HttpResponse(response, mimetype="text/plain")
@@ -158,6 +160,7 @@ def get_client_tree(request):
            
 
 
+@login_required
 def get_tree_search_file(request):
     pattern = request.POST['pattern']
     job_id = request.POST['job_id']

@@ -16,14 +16,13 @@ from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.filesets.models import FileSet
 from nimbus.schedules.models import Schedule
-from nimbus.bacula.models import Media
+from nimbus.bacula.models import Media, Job, File
 # from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
 from nimbus.offsite.models import is_active
 #from nimbus.libs import offsite
-from nimbus.bacula.models import Job, File
 from nimbus.shared import utils, enums, signals, fields
 
 
@@ -69,6 +68,13 @@ class Procedure(BaseModel):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
                 .order_by('-endtime')[0]
 
+    @classmethod
+    def all_jobs(cls):
+        job_names = [ p.bacula_name for p in cls.objects.all() ]
+        jobs = Job.objects.filter(name__in=job_names).order_by('-starttime')
+        return jobs
+
+
     def restore_jobs(self):
         return Job.objects.filter(client__name=self.computer.bacula_name,
                                   fileset__fileset=self.fileset_bacula_name,
@@ -96,9 +102,16 @@ class Procedure(BaseModel):
         cls.objects.filter(offsite_on=True).update(offsite_on=False)
 
     @staticmethod
-    def list_files(jobid, path="/"):
-       bacula = Bacula()
-       return bacula.list_files(jobid, path)
+    def list_files(jobid, path, computer):
+        bacula = Bacula()
+
+        if not path.startswith('/'):
+            path = "/" + path
+
+        if computer.operation_system == "windows":
+            path = 'C:' + path #FIX: get windows drivers from restore
+
+        return bacula.list_files(jobid, path)
 
     @staticmethod
     def search_files(jobid, pattern):
@@ -126,6 +139,10 @@ def update_procedure_file(procedure):
                    offsite_param="--upload-requests %v",
                    client=procedure.computer.bacula_name,
                    pool=procedure.pool_bacula_name() )
+
+
+    update_pool_file(procedure)
+
     if not exists(settings.NIMBUS_RESTORE_FILE):
         render_to_file(settings.NIMBUS_RESTORE_FILE,
                        "restore",
@@ -140,6 +157,7 @@ def remove_procedure_file(procedure):
     base_dir,filepath = utils.mount_path(procedure.bacula_name,
                                          settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
+    remove_pool_file(procedure)
 
 def remove_procedure_volumes(procedure):
     pool_name = procedure.pool_bacula_name()
@@ -176,8 +194,8 @@ def remove_pool_file(procedure):
     filename = path.join(settings.NIMBUS_POOLS_DIR, name)
     utils.remove_or_leave(filename)
 
-signals.connect_on(update_pool_file, Procedure, post_save)
-signals.connect_on(remove_pool_file, Procedure, post_delete)
+#signals.connect_on(update_pool_file, Procedure, post_save)
+#signals.connect_on(remove_pool_file, Procedure, post_delete)
 
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)

@@ -101,7 +101,7 @@ def home(request):
     # - date
     # - message
 
-    last_jobs = Job.objects.all().order_by('-starttime').distinct()[:5]
+    last_jobs = Procedure.all_jobs()[:5]
 
     return render_to_response(request, "home.html", locals())
 
