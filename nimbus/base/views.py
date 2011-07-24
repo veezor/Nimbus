@@ -45,6 +45,8 @@ def home(request):
 
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
+    print "diskdata" * 10
+    print diskdata
     #diskdata = [("13/11", 2097764768), ("13/01", 2097764175), ("13/02", 2097764234)]
     if len(diskdata) == 1: # duplicates first item for area graph
         diskdata *= 2
@@ -52,11 +54,11 @@ def home(request):
     # TODO: O diskfree deve ser calculado como gráfico de história.
     table3 = False
     if (diskdata):
-        table3 = {'title': u"Ocupação do disco", 'width': "", 'type': "area", 'cid': "chart3", 'height': "130",
-                  'header': [utils.filesizeformat(i[1]) for i in diskdata], 'labels': [utils.filesizeformat(i[1]) for i in diskdata]}
+        table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "130",
+                  'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1], "GB") for i in diskdata]}
         #table3['header'] = ["Gigabytes"]
         #setando valor padrao
-        t3data = [utils.filesizeformat(i[1]) for i in diskdata] if len(diskdata) else [0.0]
+        t3data = [utils.filesizeformat(i[1], "GB") for i in diskdata] if len(diskdata) else [0.0]
         table3['lines'] = {"Disponível": t3data}
 
 

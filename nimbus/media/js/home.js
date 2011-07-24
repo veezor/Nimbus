@@ -42,9 +42,20 @@ $(document).ready(function(){
                     min: 0
                 },
                 yaxis: {
-                    tickOptions:{ formatString:'%.2f' },
+                    tickOptions:{ 
+                        mark: 'outside',    // Where to put the tick mark on the axis
+                                    // 'outside', 'inside' or 'cross',
+                        showMark: true,
+                        showGridline: true, // wether to draw a gridline (across the whole grid) at this tick,
+                        markSize: 4,        // length the tick will extend beyond the grid in pixels.  For
+                                            // 'cross', length will be added above and below the grid boundary,
+                        show: true,         // wether to show the tick (mark and label),
+                        showLabel: true,    // wether to show the text label at the tick,
+                        formatString: '%.2f',
+                    },
                     min: 0,
                     //max: 2000
+                     
                 }
             },
             highlighter: { show:highlighter_show },
