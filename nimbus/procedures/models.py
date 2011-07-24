@@ -96,9 +96,16 @@ class Procedure(BaseModel):
         cls.objects.filter(offsite_on=True).update(offsite_on=False)
 
     @staticmethod
-    def list_files(jobid, path="/"):
-       bacula = Bacula()
-       return bacula.list_files(jobid, path)
+    def list_files(jobid, path, computer):
+        bacula = Bacula()
+
+        if not path.startswith('/'):
+            path = "/" + path
+
+        if computer.operation_system == "windows":
+            path = 'C:' + path #FIX: get windows drivers from restore
+
+        return bacula.list_files(jobid, path)
 
     @staticmethod
     def search_files(jobid, pattern):
