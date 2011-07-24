@@ -133,6 +133,10 @@ def update_procedure_file(procedure):
                    offsite_param="--upload-requests %v",
                    client=procedure.computer.bacula_name,
                    pool=procedure.pool_bacula_name() )
+
+
+    update_pool_file(procedure)
+
     if not exists(settings.NIMBUS_RESTORE_FILE):
         render_to_file(settings.NIMBUS_RESTORE_FILE,
                        "restore",
@@ -147,6 +151,7 @@ def remove_procedure_file(procedure):
     base_dir,filepath = utils.mount_path(procedure.bacula_name,
                                          settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
+    remove_pool_file(procedure)
 
 def remove_procedure_volumes(procedure):
     pool_name = procedure.pool_bacula_name()
@@ -183,8 +188,8 @@ def remove_pool_file(procedure):
     filename = path.join(settings.NIMBUS_POOLS_DIR, name)
     utils.remove_or_leave(filename)
 
-signals.connect_on(update_pool_file, Procedure, post_save)
-signals.connect_on(remove_pool_file, Procedure, post_delete)
+#signals.connect_on(update_pool_file, Procedure, post_save)
+#signals.connect_on(remove_pool_file, Procedure, post_delete)
 
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
