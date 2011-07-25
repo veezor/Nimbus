@@ -87,9 +87,12 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
                             $("#id_filepath_set-TOTAL_FORMS").val(counter-1);
                             $("#id_filepath_set-INITIAL_FORMS").val(counter-1);
                             $("#id_filepath_set-MAX_NUM_FORMS").val(counter-1);
-                            $("[name="+field.name+"]").remove();
+                            //$("[name="+field.name+"]").remove();
+                            
                         }
                     });
+                    // removes path_restore
+                    $("input:[name=path_restore][value="+$(this).attr("value")+"]").remove();
                 }
                 else
                 {
@@ -103,6 +106,9 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
                     $("#id_filepath_set-TOTAL_FORMS").val(counter);
                     $("#id_filepath_set-INITIAL_FORMS").val(counter);
                     $("#id_filepath_set-MAX_NUM_FORMS").val(counter);
+                    // create input hidden for path_restore
+                    var path_restore = "<input type=\"hidden\" name=\"path_restore\" id=\"path_restore_"+counter+"\" value=\""+$(this).attr("value")+"\" />";
+                    $("#restore_form").append(path_restore);
                 }
             });
         }

@@ -63,7 +63,8 @@ def restore_files(request):
     # path (lista)
     
     if request.method == "POST":
-
+        print "post" * 10
+        print request.POST
         computer = Computer.objects.get(id=request.POST["computer_id"])
         jobid = int(request.POST["job_id"])
         target = request.POST["path_restore"]
@@ -135,7 +136,8 @@ def get_tree(request):
     computer = Computer.objects.get(id=computer_id)
     
     files = Procedure.list_files(job_id, path, computer)
-
+    # teste que força o retorno da lista de arquivos
+    #files = ["/home/lucas/arquivo1.txt", "/home/lucas/arquivo2.txt"];
     response = simplejson.dumps(files)
     return HttpResponse(response, mimetype="text/plain")
 
