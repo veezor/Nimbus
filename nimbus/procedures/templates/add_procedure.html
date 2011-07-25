@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" src="/media/jquery-ui.js"></script>
-<link href="/media/jquery-ui.css" rel="stylesheet" type="text/css"/>
-<link href="/media/css/procedures.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript" src="/media/jquery-ui.js"></script>
+<link href="/media/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css"/>
+<link href="/media/css/procedures.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
 $(document).ready(function(){
-    var field_schedule = "schedule_return";
-    var field_fileset = "fileset_return";
+    var field_schedule = ".schedule_return";
+    var field_fileset = ".fileset_return";
     {{ init_script }}
 });
 </script>

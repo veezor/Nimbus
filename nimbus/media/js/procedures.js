@@ -295,6 +295,7 @@ $(document).ready(function(){
 
 // default functions
 function set_fileset() {
+    FILESET_ID = $(".fileset_return").val();
     if (typeof FILESET_ID != "undefined") {
         $("#id_procedure-fileset").append("<option value="+FILESET_ID+">Usar o fileset criado</option>");
         $("#id_procedure-fileset").val(FILESET_ID);
@@ -306,6 +307,7 @@ function set_fileset() {
     }
 };
 function set_schedule() {
+    SCHEDULE_ID = $(".schedule_return").val();
     if (typeof SCHEDULE_ID != "undefined") {
         $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">Usar o agendamento criado</option>");
         $("#id_procedure-schedule").val(SCHEDULE_ID);
