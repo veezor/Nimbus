@@ -52,6 +52,7 @@ $(document).ready(function(){
     $('#fileset_button').click(function(){
         if ($('#id_procedure-computer').val())
         {
+            //jQuery.facebox('Você precisa escolher um computador');
             jQuery.facebox({ ajax: $('#fileset_button')[0].href+$('#id_procedure-computer').val() });
         }
         else
