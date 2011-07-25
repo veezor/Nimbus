@@ -19,12 +19,13 @@ $(document).ready(function(){
     $('.edit-fileset').click(function(){
         var fileset_id = $(this)[0].id;
         selected_val = $('#select_' + fileset_id)[0].value;
-        console.log(selected_val);
+        //console.log(selected_val);
         if (selected_val == "") {
             alert("Escolha um computador para usar como base de arquivos");
             return false;
         }
         locattion = $(this)[0].href;
+        console.log(locattion);
         jQuery.facebox({ ajax: locattion + selected_val });
         return false;
     });
@@ -110,7 +111,7 @@ $(document).ready(function(){
     $('.schedule_activate').change(function(){
         _checked = $(this).attr('checked');
         _class = $(this).attr('id');
-        console.log(_class)
+        //console.log(_class)
         if (_checked) {
             $('.' + _class).addClass('active');
             $('.' + _class + '_error').show();

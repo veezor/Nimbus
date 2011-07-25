@@ -16,7 +16,7 @@ $(document).ready(function(){
     });
     
     $(".tree a").click(function() {
-        console.log("bla");
+        //console.log("bla");
         if (!document.getElementsByClassName('wait')[0]) {
             update_tree($(this).attr("path"), get_tree_path);
         } else {
@@ -75,6 +75,7 @@ $(document).ready(function(){
                 if (response.status == true) {
                     FILESET_ID = response.fileset_id;
                     FILESET_NAME = response.fileset_name;
+                    console.log("entrou na funcao");
                     alert(response.message);
                     $.facebox.close();
                     set_fileset();
@@ -113,6 +114,7 @@ $(document).ready(function(){
                 $('#main_form').submit()
             } else {
                 async_submit();
+                console.log("opa");
             }
         }
 	});

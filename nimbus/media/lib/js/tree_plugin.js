@@ -26,7 +26,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
     ul.insertAfter($(tree_class + " *[path="+root_path+"]"));
 
     $(tree_class + " *[path="+root_path+"]").click(function(){
-        alert("bla");
+        //alert("bla");
     });
     link = $(tree_class + " *[path="+root_path+"]");
     link.append($("<div class='wait'></div>"));
@@ -136,7 +136,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
 }
 
 function update_tree(root_path, get_tree_path, tree_class, input_type, input_name, depends) {
-    console.log("tree");
+    //console.log("tree");
     if (!tree_class) {
         tree_class = '.tree';
     }

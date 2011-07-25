@@ -182,7 +182,7 @@ function submit_all() {
         url: post_url,
         data: post_data,
         success: function(j) {
-            console.log("sucess");
+            //console.log("sucess");
             var schedule_response = jQuery.parseJSON(j);
             //console.log(schedule_response);
 			if (schedule_response['status'] == 'ok') {

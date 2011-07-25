@@ -11,6 +11,10 @@ $(document).ready(function(){
     var field_schedule = ".schedule_return";
     var field_fileset = ".fileset_return";
     {{ init_script }}
+    {% if comp_id %}
+    $("#id_procedure-computer option[value={{ comp_id }}]").attr("selected", true);
+    $("#id_procedure-computer").change();
+    {% endif %}
 });
 </script>
 
