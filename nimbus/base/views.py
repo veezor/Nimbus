@@ -108,6 +108,9 @@ def home(request):
 
 def ie_error(request):
     return render_to_response(request, "ie_error.html", locals())
+    
+def license(request):
+    return render_to_response(request, "license.html", locals())
 
 
 

@@ -1547,3 +1547,8 @@ ul.styled-list li {
 	padding:5px 9px 5px 25px ;margin-bottom:1em; font-weight: bold; /*border-style: solid; border-width: 1px;*/
 	background:#FFF6BF url(/media/icons/error.png) 3px 50% no-repeat;color:#514721;border-color:#FFD324;
 }
+
+#license-box{
+    height: 400px;
+    overflow: auto;
+}
