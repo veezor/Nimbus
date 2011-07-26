@@ -19,15 +19,20 @@ class ProcedureForm(forms.ModelForm):
                 else:
                     self.fields[field].empty_label = u"-ou escolha um perfil-"
 
+
+    computer = forms.models.ModelChoiceField(label=_("Computador"),
+                                             queryset=Computer.objects.filter(id__gt=1))
+ 
+
     pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
                                              min_value=1, max_value=3650,
                                              initial=10,
                                              widget=forms.HiddenInput())
     fileset = forms.models.ModelChoiceField(label=_("Conjunto de arquivos"),
-                                            queryset=FileSet.objects.all(),
+                                            queryset=FileSet.objects.filter(id__gt=1),
                                             empty_label = u"-ou escolha um perfil-")
     schedule = forms.models.ModelChoiceField(label=_("Agendamento"),
-                                             queryset=Schedule.objects.all(),
+                                             queryset=Schedule.objects.filter(id__gt=1),
                                              empty_label = u"-ou escolha um perfil-")
     # fileset.empty_label = u"-ou escolha um modelo-"
     # schedule.empty_label = u"-ou escolha um modelo-"
