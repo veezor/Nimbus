@@ -1,6 +1,5 @@
 function mount_tree(data, root_path, get_tree_path, tree_class, input_type, input_name, depends) {
 
-
     if (data.type = 'error' && data.message) {
         alert(data.message)
         $('#mensagem_erro_fileset').html(data.message).show();
@@ -56,6 +55,8 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
             attr_class = "directory";
             mime_class = "folder";
             var inner = $("<a>").attr("href", "#").attr("path", path).text(path_name);
+            dir_path = ""+path;
+            console.log(dir_path);
         } else {
             attr_class = "file";
             if (path_name.split('.').length > 1) {
@@ -92,7 +93,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
                         }
                     });
                     // removes path_restore
-                    $("input:[name=path][value="+$(this).attr("value")+"]").remove();
+                    $("input:[name=path][value="+dir_path+$(this).attr("value")+"]").remove();
                 }
                 else
                 {
@@ -108,7 +109,8 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
                     $("#id_filepath_set-MAX_NUM_FORMS").val(counter);
                     
                     // create input hidden for path_restore
-                    var path_restore = "<input type=\"hidden\" name=\"path\" id=\"path_"+counter+"\" value=\""+$(this).attr("value")+"\" />";
+                    console.log(dir_path);
+                    var path_restore = "<input type=\"hidden\" name=\"path\" id=\"path_"+counter+"\" value=\""+dir_path+$(this).attr("value")+"\" />";
                     $("#restore_form").append(path_restore);
                 }
             });
@@ -171,7 +173,7 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
     } else {
         $('#mensagem_erro_fileset').html('').hide();
     }
-    console.log($(tree_class));
+    //console.log($(tree_class));
     link = $(tree_class + " *[path="+root_path+"]");
     link.find(".wait").remove();
     link.append($("<div class='wait'></div>"));
