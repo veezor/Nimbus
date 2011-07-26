@@ -142,7 +142,7 @@
         "pk": 1,
         "model": "schedules.backuplevel",
         "fields": {
-            "name": "Completo"
+            "name": "Full"
         }
     },
     {
