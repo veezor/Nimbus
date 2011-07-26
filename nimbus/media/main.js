@@ -99,6 +99,11 @@ $(document).ready(function() {
     set_backup_type();
     set_schedule_procedure();
     $('input:text').addClass("text");
+    // asks: are you sure?
+    $(".negative").click(function(){
+        if (!confirm("Tem certeza?"))
+            return false;
+    });
 });
 
 /* minibuttons */
