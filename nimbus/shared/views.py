@@ -34,7 +34,7 @@ def edit_singleton_model(request, templatename, redirect_to,
 
 def render_to_response(request, template, dictionary):
     # renderiza a mensagem de erro para o internet explorer
-    # esta chamada está aqui por se tratar de um evento global, evitando repetição
+    # esta chamada esta aqui por se tratar de um evento global, evitando repeticao
     block_ie_browser(request)
     return _render_to_response( template, dictionary,
                                 context_instance=RequestContext(request))

@@ -10,7 +10,6 @@ from urllib2 import URLError
 from django.conf import settings
 
 import systeminfo
-from nimbus.offsite.models import Offsite
 
 
 def _sort_key_function(date):
@@ -22,7 +21,6 @@ class GraphDataManager(object):
     """ data = {'data' :
                     {
                   '<date>' : {
-                    'offsite' : number,
                     'disk' : number
                    }
               },
@@ -51,16 +49,6 @@ class GraphDataManager(object):
         with nested(file(self.filename, "w"),self.lock) as (fileobj, lock):
             pickle.dump(data, fileobj)
 
-    def get_offsite_data(self):
-        offsite = Offsite.get_instance()
-        if offsite.active:
-            try:
-                s3 = Offsite.get_s3_interface()
-                return s3.get_usage()
-            except URLError, error:
-                return 0.0
-        else:
-            return 0.0
 
     def get_disk_data(self):
         try:
@@ -97,10 +85,8 @@ class GraphDataManager(object):
     def list_disk_measures(self):
         return self._list_measures('disk')
 
-    def list_offsite_measures(self):
-        return self._list_measures('offsite')
 
-    def update(self, offsite=True):
+    def update(self):
         data = self.data['data']
         last_update = self.data['last_update']
         now = datetime.datetime.now()
@@ -109,22 +95,11 @@ class GraphDataManager(object):
         if diff < five_minutes:
             return
         data_key = (now.day, now.month, now.year)
-        if data_key in data:
-            if 'offsite' in data[data_key]:
-                old_offsite_value = data[data_key]['offsite'] # preserve old measeure on errors
-            else:
-                old_offsite_value = 0
-        else:
+        if not data_key in data:
             data[data_key] = {}
 
 
         data[data_key]['disk'] = self.get_disk_data()
-
-        if offsite:
-            offsite_value = self.get_offsite_data()
-
-            if offsite_value or old_offsite_value:
-                data[data_key]['offsite'] = offsite_value or old_offsite_value
 
         self.data['last_update'] = now
         self._remove_old_entries()
@@ -144,4 +119,4 @@ class GraphDataManager(object):
 
 def update_disk_graph():
     data_manager = GraphDataManager()
-    data_manager.update(offsite=False)
+    data_manager.update()

@@ -83,7 +83,6 @@
                                 </div>
                                 <div class="fileset_detail">
                                     <br/>
-                                    Offsite ativado? <strong>{% if proc.offsite_on %}Sim{% else %}Não{% endif %}</strong><br/>
                                     <ul>
                                         {% for file in proc.fileset.files.all %}
                                         <li><strong>{{file}}</strong></li>

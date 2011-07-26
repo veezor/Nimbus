@@ -9,12 +9,6 @@ import functools
 
 
 
-sys.path.extend( ['/var/nimbus/deps/',
-                  '/var/nimbus/deps/gunicorn-0.11.1-py2.6.egg/',
-                  '/usr/lib/python2.6/dist-packages',
-                  '/usr/lib/python2.6/lib-dynload',
-                  '/usr/lib/python2.6/'] )
-
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nimbus.settings'
 
 
@@ -25,7 +19,7 @@ from django.core.management import call_command
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from nimbus.libs import offsite, graphsdata
+from nimbus.libs import graphsdata
 from nimbus.shared import utils
 from nimbus.config.models import Config
 from nimbus.storages.models import Storage
@@ -91,33 +85,6 @@ class App(object):
         NimbusApplication("%prog [OPTIONS] [SETTINGS_PATH]").run()
 
 
-    def create_upload_requests(self):
-        try:
-            args = sys.argv[2]
-            volumes = args.split('|')
-            volumes = filter(None, volumes)
-            volumes = offsite.get_volumes_abspath( volumes )
-            manager = offsite.RemoteManager()
-
-            for volume in volumes:
-                manager.create_upload_request( volume )
-
-            manager.generate_database_dump_upload_request()
-            manager.process_pending_upload_requests()
-        except IndexError, error:
-            # not args.
-            pass
-
-
-    def upload_volumes(self):
-        manager = offsite.RemoteManager()
-        manager.process_pending_upload_requests()
-
-
-    def delete_volumes(self):
-        manager = offsite.RemoteManager()
-        manager.process_pending_delete_requests()
-
 
     def change_password(self):
 
@@ -140,11 +107,8 @@ class App(object):
         commands = {
             "--server-forever" : self.run_server,
             "--update-graphs-data" : self.update_graphs_data,
-            "--upload-requests" : self.create_upload_requests,
             "--create-database" : self.create_database,
-            "--upload-now" : self.upload_volumes,
             "--shell" : self.shell,
-            "--delete-volumes" : self.delete_volumes,
             "--change-password" : self.change_password
         }
 

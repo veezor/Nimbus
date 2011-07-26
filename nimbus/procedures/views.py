@@ -18,7 +18,6 @@ from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
 from nimbus.filesets.models import FileSet
-from nimbus.offsite.models import Offsite
 #from nimbus.pools.models import Pool
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
@@ -123,34 +122,10 @@ def execute(request, object_id):
 @login_required
 def list_all(request):
     procedures = Procedure.objects.filter(id__gt=1)
-    offsite = Offsite.get_instance()
-    offsite_on = offsite.active
     title = u"Procedimentos de backup"
     last_jobs = Procedure.all_jobs()
     return render_to_response(request, "procedures_list.html", locals())
 
-@login_required
-def list_offsite(request):
-    procedures = Procedure.objects.filter(offsite_on=True)
-    extra_content = {'procedures': procedures,
-                     'title': u"Procedimentos com offsite ativo"}
-    return render_to_response(request, "procedures_list.html", extra_content)
-
-@login_required
-def activate_offsite(request, object_id):
-    if request.method == "POST":
-        procedure = Procedure.objects.get(id=object_id)
-        procedure.offsite_on = True
-        procedure.save()
-    return redirect('/procedures/list')
-
-@login_required
-def deactivate_offsite(request, object_id):
-    if request.method == "POST":
-        procedure = Procedure.objects.get(id=object_id)
-        procedure.offsite_on = False
-        procedure.save()
-    return redirect('/procedures/list')
 
 @login_required
 def activate(request, object_id):

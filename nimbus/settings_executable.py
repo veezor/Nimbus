@@ -92,14 +92,6 @@ SERVE_STATIC_FILES = False
 
 NIMBUS_CLIENT_PORT = 11110
 
-QUEUE_SERVICE_MANAGER_PORT = 11112
-QUEUE_SERVICE_MANAGER_ADDRESS = '127.0.0.1'
-QUEUE_SERVICE_MANAGER_URL = "http://localhost:11112"
-QUEUE_MANAGER_START_SLEEP_TIME = 3
-
-
-NIMBUS_CENTRAL_USER_DATA_URL = "http://www.veezor.com/central/acesso_iam.php"
-
 
 
 
@@ -210,11 +202,9 @@ INSTALLED_APPS = (
     'nimbus.storages',
     'nimbus.procedures',
     'nimbus.timezone',
-    'nimbus.offsite',
     'nimbus.wizard',
     'nimbus.computers',
     'nimbus.restore',
-    'nimbus.recovery',
     'nimbus.system',
     'nimbus.security',
 )
