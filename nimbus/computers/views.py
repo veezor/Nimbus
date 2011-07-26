@@ -114,10 +114,7 @@ def list(request):
 @login_required
 def view(request, object_id):
     computer = Computer.objects.get(id=object_id)
-    running_status = ('R','p','j','c','d','s','M','m','s','F','B')
-    running_jobs = Job.objects.filter(jobstatus__in=running_status,
-                                      client__name=computer.bacula_name)\
-                                          .order_by('-starttime').distinct()[:5]
+    running_jobs = computer.running_jobs()
     running_procedures_content = []
     try:
         for job in running_jobs:
@@ -131,8 +128,7 @@ def view(request, object_id):
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
         pass
 
-    last_jobs = Job.objects.filter(client__name=computer.bacula_name)\
-                                            .order_by('-endtime').distinct()[:5]
+    last_jobs = computer.last_jobs()
     last_procedures_content = []
     try:
         for job in last_jobs:
@@ -145,9 +141,9 @@ def view(request, object_id):
                     })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
         pass
-    errors_jobs = Job.objects.filter(jobstatus__in=('e','E','f'),
-                                     client__name=computer.bacula_name)\
-                                            .order_by('-endtime').distinct()[:5]
+
+
+    errors_jobs = computer.error_jobs()
     errors_procedures_content = []
     try:
         for job in errors_jobs:
