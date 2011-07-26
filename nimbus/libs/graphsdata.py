@@ -112,11 +112,11 @@ class GraphDataManager(object):
         if data_key in data:
             if 'offsite' in data[data_key]:
                 old_offsite_value = data[data_key]['offsite'] # preserve old measeure on errors
-            else:
-                old_offsite_value = 0
+
         else:
             data[data_key] = {}
 
+        old_offsite_value = 0
 
         data[data_key]['disk'] = self.get_disk_data()
 
