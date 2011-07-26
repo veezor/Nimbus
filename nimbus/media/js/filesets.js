@@ -74,6 +74,7 @@ $(document).ready(function(){
                 console.log(response);
                 if (response.status == true) {
                     FILESET_ID = response.fileset_id;
+                    $(".fileset_return").val(FILESET_ID);
                     FILESET_NAME = response.fileset_name;
                     console.log("entrou na funcao");
                     alert(response.message);

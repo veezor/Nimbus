@@ -29,13 +29,13 @@ from nimbus.schedules.models import Schedule
 
 @login_required
 def add(request, teste=None):
-    comp_id = False
+    comp_id = 0
     if request.GET:
         comp_id = request.GET["comp_id"]
     title = u"Adicionar backup"
     form = ProcedureForm(prefix="procedure")
-    print "form"*10
-    print form
+    #print "form"*10
+    #print form
     schedule_return = False
     fileset_return = False
     content = {'title': title,
@@ -46,11 +46,14 @@ def add(request, teste=None):
                 'comp_id': comp_id}
     if request.method == "POST":
         data = copy(request.POST)
+        print "data"*10
+        print data
         # retorna o ajax caso haja submissão do formulário
         if data['schedule_return']:
             content['init_script'] = "$(field_schedule).val(%s);set_schedule();" % data['schedule_return']
         if data['fileset_return']:
             content['init_script'] += "$(field_fileset).val(%s);set_fileset();" % data['fileset_return']
+        print data["procedure-fileset"]
         if data["procedure-fileset"]:
             fileset = FileSet.objects.get(id=data['procedure-fileset'])
             content['fileset'] = fileset

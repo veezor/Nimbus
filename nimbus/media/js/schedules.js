@@ -191,6 +191,9 @@ function submit_all() {
 					//console.log(SCHEDULES[index]);
 					if (SCHEDULES[index]['status'] != 'old') {
     					SCHEDULES[index]['schedule_id'] = TMP_SCHEDULE_ID; 
+    					$(".schedule_return").attr("value",TMP_SCHEDULE_ID);
+    					console.log("schedule_id: ");
+    					console.log(TMP_SCHEDULE_ID);
     					$.ajax({
     			            type: "POST",
     						async: false,
@@ -198,7 +201,7 @@ function submit_all() {
     			            data: SCHEDULES[index],
     			            success: function(j) {
     			                var run_response = jQuery.parseJSON(j);
-    			                console.log(run_response);
+    			                //console.log(run_response);
     							if (run_response['status'] == 'ok') {
     								status.push(true);
     							}
@@ -211,7 +214,7 @@ function submit_all() {
 			}
         }
     });
-    console.log(status);
+    //console.log(status);
 	if (status.length == SCHEDULES.length) {
 		alert('Agendamento criado com sucesso');
 		SCHEDULE_ID = TMP_SCHEDULE_ID;
