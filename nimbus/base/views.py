@@ -45,8 +45,9 @@ def home(request):
 
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
-    print "diskdata" * 10
-    print diskdata
+    # teste para diskdata
+    #print "diskdata" * 10
+    #print diskdata
     #diskdata = [("13/11", 2097764768), ("13/01", 2097764175), ("13/02", 2097764234)]
     if len(diskdata) == 1: # duplicates first item for area graph
         diskdata *= 2
