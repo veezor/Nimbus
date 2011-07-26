@@ -32,6 +32,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
     
     total = data.length;
     contador = 0;
+    var dir_path = "";
     for (var item in data) {
         contador = contador + 1;
         if (contador > total) {
@@ -55,7 +56,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
             attr_class = "directory";
             mime_class = "folder";
             var inner = $("<a>").attr("href", "#").attr("path", path).text(path_name);
-            dir_path = ""+path;
+            dir_path = dir_path+path;
             console.log(dir_path);
         } else {
             attr_class = "file";
