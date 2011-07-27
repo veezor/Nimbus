@@ -9,6 +9,7 @@ from django.views.generic import create_update
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.template import RequestContext
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from pybacula import BConsoleInitError
 
@@ -135,7 +136,7 @@ def list_all(request):
     offsite = Offsite.get_instance()
     offsite_on = offsite.active
     title = u"Procedimentos de backup"
-    last_jobs = Procedure.all_jobs()
+    last_jobs = Procedure.all_jobs()[:10]
     return render_to_response(request, "procedures_list.html", locals())
 
 @login_required
@@ -204,3 +205,45 @@ def profile_delete(request, object_id):
             return redirect('nimbus.procedures.views.profile_list')
     remove_name = profile.name
     return render_to_response(request, 'remove.html', locals())
+    
+@login_required
+def history(request, object_id=False):
+    #TODO: Filtrar jobs de um procedimento específico
+    title = u'Histórico de Procedimentos'
+    # get page number
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+    #get all jobs
+    all_jobs = Procedure.all_jobs()
+    paginator = Paginator(all_jobs, 5)
+    try:
+        jobs = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        jobs = paginator.page(paginator.num_pages)
+    last_jobs = jobs.object_list
+    return render_to_response(request, "procedures_history.html", locals())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
