@@ -217,7 +217,7 @@ def history(request, object_id=False):
         page = 1
     #get all jobs
     all_jobs = Procedure.all_jobs()
-    paginator = Paginator(all_jobs, 5)
+    paginator = Paginator(all_jobs, 20)
     try:
         jobs = paginator.page(page)
     except (EmptyPage, InvalidPage):
