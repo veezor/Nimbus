@@ -85,8 +85,14 @@ class Computer(BaseModel):
     def bacula_id(self):
         return Client.objects.get(name=self.bacula_name).clientid
 
+
+    def _procedure_names(self):
+        return [ p.bacula_name for p in self.procedure_set.all() ]
+
+
     def successful_jobs(self):
-        return Job.objects.filter(jobstatus__in=('T','W'), 
+        return Job.objects.filter(jobstatus__in=('T','W'),
+                                  name__in=self._procedure_names(),
                                   client__name=self.bacula_name)\
                                         .order_by('-endtime').distinct()[:15]
 
@@ -98,12 +104,20 @@ class Computer(BaseModel):
     def running_jobs(self):
         status = ('R','p','j','c','d','s','M','m','s','F','B')
         return Job.objects.filter(jobstatus__in=status, 
+                                  name__in=self._procedure_names(),
                                   client__name=self.bacula_name)\
                                         .order_by('-starttime').distinct()[:5]
 
     def last_jobs(self):
-        return Job.objects.filter(client__name=self.bacula_name)\
+        return Job.objects.filter(client__name=self.bacula_name,
+                                  name__in=self._procedure_names())\
                                         .order_by('-endtime').distinct()[:15]
+
+    def error_jobs(self):
+        return Job.objects.filter(jobstatus__in=('e','E','f'),
+                                  name__in=self._procedure_names(),
+                                     client__name=self.bacula_name)\
+                                            .order_by('-endtime').distinct()[:5]
 
     def configure(self):
         nimbuscomputer = Computer.objects.get(id=1)

@@ -37,8 +37,7 @@ def view(request, object_id=None):
         except Computer.DoesNotExist, error:
             return redirect('nimbus.restore.views.view')
 
-    #computers = Computer.objects.filter(active=True,id__gt=1)
-    computers = Computer.objects.filter(active=True)
+    computers = Computer.objects.filter(active=True,id__gt=1)
     
     extra_content = {
         'computer': computer,
@@ -63,8 +62,6 @@ def restore_files(request):
     # path (lista)
     
     if request.method == "POST":
-        print "post" * 10
-        print request.POST
         computer = Computer.objects.get(id=request.POST["computer_id"])
         jobid = int(request.POST["job_id"])
         target = request.POST["path_restore"]
