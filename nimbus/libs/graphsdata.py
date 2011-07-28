@@ -12,9 +12,6 @@ from django.conf import settings
 import systeminfo
 from nimbus.offsite.models import Offsite
 
-print "graphs "*10
-print settings.NIMBUS_GRAPHDATA_FILENAME
-
 def _sort_key_function(date):
     day, month, year = date
     return (year, month, day)

@@ -122,7 +122,6 @@ class Computer(BaseModel):
     def configure(self):
         nimbuscomputer = Computer.objects.get(id=1)
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
-        #print url
         proxy = xmlrpclib.ServerProxy(url)
         proxy.save_keys(self.crypto_info.pem,
                         nimbuscomputer.crypto_info.certificate)

@@ -37,8 +37,7 @@ def add(request):
 def do_add(request):
     if request.method == 'POST':
         data = request.POST
-        print "a" * 200
-        print data
+
         if data.has_key('main'):
             new = Schedule()
             new.name = data['name']
@@ -81,7 +80,6 @@ def edit(request, object_id):
 def do_edit(request):
     if request.method == 'POST':
         data = request.POST
-        print data
         if data.has_key('main'):
             s = get_object_or_404(Schedule, pk=int(data['id']))
             s.name = data['name']

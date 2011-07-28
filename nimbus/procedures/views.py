@@ -35,8 +35,6 @@ def add(request, teste=None):
         comp_id = request.GET["comp_id"]
     title = u"Adicionar backup"
     form = ProcedureForm(prefix="procedure")
-    #print "form"*10
-    #print form
     schedule_return = False
     fileset_return = False
     content = {'title': title,

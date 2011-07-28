@@ -41,7 +41,6 @@ def add(request, computer_id=None):
 def do_add(request):
     if request.method == 'POST':
         data = request.POST
-        print data
         fileset_form = forms.FileSetForm(data, prefix="fileset")
         if fileset_form.is_valid():
             new_fileset = fileset_form.save()

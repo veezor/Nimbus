@@ -107,8 +107,6 @@ def get_jobs(request, procedure_id, data_inicio, data_fim):
     #         {"name": "Job3 - 12 Aug 2010", "id": "37"}]
 
     # response = serializers.serialize("json", jobs)
-    #print "jobs" * 200
-    #print procedure_id
 
     data_inicio = "%s 00:00:00" % data_inicio
     data_inicio = datetime.strptime(data_inicio, '%d-%m-%Y %H:%M:%S')

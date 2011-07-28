@@ -26,7 +26,7 @@ def home(request):
     table1 = {
         'title': u"Quantidade de dados realizados backup", 'width': "100%", 'type': "bar", 'cid': "chart1",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_bytes)],
-        'labels': [utils.filesizeformat(v, "GB") for k, v in sorted(job_bytes.items())],
+        'labels': [utils.filesizeformat(v) for k, v in sorted(job_bytes.items())],
         'lines': {
             "Dados": utils.ordered_dict_value_to_formatted_float(job_bytes)
         }
@@ -45,22 +45,17 @@ def home(request):
 
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
-    # teste para diskdata
-    #print "diskdata" * 10
-    #print diskdata
+    diskdata = []
     #diskdata = [("13/11", 2097764768), ("13/01", 2097764175), ("13/02", 2097764234)]
     if len(diskdata) == 1: # duplicates first item for area graph
         diskdata *= 2
 
-    # TODO: O diskfree deve ser calculado como gráfico de história.
-    table3 = False
-    if (diskdata):
-        table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
-                  'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1], "GB") for i in diskdata]}
-        #table3['header'] = ["Gigabytes"]
-        #setando valor padrao
-        t3data = [utils.filesizeformat(i[1], "GB") for i in diskdata] if len(diskdata) else [0.0]
-        table3['lines'] = {"Disponível": t3data}
+    table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
+              'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1], "GB") for i in diskdata]}
+    #table3['header'] = ["Gigabytes"]
+    #setando valor padrao
+    t3data = [utils.filesizeformat(i[1], "GB") for i in diskdata] if len(diskdata) else [0.0]
+    table3['lines'] = {"Disponível": t3data}
 
 
     memory = systeminfo.get_memory_usage()
@@ -84,8 +79,6 @@ def home(request):
 
 
     offsite_data = graph_data_manager.list_offsite_measures()
-    print "a" * 200
-    print len(offsite_data)
     table6 = False
     if len(offsite_data) > 0:
         if len(offsite_data) == 1: # duplicates first item for area graph
