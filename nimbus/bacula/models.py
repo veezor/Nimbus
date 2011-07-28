@@ -235,10 +235,15 @@ class Job(models.Model):
     def procedure(self):
         from nimbus.procedures.models import Procedure
         procedure_name = self.name.split('_')[0]
-        try:
-            return Procedure.objects.get(uuid__uuid_hex=procedure_name)
-        except:
-            return None
+
+        if not hasattr(self, '_procedure'):
+            try:
+                self._procedure = Procedure.objects.select_related().get(uuid__uuid_hex=procedure_name)
+            except Procedure.DoesNotExist, error:
+                self._procedure = None
+
+        return self._procedure
+
 
     @property
     def status_friendly(self):

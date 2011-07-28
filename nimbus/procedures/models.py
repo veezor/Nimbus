@@ -22,7 +22,7 @@ from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
 from nimbus.offsite.models import is_active
-#from nimbus.libs import offsite
+from nimbus.libs import offsite
 from nimbus.shared import utils, enums, signals, fields
 
 
@@ -71,7 +71,7 @@ class Procedure(BaseModel):
     @classmethod
     def all_jobs(cls):
         job_names = [ p.bacula_name for p in cls.objects.all() ]
-        jobs = Job.objects.filter(name__in=job_names).order_by('-starttime')
+        jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
 
@@ -105,10 +105,7 @@ class Procedure(BaseModel):
     def list_files(jobid, path, computer):
         bacula = Bacula()
 
-        if not path.startswith('/'):
-            path = "/" + path
-
-        if computer.operation_system == "windows":
+        if computer.operation_system == "windows" and not ':' in path:
             path = 'C:' + path #FIX: get windows drivers from restore
 
         return bacula.list_files(jobid, path)
@@ -199,5 +196,6 @@ def remove_pool_file(procedure):
 
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
-signals.connect_on( remove_procedure_file, Procedure, post_delete)
 signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
+signals.connect_on( remove_procedure_file, Procedure, post_delete)
+

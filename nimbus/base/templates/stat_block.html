@@ -9,7 +9,7 @@ Tipos possíveis: ok, warn, error
 
 	<div id="job_{{job.jobid}}" class="job_line minus">
 		<span class="status_{{job.general_status}}">Status {{job.general_status}}</span>
-        {{job.start_time}}: Backup {{job.backup_level}} de '{{job.client.computer.name}}'
+        {{job.start_time}}: Backup {{job.backup_level}} de '{{job.procedure.computer.name}}'
         <div class="clear"></div>
 	</div>
 	<div id="job_{{job.jobid}}_details" class="hide">
@@ -23,8 +23,8 @@ Tipos possíveis: ok, warn, error
             {% endif %}
             </tr>
             <tr>
-            {% if job.client.computer %}
-            <td>Computador: {{job.client.computer.name}}</td><td>({{job.client.computer.address}})</td>
+            {% if job.procedure.computer %}
+            <td>Computador: {{job.procedure.computer.name}}</td><td>({{job.procedure.computer.address}})</td>
             {% else %}
             <td>Computador:</td> <td>Computador não encontrado</td>
             {% endif %}</tr>

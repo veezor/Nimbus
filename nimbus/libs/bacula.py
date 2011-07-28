@@ -57,12 +57,15 @@ class Bacula(object):
         self.cmd._bvfs_update.run()
         dirs = self.cmd._bvfs_lsdir.jobid[jobid].path[path].run()
         dirs = self._get_items_from_bconsole_output(dirs)
-        dirs.remove('.')
-        dirs.remove('..')
+        if '.' in dirs:
+            dirs.remove('.')
+        if '..' in dirs:
+            dirs.remove('..')
         result.extend( dirs )
         files = self.cmd._bvfs_lsfiles.jobid[jobid].path[path].run()
         result.extend( self._get_items_from_bconsole_output(files) )
         result.sort()
+        result = [ path + p for p in result ]
         return result
 
     def run_restore(self, client_name, jobid, where, files):

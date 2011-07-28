@@ -11,6 +11,8 @@ import win32api
 import win32evtlogutil
 import servicemanager
 import subprocess
+import locale
+import traceback
 
 import win32com.client
 
@@ -42,12 +44,6 @@ class AsyncXMLRPCServer(SocketServer.ThreadingMixIn, SimpleXMLRPCServer):
     pass
 
     
-    
-def is_dir(name):
-    if os.path.isdir(name):
-        return name + "/" 
-    return name
-
     
 class NimbusService(object):
 
@@ -91,11 +87,26 @@ class NimbusService(object):
 
     def list_dir(self, path):
         try:
-            files = glob(os.path.join(path,'*'))
-            files = map(is_dir, files)
+
+                        
+            def _is_dir(filename):
+                if os.path.isdir(os.path.join(path, filename)):
+                    return path + filename + '/'
+                return path + filename
+
+
+            def _convert_encoding_filename(filename):
+                if not isinstance(filename, unicode):
+                    return filename.decode(locale.getpreferredencoding())
+                return filename
+            
+            files = os.listdir(path)
+            files = map(_is_dir, files)
+            files = [ _convert_encoding_filename(f) for f in files]
             return files
         except IOError, error:
             return []
+
         
 
 class XMLRPCservice(win32serviceutil.ServiceFramework):
