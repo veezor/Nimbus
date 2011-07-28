@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    console.log("leu");
     // Accordeon for procedure history
     $(".hide").slideUp();
     $('.job_line').click(function(){
@@ -7,6 +8,7 @@ $(document).ready(function(){
         if (next.css('display') == 'none')
             next.slideDown();
         else
+            return false;
             //next.slideUp();
     });
     $('.job_line').mouseover(function(){
@@ -15,6 +17,7 @@ $(document).ready(function(){
     $('.job_line').mouseout(function(){
         $(this).removeClass('over');
     });
+    
     // JavaScript para mostrar os status dos jobs nos histórico
     $('.edit-fileset').click(function(){
         var fileset_id = $(this)[0].id;
