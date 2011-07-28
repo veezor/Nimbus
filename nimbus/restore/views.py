@@ -148,11 +148,7 @@ def get_client_tree(request):
         computer_id = request.POST['computer_id']
 
         computer = Computer.objects.get(id=computer_id)
-
-        url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
-        proxy = xmlrpclib.ServerProxy(url)
-        files = proxy.list_dir(path)
-        files.sort()
+        files = computer.get_file_tree(path)
         response = simplejson.dumps(files)
         return HttpResponse(response, mimetype="text/plain")
 
