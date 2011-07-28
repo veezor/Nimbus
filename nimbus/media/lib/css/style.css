@@ -1438,13 +1438,17 @@ p.alert a{color: #8F7E11;}
 }
 
 /* Estatisticas */
+#memory-use{
+    width: 48%;
+}
 #disc-use {
-    margin-left: 30px;
-    width: 35%;
+/*     margin-left: 30px; */
+    width: 48%;
 }
 
 #offsite-use {
-    margin-left: 30px;
+/*     margin-left: 30px; */
+    display: none;
     width: 35%;
 }
 

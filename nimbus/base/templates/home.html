@@ -57,7 +57,7 @@
     		</div>		<!-- .block_head ends -->
 
     		<div class="block_content">
-                <div class="left">
+                <div class="left" class="mamory-use">
                     <h4>Uso da Memória</h4>
                     {% with table4.lines.Ocupado.0 as value %}
     			        {% include "bar_chart.html" %}
@@ -68,7 +68,7 @@
     			        {% include "bar_chart.html" %}
     			    {% endwith %}
                 </div>
-                <div class="left" id="disc-use">
+                <div class="right" id="disc-use">
                 {% if table3 %}
     			    {% with table3 as table %}
     			        {% include "table_chart.html" %}
