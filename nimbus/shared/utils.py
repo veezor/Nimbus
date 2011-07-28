@@ -17,7 +17,7 @@ class Referer(object):
         if self.raw:
             self.local = self.local_address()
         else:
-            self.local = None
+            self.local = ''
     
     def local_address(self):
         if self.raw.startswith('http://'):
