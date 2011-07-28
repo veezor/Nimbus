@@ -66,7 +66,7 @@ def home(request):
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
 
-    table4 = {'title': u"Uso da memória", 'width': "48%", 'type': "pie", 'cid': "chart4", 'header': ["Gigabytes"],
+    table4 = {'title': u"Uso da memória", 'width': "90%", 'type': "pie", 'cid': "chart4", 'header': ["Gigabytes"],
               'lines': {
                   "Disponível": [memory_free],
                   "Ocupado": [memory]}}
@@ -75,7 +75,7 @@ def home(request):
     cpu_free = 100 - memory
 
 
-    table5 = {'title': u"Uso da CPU", 'width': "48%", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
+    table5 = {'title': u"Uso da CPU", 'width': "90%", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
         "Disponível": [cpu_free],
         "Ocupado": [cpu]}}
 
