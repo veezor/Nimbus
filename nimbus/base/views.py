@@ -26,7 +26,7 @@ def home(request):
     table1 = {
         'title': u"Quantidade de dados realizados backup", 'width': "100%", 'type': "bar", 'cid': "chart1",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_bytes)],
-        'labels': [utils.filesizeformat(v) for k, v in sorted(job_bytes.items())],
+        'labels': [utils.filesizeformat(v, "GB") for k, v in sorted(job_bytes.items())],
         'lines': {
             "Dados": utils.ordered_dict_value_to_formatted_float(job_bytes)
         }
@@ -55,7 +55,7 @@ def home(request):
     # TODO: O diskfree deve ser calculado como gráfico de história.
     table3 = False
     if (diskdata):
-        table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "130",
+        table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
                   'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1], "GB") for i in diskdata]}
         #table3['header'] = ["Gigabytes"]
         #setando valor padrao
@@ -75,7 +75,7 @@ def home(request):
     cpu_free = 100 - memory
 
 
-    table5 = {'title': u"Uso da CPU", 'width': "90%", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
+    table5 = {'title': u"Uso da CPU", 'width': "", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
         "Disponível": [cpu_free],
         "Ocupado": [cpu]}}
 

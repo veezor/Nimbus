@@ -137,7 +137,7 @@ class Computer(BaseModel):
 
     def activate(self):
         if self.active:
-            raise ComputerAlreadyActive("Computer already active")
+            raise ComputerAlreadyActive("O computador já está ativo")
         self.configure() 
         self.active = True
         self.save()
