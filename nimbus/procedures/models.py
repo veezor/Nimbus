@@ -22,7 +22,7 @@ from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
 from nimbus.offsite.models import is_active
-#from nimbus.libs import offsite
+from nimbus.libs import offsite
 from nimbus.shared import utils, enums, signals, fields
 
 
@@ -71,7 +71,7 @@ class Procedure(BaseModel):
     @classmethod
     def all_jobs(cls):
         job_names = [ p.bacula_name for p in cls.objects.all() ]
-        jobs = Job.objects.filter(name__in=job_names).order_by('-starttime')
+        jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
 
