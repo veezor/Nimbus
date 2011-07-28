@@ -196,5 +196,6 @@ def remove_pool_file(procedure):
 
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
-signals.connect_on( remove_procedure_file, Procedure, post_delete)
 signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
+signals.connect_on( remove_procedure_file, Procedure, post_delete)
+
