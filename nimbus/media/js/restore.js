@@ -4,11 +4,19 @@ $(document).ready(function(){
         $(this).parent().parent().find('.' + target).slideToggle();
         return false;
     });
-
+    
     $(".tree a").click(function()
     {
-        get_tree_path = "/restore/get_tree/";
+        /*
+get_tree_path = "/restore/get_tree/";
         update_tree($(this).attr("path"), get_tree_path, '.tree');
+*/
+        get_tree_path = "/restore/get_tree/";
+        if (!document.getElementsByClassName('wait')[0]) {
+            update_tree($(this).attr("path"), get_tree_path, '.tree');
+        } else {
+            $('.wait').remove();
+        }
         return false;
     });
 

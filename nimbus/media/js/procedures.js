@@ -7,7 +7,7 @@ $(document).ready(function(){
         if (next.css('display') == 'none')
             next.slideDown();
         else
-            next.slideUp();
+            //next.slideUp();
     });
     $('.job_line').mouseover(function(){
         $(this).addClass('over');

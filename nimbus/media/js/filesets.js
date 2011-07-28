@@ -16,7 +16,6 @@ $(document).ready(function(){
     });
     
     $(".tree a").click(function() {
-        //console.log("bla");
         if (!document.getElementsByClassName('wait')[0]) {
             update_tree($(this).attr("path"), get_tree_path);
         } else {
