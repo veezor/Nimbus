@@ -46,10 +46,7 @@ def home(request):
     graphsdata.update_disk_graph()
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
-    diskdata = []
-    #diskdata = [("13/11", 2097764768), ("13/01", 2097764175), ("13/02", 2097764234)]
-    if len(diskdata) == 1: # duplicates first item for area graph
-        diskdata *= 2
+    
 
     table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
               'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1], "GB") for i in diskdata]}
@@ -82,8 +79,6 @@ def home(request):
     offsite_data = graph_data_manager.list_offsite_measures()
     table6 = False
     if len(offsite_data) > 0:
-        if len(offsite_data) == 1: # duplicates first item for area graph
-            offsite_data *= 2
         table6 = {'title': u"Uso do Offsite", 'width': "", 'type': "area", 'height': "130", 'cid': "chart6",
                   'header': [i[0] for i in offsite_data], 'labels': [utils.filesizeformat(i[1]) for i in offsite_data]}
         # table6['header'] = ["GB"]
