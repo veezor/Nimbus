@@ -78,7 +78,10 @@ $(document).ready(function(){
                     console.log("entrou na funcao");
                     alert(response.message);
                     $.facebox.close();
-                    set_fileset();
+                    //set_fileset();
+                    //location.reload();
+                    window.location = "/procedures/profile/list/#fileset_"+response.fileset_id;
+                    location.reload();
                 } else {
                     $("#field_error_" + response.error).show();
                     alert(response.message);
@@ -114,7 +117,6 @@ $(document).ready(function(){
                 $('#main_form').submit()
             } else {
                 async_submit();
-                console.log("opa");
             }
         }
 	});

@@ -56,7 +56,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
             mime_class = "folder";
             var inner = $("<a>").attr("href", "#").attr("path", path).text(path_name);
             dir_path = ""+path;
-            console.log("dir_path = "+dir_path);
+            //console.log("dir_path = "+dir_path);
         } else {
             attr_class = "file";
             if (path_name.split('.').length > 1) {
@@ -109,7 +109,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
                     $("#id_filepath_set-MAX_NUM_FORMS").val(counter);
                     
                     // create input hidden for path_restore
-                    console.log("dir_path = "+dir_path);
+                    //console.log("dir_path = "+dir_path);
                     var path_restore = "<input type=\"hidden\" name=\"path\" id=\"path_"+counter+"\" value=\""+dir_path+$(this).attr("value")+"\" />";
                     $("#restore_form").append(path_restore);
                 }
@@ -138,7 +138,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
 }
 
 function update_tree(root_path, get_tree_path, tree_class, input_type, input_name, depends) {
-    console.log(root_path);
+    //console.log(root_path);
     if (!tree_class) {
         tree_class = '.tree';
     }
