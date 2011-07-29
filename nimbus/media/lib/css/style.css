@@ -1311,6 +1311,17 @@ a.submit:hover {
     width: 43px;
 }
 
+
+.tree_computer .wait {
+    background: #FFFFFF url('/media/icons/loading_bar.gif') right no-repeat;
+    display: inline;
+    height: 11px;
+    padding-left: 52px;
+    width: 43px;
+}
+
+
+
 .chart {
 	float:left;
 }
