@@ -115,7 +115,7 @@
 			        <span id="actual_time">{% now "H:i:s" %}</span>
 			    </div>
 			</div>
-			
+			<noscript><div class="message error">Atenção! Seu javascript precisa estar ativo para usar o Nimbus corretamente.</div></noscript>
             {% if messages %}
                 {% for msg in messages %}
                     <div class="message {{ msg.tags }}">
