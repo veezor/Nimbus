@@ -60,7 +60,19 @@ get_tree_path = "/restore/get_tree/";
         $.getJSON('/restore/get_procedures/' + computer_id + '/', {}, function(data)
         {
             if (data['error']) {
-                $('.computer_error').html($('<p>').text(data['error'])).addClass("message error").show('slow');
+
+                //help-me fix-me
+                $('.computer_error').html($('<p>').text(data['error'])).addClass("message error").append('<span class="close" title="Dismiss"></span>').fadeIn('slow');
+            	jQuery('.message .close').hover(
+        		function() { jQuery(this).addClass('hover'); },
+        		function() { jQuery(this).removeClass('hover'); }
+	            );
+
+                jQuery('.message .close').click(function() {
+                    jQuery(this).parent().fadeOut('slow', function() { jQuery(this).remove(); });
+                });
+                
+
             }
         
             $('#procedure_id').empty();
