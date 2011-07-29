@@ -97,8 +97,8 @@ def delete(request, object_id):
 
 @login_required
 def list(request):
-    if 'group' in request.GET:
-        group = request.GET.get("group")
+    group = request.GET.get("group")
+    if group:
         computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
     else:
         computers = Computer.objects.filter(active=True,id__gt=1).order_by('groups__name')

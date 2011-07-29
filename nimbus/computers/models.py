@@ -31,6 +31,9 @@ class ComputerAlreadyActive(Exception):
 class ComputerGroup(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
 
+    def __unicode__(self):
+        return self.name
+
 
 class CryptoInfo(models.Model):
     key = models.CharField( max_length=2048, blank=False, null=False)
