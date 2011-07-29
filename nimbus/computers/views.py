@@ -14,7 +14,6 @@ from django.core import serializers
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.db import IntegrityError
-from django.shortcuts import render_to_response as render_this
 
 from nimbus.computers.models import Computer, ComputerGroup, ComputerAlreadyActive
 from nimbus.procedures.models import Procedure
@@ -31,7 +30,7 @@ def add(request):
                'forms':lforms,
                'computers':Computer.objects.filter(active=False)
               }
-    return render_this("computers_add.html", content)
+    return render_to_response(request, "computers_add.html", content)
 
 @login_required
 def edit_no_active(request, object_id):
