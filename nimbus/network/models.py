@@ -24,11 +24,11 @@ from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 
 class NetworkInterface(BaseModel):
-    address = models.IPAddressField(null=False)
-    netmask = models.IPAddressField(null=False)
-    gateway = models.IPAddressField(null=False)
-    dns1 = models.IPAddressField(null=False)
-    dns2 = models.IPAddressField(blank=True,null=True)
+    address = models.IPAddressField('Endereço IP', null=False)
+    netmask = models.IPAddressField('Máscara de rede', null=False)
+    gateway = models.IPAddressField('Gateway', null=False)
+    dns1 = models.IPAddressField('Servidor DNS1', null=False)
+    dns2 = models.IPAddressField('Servidor DNS2', blank=True,null=True)
 
 
     class Meta:

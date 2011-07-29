@@ -37,12 +37,12 @@ def check_domain(value):
 
 
 class Timezone(BaseModel):
-    ntp_server = models.CharField( max_length=255, blank=False,
+    ntp_server = models.CharField('Servidor ntp', max_length=255, blank=False,
                                    null=False, default="a.ntp.br",
                                    validators=[check_domain])
-    country = models.CharField( max_length=255, blank=False, 
+    country = models.CharField('País', max_length=255, blank=False, 
                                 choices=COUNTRY_CHOICES)
-    area = models.CharField( max_length=255, blank=False, 
+    area = models.CharField('Região', max_length=255, blank=False, 
                              null=False)
 
 
