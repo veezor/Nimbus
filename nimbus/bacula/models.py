@@ -77,27 +77,27 @@ class Job(models.Model):
                 'Esperando pelo cliente',
                 'Esperando',
                 'Gravando dados']
-    STATUS_MESSAGES_MAPPING = {'C': 'Created, not yet running',
-                               'R': 'Running',
-                               'B': 'Blocked',
-                               'T': 'Completed successfully',
-                               'E': 'Terminated with errors',
-                               'e': 'Non-fatal error',
-                               'f': 'Fatal error',
-                               'D': 'Verify found differences',
-                               'A': 'Canceled by user',
-                               'F': 'Waiting for Client',
-                               'S': 'Waiting for Storage daemon',
-                               'm': 'Waiting for new media',
-                               'M': 'Waiting for media mount',
-                               's': 'Waiting for storage resource',
-                               'j': 'Waiting for job resource',
-                               'c': 'Waiting for client resource',
-                               'd': 'Waiting on maximum jobs',
-                               't': 'Waiting on start time',
-                               'p': 'Waiting on higher priority jobs',
-                               'i': 'Doing batch insert file records',
-                               'a': 'SD despooling attributes'}
+    STATUS_MESSAGES_MAPPING = {'C': ('Created, not yet running', 0),
+                               'R': ('Running', 1),
+                               'B': ('Blocked', 2),
+                               'T': ('Completed successfully',3),
+                               'E': ('Terminated with errors',5),
+                               'e': ('Non-fatal error',6),
+                               'f': ('Fatal error',7),
+                               'D': ('Verify found differences',8),
+                               'A': ('Canceled by user',9),
+                               'F': ('Waiting for Client',11),
+                               'S': ('Waiting for Storage daemon',12),
+                               'm': ('Waiting for new media',12),
+                               'M': ('Waiting for media mount',12),
+                               's': ('Waiting for storage resource',12),
+                               'j': ('Waiting for job resource',12),
+                               'c': ('Waiting for client resource',12),
+                               'd': ('Waiting on maximum jobs',12),
+                               't': ('Waiting on start time',12),
+                               'p': ('Waiting on higher priority jobs',12),
+                               'i': ('Doing batch insert file records',13),
+                               'a': ('SD despooling attributes',12)}
     jobid = models.IntegerField(primary_key=True )
     job = models.TextField()
     name = models.TextField()
@@ -158,6 +158,18 @@ class Job(models.Model):
             return 'error'
         else:
             return 'ok'
+
+
+    @property
+    def human_general_status(self):
+        status = self.general_status
+        _status_mapping = {
+            'error' : 'erro',
+            'warning' : 'alerta',
+            'waiting' : 'esperando',
+            'running' : 'executando'
+        }
+        return _status_mapping.get(status, 'ok')
 
     @property
     def backup_level(self):
@@ -257,7 +269,8 @@ class Job(models.Model):
 
     @property
     def status_message(self):
-        return self.STATUS_MESSAGES_MAPPING.get(self.jobstatus, "Desconhecido")
+        #FIX-ME
+        return self.MESSAGES[self.STATUS_MESSAGES_MAPPING.get(self.jobstatus, "Desconhecido")[1]]
 
     @property
     def duration(self):

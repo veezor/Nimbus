@@ -8,7 +8,7 @@ Tipos possíveis: ok, warn, error
 	<!-- <div class="inner_message {% cycle "odd" "even" %}" title="{{ job_line.tooltip }}"><img src="/media/icons/{{job_line.type}}.png" /> {% if job_line.date %}<small>{{job_line.date}}</small> -{% endif %} {{job_line.label}} {% if job_line.message %}<small>({{job_line.message}})</small>{% endif %}</div> -->
 <!-- 	<div id="job_{{job.jobid}}" class="job_line minus"> -->
     <h3>
-		<span class="status_{{job.general_status}}">Status {{job.general_status}}</span>
+		<span class="status_{{job.general_status}}">Status {{job.human_general_status}}</span>
         {{job.start_time}}: Backup {{job.procedure.name}} de '{{job.procedure.computer.name}}'
         <div class="clear"></div>
 	</h3>
