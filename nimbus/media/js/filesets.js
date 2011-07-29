@@ -70,12 +70,10 @@ $(document).ready(function(){
             data: $('#main_form').serialize(),
             success: function(j) {
                 var response = jQuery.parseJSON(j);
-                console.log(response);
                 if (response.status == true) {
                     FILESET_ID = response.fileset_id;
                     $(".fileset_return").val(FILESET_ID);
                     FILESET_NAME = response.fileset_name;
-                    console.log(window.location.href);
                     alert(response.message);
                     $.facebox.close();
                     set_fileset();
@@ -100,7 +98,6 @@ $(document).ready(function(){
 				checked_paths.push(all_paths[i].value);
 			};
 		};
-		console.log(checked_paths);
 		var inicial = parseInt($('#id_files-INITIAL_FORMS')[0].value)
 		var total = inicial + checked_paths.length
 		$('#id_files-TOTAL_FORMS').val(total);

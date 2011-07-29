@@ -192,8 +192,6 @@ function submit_all() {
 					if (SCHEDULES[index]['status'] != 'old') {
     					SCHEDULES[index]['schedule_id'] = TMP_SCHEDULE_ID; 
     					$(".schedule_return").attr("value",TMP_SCHEDULE_ID);
-    					console.log("schedule_id: ");
-    					console.log(TMP_SCHEDULE_ID);
     					$.ajax({
     			            type: "POST",
     						async: false,

@@ -19,7 +19,6 @@ $(document).ready(function(){
             return false;
         }
         locattion = $(this)[0].href;
-        console.log(locattion);
         jQuery.facebox({ ajax: locattion + selected_val });
         return false;
     });
