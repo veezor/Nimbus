@@ -79,14 +79,14 @@ def restore_files(request):
 @login_required
 def get_procedures(request, object_id=None):
     if not object_id:
-        message = {'error': 'Erro ao tentar selecionar o computador.'}
+        message = {'error': 'Selecione um computador.'}
         response = simplejson.dumps(message)
         return HttpResponse(response, mimetype="text/plain")
     
     procedures = Procedure.objects.filter(computer=object_id)
     # computer = Computer.objects.get(id=object_id)
     if not procedures.count():
-        message = {'error': 'Erro ao tentar selecionar o computador.'}
+        message = {'error': 'Não existem procedimentos para o computador selecionado.'}
         response = simplejson.dumps(message)
         return HttpResponse(response, mimetype="text/plain")
     
