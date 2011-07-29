@@ -110,7 +110,7 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
                     
                     // create input hidden for path_restore
                     //console.log("dir_path = "+dir_path);
-                    var path_restore = "<input type=\"hidden\" name=\"path\" id=\"path_"+counter+"\" value=\""+dir_path+$(this).attr("value")+"\" />";
+                    var path_restore = "<input type=\"hidden\" name=\"path\" id=\"path_"+counter+"\" value=\""+$(this).attr("value")+"\" />";
                     $("#restore_form").append(path_restore);
                 }
             });
