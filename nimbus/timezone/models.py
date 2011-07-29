@@ -46,7 +46,8 @@ class Timezone(BaseModel):
                              null=False)
 
 
-
+    class Meta:
+        verbose_name = u"Fuso horário"
 
 
     

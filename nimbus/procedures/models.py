@@ -46,6 +46,11 @@ class Procedure(BaseModel):
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
 
+
+    class Meta:
+        verbose_name = u"Procedimento"
+
+
     def fileset_bacula_name(self):
         return self.fileset.bacula_name
         # return self.profile.fileset.bacula_name

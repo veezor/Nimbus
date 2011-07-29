@@ -25,6 +25,10 @@ class BackupLevel(models.Model):
     def __unicode__(self):
         return self.name
 
+
+    class Meta:
+        verbose_name = u"Nível de backup"
+
 class BackupKind(models.Model):
     name = models.CharField(max_length=255, unique=True, null=False)
     name_pt = models.CharField(max_length=255, unique=True, null=False)
@@ -32,10 +36,19 @@ class BackupKind(models.Model):
     def __unicode__(self):
         return self.name
 
+
+    class Meta:
+        verbose_name = u"Tipo de agendamento"
+
 class Schedule(BaseModel):
     name = models.CharField(u'Nome qualquer', max_length=255, null=False,
                             blank=False)
     is_model = models.BooleanField(default=False, null=False)
+
+
+
+    class Meta:
+        verbose_name = u"Agendamento"
 
     def get_runs(self):
         # runs = []

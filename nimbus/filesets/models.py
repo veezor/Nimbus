@@ -20,6 +20,9 @@ class FileSet(BaseModel):
         return self.name
 
 
+    class Meta:
+        verbose_name = u"Conjunto de arquivos"
+
 class FilePath(models.Model):
 #    computer = models.ForeignKey(computer_models.Computer)
     path = fields.ModelPathField(max_length=2048, null=False)
@@ -28,6 +31,11 @@ class FilePath(models.Model):
 
     def __unicode__(self):
         return u"%s - %s" % (self.fileset.name, self.path)
+
+
+    class Meta:
+        verbose_name = u"Arquivo"
+
 
 def update_fileset_file(fileset):
     """FileSet update filesets to a procedure instance"""

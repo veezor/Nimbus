@@ -30,6 +30,10 @@ class NetworkInterface(BaseModel):
     dns1 = models.IPAddressField(null=False)
     dns2 = models.IPAddressField(blank=True,null=True)
 
+
+    class Meta:
+        verbose_name = u"Interface de rede"
+
     def __init__(self, *args, **kwargs):
         super(NetworkInterface, self).__init__(*args, **kwargs)
         if not self.id:

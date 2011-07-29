@@ -37,6 +37,10 @@ class Storage(BaseModel):
     active = models.BooleanField(editable=False)
 
 
+
+    class Meta:
+        verbose_name = u"Dispositivo de armazenamento"
+
     @property
     def is_local(self):
         if self.address == get_nimbus_address():

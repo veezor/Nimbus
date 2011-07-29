@@ -31,6 +31,12 @@ class Offsite(BaseModel):
     plan_size = models.IntegerField(default=0, editable=False)
     active = models.BooleanField()
 
+
+
+    class Meta:
+        verbose_name = u"Configurações do offsite"
+
+
     def clean(self):
         if self.active:
 

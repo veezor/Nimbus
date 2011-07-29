@@ -35,6 +35,10 @@ class ComputerGroup(models.Model):
         return self.name
 
 
+    class Meta:
+        verbose_name = u"Grupo de computadores"
+
+
 class CryptoInfo(models.Model):
     key = models.CharField( max_length=2048, blank=False, null=False)
     certificate = models.CharField( max_length=2048, blank=False, null=False)
@@ -59,6 +63,12 @@ class Computer(BaseModel):
     active = models.BooleanField(editable=False)
     crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False, 
                                     unique=True, editable=False)
+
+
+
+    class Meta:
+        verbose_name = u"Computador"
+
 
     def _get_crypt_file(self, filename):
         km = KeyManager()
