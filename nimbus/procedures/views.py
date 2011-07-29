@@ -183,7 +183,7 @@ def profile_list(request):
     title = u"Perfis de configuração"
     filesets = FileSet.objects.filter(is_model=True)
     schedules = Schedule.objects.filter(is_model=True)
-    computers = Computer.objects.all()
+    computers = Computer.objects.all(active=True,id__gt=1)
     content = {'title': u"Perfis de configuração",
                'filesets': filesets,
                'schedules': schedules,
