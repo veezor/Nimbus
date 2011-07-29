@@ -75,13 +75,16 @@ $(document).ready(function(){
                     FILESET_ID = response.fileset_id;
                     $(".fileset_return").val(FILESET_ID);
                     FILESET_NAME = response.fileset_name;
-                    console.log("entrou na funcao");
+                    console.log(window.location.href);
                     alert(response.message);
                     $.facebox.close();
-                    //set_fileset();
+                    set_fileset();
                     //location.reload();
-                    window.location = "/procedures/profile/list/#fileset_"+response.fileset_id;
-                    location.reload();
+                    href = window.location.href;
+                    if (href.search("/procedures/profile/list/") > 0){
+                        window.location = "/procedures/profile/list/#fileset_"+response.fileset_id;
+                        location.reload();
+                    }
                 } else {
                     $("#field_error_" + response.error).show();
                     alert(response.message);
