@@ -43,6 +43,7 @@ def home(request):
         }
     }
 
+    graphsdata.update_disk_graph()
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
     diskdata = []
