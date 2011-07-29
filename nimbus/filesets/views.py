@@ -80,7 +80,7 @@ def do_edit(request, fileset_id):
             filepaths_form = forms.FilesToDeleteForm(data, instance=new_fileset)
             if filepaths_form.is_valid():
                 filepaths_form.save()
-                return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi criado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
+                return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi atualizado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
             else:
                 new_fileset.delete()
                 return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos arquivos","error":1}')
