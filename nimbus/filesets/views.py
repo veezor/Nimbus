@@ -74,7 +74,6 @@ def do_edit(request, fileset_id):
     f = FileSet.objects.get(id=fileset_id)
     if request.method == 'POST':
         data = request.POST
-        print data
         fileset_form = forms.FileSetForm(data, prefix="fileset", instance=f)
         if fileset_form.is_valid():
             new_fileset = fileset_form.save()
@@ -93,7 +92,6 @@ def do_edit(request, fileset_id):
 @login_required
 def get_tree(request):
     if request.method == "POST":
-        print request.POST
         try:
             path = request.POST['path']
             computer_id = request.POST['computer_id']

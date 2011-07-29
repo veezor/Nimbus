@@ -188,7 +188,6 @@ class S3(object):
         with MultipartFileManager(filename, part) as manager:
             for (part_number, part_content) in enumerate(manager):
 
-                print queue_service.get_worker_ratelimit()
                 self.rate_limiter.rate_limit = queue_service.get_worker_ratelimit()
 
                 part = StringIO(part_content)

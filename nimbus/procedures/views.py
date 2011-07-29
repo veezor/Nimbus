@@ -45,14 +45,11 @@ def add(request, teste=None):
                 'comp_id': comp_id}
     if request.method == "POST":
         data = copy(request.POST)
-        print "data"*10
-        print data
         # retorna o ajax caso haja submissão do formulário
         if data['schedule_return']:
             content['init_script'] = "$(field_schedule).val(%s);set_schedule();" % data['schedule_return']
         if data['fileset_return']:
             content['init_script'] += "$(field_fileset).val(%s);set_fileset();" % data['fileset_return']
-        print data["procedure-fileset"]
         if data["procedure-fileset"]:
             fileset = FileSet.objects.get(id=data['procedure-fileset'])
             content['fileset'] = fileset
