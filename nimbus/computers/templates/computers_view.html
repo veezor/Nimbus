@@ -48,10 +48,8 @@
                         <button type="submit" class="css3button positive" value="Restaurar">Restaurar</button>
                     </form>
                     {% endif %}
-                    <form action="/backup/{{computer.id}}/add/" method="post" class="floatright">
-                        <button type="submit" class="css3button positive" value="Criar backup">Criar Backup</button>
-                    </form>
-                    <a href="/computers/{{comp.id}}/configure/" class="css3button positive">Reconfigurar</a>
+                    <a href="/procedures/add/?comp_id={{ computer.id }}" class="floatright css3button positive">Criar Backup</a>
+                    <a href="/computers/{{computer.id}}/configure/" class="css3button positive">Reconfigurar</a>
                 </div>
                 {% if not computer.procedure_set.count %}
                     <p>Não existem procedimentos para este computador.</p>
