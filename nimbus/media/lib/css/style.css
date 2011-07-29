@@ -498,7 +498,7 @@ display: none;
 	
 .block table tr td,
 .block table tr th {
-	border-bottom: 1px solid #ddd;
+	#border-bottom: 1px solid #ddd;
 	padding: 10px;
 	line-height: normal;
 	text-align: left;
@@ -1570,4 +1570,12 @@ ul.styled-list li {
 #license-box{
     height: 400px;
     overflow: auto;
+}
+
+.float_left{
+    float:left;
+}
+
+.clear{
+    clear:both;
 }

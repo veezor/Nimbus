@@ -153,6 +153,18 @@
     border-right: 1px solid #ccc;
 }
 
+.fileset_checkbox{
+    width:50px;
+    margin-bottom:15px;
+}
+
+.fileset_input{
+    width:50px;
+}
+.fileset_line{
+    margin-bottom:15px;
+}
+
 /* divs at title */
 
 .title-left{
