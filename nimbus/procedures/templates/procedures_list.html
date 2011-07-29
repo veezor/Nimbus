@@ -26,7 +26,10 @@
                         <h3 class="name">{{procedure.name}}</h3>
                         <small>Computador: {{procedure.computer.name}} ({{procedure.computer.operation_system|title}})</small>
                     </div>
-                    <p class="options"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p>
+                    <p class="options">
+                        <a href="/procedures/{{procedure.id}}/edit/" class="css3button positive pill">Editar</a>
+                        <a href="/procedures/{{procedure.id}}/delete/" class="css3button negative pill">Remover</a>
+                    </p>
                 </div>
                 <div class="right">
                     <div class="floatright align-left">

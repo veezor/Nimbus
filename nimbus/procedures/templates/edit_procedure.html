@@ -9,6 +9,7 @@
 <script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
+        $("#slider").slider({ value: {{ retention_time }} });
 		FILESET_ID = {{fileset.id}};
 		FILESET_NAME = "{{fileset.name}}";
 		SCHEDULE_ID = {{schedule.id}};
@@ -49,10 +50,10 @@
                 <p>
 					<label>{{ field.label }}:</label><br />
 					{% if field.label == 'Agendamento' %}
-					<a href="/schedules/add/" id="schedule_button" class="minibutton"><span>Criar um agendamento</span></a><span id="discard_schedule" class="hidden"> ou <a class="minibutton" onClick="unset_schedule()"><span>Descartar e escolher um perfil</span></a></span>
+					<a href="/schedules/add/" id="schedule_button" class="css3button positive"><span>Criar um agendamento</span></a><span id="discard_schedule" class="hidden"> ou <a class="minibutton" onClick="unset_schedule()"><span>Descartar e escolher um perfil</span></a></span>
 					{% endif %}
 					{%if field.label == 'Conjunto de arquivos' %}
-					<a href="/filesets/add/" class="filesets minibutton" id="fileset_button"><span>Criar um conjunto de arquivos</span></a><span id="discard_fileset" class="hidden"> ou <a class="minibutton" onClick="unset_fileset()"><span>Descartar e escolher um perfil</span></a></span>
+					<a href="/filesets/add/" class="filesets css3button positive" id="fileset_button"><span>Criar um conjunto de arquivos</span></a><span id="discard_fileset" class="hidden"> ou <a class="minibutton" onClick="unset_fileset()"><span>Descartar e escolher um perfil</span></a></span>
 					{% endif %}
 					{{ field }}
                 </p>
@@ -73,7 +74,7 @@
 	    </div>
 	    <hr />
         <p>
-            <input type="submit" class="submit small" value="Salvar" /> <a href="/procedures/list" class="submit small">Cancelar</a>
+            <button type="submit" class="css3button big positive" value="Salvar">Salvar</button> <a href="/procedures/list" class="css3button big negative">Cancelar</a>
         </p>
         </form>
     </div>
