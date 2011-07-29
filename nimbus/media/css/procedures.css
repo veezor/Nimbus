@@ -204,3 +204,11 @@
 .status_waiting{background: #9da500 url(/media/icons/sleep32.png) left center no-repeat;}
 .status_ok{background: #26BF24 url(/media/icons/check32.png) left center no-repeat;}
 .status_running{background: #1A8CA5 url(/media/icons/exchange32.png) left center no-repeat;}
+
+#accordion h3{
+    font-weight: normal;
+    font-size: 12px;
+    padding: 4px;
+    border: 1px solid #c3c3c3;
+    
+}

@@ -1,16 +1,7 @@
 $(document).ready(function(){
-    console.log("leu");
+    //console.log("leu");
     // Accordeon for procedure history
-    $(".hide").slideUp();
-    $('.job_line').click(function(){
-        $(".hide").slideUp();
-        var next = $(this).next();
-        if (next.css('display') == 'none')
-            next.slideDown();
-        else
-            return false;
-            //next.slideUp();
-    });
+	$("#accordion").accordion({ collapsible: true, active:  });
     $('.job_line').mouseover(function(){
         $(this).addClass('over');
     });
