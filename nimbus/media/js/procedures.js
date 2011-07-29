@@ -1,7 +1,7 @@
 $(document).ready(function(){
     //console.log("leu");
     // Accordeon for procedure history
-	$("#accordion").accordion({ collapsible: true, active:  });
+	$("#accordion").accordion({ collapsible: true, active: true });
     $('.job_line').mouseover(function(){
         $(this).addClass('over');
     });
