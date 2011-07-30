@@ -35,14 +35,14 @@
         <div id="computers">
         {% for comp in computers %}
             {% ifchanged comp.groups.all %}
-            <h2>{% for g in comp.groups.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</h2>
             {% endifchanged %}
             <div class="computer {% if not comp.active %}desativado{% endif %}" >
                 <div class="left">
                     <div class="title">
                         <img src="/media/icons/computer.png" alt="" />
                         <h3 class="name"><a href="/computers/{{ comp.id }}/view">{{comp.name}}</a></h3>
-                        <small class="ip">{{comp.address}} - {{comp.operation_system|title}} - {% for g in comp.groups.all %}{{g.name}}{% endfor %}</small>
+                        <small class="ip">{{comp.address}} - {{comp.operation_system|title}} </small> <br/>
+                        <small class="ip">Grupos: {% for g in comp.groups.all %} {{g.name}} {% endfor %}</small>
                     </div>
                     <p class="description">{{comp.description}}</p>
                     <p class="options">

@@ -98,9 +98,10 @@ def delete(request, object_id):
 def list(request):
     group = request.GET.get("group")
     if group:
-        computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
+        computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group)
     else:
-        computers = Computer.objects.filter(active=True,id__gt=1).order_by('groups__name')
+        computers = Computer.objects.filter(active=True,id__gt=1)
+
 
     groups = ComputerGroup.objects.order_by('name')
     extra_content = {
