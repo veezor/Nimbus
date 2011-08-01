@@ -214,7 +214,7 @@ function submit_all() {
     });
     //console.log(status);
 	if (status.length == SCHEDULES.length) {
-		alert('Agendamento criado com sucesso');
+        // alert('Agendamento criado com sucesso');
 		SCHEDULE_ID = TMP_SCHEDULE_ID;
 		return true;				
 	} else {
@@ -229,4 +229,15 @@ function create_schedule() {
 		set_schedule();
 	};
 	return status;
+}
+function discard_unused_schedule(schedule_id) {
+    console.log(schedule_id);
+    $.ajax({
+        type: "POST",
+        url: "/schedules/reckless_discard/",
+        data: {"schedule_id": schedule_id},
+        success: function(j) {
+            console.log(j);
+		}
+    });
 }

@@ -128,3 +128,16 @@ def delete(request, fileset_id):
     f.delete()
     messages.success(request, u"Perfil de conjunto de arquivos '%s' removido com sucesso." % name)
     return redirect('/procedures/profile/list')
+
+
+@login_required
+def reckless_discard(request):
+    if request.method == 'POST':
+        print request.POST
+        fileset_id = request.POST["fileset_id"]
+        f = get_object_or_404(FileSet, pk=fileset_id)
+        # not so reckless
+        if not f.procedures.all():
+            f.delete()
+        # else:
+            # leave it to garbage colletor

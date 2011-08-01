@@ -130,3 +130,16 @@ def delete(request, schedule_id):
     s.delete()
     messages.success(request, u"Perfil de agendamento '%s' removido com sucesso." % name)
     return redirect('/procedures/profile/list')
+
+
+@login_required
+def reckless_discard(request):
+    if request.method == 'POST':
+        print request.POST
+        schedule_id = request.POST["schedule_id"]
+        s = get_object_or_404(Schedule, pk=schedule_id)
+        # not so reckless
+        if not s.procedures.all():
+            s.delete()
+        # else:
+            # leave it to garbage colletor
