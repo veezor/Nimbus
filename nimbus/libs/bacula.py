@@ -2,20 +2,22 @@
 # -*- coding: utf-8 -*-
 
 import os
+import time
 import logging
 import datetime
 import tempfile
 import xmlrpclib
 
 from django.conf import settings
-from django.db import connections
-from django.db.models import Sum
 
 import pybacula
-from pybacula import BaculaCommandLine, configcheck
+from pybacula import BaculaCommandLine, configcheck, BConsoleInitError
+
+import systemprocesses
 
 from nimbus.shared import utils
 from nimbus.bacula import models
+#from nimbus.config.models import BaculaSettings
 
 
 try:
@@ -97,6 +99,11 @@ class Bacula(object):
             return self.cmd.run.client[client_name].\
             job[job_name].level["Full"].when[date].yes.run()
 
+
+    def cancel_procedure(self, procedure):
+        self.cmd.cancel.job[procedure.bacula_name].run()
+
+
     def purge_volumes(self, volumes, pool_name):
         purge = self.cmd.purge
         for volume in volumes:
@@ -110,8 +117,9 @@ class Bacula(object):
             .pool[pool_name].run()
 
     def delete_pool(self, pool_name):
-        self.cmd.delete.pool[pool_name].run()
-    
+        self.cmd.delete.pool[pool_name].raw('\nyes').run()
+
+
 def bacula_is_locked():
     return os.path.exists(settings.BACULA_LOCK_FILE)
 
@@ -140,6 +148,7 @@ def lock_and_stop_bacula():
         except Exception, error:
             logger.exception("stop bacula-dir error")
 
+
 class BaculaLock(object):
 
     def __enter__(self):
@@ -148,3 +157,81 @@ class BaculaLock(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         unlock_bacula_and_start()
+
+
+
+class ReloadManager(object):
+
+    def __init__(self):
+        from nimbus.config.models import BaculaSettings
+        self.conf = BaculaSettings.get_instance()
+
+
+    def add_reload_request(self):
+        self.conf.increment_reload_requests_counter()
+
+        if self.conf.reload_requests_counter > self.conf.reload_requests_threshold\
+           and self.interval > self.min_interval:
+            self._reload()
+        self._lazy_reload()
+
+
+    def _reload(self):
+        self.conf.reset_reload_requests_counter()
+        self._call_reload_baculadir()
+
+
+    def force_reload(self):
+        self._reload()
+
+    @property
+    def min_interval(self):
+        return datetime.timedelta(seconds=self.conf.min_reload_requests_interval)
+
+    @property
+    def interval(self):
+
+        if not self.conf.last_bacula_reload:
+            return self.min_interval + 1
+
+        now = datetime.datetime.now()
+        return now - self.last_reload
+
+
+    def _lazy_reload(self):
+        def _reload():
+            time.sleep(self.conf.min_reload_requests_interval * 2)
+            if self.conf.has_bacula_reload_requests:
+                self._reload()
+
+        systemprocesses.max_priority_job("bacula-dir reload",
+                                         _reload )
+
+
+    def _force_baculadir_restart(self):
+        if not bacula_is_locked():
+            try:
+                logger = logging.getLogger(__name__)
+                manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
+                stdout = manager.director_restart()
+                logger.info("bacula-dir restart ok")
+                logger.info(stdout)
+            except Exception, error:
+                logger.error("Reload bacula-dir error")
+
+
+
+    def _call_reload_baculadir(self):
+        try:
+            logger = logging.getLogger(__name__)
+            logger.info("Iniciando comunicacao com o bacula")
+            bacula = Bacula()
+            bacula.reload()
+            logger.info("Reload no bacula executado com sucesso")
+            del bacula
+        except BConsoleInitError, e:
+            logger.error("Comunicação com o bacula falhou, vou tentar o restart")
+            self._force_baculadir_restart()
+            logger.error("Comunicação com o bacula falhou")
+
+

@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import logging
+import os
 from os import path
 from os.path import join, exists
 
@@ -11,6 +12,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
 
 from pybacula import BConsoleInitError
+
 from nimbus.base.models import BaseModel
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
@@ -19,7 +21,7 @@ from nimbus.schedules.models import Schedule
 from nimbus.bacula.models import Media, Job, File
 # from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
-from nimbus.libs.bacula import Bacula
+from nimbus.libs.bacula import Bacula, ReloadManager
 from nimbus.offsite.models import Offsite
 from nimbus.offsite.models import is_active
 from nimbus.libs import offsite
@@ -154,6 +156,9 @@ def update_procedure_file(procedure):
                        client=procedure.computer.bacula_name,
                        pool=procedure.pool_bacula_name())
 
+    reload_manager = ReloadManager()
+    reload_manager.force_reload()
+
 def remove_procedure_file(procedure):
     """remove procedure file"""
     base_dir,filepath = utils.mount_path(procedure.bacula_name,
@@ -161,15 +166,25 @@ def remove_procedure_file(procedure):
     utils.remove_or_leave(filepath)
     remove_pool_file(procedure)
 
+
 def remove_procedure_volumes(procedure):
     pool_name = procedure.pool_bacula_name()
     medias = Media.objects.filter(pool__name=pool_name).distinct()
     volumes = [m.volumename for m in medias]
     try:
         bacula = Bacula()
+        bacula.cancel_procedure(procedure)
         bacula.purge_volumes(volumes, pool_name)
         bacula.truncate_volumes(pool_name)
         bacula.delete_pool(pool_name)
+        for volume in volumes:
+            volume_abs_path = join(settings.NIMBUS_DEFAULT_ARCHIVE, volume)
+            if exists(volume_abs_path):
+                os.remove(volume_abs_path)
+
+        reload_manager = ReloadManager()
+        reload_manager.force_reload()
+
     except BConsoleInitError, error:
         logger = logging.getLogger(__name__)
         logger.exception("Erro na comunicação com o bacula")

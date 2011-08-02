@@ -27,6 +27,7 @@ from django.conf import settings
 
 from nimbus.libs import offsite, graphsdata
 from nimbus.shared import utils
+from nimbus.libs.bacula import ReloadManager
 from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
@@ -76,6 +77,9 @@ class App(object):
             computer.activate()
 
             register_administrative_nimbus_models()
+
+            reload_manager = ReloadManager()
+            reload_manager.force_reload()
 
 
 
