@@ -37,12 +37,14 @@ $(document).ready(function(){
         $(this).removeClass("hvr");
     });
     /* Asks 'are you sure?' on delete action */
-    $(".red").click(function(){
-        if (!confirm("Tem certeza?"))
-            return false;
-    });
+    // Não importa se voce clica em 'ok' ou 'cancel', a acao eh executada assim mesmo
+    // $(".red").click(function(){
+    //     if (!confirm("Tem certeza?"))
+    //         return false;
+    // });
+
     // facebox stuff
-    //$.facebox.settings.opacity = 0.3;
+    $.facebox.settings.opacity = 0.7;
     $('#fileset_button').click(function(){
         if ($('#id_procedure-computer').val())
         {
@@ -294,8 +296,9 @@ function set_fileset() {
     if (typeof FILESET_ID != "undefined") {
         $("#id_procedure-fileset").append("<option value="+FILESET_ID+">Usar o fileset criado</option>");
         $("#id_procedure-fileset").val(FILESET_ID);
+        $("#id_procedure-fileset").hide("slow");
         $("#uniform-id_procedure-fileset").hide('slow');
-        $("#discard_fileset").show('slow')
+        $("#discard_fileset").show('slow');
         $("#fileset_button").html("<span>Modificar</span>");
         $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");   
         $(".fileset_return").val(FILESET_ID);         
@@ -306,8 +309,9 @@ function set_schedule() {
     if (typeof SCHEDULE_ID != "undefined") {
         $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">Usar o agendamento criado</option>");
         $("#id_procedure-schedule").val(SCHEDULE_ID);
+        $("#id_procedure-schedule").hide('slow');
         $("#uniform-id_procedure-schedule").hide('slow');
-        $("#discard_schedule").show('slow')
+        $("#discard_schedule").show('slow');
         $("#schedule_button").html("Modificar");
         $("#schedule_button").attr('href', "/schedules/" + SCHEDULE_ID + "/edit/"); 
         $(".schedule_return").val(SCHEDULE_ID);
@@ -315,14 +319,30 @@ function set_schedule() {
 };
 function unset_schedule() {
     $("#uniform-id_procedure-schedule").show('slow');
-    $("#discard_schedule").hide('slow')
+    $("#discard_schedule").hide('slow');
     $("#schedule_button").html("<span>Criar outro agendamento</span>");
     $("#schedule_button").attr('href', "/schedules/add/");   
-    $(".schedule_return").val("");         
+    $(".schedule_return").val("");
+    $("#id_procedure-schedule").val('');
+    for (var i = 0; i <= $("#id_procedure-schedule")[0].length; i++){
+        if ($("#id_procedure-schedule")[0][i].value == SCHEDULE_ID) {
+            $("#id_procedure-schedule")[0].remove(i);
+        }
+    }
+    $("#id_procedure-schedule").show('slow');
+    discard_unused_schedule(SCHEDULE_ID);
 };
 function unset_fileset() {
     $("#uniform-id_procedure-fileset").show('slow');
-    $("#discard_fileset").hide('slow')
+    $("#discard_fileset").hide('slow');
     $("#fileset_button").html("<span>Criar outro fileset</span>");
-    $("#fileset_button").attr('href', "/filesets/add/");            
+    $("#fileset_button").attr('href', "/filesets/add/");
+    $("#id_procedure-fileset").val('');
+    for (var i = 0; i <= $("#id_procedure-fileset")[0].length; i++){
+        if ($("#id_procedure-fileset")[0][i].value == FILESET_ID) {
+            $("#id_procedure-fileset")[0].remove(i);
+        }
+    }
+    $("#id_procedure-fileset").show("slow");
+    discard_unused_fileset(FILESET_ID);
 };

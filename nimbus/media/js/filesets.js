@@ -74,7 +74,7 @@ $(document).ready(function(){
                     FILESET_ID = response.fileset_id;
                     $(".fileset_return").val(FILESET_ID);
                     FILESET_NAME = response.fileset_name;
-                    alert(response.message);
+                    // alert(response.message);
                     $.facebox.close();
                     set_fileset();
                     //location.reload();
@@ -121,3 +121,15 @@ $(document).ready(function(){
         }
 	});
 });
+
+function discard_unused_fileset(fileset_id) {
+    console.log(fileset_id);
+    $.ajax({
+        type: "POST",
+        url: "/filesets/reckless_discard/",
+        data: {"fileset_id": fileset_id},
+        success: function(j) {
+            console.log(j);
+		}
+    });
+}
