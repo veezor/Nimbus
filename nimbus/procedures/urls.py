@@ -6,7 +6,6 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('nimbus.procedures.views',
                         (r'^add/$', 'add'),
                         (r'^add/', 'add'),
-                        (r'^$', 'list_all'), 
                         (r'^list/$', 'list_all'),
                         (r'^history/$', 'history'), 
                         (r'^(?P<object_id>\d+)/history/$', 'history'), 
