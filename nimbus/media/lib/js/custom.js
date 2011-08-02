@@ -211,13 +211,16 @@ $(document).ready(function(){
 	})
 	// $(".sparklines").sparkline('html', {width: "300", height: "150px" });
 	
-	var actual_time = $('#actual_time').html().split(':');
-	var hours = actual_time[0];
-	var minutes = actual_time[1];
-	var seconds = actual_time[2];
-	data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
-	update_time();
-	
+	var actual_time_html = $('#actual_time').html();
+    if (actual_time_html != null){
+        var actual_time.split(':');
+        var hours = actual_time[0];
+        var minutes = actual_time[1];
+        var seconds = actual_time[2];
+        data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
+        update_time();
+    }
+        
 	$(".date_picker").mask('99/99/9999');
 	$(".date_picker").bind("blur focus change click keyup", function(){
 	   $(this).mask('99/99/9999');
