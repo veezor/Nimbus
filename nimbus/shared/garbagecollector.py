@@ -12,15 +12,13 @@ class Trashmen(object):
         """Pega todos os objetos orfaos"""
         orphans = []
         # Schedules que não são modelos e não tem procedure
-        schedules = Schedule.objects.filter(is_model=False).all()
-        for schedule in schedules:
-            if len(schedule.procedures.all()) == 0:
-                orphans.append(schedule)
-        # Schedules que não são modelos e não tem procedure
-        filesets = FileSet.objects.filter(is_model=False).all()
-        for fileset in filesets:
-            if len(fileset.procedures.all()) == 0:
-                orphans.append(fileset)
+        schedules = Schedule.objects.filter(is_model=False,procedures__isnull=True)
+        orphans.extends(schedules)
+        
+        # Filesets que não são modelos e não tem procedure
+        filesets = FileSet.objects.filter(is_model=False,procedures__isnull=True)
+        orphans.extends(filesets)
+
         return orphans
         
     def kill_them(self):
