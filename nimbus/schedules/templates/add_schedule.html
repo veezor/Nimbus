@@ -21,13 +21,14 @@
 		}
 		table#inventory{width: 100%;}
 		table#inventory tbody tr td{
-		  padding: 8px;
+		  padding: 2px;
 		  background: #fafafa;
 		}
 		.remove_schedule{cursor: pointer;}
 		.first_table{width: 100%;}
-		.first_table td{width: 50%; border-bottom: 1px solid #c0c0c0; margin-bottom: 10px;}
+		.first_table td{width: 60%; border-bottom: 1px solid #c0c0c0; margin-bottom: 10px;}
 		.border{border-top: 1px solid #c0c0c0;}
+		div#schedules_made {min-height: 100px; max-height: 200px; overflow: auto;}
 	</style>
 {% endblock %}
 
@@ -218,7 +219,9 @@
 		</td>
 	</tr>
 </table>
+</div>
 <h3>Agendamentos selecionados</h3>
+<div id="schedules_made">
 <table id="inventory" cellpadding="0" cellspacing="0">
 	<thead>
 		<tr><th>&nbsp;</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr>
@@ -233,10 +236,11 @@
 {% else %}
 <input type="hidden" id="schedule_name" value="Apenas para este procedimento"/>
 {% endif %}
+</div>
 {% if reload %}
 <a href="#" onclick="if (create_schedule() == true) {window.location.reload()}" class="css3button big positive"><span>Criar Agendamento</span></a>
 {% else %}
 <a href="#" onclick="create_schedule()" class="css3button positive big"><span>Criar Agendamento</span></a>
 {% endif %}
-</div>
+
 {% endblock %}
