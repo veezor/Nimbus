@@ -35,37 +35,35 @@ def add(request, teste=None):
         comp_id = request.GET["comp_id"]
     title = u"Adicionar backup"
     form = ProcedureForm(prefix="procedure")
-    schedule_return = False
-    fileset_return = False
+    # schedule_return = False
+    # fileset_return = False
     content = {'title': title,
-                'schedule_return': schedule_return,
-                'fileset_return': fileset_return,
+                # 'schedule_return': schedule_return,
+                # 'fileset_return': fileset_return,
                 'form':form,
-                'init_script': "",
+                # 'init_script': "",
                 'comp_id': comp_id}
     if request.method == "POST":
         data = copy(request.POST)
-        # retorna o ajax caso haja submissão do formulário
-        if data['schedule_return']:
-            content['init_script'] = "$(field_schedule).val(%s);set_schedule();" % data['schedule_return']
-        if data['fileset_return']:
-            content['init_script'] += "$(field_fileset).val(%s);set_fileset();" % data['fileset_return']
+        print data['procedure-fileset']
+        print data['procedure-schedule']
         if data["procedure-fileset"]:
             fileset = FileSet.objects.get(id=data['procedure-fileset'])
             content['fileset'] = fileset
+        if data["procedure-schedule"]:
+            schedule = Schedule.objects.get(id=data['procedure-schedule'])
+            content['schedule'] = schedule
         procedure_form = ProcedureForm(data, prefix="procedure")
-        if len(data['procedure-pool_retention_time']) > 4:
-            messages.error(request, "O tempo de retenção é muito alto, por favor escolha um valor menor")
-            content['form'] = procedure_form
-            return render_to_response(request, "add_procedure.html", content)
-        elif procedure_form.is_valid():
+        if procedure_form.is_valid():
             procedure = procedure_form.save()
             messages.success(request, "Procedimento de backup '%s' criado com sucesso" % procedure.name)
             return redirect('/procedures/list')
         else:
             messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
             content['form'] = procedure_form
+            print content['form']
             return render_to_response(request, "add_procedure.html", content)
+    print content
     return render_to_response(request, "add_procedure.html", content)
 
 
@@ -74,14 +72,15 @@ def edit(request, procedure_id):
     p = get_object_or_404(Procedure, pk=procedure_id)
     title = u"Editando '%s'" % p.name
     partial_form = ProcedureForm(prefix="procedure", instance=p)
-    lforms = [partial_form]
     content = {'title': title,
-              'forms':lforms,
+              'form': partial_form,
               'id': procedure_id,
               'procedure': p,
               'schedule': p.schedule,
               'fileset': p.fileset,
               'retention_time': p.pool_retention_time}
+    print content
+    print content['schedule'].id
     if request.method == "POST":
         data = copy(request.POST)
         if data['procedure-schedule'] == u"":

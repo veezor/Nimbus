@@ -24,10 +24,10 @@ class ProcedureForm(forms.ModelForm):
                                              queryset=Computer.objects.filter(id__gt=1))
  
 
-    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
-                                             min_value=1, max_value=3650,
-                                             initial=10,
-                                             widget=forms.HiddenInput())
+    pool_retention_time = forms.IntegerField(label="Tempo de retenção",
+                                             min_value=1, max_value=9999,
+                                             initial=10)
+                                             # widget=forms.HiddenInput())
     fileset = forms.models.ModelChoiceField(label=_("Conjunto de arquivos"),
                                             queryset=FileSet.objects.filter(id__gt=1),
                                             empty_label = u"-ou escolha um perfil-")
@@ -65,8 +65,9 @@ class ProcedureEditForm(forms.ModelForm):
                                                 Q(is_model=True) | Q(id=s_id)))
 #        remove_null_choice(self, ['schedule', 'fileset', 'storage', 'computer'])
                                                 
-    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
-                                             min_value=1, widget=forms.HiddenInput())
+    pool_retention_time = forms.IntegerField(label="Tempo de retenção",
+                                             min_value=1, max_value=9999)
+                                             # widget=forms.HiddenInput())
                                 
     class Meta:
         model = Procedure
