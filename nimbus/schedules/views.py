@@ -105,9 +105,17 @@ def do_edit(request):
                 return HttpResponse('{"status": "error"}')
 
 
-
 @login_required
 def delete(request, schedule_id):
+    s = get_object_or_404(Schedule, pk=schedule_id)
+    procedures = s.procedures.all()
+    content = {'schedule': s,
+               'procedures': procedures}
+    return render_to_response(request, "remove_schedule.html", content)
+
+
+@login_required
+def do_delete(request, schedule_id):
     s = get_object_or_404(Schedule, pk=schedule_id)
     if s.is_model:
         for procedure in s.procedures.all():

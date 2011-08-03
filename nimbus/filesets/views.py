@@ -109,8 +109,18 @@ def get_tree(request):
         except Exception:
             traceback.print_exc()
 
+
 @login_required
 def delete(request, fileset_id):
+    f = get_object_or_404(FileSet, pk=fileset_id)
+    procedures = f.procedures.all()
+    content = {'fileset': f,
+               'procedures': procedures}
+    return render_to_response(request, "remove_fileset.html", content)
+
+
+@login_required
+def do_delete(request, fileset_id):
     f = get_object_or_404(FileSet, pk=fileset_id)
     if f.is_model:
         for procedure in f.procedures.all():

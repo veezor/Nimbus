@@ -40,7 +40,6 @@ def add(request, teste=None):
                 'comp_id': comp_id}
     if request.method == "POST":
         data = copy(request.POST)
-        print data
         if data["procedure-fileset"]:
             fileset = FileSet.objects.get(id=data['procedure-fileset'])
             content['fileset'] = fileset
