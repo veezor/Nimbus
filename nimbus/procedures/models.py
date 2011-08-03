@@ -75,6 +75,12 @@ class Procedure(BaseModel):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
                 .order_by('-endtime')[0]
 
+    @property
+    def running_job_ids(self):
+        status = ('R','p','j','c','d','s','M','m','s','F','B') #TODO: refactor
+        return Job.objects.filter(name=self.bacula_name,
+                                  jobstatus__in=status).values_list('jobid', flat=True)
+
     @classmethod
     def all_jobs(cls):
         job_names = [ p.bacula_name for p in cls.objects.all() ]
