@@ -197,7 +197,7 @@ class ReloadManager(object):
             return self.min_interval + 1
 
         now = datetime.datetime.now()
-        return now - self.last_reload
+        return now - self.conf.last_bacula_reload
 
 
     def _lazy_reload(self):
