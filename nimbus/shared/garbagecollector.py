@@ -13,11 +13,11 @@ class Trashmen(object):
         orphans = []
         # Schedules que não são modelos e não tem procedure
         schedules = Schedule.objects.filter(is_model=False,procedures__isnull=True)
-        orphans.extends(schedules)
+        orphans += schedules
         
         # Filesets que não são modelos e não tem procedure
         filesets = FileSet.objects.filter(is_model=False,procedures__isnull=True)
-        orphans.extends(filesets)
+        orphans += filesets
 
         return orphans
         
