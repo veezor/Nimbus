@@ -23,12 +23,12 @@
 				{% if procedure.fileset.is_model %}
 				<li>O perfil do conjunto de arquivos <strong>"{{procedure.fileset.name}}"</strong> não será afetado.</li>
 				{% else %}
-				<li>O conjunto de arquivos <strong>"{{procedure.fileset.name}}"</strong> é usado apenas para este backup e será removido.</li>
+				<li>O conjunto de arquivos <strong>"{{procedure.fileset.name}}"</strong> é usado apenas para este backup e <strong>será removido</strong>.</li>
 				{% endif %}
 				{% if procedure.schedule.is_model %}
 				<li>O perfil de agendamento <strong>"{{procedure.schedule.name}}"</strong> não será afetado.</li>
 				{% else %}
-				<li>O agendamento <strong>"{{procedure.schedule.name}}"</strong> é usado apenas para este backup e será removido.</li>
+				<li>O agendamento <strong>"{{procedure.schedule.name}}"</strong> é usado apenas para este backup e <strong>será removido</strong>.</li>
 				{% endif %}
 				{% if last_jobs %}
 				<li>Os seguintes backups serão apagados e não mais poderão ser restaurados:</li>
@@ -39,7 +39,8 @@
 				<li>Não existe nenhum backup salvo deste procedimento</li>
 				{% endif %}
 			</ul>
-            <p>Esta operação não poderá ser desfeita. Deseja prosseguir mesmo assim?</p>
+            <br \>
+			<p><strong>Esta operação não poderá ser desfeita. Deseja prosseguir mesmo assim?</strong></p>
             <p>
                 <!-- <input type="submit" class="css3button positive" name="confirm" value="Prosseguir" /> ou <a href="" onclick="history.back(-1); return false;">Cancelar</a> -->
                 <a href="/procedures/{{procedure.id}}/do_delete/" class="css3button negative">Excluir</a> ou <a href="" class="css3button positive" onclick="history.back(-1); return false;">Cancelar</a>
