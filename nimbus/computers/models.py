@@ -126,6 +126,13 @@ class Computer(BaseModel):
                                   name__in=self._procedure_names())\
                                         .order_by('-endtime').distinct()[:15]
 
+    @property
+    def all_my_jobs(self):
+        return Job.objects.filter(client__name=self.bacula_name,
+                                  name__in=self._procedure_names())\
+                                        .order_by('-endtime').distinct()
+    
+
     def error_jobs(self):
         return Job.objects.filter(jobstatus__in=('e','E','f'),
                                   name__in=self._procedure_names(),

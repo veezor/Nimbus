@@ -11,7 +11,7 @@ from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.core import serializers
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.db import IntegrityError
 
@@ -82,17 +82,22 @@ def edit(request, object_id):
                                        extra_context = extra_context,
                                        post_save_redirect = "/computers/")
 
+
 @login_required
 def delete(request, object_id):
-    if request.method == "POST":
-        computer = Computer.objects.get(id=object_id)
-        computer.delete()
-        messages.success(request, u"Computador removido com sucesso.")
-        return redirect('nimbus.computers.views.list')
-    else:
-        computer = Computer.objects.get(id=object_id)
-        remove_name = computer.name
-        return render_to_response(request, 'remove.html', locals())
+    c = get_object_or_404(Computer, pk=object_id)
+    jobs = c.all_my_jobs
+    content = {'computer': c,
+               'last_jobs': jobs,
+               'procedures': c.procedure_set.all()}
+    return render_to_response(request, "remove_computer.html", content)
+
+@login_required
+def do_delete(request, object_id):
+    computer = Computer.objects.get(id=object_id)
+    computer.delete()
+    messages.success(request, u"Computador removido com sucesso.")
+    return redirect('nimbus.computers.views.list')
 
 @login_required
 def list(request):
