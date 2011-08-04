@@ -12,6 +12,7 @@ urlpatterns = patterns('nimbus.procedures.views',
                         # # (r'^(?P<object_id>\d+)/view/$', 'view'), 
                         (r'^(?P<procedure_id>\d+)/edit/$', 'edit'),
                         (r'^(?P<object_id>\d+)/delete/$', 'delete'),
+                        (r'^(?P<object_id>\d+)/do_delete/$', 'do_delete'),
                         (r'^(?P<object_id>\d+)/activate/$', 'activate'),
                         (r'^(?P<object_id>\d+)/deactivate/$', 'deactivate'),
                         #     

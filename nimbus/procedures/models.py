@@ -81,6 +81,11 @@ class Procedure(BaseModel):
         return Job.objects.filter(name=self.bacula_name,
                                   jobstatus__in=status).values_list('jobid', flat=True)
 
+    @property
+    def all_my_jobs(self):
+        jobs = Job.objects.filter(name=self.bacula_name)
+        return jobs
+        
     @classmethod
     def all_jobs(cls):
         job_names = [ p.bacula_name for p in cls.objects.all() ]

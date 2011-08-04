@@ -92,19 +92,24 @@ def edit(request, procedure_id):
 
 @login_required
 def delete(request, object_id):
-    if request.method == "POST":
-        procedure = Procedure.objects.get(id=object_id)
-        if not procedure.schedule.is_model:
-            procedure.schedule.delete()
-        if not procedure.fileset.is_model:
-            procedure.fileset.delete()
-        procedure.delete()
-        messages.success(request, u"Procedimento removido com sucesso.")
-        return redirect('/procedures/list')
-    else:
-        procedure = Procedure.objects.get(id=object_id)
-        remove_name = procedure.name
-        return render_to_response(request, 'remove.html', locals())
+    p = get_object_or_404(Procedure, pk=object_id)
+    jobs = p.all_my_jobs
+    content = {'procedure': p,
+               'last_jobs': jobs}
+    return render_to_response(request, "remove_procedure.html", content)
+
+
+@login_required
+def do_delete(request, object_id):
+    procedure = Procedure.objects.get(id=object_id)
+    if not procedure.schedule.is_model:
+        procedure.schedule.delete()
+    if not procedure.fileset.is_model:
+        procedure.fileset.delete()
+    procedure.delete()
+    messages.success(request, u"Procedimento removido com sucesso.")
+    return redirect('/procedures/list')
+
 
 @login_required
 def execute(request, object_id):
