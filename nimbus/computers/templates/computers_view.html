@@ -62,20 +62,19 @@
                             <div class="title">
                                 <a href="#" class="toggle" ref="fileset_detail">
                                     <img src="/media/icons/folder.png"/>
-                                    <h4 class="name">{{proc.profile.fileset.name}}</h4>
-                                    <small class="ip">{% for file in proc.profile.fileset.files.all|slice:":3" %}{{file.path}} - {% endfor %}</small>
+                                    <h4 class="name">{{proc.fileset.name}}</h4>
+                                    <small class="ip">{% for file in proc.fileset.files.all|slice:":3" %}{{file.path}} - {% endfor %}</small>
                                 </a>
                             </div>
                             <div class="fileset_detail">
                                 <br/>
                                 Offsite ativado? <strong>{% if proc.offsite_on %}Sim{% else %}Não{% endif %}</strong><br/>
-                                Perfil de configuração: <strong>{{proc.profile.name}}</strong> <small>(<a href="/procedures/profile/{{proc.profile.id}}/edit">editar</a>)</small><br/>
-                                Local de armazenamento: <strong><a href="/storages/{{proc.profile.storage.id}}/view"><span title="Endereço: {{proc.profile.storage.address}} - {{proc.profile.storage.description|slice:":25"}}...">{{proc.profile.storage.name}}</span></a></strong><br/>
-                                Agendamento: <strong>{{proc.profile.schedule}}</strong> <small>(<a href="/schedules/{{proc.profile.schedule.id}}/edit">editar</a>)</small><br/>
-                                Arquivos: <small>(<a href="/filesets/{{proc.profile.fileset.id}}/edit/">editar</a>)</small>
+                                Local de armazenamento: <strong><a href="/storages/{{proc.storage.id}}/view"><span title="Endereço: {{proc.storage.address}} - {{proc.storage.description|slice:":25"}}...">{{proc.storage.name}}</span></a></strong><br/>
+                                Agendamento: <strong>{{proc.schedule}}</strong> <small>(<a href="/procedures/{{proc.id}}/edit">editar</a>)</small><br/>
+                                Arquivos: <small>(<a href="/procedures/{{proc.id}}/edit/">editar</a>)</small>
                                 <ul>
-                                    {% for file in proc.profile.fileset.files.all %}
-                                    <li><strong>{{file}}</strong></li>
+                                    {% for file in proc.fileset.files.all %}
+                                    <li><strong>{{file.path}}</strong></li>
                                     {% endfor %}
                                 </ul>
                             </div>

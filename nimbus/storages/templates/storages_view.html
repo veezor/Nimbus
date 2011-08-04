@@ -30,7 +30,7 @@
                     
                 </div>
                 <div class="right">
-                    {% if not storage.profile_set.count %}
+                    {% if not storage.procedure_set.count %}
                         <div class="message warning">
                             <p>Não existem procedimentos relacionados a este armazenamento.</p>
                         </div>
@@ -48,11 +48,10 @@
                                 </div>
                                 <div class="computer_detail" class="hidden">
                                     {% for proc in computer.procedure_set.all %}
-                                        <h4 class="name">{{proc.name}} <small><a href="{% url nimbus.procedures.views.edit object_id=proc.id %}">(editar)</a></small></h4>
+                                        <h4 class="name">{{proc.name}} <small><a href="{% url nimbus.procedures.views.edit procedure_id=proc.id %}">(editar)</a></small></h4>
                                         Offsite ativado: {% if proc.offsite_on %}Sim{% else %}Não{% endif %}<br/>
-                                        Perfil de configuração: <a href="{% url nimbus.procedures.views.profile_edit object_id=proc.profile.id %}">{{proc.profile.name}}</a><br/>
-                                        Agendamento: <a href="{% url nimbus.schedules.views.edit object_id=proc.profile.schedule.id %}">{{proc.profile.schedule}}</a><br/>
-                                        Conjunto de arquivos: <a href="{% url nimbus.filesets.views.edit object_id=proc.profile.fileset.id %}">{{proc.profile.fileset}}</a>
+                                        Agendamento: {{proc.schedule}}<br/>
+                                        Conjunto de arquivos: {{proc.fileset}}
                                         <p></p>
                                     {% endfor %}
                                 </div>

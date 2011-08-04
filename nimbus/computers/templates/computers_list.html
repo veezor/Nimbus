@@ -84,9 +84,13 @@
                                 <div class="fileset_detail">
                                     <br/>
                                     Offsite ativado? <strong>{% if proc.offsite_on %}Sim{% else %}Não{% endif %}</strong><br/>
+                                    Local de armazenamento: <strong><a href="/storages/{{proc.storage.id}}/view"><span title="Endereço: {{proc.storage.address}} - {{proc.storage.description|slice:":25"}}...">{{proc.storage.name}}</span></a></strong><br/>
+                                    Agendamento: <strong>{{proc.schedule}}</strong> <small>(<a href="/procedures/{{proc.id}}/edit">editar</a>)</small><br/>
+                                    Arquivos: <small>(<a href="/procedures/{{proc.id}}/edit/">editar</a>)</small>
+
                                     <ul>
                                         {% for file in proc.fileset.files.all %}
-                                        <li><strong>{{file}}</strong></li>
+                                        <li><strong>{{file.path}}</strong></li>
                                         {% endfor %}
                                     </ul>
                                 </div>
