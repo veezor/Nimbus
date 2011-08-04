@@ -102,7 +102,7 @@ class Bacula(object):
 
     def cancel_procedure(self, procedure):
         self.cmd.cancel.job[procedure.bacula_name].run()
-        for job_id in procedure.running_job_ids:
+        for job_id in procedure.jobs_id_to_cancel:
             self.cmd.cancel.jobid[job_id].run()
 
 

@@ -76,8 +76,8 @@ class Procedure(BaseModel):
                 .order_by('-endtime')[0]
 
     @property
-    def running_job_ids(self):
-        status = ('R','p','j','c','d','s','M','m','s','F','B') #TODO: refactor
+    def jobs_id_to_cancel(self):
+        status = ('R','p','j','c','d','s','M','m','s','F','B', 'C') #TODO: refactor
         return Job.objects.filter(name=self.bacula_name,
                                   jobstatus__in=status).values_list('jobid', flat=True)
 
