@@ -46,6 +46,11 @@ cp webservices/manager/nimbus_manager.conf deb/etc/nimbus
 cp webservices/manager/nimbus_manager_log.conf deb/etc/nimbus
 cp libs/keymanager/conf/ssl.conf deb/etc/nimbus
 cp webservices/manager/init.d/nimbusmanager deb/etc/init.d
+cp LICENSE deb/var/www/
+cp third_part_software.txt deb/var/www
+cp -a doc deb/var/www
+cp README deb/var/www
+ 
 
 dpkg-deb -b deb nimbus.deb
 
