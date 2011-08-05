@@ -19,15 +19,15 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
         input_name = 'path';
     }
     
-    root = $(tree_class + " *[path="+root_path+"]");
+    root = $(tree_class + " *[path=\""+root_path+"\"]");
     root.addClass('directory_open');
     var ul = $("<ul>").addClass("open").hide();
-    ul.insertAfter($(tree_class + " *[path="+root_path+"]"));
+    ul.insertAfter($(tree_class + " *[path=\""+root_path+"\"]"));
 
-    $(tree_class + " *[path="+root_path+"]").click(function(){
+    $(tree_class + " *[path=\""+root_path+"\"]").click(function(){
         //alert("bla");
     });
-    link = $(tree_class + " *[path="+root_path+"]");
+    link = $(tree_class +  " *[path=\""+root_path+"\"]");
     link.append($("<div class='wait'></div>"));
     
     total = data.length;
@@ -173,7 +173,7 @@ function update_tree(root_path, get_tree_path, tree_class, input_type, input_nam
         $('#mensagem_erro_fileset').html('').hide();
     }
     //console.log($(tree_class));
-    link = $(tree_class + " *[path="+root_path+"]");
+    link = $(tree_class +  " *[path=\""+root_path+"\"]" );
     link.find(".wait").remove();
     link.append($("<div class='wait'></div>"));
 
