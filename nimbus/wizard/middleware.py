@@ -34,7 +34,6 @@ class Wizard(object):
         path = request.META['PATH_INFO']
         if path.startswith("/wizard") or\
                 path.startswith("/media") or\
-                path.startswith("/recovery") or\
                 'ajax' in path:
             return False
         return True

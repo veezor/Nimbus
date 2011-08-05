@@ -78,7 +78,7 @@ def timezone(request):
     extra_context = {
         'wizard_title': u'3 de 4 - Configuração de Hora',
         'page_name': u'timezone',
-        'previous': reverse('nimbus.wizard.views.recovery')
+        'previous': reverse('nimbus.wizard.views.network')
     }
     return edit_singleton_model( request, "generic.html",
                                  "nimbus.wizard.views.password",
