@@ -47,8 +47,8 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
         root_path_re = new RegExp("^" + root_path, "g");
         path_name = path.replace(root_path_re, '');
 
-        var input = $("<input>").attr("type", input_type).attr("class", "full_path").val(path);
-        // var input = $("<input>").attr("type", input_type).attr("name", input_name).attr("class", "full_path").val(path);
+        //var input = $("<input>").attr("type", input_type).attr("class", "full_path").val(path);
+        var input = $("<input>").attr("type", input_type).attr("name", input_name).attr("class", "full_path").val(path);
         
         // If is a directory.
         if (path.match("/$") == "/" || path.match("\\$") == "\\") {
@@ -58,6 +58,12 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
             dir_path = ""+path;
             //console.log("dir_path = "+dir_path);
         } else {
+
+
+            if (input_type == 'radio'){
+                continue; 
+            }
+
             attr_class = "file";
             if (path_name.split('.').length > 1) {
                 mime_class = "ext_" + $(path_name.split('.')).eq(-1)[0].toLowerCase();
@@ -70,57 +76,50 @@ function mount_tree(data, root_path, get_tree_path, tree_class, input_type, inpu
 
         var file = $("<span>").html(inner);
         var counter = 0;
-        if (input_type != "radio") {
-            input.change(function(){
-                checked = $(this).attr("checked") && "checked" || "";
-                $(this).parent().find('input').attr("checked", checked);
-                
-                if (!checked) {
-                    atual = $(this).parent().parent().parent().parent();
-                    for (var i = 0; i < $(this).val().split('/').length - 2; i++) {
-                        atual.find('input').eq(0).attr('checked', '');
-                        atual = atual.parent().parent().parent().parent();
+        input.change(function(){
+            checked = $(this).attr("checked") && "checked" || "";
+            $(this).parent().find('input').attr("checked", checked);
+            
+            if (!checked) {
+                atual = $(this).parent().parent().parent().parent();
+                for (var i = 0; i < $(this).val().split('/').length - 2; i++) {
+                    atual.find('input').eq(0).attr('checked', '');
+                    atual = atual.parent().parent().parent().parent();
+                }
+
+                $.each($(':input').serializeArray(), function(i, field) {
+                    if (field.value == path)
+                    {
+                        $("#id_filepath_set-TOTAL_FORMS").val(counter-1);
+                        $("#id_filepath_set-INITIAL_FORMS").val(counter-1);
+                        $("#id_filepath_set-MAX_NUM_FORMS").val(counter-1);
+                        //$("[name="+field.name+"]").remove();
+                        
                     }
+                });
+                // removes path_restore
+                $("input:[name=path][value="+dir_path+$(this).attr("value")+"]").remove();
+            }
+            else
+            {
+                // creates input hidden for validation
+                var input_path = "<input type='text' value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-path' name='filepath_set-"+counter+"-path' />";
+                var input_fileset = "<input type='text'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-fileset' name='filepath_set-"+counter+"-fileset' />";
+                var input_id = "<input type='text'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-id' name='filepath_set-"+counter+"-id' />";
+                counter++;
+                $('#submit_fileset').after(input_path);
 
-                    $.each($(':input').serializeArray(), function(i, field) {
-                        if (field.value == path)
-                        {
-                            $("#id_filepath_set-TOTAL_FORMS").val(counter-1);
-                            $("#id_filepath_set-INITIAL_FORMS").val(counter-1);
-                            $("#id_filepath_set-MAX_NUM_FORMS").val(counter-1);
-                            //$("[name="+field.name+"]").remove();
-                            
-                        }
-                    });
-                    // removes path_restore
-                    $("input:[name=path][value="+dir_path+$(this).attr("value")+"]").remove();
-                }
-                else
-                {
-                    // creates input hidden for validation
-                    var input_path = "<input type='text' value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-path' name='filepath_set-"+counter+"-path' />";
-                    var input_fileset = "<input type='text'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-fileset' name='filepath_set-"+counter+"-fileset' />";
-                    var input_id = "<input type='text'  value='"+path+"' class='hdn' id='id_filepath_set-"+counter+"-id' name='filepath_set-"+counter+"-id' />";
-                    counter++;
-                    $('#submit_fileset').after(input_path);
+                $("#id_filepath_set-TOTAL_FORMS").val(counter);
+                $("#id_filepath_set-INITIAL_FORMS").val(counter);
+                $("#id_filepath_set-MAX_NUM_FORMS").val(counter);
+                
+                // create input hidden for path_restore
+                //console.log("dir_path = "+dir_path);
+                //var path_restore = "<input type=\"hidden\" name=\"path\" id=\"path_"+counter+"\" value=\""+$(this).attr("value")+"\" />";
+                //$("#restore_form").append(path_restore);
+            }
+        });
 
-                    $("#id_filepath_set-TOTAL_FORMS").val(counter);
-                    $("#id_filepath_set-INITIAL_FORMS").val(counter);
-                    $("#id_filepath_set-MAX_NUM_FORMS").val(counter);
-                    
-                    // create input hidden for path_restore
-                    //console.log("dir_path = "+dir_path);
-                    var path_restore = "<input type=\"hidden\" name=\"path\" id=\"path_"+counter+"\" value=\""+$(this).attr("value")+"\" />";
-                    $("#restore_form").append(path_restore);
-                }
-            });
-        }
-        else
-        {
-            input.click(function(){
-                $("#path_restore").val($(this).attr("value"));
-            });
-        }
         input.prependTo(file);
 
         var li = $("<li>").addClass(attr_class).addClass(mime_class);

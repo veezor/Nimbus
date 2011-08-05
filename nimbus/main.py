@@ -27,7 +27,9 @@ from django.conf import settings
 
 from nimbus.libs import offsite, graphsdata
 from nimbus.shared import utils
-from nimbus.libs.bacula import ReloadManager
+from nimbus.libs.bacula import ( ReloadManager,
+                                 ReloadManagerService,
+                                 force_unlock_bacula_and_start)
 from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
@@ -80,6 +82,9 @@ class App(object):
 
             reload_manager = ReloadManager()
             reload_manager.force_reload()
+        else:
+            force_unlock_bacula_and_start()
+
 
 
 
@@ -140,6 +145,11 @@ class App(object):
                 break
 
 
+    def reload_manager_service(self):
+        service = ReloadManagerService()
+        service.run()
+
+
     def run(self):
         commands = {
             "--server-forever" : self.run_server,
@@ -149,7 +159,8 @@ class App(object):
             "--upload-now" : self.upload_volumes,
             "--shell" : self.shell,
             "--delete-volumes" : self.delete_volumes,
-            "--change-password" : self.change_password
+            "--change-password" : self.change_password,
+            "--start-reload-manager-service" : self.reload_manager_service
         }
 
         if len(sys.argv) > 1:
