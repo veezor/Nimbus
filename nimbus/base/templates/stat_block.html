@@ -24,7 +24,7 @@ Tipos possíveis: ok, warn, error
             </tr>
             <tr>
             {% if job.procedure.computer %}
-            <td>Computador: {{job.procedure.computer.name}}</td><td>({{job.procedure.computer.address}})</td>
+            <td>Computador:</td><td>{{job.procedure.computer.name}} ({{job.procedure.computer.address}})</td>
             {% else %}
             <td>Computador:</td> <td>Computador não encontrado</td>
             {% endif %}</tr>
