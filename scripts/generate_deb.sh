@@ -40,6 +40,7 @@ cp -a apps/unix/client/nimbusclient deb/etc/init.d
 cp nimbus/confs/nginx-nimbus.site deb/etc/nginx/sites-enabled/default
 cp nimbus/confs/nimbus.cron deb/etc/cron.hourly/nimbus
 cp nimbus/confs/logging.conf deb/etc/nimbus/
+cp nimbus/confs/reload_manager_logging.conf deb/etc/nimbus/
 cp nimbus/confs/nimbus.initd deb/etc/init.d/nimbus
 cp webservices/manager/nimbus_manager.conf deb/etc/nimbus
 cp webservices/manager/nimbus_manager_log.conf deb/etc/nimbus
