@@ -499,7 +499,7 @@ display: none;
 .block table tr td,
 .block table tr th {
 	#border-bottom: 1px solid #ddd;
-	padding: 10px;
+	padding: 3px;
 	line-height: normal;
 	text-align: left;
 	}
