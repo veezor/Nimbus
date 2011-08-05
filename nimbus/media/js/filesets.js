@@ -16,7 +16,6 @@ $(document).ready(function(){
     });
     
     $(".tree a").click(function() {
-        console.log("bla");
         if (!document.getElementsByClassName('wait')[0]) {
             update_tree($(this).attr("path"), get_tree_path);
         } else {
@@ -71,13 +70,19 @@ $(document).ready(function(){
             data: $('#main_form').serialize(),
             success: function(j) {
                 var response = jQuery.parseJSON(j);
-                console.log(response);
                 if (response.status == true) {
                     FILESET_ID = response.fileset_id;
+                    $(".fileset_return").val(FILESET_ID);
                     FILESET_NAME = response.fileset_name;
-                    alert(response.message);
+                    // alert(response.message);
                     $.facebox.close();
                     set_fileset();
+                    //location.reload();
+                    href = window.location.href;
+                    if (href.search("/procedures/profile/list/") > 0){
+                        window.location = "/procedures/profile/list/#fileset_"+response.fileset_id;
+                        location.reload();
+                    }
                 } else {
                     $("#field_error_" + response.error).show();
                     alert(response.message);
@@ -93,7 +98,6 @@ $(document).ready(function(){
 				checked_paths.push(all_paths[i].value);
 			};
 		};
-		console.log(checked_paths);
 		var inicial = parseInt($('#id_files-INITIAL_FORMS')[0].value)
 		var total = inicial + checked_paths.length
 		$('#id_files-TOTAL_FORMS').val(total);
@@ -117,3 +121,15 @@ $(document).ready(function(){
         }
 	});
 });
+
+function discard_unused_fileset(fileset_id) {
+    console.log(fileset_id);
+    $.ajax({
+        type: "POST",
+        url: "/filesets/reckless_discard/",
+        data: {"fileset_id": fileset_id},
+        success: function(j) {
+            console.log(j);
+		}
+    });
+}

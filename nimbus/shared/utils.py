@@ -17,32 +17,45 @@ class Referer(object):
         if self.raw:
             self.local = self.local_address()
         else:
-            self.local = None
+            self.local = ''
     
     def local_address(self):
         if self.raw.startswith('http://'):
             return '/' + '/'.join(self.raw.replace('http://','').split('/')[1:])
     
 
-def filesizeformat(bytes):
+def filesizeformat(bytes, unit=""):
+    
     bytes = float(bytes)
-
     KB = 1024
     MB = 1024*KB
     GB = 1024*MB
     TB = 1024*GB
-
-    if bytes < KB:
-        return "%.2f bytes" % bytes
-
-    elif bytes < MB:
-        return "%.2f Kb" % (bytes/KB)
-    elif bytes < GB:
-        return "%.2f Mb" % (bytes/MB)
-    elif bytes < TB:
-        return "%.2f Gb" % (bytes/GB)
+    if unit:
+        if unit == "B":
+            return "%.2f bytes" % bytes
+        elif unit == "KB":
+            return "%.2f Kb" % (bytes/KB)
+        elif unit == "MB":
+            return "%.2f Mb" % (bytes/MB)
+        elif unit == "GB":
+            return "%.2f Gb" % (bytes/GB)
+        elif unit == "TB":
+            return "%.2f Tb" % (bytes/TB)
+        else:
+            return bytes
     else:
-        return "%.2f Tb" % (bytes/TB)
+        if bytes < KB:
+            return "%.2f bytes" % bytes
+        elif bytes < MB:
+            return "%.2f Kb" % (bytes/KB)
+        elif bytes < GB:
+            return "%.2f Mb" % (bytes/MB)
+        elif bytes < TB:
+            return "%.2f Gb" % (bytes/GB)
+        else:
+            return "%.2f Tb" % (bytes/TB)
+
 
 
 def int_or_string(value):

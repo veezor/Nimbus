@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import logging
+import os
 from os import path
 from os.path import join, exists
 
@@ -11,6 +12,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
 
 from pybacula import BConsoleInitError
+
 from nimbus.base.models import BaseModel
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
@@ -19,7 +21,7 @@ from nimbus.schedules.models import Schedule
 from nimbus.bacula.models import Media, Job, File
 # from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
-from nimbus.libs.bacula import Bacula
+from nimbus.libs.bacula import Bacula, ReloadManager
 from nimbus.shared import utils, enums, signals, fields
 
 
@@ -41,6 +43,11 @@ class Procedure(BaseModel):
                                 blank=False)
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
+
+
+    class Meta:
+        verbose_name = u"Procedimento"
+
 
     def fileset_bacula_name(self):
         return self.fileset.bacula_name
@@ -64,10 +71,21 @@ class Procedure(BaseModel):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
                 .order_by('-endtime')[0]
 
+    @property
+    def jobs_id_to_cancel(self):
+        status = ('R','p','j','c','d','s','M','m','s','F','B', 'C') #TODO: refactor
+        return Job.objects.filter(name=self.bacula_name,
+                                  jobstatus__in=status).values_list('jobid', flat=True)
+
+    @property
+    def all_my_jobs(self):
+        jobs = Job.objects.filter(name=self.bacula_name)
+        return jobs
+        
     @classmethod
     def all_jobs(cls):
         job_names = [ p.bacula_name for p in cls.objects.all() ]
-        jobs = Job.objects.filter(name__in=job_names).order_by('-starttime')
+        jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
 
@@ -97,10 +115,7 @@ class Procedure(BaseModel):
     def list_files(jobid, path, computer):
         bacula = Bacula()
 
-        if not path.startswith('/'):
-            path = "/" + path
-
-        if computer.operation_system == "windows":
+        if computer.operation_system == "windows" and not ':' in path:
             path = 'C:' + path #FIX: get windows drivers from restore
 
         return bacula.list_files(jobid, path)
@@ -142,6 +157,9 @@ def update_procedure_file(procedure):
                        client=procedure.computer.bacula_name,
                        pool=procedure.pool_bacula_name())
 
+    reload_manager = ReloadManager()
+    reload_manager.force_reload()
+
 def remove_procedure_file(procedure):
     """remove procedure file"""
     base_dir,filepath = utils.mount_path(procedure.bacula_name,
@@ -149,15 +167,25 @@ def remove_procedure_file(procedure):
     utils.remove_or_leave(filepath)
     remove_pool_file(procedure)
 
+
 def remove_procedure_volumes(procedure):
     pool_name = procedure.pool_bacula_name()
     medias = Media.objects.filter(pool__name=pool_name).distinct()
     volumes = [m.volumename for m in medias]
     try:
         bacula = Bacula()
+        bacula.cancel_procedure(procedure)
         bacula.purge_volumes(volumes, pool_name)
         bacula.truncate_volumes(pool_name)
         bacula.delete_pool(pool_name)
+        for volume in volumes:
+            volume_abs_path = join(settings.NIMBUS_DEFAULT_ARCHIVE, volume)
+            if exists(volume_abs_path):
+                os.remove(volume_abs_path)
+
+        reload_manager = ReloadManager()
+        reload_manager.force_reload()
+
     except BConsoleInitError, error:
         logger = logging.getLogger(__name__)
         logger.exception("Erro na comunicação com o bacula")
@@ -180,5 +208,6 @@ def remove_pool_file(procedure):
 #signals.connect_on(remove_pool_file, Procedure, post_delete)
 
 signals.connect_on( update_procedure_file, Procedure, post_save)
-signals.connect_on( remove_procedure_file, Procedure, post_delete)
 signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
+signals.connect_on( remove_procedure_file, Procedure, post_delete)
+

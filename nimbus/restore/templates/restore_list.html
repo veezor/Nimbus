@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 <script type="text/javascript" src="/media/js/restore.js"></script>
+<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/restore.css" />
 
 {% endblock %}
@@ -18,7 +18,7 @@
 	</div>
 
     <div class="block_content">
-        <form action="/restore/restore_files" method="post">
+        <form action="/restore/restore_files" id="restore_form" method="post">
             <input id="url_tree" name="url" value="{% url nimbus.restore.views.get_tree_search_file %}" type="hidden"/>
             {% if computer %}
                 <p><a href="/computers/list">Listar todos os computadores</a></p>
@@ -46,7 +46,7 @@
                 {% endif %}
                 <p>
                     <label for="procedure_id">Selecione o procedimento:</label><br/>
-                    <select name="procedure_id" id="procedure_id" class="styled">
+                    <select name="procedure_id" id="procedure_id" >
                         <option value=""> - Selecione - </option>
                         {% for procedure in computer.procedure_set.all %}
                         <option value="{{procedure.id}}">{{procedure.name}}</option>
@@ -61,7 +61,7 @@
                 {% endif %}
                 <p>
                     <label for="computer_id">Computador que será restaurado:</label><br/>
-                    <select class="styled" id="computer_id" name="computer_id">
+                    <select  id="computer_id" name="computer_id">
                         <option value=""> - Selecione - </option>
                         {% for computer in computers %}
                         <option value="{{computer.id}}">{{computer.name}}</option>
@@ -77,7 +77,7 @@
                 {% endif %}
                 <p class="procedure_select" class="hidden">
                     <label for="procedure_id">Selecione o procedimento:</label><br/>
-                    <select name="procedure_id" id="procedure_id" class="styled">
+                    <select name="procedure_id" id="procedure_id" >
                         <option value=""> - Selecione - </option>
                         {% for procedure in computer.procedure_set.all %}
                         <option value="{{procedure.id}}">{{procedure.name}}</option>
@@ -117,7 +117,7 @@
                     <li>{{ errors.job_id }}</li>
                 </ul>
                 {% endif %}
-                <select name="job_id" class="styled" id="jobs_list">
+                <select name="job_id"  id="jobs_list">
                     <option value=""> - Selecione um Job - </option>
                 </select>
                 <div class="clear"></div>
@@ -141,9 +141,8 @@
                 <h2 class="titulo_step">4. Local para restauração</h2>
                 
                 <ul class="tree_computer"><li class="directory first"><span><a href="#" path="/">Selecione o local para restauração</a></span></li></ul>
-                
     		    <p>
-                    <button type="submit" class="css3button big positive" value="Restaurar">Restaurar Arquivos</button>
+                    <button type="submit" class="css3button big positive" value="Restaurar Arquivos">Restaurar Arquivos</button>
                 </p>
                 <div class="clear"></div>
             </div>

@@ -2,20 +2,25 @@
 # -*- coding: utf-8 -*-
 
 import os
+import time
+import socket
 import logging
 import datetime
 import tempfile
 import xmlrpclib
+import subprocess
+import SimpleXMLRPCServer
+from threading import Thread
 
 from django.conf import settings
-from django.db import connections
-from django.db.models import Sum
 
 import pybacula
-from pybacula import BaculaCommandLine, configcheck
+from pybacula import BaculaCommandLine, configcheck, BConsoleInitError
+
 
 from nimbus.shared import utils
 from nimbus.bacula import models
+#from nimbus.config.models import BaculaSettings
 
 
 try:
@@ -57,12 +62,15 @@ class Bacula(object):
         self.cmd._bvfs_update.run()
         dirs = self.cmd._bvfs_lsdir.jobid[jobid].path[path].run()
         dirs = self._get_items_from_bconsole_output(dirs)
-        dirs.remove('.')
-        dirs.remove('..')
+        if '.' in dirs:
+            dirs.remove('.')
+        if '..' in dirs:
+            dirs.remove('..')
         result.extend( dirs )
         files = self.cmd._bvfs_lsfiles.jobid[jobid].path[path].run()
         result.extend( self._get_items_from_bconsole_output(files) )
         result.sort()
+        result = [ path + p for p in result ]
         return result
 
     def run_restore(self, client_name, jobid, where, files):
@@ -94,6 +102,13 @@ class Bacula(object):
             return self.cmd.run.client[client_name].\
             job[job_name].level["Full"].when[date].yes.run()
 
+
+    def cancel_procedure(self, procedure):
+        self.cmd.cancel.job[procedure.bacula_name].run()
+        for job_id in procedure.jobs_id_to_cancel:
+            self.cmd.cancel.jobid[job_id].run()
+
+
     def purge_volumes(self, volumes, pool_name):
         purge = self.cmd.purge
         for volume in volumes:
@@ -107,22 +122,35 @@ class Bacula(object):
             .pool[pool_name].run()
 
     def delete_pool(self, pool_name):
-        self.cmd.delete.pool[pool_name].run()
-    
+        self.cmd.delete.pool[pool_name].raw('\nyes').run()
+
+
 def bacula_is_locked():
     return os.path.exists(settings.BACULA_LOCK_FILE)
 
+
+
 def unlock_bacula_and_start():
     if bacula_is_locked():
+        force_unlock_bacula_and_start()
+
+
+def force_unlock_bacula_and_start():
+    try:
         os.remove(settings.BACULA_LOCK_FILE)
-        try:
-            logger = logging.getLogger(__name__)
-            manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
-            stdout = manager.director_start()
-            logger.info("bacula-dir started and unlocked")
-            logger.info(stdout)
-        except Exception, error:
-            logger.exception("start bacula-dir error")
+    except OSError:
+        pass #ignore
+    try:
+        logger = logging.getLogger(__name__)
+        manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
+        stdout = manager.director_start()
+        logger.info("bacula-dir started and unlocked")
+        logger.info(stdout)
+    except Exception, error:
+        logger.exception("start bacula-dir error")
+
+
+
 
 def lock_and_stop_bacula():
     if not bacula_is_locked():
@@ -137,6 +165,7 @@ def lock_and_stop_bacula():
         except Exception, error:
             logger.exception("stop bacula-dir error")
 
+
 class BaculaLock(object):
 
     def __enter__(self):
@@ -145,3 +174,135 @@ class BaculaLock(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         unlock_bacula_and_start()
+
+
+
+class ReloadManagerService(object):
+
+    def __init__(self):
+        from nimbus.config.models import BaculaSettings
+        self.conf = BaculaSettings.get_instance()
+        logging.config.fileConfig(settings.RELOAD_MANAGER_LOGGING_CONF)
+
+
+    def add_reload_request(self):
+        self.conf.increment_reload_requests_counter()
+
+        if self.conf.reload_requests_counter > self.conf.reload_requests_threshold\
+           and self._interval > self._min_interval:
+            self._reload()
+
+        return True
+
+
+    def _reload(self):
+        self.conf.reset_reload_requests_counter()
+        self._call_reload_baculadir()
+
+
+    def force_reload(self):
+        self._reload()
+        return True
+
+
+    @property
+    def _min_interval(self):
+        return datetime.timedelta(seconds=self.conf.min_reload_requests_interval)
+
+    @property
+    def _interval(self):
+
+        if not self.conf.last_bacula_reload:
+            return self._min_interval + 1
+
+        now = datetime.datetime.now()
+        return now - self.conf.last_bacula_reload
+
+
+    def _force_baculadir_restart(self):
+        if not bacula_is_locked():
+            try:
+                logger = logging.getLogger(__name__)
+                manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
+                stdout = manager.director_restart()
+                logger.info("bacula-dir restart ok")
+                logger.info(stdout)
+            except Exception, error:
+                logger.error("Reload bacula-dir error")
+
+
+
+    def _call_reload_baculadir(self):
+        try:
+            logger = logging.getLogger(__name__)
+            logger.info("Iniciando comunicacao com o bacula")
+            bacula = Bacula()
+            bacula.reload()
+            logger.info("Reload no bacula executado com sucesso")
+            del bacula
+        except BConsoleInitError, e:
+            logger.error("Comunicação com o bacula falhou, vou tentar o restart")
+            self._force_baculadir_restart()
+            logger.error("Comunicação com o bacula falhou")
+
+
+
+    def run(self):
+        self.thread = Thread(name='ReloadManagerService Worker',
+                             target=self._start_timed_worker)
+        self.thread.start()
+        self._start_xmlrpc_service()
+
+
+    def check_service(self):
+        return True
+
+
+    def _start_timed_worker(self):
+
+        while True:
+            time.sleep(self.conf.min_reload_requests_interval * 2)
+            if self.conf.has_bacula_reload_requests:
+                self._reload()
+
+
+
+    def _start_xmlrpc_service(self):
+        self.server = SimpleXMLRPCServer.SimpleXMLRPCServer((settings.RELOAD_MANAGER_ADDRESS,
+                                                        settings.RELOAD_MANAGER_PORT))
+        self.server.register_instance(self)
+        self.server.serve_forever()
+
+
+
+
+
+class ReloadManager(object):
+
+    def __init__(self):
+        self._connection = self._get_connection()
+
+
+    def _get_proxy(self):
+        proxy = xmlrpclib.ServerProxy(settings.RELOAD_MANAGER_URL)
+        proxy.check_service()
+        return proxy
+
+
+    def _get_connection(self):
+        try:
+            return self._get_proxy()
+        except socket.error:
+            service = subprocess.Popen(settings.RELOAD_MANAGER_COMMAND,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+            time.sleep(settings.RELOAD_MANAGER_START_SLEEP_TIME)
+            return self._get_proxy()
+
+
+    def add_reload_request(self):
+        self._connection.add_reload_request()
+
+
+    def force_reload(self):
+        self._connection.force_reload()

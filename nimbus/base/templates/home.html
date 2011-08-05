@@ -12,6 +12,9 @@
 <script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
 <script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.cursor.min.js"></script>
 <script type="text/javascript" src="/media/js/home.js"></script>
+<!-- this is here due stat_block.html -->
+<script type="text/javascript" src="/media/js/procedures.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
 {% endblock %}
 
 {% block content %}
@@ -23,22 +26,24 @@
 
     			<h2>Backups</h2>
 
-                <ul class="tabs">
+                <!-- <ul class="tabs">
                     <li><a href="#backup-bytes">Mega bytes</a></li>
                     <li><a href="#backup-files">Quantidade de Arquivos</a></li>
-                </ul>
-            </div>		<!-- .block_head ends -->
+                </ul> -->
+            </div>
 
-		    <div class="block_content tab_content" id="backup-bytes">
+		    <!-- <div class="block_content tab_content" id="backup-bytes"> -->
+		    <div class="block_content" id="backup-bytes">
 		        {% with table1 as table %}
 			        {% include "table_chart.html" %}
 			    {% endwith %}
 		    </div>
-    		<div class="block_content tab_content" id="backup-files">
+    		<!-- <div class="block_content tab_content" id="backup-files"> -->
+    		<div class="block_content" id="backup-files">
 			    {% with table2 as table %}
 			        {% include "table_chart.html" %}
 			    {% endwith %}
-    		</div>		<!-- .block_content ends -->
+    		</div>
 
 
 
@@ -57,18 +62,7 @@
     		</div>		<!-- .block_head ends -->
 
     		<div class="block_content">
-                <div class="left">
-                    <h4>Uso da Memória</h4>
-                    {% with table4.lines.Ocupado.0 as value %}
-    			        {% include "bar_chart.html" %}
-    			    {% endwith %}
-                    <br/>
-                    <h4>Uso da CPU</h4>
-                    {% with table5.lines.Ocupado.0 as value %}
-    			        {% include "bar_chart.html" %}
-    			    {% endwith %}
-                </div>
-                <div class="left" id="disc-use">
+                <div class="right" id="disc-use">
                 {% if table3 %}
     			    {% with table3 as table %}
     			        {% include "table_chart.html" %}
@@ -82,6 +76,23 @@
     		    <p></p>
 
     		</div>		<!-- .block_content ends -->
+    		<div class="block_content">
+                <div id="memory-use">
+                    <div class="left memory">
+                        <h4>Uso da Memória</h4>
+                        {% with table4.lines.Ocupado.0 as value %}
+        			        {% include "bar_chart.html" %}
+        			    {% endwith %}
+    			    </div>
+    			    <div class="right cpu">
+                        <h4>Uso da CPU</h4>
+                        {% with table5.lines.Ocupado.0 as value %}
+        			        {% include "bar_chart.html" %}
+        			    {% endwith %}
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>		<!-- .block_content ends -->
 
     		<div class="bendl"></div>
     		<div class="bendr"></div>
@@ -97,7 +108,7 @@
     			<div class="bheadr"></div>
 
     			<h2 class="floatleft">Procedimentos</h2>&nbsp;&nbsp;
-    			<a href="/procedures/list" class="css3button positive"><span>Listar todos os procedimentos</span></a>
+    			<a href="/procedures/history" class="css3button positive">Listar todos os procedimentos</a>
 
     		</div>		<!-- .block_head ends -->
 

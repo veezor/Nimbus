@@ -11,10 +11,9 @@ from django.views.generic import create_update
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.core import serializers
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.db import IntegrityError
-from django.shortcuts import render_to_response as render_this
 
 from nimbus.computers.models import Computer, ComputerGroup, ComputerAlreadyActive
 from nimbus.procedures.models import Procedure
@@ -31,7 +30,7 @@ def add(request):
                'forms':lforms,
                'computers':Computer.objects.filter(active=False)
               }
-    return render_this("computers_add.html", content)
+    return render_to_response(request, "computers_add.html", content)
 
 @login_required
 def edit_no_active(request, object_id):
@@ -83,25 +82,31 @@ def edit(request, object_id):
                                        extra_context = extra_context,
                                        post_save_redirect = "/computers/")
 
+
 @login_required
 def delete(request, object_id):
-    if request.method == "POST":
-        computer = Computer.objects.get(id=object_id,id__gt=1)
-        computer.delete()
-        messages.success(request, u"Computador removido com sucesso.")
-        return redirect('nimbus.computers.views.list')
-    else:
-        computer = Computer.objects.get(id=object_id)
-        remove_name = computer.name
-        return render_to_response(request, 'remove.html', locals())
+    c = get_object_or_404(Computer, pk=object_id)
+    jobs = c.all_my_jobs
+    content = {'computer': c,
+               'last_jobs': jobs,
+               'procedures': c.procedure_set.all()}
+    return render_to_response(request, "remove_computer.html", content)
+
+@login_required
+def do_delete(request, object_id):
+    computer = Computer.objects.get(id=object_id)
+    computer.delete()
+    messages.success(request, u"Computador removido com sucesso.")
+    return redirect('nimbus.computers.views.list')
 
 @login_required
 def list(request):
-    if 'group' in request.GET:
-        group = request.GET.get("group")
-        computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group).order_by('groups__name')
+    group = request.GET.get("group")
+    if group:
+        computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group)
     else:
-        computers = Computer.objects.filter(active=True).order_by('groups__name')
+        computers = Computer.objects.filter(active=True,id__gt=1)
+
 
     groups = ComputerGroup.objects.order_by('name')
     extra_content = {
@@ -113,13 +118,8 @@ def list(request):
 
 @login_required
 def view(request, object_id):
-    print "b"*200
-    print object_id
     computer = Computer.objects.get(id=object_id)
-    running_status = ('R','p','j','c','d','s','M','m','s','F','B')
-    running_jobs = Job.objects.filter(jobstatus__in=running_status,
-                                      client__name=computer.bacula_name)\
-                                          .order_by('-starttime').distinct()[:5]
+    running_jobs = computer.running_jobs()
     running_procedures_content = []
     try:
         for job in running_jobs:
@@ -133,8 +133,7 @@ def view(request, object_id):
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
         pass
 
-    last_jobs = Job.objects.filter(client__name=computer.bacula_name)\
-                                            .order_by('-endtime').distinct()[:5]
+    last_jobs = computer.last_jobs()
     last_procedures_content = []
     try:
         for job in last_jobs:
@@ -147,9 +146,9 @@ def view(request, object_id):
                     })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
         pass
-    errors_jobs = Job.objects.filter(jobstatus__in=('e','E','f'),
-                                     client__name=computer.bacula_name)\
-                                            .order_by('-endtime').distinct()[:5]
+
+
+    errors_jobs = computer.error_jobs()
     errors_procedures_content = []
     try:
         for job in errors_jobs:

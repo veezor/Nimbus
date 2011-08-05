@@ -62,7 +62,6 @@ def restore_files(request):
     # path (lista)
     
     if request.method == "POST":
-
         computer = Computer.objects.get(id=request.POST["computer_id"])
         jobid = int(request.POST["job_id"])
         target = request.POST["path_restore"]
@@ -80,14 +79,14 @@ def restore_files(request):
 @login_required
 def get_procedures(request, object_id=None):
     if not object_id:
-        message = {'error': 'Erro ao tentar selecionar o computador.'}
+        message = {'error': 'Selecione um computador.'}
         response = simplejson.dumps(message)
         return HttpResponse(response, mimetype="text/plain")
     
     procedures = Procedure.objects.filter(computer=object_id)
     # computer = Computer.objects.get(id=object_id)
     if not procedures.count():
-        message = {'error': 'Erro ao tentar selecionar o computador.'}
+        message = {'error': 'Não existem procedimentos para o computador selecionado.'}
         response = simplejson.dumps(message)
         return HttpResponse(response, mimetype="text/plain")
     
@@ -108,8 +107,6 @@ def get_jobs(request, procedure_id, data_inicio, data_fim):
     #         {"name": "Job3 - 12 Aug 2010", "id": "37"}]
 
     # response = serializers.serialize("json", jobs)
-    print "jobs" * 200
-    print procedure_id
 
     data_inicio = "%s 00:00:00" % data_inicio
     data_inicio = datetime.strptime(data_inicio, '%d-%m-%Y %H:%M:%S')
@@ -134,7 +131,8 @@ def get_tree(request):
     computer = Computer.objects.get(id=computer_id)
     
     files = Procedure.list_files(job_id, path, computer)
-
+    # teste que força o retorno da lista de arquivos
+    #files = ["/home/lucas/arquivo1.txt", "/home/lucas/arquivo2.txt"];
     response = simplejson.dumps(files)
     return HttpResponse(response, mimetype="text/plain")
 
@@ -148,11 +146,7 @@ def get_client_tree(request):
         computer_id = request.POST['computer_id']
 
         computer = Computer.objects.get(id=computer_id)
-
-        url = "http://%s:%d" % (computer.address, settings.NIMBUS_CLIENT_PORT)
-        proxy = xmlrpclib.ServerProxy(url)
-        files = proxy.list_dir(path)
-        files.sort()
+        files = computer.get_file_tree(path)
         response = simplejson.dumps(files)
         return HttpResponse(response, mimetype="text/plain")
 

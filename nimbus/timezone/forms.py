@@ -10,9 +10,9 @@ from nimbus.shared.forms import make_custom_fields
 
 
 class TimezoneForm(ModelForm):
-    area = forms.ChoiceField(choices=[('', '----------')],
+    area = forms.ChoiceField(label='Região', choices=[('', '----------')],
             widget=forms.Select(attrs={'class': 'uniform'}))
-    country = forms.ChoiceField(choices=COUNTRY_CHOICES,
+    country = forms.ChoiceField(label='País', choices=COUNTRY_CHOICES,
             widget=forms.Select(attrs={'class': 'uniform'}))
 
     formfield_callback = make_custom_fields

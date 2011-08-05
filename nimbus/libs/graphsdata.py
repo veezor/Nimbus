@@ -11,7 +11,6 @@ from django.conf import settings
 
 import systeminfo
 
-
 def _sort_key_function(date):
     day, month, year = date
     return (year, month, day)
@@ -68,7 +67,25 @@ class GraphDataManager(object):
                 measures.append((fmt_date, value))
         except KeyError:
             pass
+        
+        self._complete_measures(measures)
         return measures
+
+
+    def _complete_measures(self, measures):
+        if len(measures) > 1:
+            day = measures[0][0] # first (date, value)
+            day = datetime.datetime.strptime(day + " 00:00", "%d/%m/%Y %H:%M")
+        else:
+            day = datetime.datetime.now()
+
+        needs =  self.MAX_DAYS - len(measures)
+        for d in xrange(1, needs + 1):
+            diff = datetime.timedelta(days=d)
+            old_day = day - diff
+            old_day_str = "%d/%d/%d" % (old_day.day, old_day.month, old_day.year)
+            measures.insert(0, (old_day_str, 0))
+
 
 #    def _list_days(self):
 #        now = datetime.datetime.now()
@@ -95,9 +112,11 @@ class GraphDataManager(object):
         if diff < five_minutes:
             return
         data_key = (now.day, now.month, now.year)
+        
         if not data_key in data:
             data[data_key] = {}
 
+        old_offsite_value = 0
 
         data[data_key]['disk'] = self.get_disk_data()
 

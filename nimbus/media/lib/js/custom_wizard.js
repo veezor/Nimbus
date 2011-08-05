@@ -4,7 +4,7 @@ $(document).ready(function(){
     // jQuery.preloadCssImages();
 
     // uniform select fields
-	$("select").uniform();
+	//$("select").uniform();
 	// CSS tweaks
 	jQuery('#header #nav li:last').addClass('nobg');
 	jQuery('.block_head ul').each(function() { jQuery('li:first', this).addClass('nobg'); });
@@ -44,7 +44,7 @@ $(document).ready(function(){
 
 
 	// Set WYSIWYG editor
-	jQuery('.wysiwyg').wysiwyg({css: "css/wysiwyg.css"});
+	//jQuery('.wysiwyg').wysiwyg({css: "css/wysiwyg.css"});
 
 
 	// Modal boxes - to all links with rel="facebox"

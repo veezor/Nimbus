@@ -4,7 +4,7 @@ $(document).ready(function(){
     // jQuery.preloadCssImages();
 	
 	// uniform select fields
-	$("select").uniform();
+	//$("select").uniform();
 	// CSS tweaks
 	jQuery('#header #nav li:last').addClass('nobg');
 	jQuery('.block_head ul').each(function() { jQuery('li:first', this).addClass('nobg'); });
@@ -44,7 +44,7 @@ $(document).ready(function(){
 		
 	
 	// Set WYSIWYG editor
-	jQuery('.wysiwyg').wysiwyg({css: "css/wysiwyg.css"});
+	//jQuery('.wysiwyg').wysiwyg({css: "css/wysiwyg.css"});
 	
 	
 	// Modal boxes - to all links with rel="facebox"
@@ -68,19 +68,19 @@ $(document).ready(function(){
 	
 	
 	// Tabs
-	jQuery(".tab_content").hide();
-	jQuery("ul.tabs li:first-child").addClass("active").show();
-	jQuery(".tab_content:first").show();
-
-	jQuery("ul.tabs li").click(function() {
-		jQuery(this).parent().find('li').removeClass("active");
-		jQuery(this).addClass("active");
-		jQuery(this).parents('.block').find(".tab_content").hide();
-
-		var activeTab = jQuery(this).find("a").attr("href");
-		jQuery(activeTab).show();
-		return false;
-	});
+    jQuery(".tab_content").hide();
+    jQuery("ul.tabs li:first-child").addClass("active").show();
+    jQuery(".tab_content:first").show();
+    
+    jQuery("ul.tabs li").click(function() {
+        jQuery(this).parent().find('li').removeClass("active");
+        jQuery(this).addClass("active");
+        jQuery(this).parents('.block').find(".tab_content").hide();
+    
+        var activeTab = jQuery(this).find("a").attr("href");
+        jQuery(activeTab).show();
+        return false;
+    });
 	
 	
 	// Sidebar Tabs
@@ -211,13 +211,16 @@ $(document).ready(function(){
 	})
 	// $(".sparklines").sparkline('html', {width: "300", height: "150px" });
 	
-	var actual_time = $('#actual_time').html().split(':');
-	var hours = actual_time[0];
-	var minutes = actual_time[1];
-	var seconds = actual_time[2];
-	data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
-	update_time();
-	
+	var actual_time_html = $('#actual_time').html();
+    if (actual_time_html != null) {
+        var actual_time = actual_time_html.split(':');
+        var hours = actual_time[0];
+        var minutes = actual_time[1];
+        var seconds = actual_time[2];
+        data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
+        update_time();
+    }
+            
 	$(".date_picker").mask('99/99/9999');
 	$(".date_picker").bind("blur focus change click keyup", function(){
 	   $(this).mask('99/99/9999');

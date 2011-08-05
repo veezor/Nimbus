@@ -26,7 +26,10 @@
                         <h3 class="name">{{procedure.name}}</h3>
                         <small>Computador: {{procedure.computer.name}} ({{procedure.computer.operation_system|title}})</small>
                     </div>
-                    <p class="options"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p>
+                    <p class="options">
+                        <a href="/procedures/{{procedure.id}}/edit/" class="css3button positive pill">Editar</a>
+                        <a href="/procedures/{{procedure.id}}/delete/" class="css3button negative pill">Remover</a>
+                    </p>
                 </div>
                 <div class="right">
                     <div class="floatright align-left">
@@ -77,20 +80,37 @@
             <p>Não existem procedimentos adicionados.</p>
         {% endfor %}
         </div>
-        
-        <div class="block-executados">
-    		    <div class="stat_block">
-                {% include "stat_block.html" %}
-                </div>
-    	    <div class="clear"></div>
-    	    <p></p>
-    	</div>
-    
+
     </div>
     
     <div class="bendl"></div>
 	<div class="bendr"></div>
 
 </div>
+
+        <div class="block">
+
+    		<div class="block_head">
+    			<div class="bheadl"></div>
+    			<div class="bheadr"></div>
+
+    			<h2 class="floatleft">Histórico de Procedimentos</h2>&nbsp;&nbsp;
+    			<a href="/procedures/history" class="css3button positive">Listar todos os procedimentos</a>
+
+    		</div>		<!-- .block_head ends -->
+
+            <div class="block_content">
+		    {% with backups_com_falhas as item %}
+    		    <div class="stat_block">
+                {% include "stat_block.html" %}
+                </div>
+    		{% endwith %}
+    		</div>
+
+    		<div class="bendl"></div>
+    		<div class="bendr"></div>
+    	</div>		<!-- .block ends -->
+    
+
 
 {% endblock %}

@@ -31,6 +31,13 @@ class ComputerAlreadyActive(Exception):
 class ComputerGroup(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
 
+    def __unicode__(self):
+        return self.name
+
+
+    class Meta:
+        verbose_name = u"Grupo de computadores"
+
 
 class CryptoInfo(models.Model):
     key = models.CharField( max_length=2048, blank=False, null=False)
@@ -56,6 +63,12 @@ class Computer(BaseModel):
     active = models.BooleanField(editable=False)
     crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False, 
                                     unique=True, editable=False)
+
+
+
+    class Meta:
+        verbose_name = u"Computador"
+
 
     def _get_crypt_file(self, filename):
         km = KeyManager()
@@ -85,8 +98,14 @@ class Computer(BaseModel):
     def bacula_id(self):
         return Client.objects.get(name=self.bacula_name).clientid
 
+
+    def _procedure_names(self):
+        return [ p.bacula_name for p in self.procedure_set.all() ]
+
+
     def successful_jobs(self):
-        return Job.objects.filter(jobstatus__in=('T','W'), 
+        return Job.objects.filter(jobstatus__in=('T','W'),
+                                  name__in=self._procedure_names(),
                                   client__name=self.bacula_name)\
                                         .order_by('-endtime').distinct()[:15]
 
@@ -98,17 +117,31 @@ class Computer(BaseModel):
     def running_jobs(self):
         status = ('R','p','j','c','d','s','M','m','s','F','B')
         return Job.objects.filter(jobstatus__in=status, 
+                                  name__in=self._procedure_names(),
                                   client__name=self.bacula_name)\
                                         .order_by('-starttime').distinct()[:5]
 
     def last_jobs(self):
-        return Job.objects.filter(client__name=self.bacula_name)\
+        return Job.objects.filter(client__name=self.bacula_name,
+                                  name__in=self._procedure_names())\
                                         .order_by('-endtime').distinct()[:15]
+
+    @property
+    def all_my_jobs(self):
+        return Job.objects.filter(client__name=self.bacula_name,
+                                  name__in=self._procedure_names())\
+                                        .order_by('-endtime').distinct()
+    
+
+    def error_jobs(self):
+        return Job.objects.filter(jobstatus__in=('e','E','f'),
+                                  name__in=self._procedure_names(),
+                                     client__name=self.bacula_name)\
+                                            .order_by('-endtime').distinct()[:5]
 
     def configure(self):
         nimbuscomputer = Computer.objects.get(id=1)
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
-        #print url
         proxy = xmlrpclib.ServerProxy(url)
         proxy.save_keys(self.crypto_info.pem,
                         nimbuscomputer.crypto_info.certificate)
@@ -123,7 +156,7 @@ class Computer(BaseModel):
 
     def activate(self):
         if self.active:
-            raise ComputerAlreadyActive("Computer already active")
+            raise ComputerAlreadyActive("O computador já está ativo")
         self.configure() 
         self.active = True
         self.save()

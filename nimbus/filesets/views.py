@@ -41,7 +41,6 @@ def add(request, computer_id=None):
 def do_add(request):
     if request.method == 'POST':
         data = request.POST
-        print data
         fileset_form = forms.FileSetForm(data, prefix="fileset")
         if fileset_form.is_valid():
             new_fileset = fileset_form.save()
@@ -75,14 +74,13 @@ def do_edit(request, fileset_id):
     f = FileSet.objects.get(id=fileset_id)
     if request.method == 'POST':
         data = request.POST
-        print data
         fileset_form = forms.FileSetForm(data, prefix="fileset", instance=f)
         if fileset_form.is_valid():
             new_fileset = fileset_form.save()
             filepaths_form = forms.FilesToDeleteForm(data, instance=new_fileset)
             if filepaths_form.is_valid():
                 filepaths_form.save()
-                return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi criado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
+                return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi atualizado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
             else:
                 new_fileset.delete()
                 return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos arquivos","error":1}')
@@ -94,7 +92,6 @@ def do_edit(request, fileset_id):
 @login_required
 def get_tree(request):
     if request.method == "POST":
-        print request.POST
         try:
             path = request.POST['path']
             computer_id = request.POST['computer_id']
@@ -112,8 +109,18 @@ def get_tree(request):
         except Exception:
             traceback.print_exc()
 
+
 @login_required
 def delete(request, fileset_id):
+    f = get_object_or_404(FileSet, pk=fileset_id)
+    procedures = f.procedures.all()
+    content = {'fileset': f,
+               'procedures': procedures}
+    return render_to_response(request, "remove_fileset.html", content)
+
+
+@login_required
+def do_delete(request, fileset_id):
     f = get_object_or_404(FileSet, pk=fileset_id)
     if f.is_model:
         for procedure in f.procedures.all():
@@ -131,3 +138,16 @@ def delete(request, fileset_id):
     f.delete()
     messages.success(request, u"Perfil de conjunto de arquivos '%s' removido com sucesso." % name)
     return redirect('/procedures/profile/list')
+
+
+@login_required
+def reckless_discard(request):
+    if request.method == 'POST':
+        print request.POST
+        fileset_id = request.POST["fileset_id"]
+        f = get_object_or_404(FileSet, pk=fileset_id)
+        # not so reckless
+        if not f.procedures.all():
+            f.delete()
+        # else:
+            # leave it to garbage colletor

@@ -1,18 +1,18 @@
 {% comment %}
 Tipos possíveis: ok, warn, error
 {% endcomment %}
-<div class="content_block cols_{{item|length}}">
-	<h2>Histórico</h2>
-	<hr />
+<h2>Histórico</h2>
+<hr />
+<div class="content_block cols_{{item|length}}" id="accordion">
 	{% for job in last_jobs %}
 	<!-- <div class="inner_message {% cycle "odd" "even" %}" title="{{ job_line.tooltip }}"><img src="/media/icons/{{job_line.type}}.png" /> {% if job_line.date %}<small>{{job_line.date}}</small> -{% endif %} {{job_line.label}} {% if job_line.message %}<small>({{job_line.message}})</small>{% endif %}</div> -->
-
-	<div id="job_{{job.jobid}}" class="job_line minus">
-		<span class="status_{{job.general_status}}">Status {{job.general_status}}</span>
-        {{job.start_time}}: Backup {{job.backup_level}} de '{{job.client.computer.name}}'
+<!-- 	<div id="job_{{job.jobid}}" class="job_line minus"> -->
+    <h3>
+		<span class="status_{{job.general_status}}">Status {{job.human_general_status}}</span>
+        {{job.start_time}}: Backup {{job.procedure.name}} de '{{job.procedure.computer.name}}'
         <div class="clear"></div>
-	</div>
-	<div id="job_{{job.jobid}}_details" class="hide">
+	</h3>
+	<div id="job_{{job.jobid}}_details">
 	   <table cellpadding="0" cellspacing="0">
 	   <tbody>
             <tr><td>Procedimento:</td>
@@ -23,8 +23,8 @@ Tipos possíveis: ok, warn, error
             {% endif %}
             </tr>
             <tr>
-            {% if job.client.computer %}
-            <td>Computador: {{job.client.computer.name}}</td><td>({{job.client.computer.address}})</td>
+            {% if job.procedure.computer %}
+            <td>Computador: {{job.procedure.computer.name}}</td><td>({{job.procedure.computer.address}})</td>
             {% else %}
             <td>Computador:</td> <td>Computador não encontrado</td>
             {% endif %}</tr>

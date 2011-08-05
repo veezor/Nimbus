@@ -99,6 +99,12 @@ $(document).ready(function() {
     set_backup_type();
     set_schedule_procedure();
     $('input:text').addClass("text");
+    // asks: are you sure?
+    // Não importa se voce clica em 'ok' ou 'cancel', a acao eh executada assim mesmo
+    // $(".negative").click(function(){
+    //     if (!confirm("Tem certeza?"))
+    //         return false;
+    // });
 });
 
 /* minibuttons */

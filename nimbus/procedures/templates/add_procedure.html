@@ -1,18 +1,27 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-<link href="/media/css/procedures.css" rel="stylesheet" type="text/css" />
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/media/js/procedures.js"></script>
-<script type="text/javascript" src="/media/lib/js/tree_plugin.js"></script>
+<script type="text/javascript" src="/media/js/filesets.js"></script>
+<script type="text/javascript" src="/media/js/schedules.js"></script>
+
+<link href="/media/css/procedures.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
-$(document).ready(function(){
-    var field_schedule = "schedule_return";
-    var field_fileset = "fileset_return";
-    {{ init_script }}
-});
+	$(document).ready(function(){
+        $("#slider").slider({ value: $("#id_procedure-pool_retention_time").val() });
+		{% if fileset %}
+			{% if not fileset.is_model %}
+		FILESET_ID = '{{fileset.id}}';		
+		set_fileset();
+			{% endif %}
+		{% endif %}
+		{% if schedule %}
+			{% if not schedule.is_model %}
+		SCHEDULE_ID = '{{schedule.id}}';
+		set_schedule();
+			{% endif %}
+		{% endif %}
+	});
 </script>
 
 {% endblock %}
@@ -35,39 +44,35 @@ $(document).ready(function(){
 			</ul>
 				{% endif %}
 			<p>
-				<label>{{ field.label }}:</label><br />
 				{% if field.label == 'Agendamento' %}
+				<label>{{ field.label }}:</label><br />
 				<a href="/schedules/add/" id="schedule_button" class="css3button positive add_schedule_button">Criar um agendamento</a>
 				<span id="discard_schedule" class="hidden"> ou <a class="css3button negative" onClick="unset_schedule()">Descartar e escolher um perfil</a></span>
-				<input type="hidden" name="schedule_return" class="schedule_return" value="{{ schedule_return }}" />
-				{% endif %}
-				{%if field.label == 'Conjunto de arquivos' %}
+				{{field}}
+				{% else %}
+					{%if field.label == 'Conjunto de arquivos' %}
+				<label>{{ field.label }}:</label><br />
 				<a href="/filesets/add/" class="filesets css3button positive" id="fileset_button">Criar um conjunto de arquivos</a>
 				<span id="discard_fileset" class="hidden"> ou <a class="css3button negative" onClick="unset_fileset()">Descartar e escolher um perfil</a></span>
-				<input type="hidden" name="fileset_return" class="fileset_return" value="{{ fileset_return }}" />
-				{% endif %}
+				{{field}}
+					{% else %}
+						{%if field.label == 'Tempo de retenção' %}
+				<label>{{field.label}}: <span id="slider_value"></span> dias</label><br />
+				{{field}}
+				<div id="slider"></div>
+				<span class="add_new_pool"><a href="#">Adicionar Outro Valor</a></span>
+						{% else %}
+				<label>{{ field.label }}:</label><br />
 				{{ field }}
+						{% endif %}
+					{% endif %}
+				{% endif %}
 			</p>
 			{% endfor %}
 			{% for hidden in form.hidden_fields %}
 			{{ hidden }}
 			{% endfor %}
-			<div class="pool_value">
-				<label>Tempo de retenção: <label id="slider_value"></label> dias</label> <label id="slider_value"></label><br />
-				<div id="slider"></div>
-				<div class="add_new_pool"><a href="#">Adicionar Outro Valor</a></div>
-				<div class="clear">&nbsp;</div>
-			</div>
-			<div class="pool_new_value">
-				<label>Tempo de retencao (em dias):</label><br />
-				<input type="text" name="pool_retention_alt" id="pool_retention_alt" maxlength="4" value="" class="text small" /><br />
-			</div>
 			<hr />
-			<!--
-<p>
-				<input type="submit" class="submit" value="Criar" />
-			</p>
--->
 			<p><button type="submit" value="submit" class="css3button big positive">Adicionar Backup</button></p>
 		</form>
 		<form action="/schedules/add/" method="POST" id="to_schedule_form"></form>

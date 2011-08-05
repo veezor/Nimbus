@@ -4,11 +4,19 @@ $(document).ready(function(){
         $(this).parent().parent().find('.' + target).slideToggle();
         return false;
     });
-
+    
     $(".tree a").click(function()
     {
-        get_tree_path = "/restore/get_tree/";
+        /*
+get_tree_path = "/restore/get_tree/";
         update_tree($(this).attr("path"), get_tree_path, '.tree');
+*/
+        get_tree_path = "/restore/get_tree/";
+        if (!document.getElementsByClassName('wait')[0]) {
+            update_tree($(this).attr("path"), get_tree_path, '.tree');
+        } else {
+            $('.wait').remove();
+        }
         return false;
     });
 
@@ -52,7 +60,19 @@ $(document).ready(function(){
         $.getJSON('/restore/get_procedures/' + computer_id + '/', {}, function(data)
         {
             if (data['error']) {
-                $('.computer_error').html($('<p>').text(data['error'])).addClass("message error").show('slow');
+
+                //help-me fix-me
+                $('.computer_error').html($('<p>').text(data['error'])).addClass("message error").append('<span class="close" title="Dismiss"></span>').fadeIn('slow');
+            	jQuery('.message .close').hover(
+        		function() { jQuery(this).addClass('hover'); },
+        		function() { jQuery(this).removeClass('hover'); }
+	            );
+
+                jQuery('.message .close').click(function() {
+                    jQuery(this).parent().fadeOut('slow', function() { jQuery(this).remove(); });
+                });
+                
+
             }
         
             $('#procedure_id').empty();

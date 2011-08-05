@@ -37,8 +37,7 @@ def add(request):
 def do_add(request):
     if request.method == 'POST':
         data = request.POST
-        print "a" * 200
-        print data
+
         if data.has_key('main'):
             new = Schedule()
             new.name = data['name']
@@ -81,7 +80,6 @@ def edit(request, object_id):
 def do_edit(request):
     if request.method == 'POST':
         data = request.POST
-        print data
         if data.has_key('main'):
             s = get_object_or_404(Schedule, pk=int(data['id']))
             s.name = data['name']
@@ -107,9 +105,17 @@ def do_edit(request):
                 return HttpResponse('{"status": "error"}')
 
 
-
 @login_required
 def delete(request, schedule_id):
+    s = get_object_or_404(Schedule, pk=schedule_id)
+    procedures = s.procedures.all()
+    content = {'schedule': s,
+               'procedures': procedures}
+    return render_to_response(request, "remove_schedule.html", content)
+
+
+@login_required
+def do_delete(request, schedule_id):
     s = get_object_or_404(Schedule, pk=schedule_id)
     if s.is_model:
         for procedure in s.procedures.all():
@@ -132,3 +138,16 @@ def delete(request, schedule_id):
     s.delete()
     messages.success(request, u"Perfil de agendamento '%s' removido com sucesso." % name)
     return redirect('/procedures/profile/list')
+
+
+@login_required
+def reckless_discard(request):
+    if request.method == 'POST':
+        print request.POST
+        schedule_id = request.POST["schedule_id"]
+        s = get_object_or_404(Schedule, pk=schedule_id)
+        # not so reckless
+        if not s.procedures.all():
+            s.delete()
+        # else:
+            # leave it to garbage colletor

@@ -21,13 +21,16 @@
 			<input type="hidden" value="{{ computer.id }}" id="computer_id" />
 			{{deletes_form.management_form}}
 			<h2>Remover arquivo atuais:</h2>
-			<table>
-				<tr><th>Apagar</th><th>Arquivo</th></tr>
+            <!--  FIX-ME tableless -->
+            <div>
+                <div class="float_left fileset_checkbox">Apagar</div><div class="float_left fileset_input">Arquivo</div>
+                <br class="clear" />
 				{% for form in deletes_form.forms %}
-					<tr><td>{{form.DELETE}}</td><td>{{form.path}}</td></tr>{{form.id}}{{form.fileset}}
-				{% endfor %}
-			</table>
-			<hr />
+                <div class="fileset_line"><div class="float_left fileset_checkbox">{{form.DELETE}}</div><div class="float_left fileset_input">{{form.path}} {{form.id}}{{form.fileset}}</div></div>
+			    <br class"clear" />
+                {% endfor %}
+		    </div>
+            <hr />
 			<h2>Adicionar novos aquivos:</h2>
 			<ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul>
 			<p>

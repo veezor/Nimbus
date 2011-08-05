@@ -21,6 +21,9 @@ from django.conf import settings
 
 from nimbus.libs import graphsdata
 from nimbus.shared import utils
+from nimbus.libs.bacula import ( ReloadManager,
+                                 ReloadManagerService,
+                                 force_unlock_bacula_and_start)
 from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
@@ -71,6 +74,12 @@ class App(object):
 
             register_administrative_nimbus_models()
 
+            reload_manager = ReloadManager()
+            reload_manager.force_reload()
+        else:
+            force_unlock_bacula_and_start()
+
+
 
 
     def update_graphs_data(self):
@@ -103,13 +112,19 @@ class App(object):
                 break
 
 
+    def reload_manager_service(self):
+        service = ReloadManagerService()
+        service.run()
+
+
     def run(self):
         commands = {
             "--server-forever" : self.run_server,
             "--update-graphs-data" : self.update_graphs_data,
             "--create-database" : self.create_database,
             "--shell" : self.shell,
-            "--change-password" : self.change_password
+            "--change-password" : self.change_password,
+            "--start-reload-manager-service" : self.reload_manager_service
         }
 
         if len(sys.argv) > 1:

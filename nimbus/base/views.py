@@ -24,7 +24,9 @@ from nimbus.computers.models import Computer
 def home(request):
     job_bytes = Job.get_bytes_from_last_jobs()
     table1 = {
-        'title': u"Quantidade de dados realizados backup", 'width': "100%", 'type': "bar", 'cid': "chart1",
+        'title': u"Quantidade de dados realizados backup", 'width': "100%",
+        'type': "bar",
+        'cid': "chart1",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_bytes)],
         'labels': [utils.filesizeformat(v) for k, v in sorted(job_bytes.items())],
         'lines': {
@@ -35,7 +37,8 @@ def home(request):
     job_files = Job.get_files_from_last_jobs()
     table2 = {
         'title': u"Quantidade de arquivos realizados backup", 'width': "100%",
-        'type': "bar", 'cid': "chart2",
+        'type': "bar",
+        'cid': "chart2",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_files)],
         'labels': [int(v) for k, v in sorted(job_files.items())],
         'lines': {
@@ -43,27 +46,23 @@ def home(request):
         }
     }
 
+    graphsdata.update_disk_graph()
     graph_data_manager = graphsdata.GraphDataManager()
     diskdata = graph_data_manager.list_disk_measures()
-    #diskdata = [("13/11", 2097764768), ("13/01", 2097764175), ("13/02", 2097764234)]
-    if len(diskdata) == 1: # duplicates first item for area graph
-        diskdata *= 2
+    
 
-    # TODO: O diskfree deve ser calculado como gráfico de história.
-    table3 = False
-    if (diskdata):
-        table3 = {'title': u"Ocupação do disco", 'width': "", 'type': "area", 'cid': "chart3", 'height': "130",
-                  'header': [utils.filesizeformat(i[1]) for i in diskdata], 'labels': [utils.filesizeformat(i[1]) for i in diskdata]}
-        #table3['header'] = ["Gigabytes"]
-        #setando valor padrao
-        t3data = [utils.filesizeformat(i[1]) for i in diskdata] if len(diskdata) else [0.0]
-        table3['lines'] = {"Disponível": t3data}
+    table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
+              'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1], "GB") for i in diskdata]}
+    #table3['header'] = ["Gigabytes"]
+    #setando valor padrao
+    t3data = [utils.filesizeformat(i[1], "GB") for i in diskdata] if len(diskdata) else [0.0]
+    table3['lines'] = {"Disponível": t3data}
 
 
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
 
-    table4 = {'title': u"Uso da memória", 'width': "48%", 'type': "pie", 'cid': "chart4", 'header': ["Gigabytes"],
+    table4 = {'title': u"Uso da memória", 'width': "90%", 'type': "pie", 'cid': "chart4", 'header': ["Gigabytes"],
               'lines': {
                   "Disponível": [memory_free],
                   "Ocupado": [memory]}}
@@ -72,10 +71,9 @@ def home(request):
     cpu_free = 100 - memory
 
 
-    table5 = {'title': u"Uso da CPU", 'width': "48%", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
+    table5 = {'title': u"Uso da CPU", 'width': "", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
         "Disponível": [cpu_free],
         "Ocupado": [cpu]}}
-
 
 
     # Dados de content:
@@ -90,6 +88,9 @@ def home(request):
 
 def ie_error(request):
     return render_to_response(request, "ie_error.html", locals())
+    
+def license(request):
+    return render_to_response(request, "license_general.html", locals())
 
 
 

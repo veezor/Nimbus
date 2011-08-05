@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import re
+
 from django.db.models import Q
 from nimbus.procedures.models import *
 from django import forms
@@ -10,6 +12,18 @@ class ProcedureForm(forms.ModelForm):
 
     def __init__(self, data=None, *args, **kwargs):
         super(ProcedureForm, self).__init__(data, *args, **kwargs)
+        p = Procedure.objects.filter(name__startswith="Backup #").order_by("id")
+        if p:
+            index_string = p[len(p) - 1].name.split("#")[1]
+            match = re.search("(\d+)", index_string)
+            if match:
+                next_id = int(match.group()) + 1
+            else:
+                next_id = 1
+        else:
+            next_id = 1
+        name_sugestion = "Backup #%02d" % next_id
+        self.fields['name'] = forms.CharField(initial=name_sugestion)
         # Se houver apenas uma opcao num ChoiceField a opção NULL sera removida
         for field in self.fields:
             if isinstance(self.fields[field], forms.models.ModelChoiceField):
@@ -19,18 +33,21 @@ class ProcedureForm(forms.ModelForm):
                 else:
                     self.fields[field].empty_label = u"-ou escolha um perfil-"
 
-    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
-                                             min_value=1, max_value=3650,
-                                             initial=10,
-                                             widget=forms.HiddenInput())
+
+    computer = forms.models.ModelChoiceField(label=_("Computador"),
+                                             queryset=Computer.objects.filter(id__gt=1))
+    # name = forms.CharField(initial=self.name_sugestion)
+
+    pool_retention_time = forms.IntegerField(label="Tempo de retenção",
+                                             min_value=1, max_value=9999,
+                                             initial=10)
+                                             # widget=forms.HiddenInput())
     fileset = forms.models.ModelChoiceField(label=_("Conjunto de arquivos"),
-                                            queryset=FileSet.objects.all(),
+                                            queryset=FileSet.objects.filter(id__gt=1),
                                             empty_label = u"-ou escolha um perfil-")
     schedule = forms.models.ModelChoiceField(label=_("Agendamento"),
-                                             queryset=Schedule.objects.all(),
+                                             queryset=Schedule.objects.filter(id__gt=1),
                                              empty_label = u"-ou escolha um perfil-")
-    # fileset.empty_label = u"-ou escolha um modelo-"
-    # schedule.empty_label = u"-ou escolha um modelo-"
 
     class Meta:
         model = Procedure
@@ -58,10 +75,10 @@ class ProcedureEditForm(forms.ModelForm):
                                             label=_("Schedule"), required=False,
                                             queryset=Schedule.objects.filter(
                                                 Q(is_model=True) | Q(id=s_id)))
-#        remove_null_choice(self, ['schedule', 'fileset', 'storage', 'computer'])
                                                 
-    pool_retention_time = forms.IntegerField(label=_("Retention Time (days)"),
-                                             min_value=1, widget=forms.HiddenInput())
+    pool_retention_time = forms.IntegerField(label="Tempo de retenção",
+                                             min_value=1, max_value=9999)
+                                             # widget=forms.HiddenInput())
                                 
     class Meta:
         model = Procedure

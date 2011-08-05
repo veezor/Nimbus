@@ -72,7 +72,7 @@ width: 100%;
 }
 
 table th,
-table td { padding: 5px; }
+table td { padding: 2px; }
 
 table thead th {
 background: #999;
