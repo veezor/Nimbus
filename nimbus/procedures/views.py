@@ -183,19 +183,19 @@ def profile_list(request):
                'computers': computers}
     return render_to_response(request, "profile_list.html", content)
 
-@login_required
-def profile_delete(request, object_id):
-    profile = get_object_or_404(Profile, pk=object_id)
-    if request.method == "POST":
-        n_procedures = Procedure.objects.filter(profile=profile).count()
-        if n_procedures:
-            messages.error(request, u"Impossível remover perfil em uso")
-        else:
-            profile.delete()
-            messages.success(request, u"Procedimento removido com sucesso.")
-            return redirect('nimbus.procedures.views.profile_list')
-    remove_name = profile.name
-    return render_to_response(request, 'remove.html', locals())
+# @login_required
+# def profile_delete(request, object_id):
+#     profile = get_object_or_404(Profile, pk=object_id)
+#     if request.method == "POST":
+#         n_procedures = Procedure.objects.filter(profile=profile).count()
+#         if n_procedures:
+#             messages.error(request, u"Impossível remover perfil em uso")
+#         else:
+#             profile.delete()
+#             messages.success(request, u"Procedimento removido com sucesso.")
+#             return redirect('nimbus.procedures.views.profile_list')
+#     remove_name = profile.name
+#     return render_to_response(request, 'remove.html', locals())
     
 @login_required
 def history(request, object_id=False):

@@ -24,7 +24,9 @@ from nimbus.computers.models import Computer
 def home(request):
     job_bytes = Job.get_bytes_from_last_jobs()
     table1 = {
-        'title': u"Quantidade de dados realizados backup", 'width': "100%", 'type': "bar", 'cid': "chart1",
+        'title': u"Quantidade de dados realizados backup", 'width': "100%",
+        'type': "bar",
+        'cid': "chart1",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_bytes)],
         'labels': [utils.filesizeformat(v) for k, v in sorted(job_bytes.items())],
         'lines': {
@@ -35,7 +37,8 @@ def home(request):
     job_files = Job.get_files_from_last_jobs()
     table2 = {
         'title': u"Quantidade de arquivos realizados backup", 'width': "100%",
-        'type': "bar", 'cid': "chart2",
+        'type': "bar",
+        'cid': "chart2",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_files)],
         'labels': [int(v) for k, v in sorted(job_files.items())],
         'lines': {

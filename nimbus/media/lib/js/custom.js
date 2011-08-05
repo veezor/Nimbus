@@ -68,19 +68,19 @@ $(document).ready(function(){
 	
 	
 	// Tabs
-	jQuery(".tab_content").hide();
-	jQuery("ul.tabs li:first-child").addClass("active").show();
-	jQuery(".tab_content:first").show();
-
-	jQuery("ul.tabs li").click(function() {
-		jQuery(this).parent().find('li').removeClass("active");
-		jQuery(this).addClass("active");
-		jQuery(this).parents('.block').find(".tab_content").hide();
-
-		var activeTab = jQuery(this).find("a").attr("href");
-		jQuery(activeTab).show();
-		return false;
-	});
+    jQuery(".tab_content").hide();
+    jQuery("ul.tabs li:first-child").addClass("active").show();
+    jQuery(".tab_content:first").show();
+    
+    jQuery("ul.tabs li").click(function() {
+        jQuery(this).parent().find('li').removeClass("active");
+        jQuery(this).addClass("active");
+        jQuery(this).parents('.block').find(".tab_content").hide();
+    
+        var activeTab = jQuery(this).find("a").attr("href");
+        jQuery(activeTab).show();
+        return false;
+    });
 	
 	
 	// Sidebar Tabs
