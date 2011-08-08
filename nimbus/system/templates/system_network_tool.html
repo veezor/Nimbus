@@ -1,15 +1,8 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('.toggle').click(function(){
-            var target = $(this).attr('ref');
-            $(this).parent().parent().find('.' + target).slideToggle();
-            return false;
-        });
-    });
-</script>
+<script type="text/javascript" src="/media/js/system.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/css/system.css" />
 {% endblock %}
 
 {% block page %}
@@ -20,49 +13,19 @@
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
 		<h2>{{title}}</h2>
-	</div>		<!-- .block_head ends -->
+	</div>
 
     <div class="block_content">
-        <script type="text/javascript" charset="utf-8">
-            $(document).ready(function(){
-                $('#form_ping').submit(function(){
-                    $('#mensagem').slideUp().empty();
-                    $('#mensagem').html('<img src="/media/icons/loading_bar.gif" /> Aguarde...');
-                    $('#mensagem').slideDown();
-                    
-                    var type = $('#type').val();
-                    $.post("/system/create_or_view_network_tool/", {ip: $('#ip').val(), type: type},
-                        function(data){
-                            $('#mensagem').empty();
-                            if (!data) {
-                                $('#mensagem').html("Erro ao executar o ping.");
-                                return false;
-                            }
-                            
-                            $('#mensagem').html(data.msg.replace(/\n/g, "<br/>"));
-                        },
-                        "json");
-                    return false;
-                });
-            });
-        </script>
-        <style type="text/css" media="screen">
-            #mensagem {
-                padding: 20px;
-                margin-bottom: 20px;
-                background: #FFF2A7;
-            }
-        </style>
         <form action="/system/create_or_view_ping/" method="post" id="form_ping">
             <p>
                 <label for="ip">IP ou domínio:</label><br/>
                 <input type="text" name="ip" value="" class="text small" id="ip" />
-                <input type="submit" class="submit" value="Executar" />
+                <button type="submit" class="css3button big positive" value="Executar">Executar</button>
                 <input type="hidden" name="type" value="{{type}}" id="type" />
             </p>
         </form>
         
-        <p id="mensagem" style="display: none"></p>
+        <p id="mensagem" class="hidden"></p>
 
     </div>
     

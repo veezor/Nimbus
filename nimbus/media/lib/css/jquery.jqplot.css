@@ -92,7 +92,7 @@
 }
 
 .jqplot-yaxis-label {
-    margin-right: 10px;
+    margin-right: 0px;
 /*    text-align: center;*/
     font-size: 11pt;
     position: absolute;
@@ -158,19 +158,24 @@ table.jqplot-cursor-tooltip {
 
 
 .jqplot-cursor-tooltip {
-    border: 1px solid #cccccc;
-    font-size: 0.75em;
+    border: 1px solid #ccc;
+    font-size: 9px;
+    color: #222;
     white-space: nowrap;
-    background: rgba(208,208,208,0.5);
-    padding: 1px;
+    background: #FFF;
+    padding: 2px;
+    opacity: 0.8;
+    font-weight: bold;
 }
 
 .jqplot-highlighter-tooltip {
-    border: 1px solid #cccccc;
-    font-size: 0.75em;
+    border: 1px solid #ccc;
+    font-size: 11px;
+    color: #222;
     white-space: nowrap;
-    background: rgba(208,208,208,0.5);
-    padding: 1px;
+    background: #FFF;
+    padding: 3px;
+    font-weight: bold;
 }
 
 .jqplot-point-label {
@@ -180,7 +185,7 @@ table.jqplot-cursor-tooltip {
     font-weight: bold;
     font-size: 12px;
 }
-      
+
 td.jqplot-cursor-legend-swatch {
 vertical-align:middle;
 text-align:center;

@@ -1,44 +1,12 @@
 {% extends "base_wizard.html" %}
 
-{% if page_name == 'timezone' %}
 {% block headtags %}
+<script type="text/javascript" src="/media/js/offsite.js"></script>
 <script type="text/javascript">
 
     $(document).ready(function() {
         $("select#id_country").bind("change", getAreaChoices);
 
-        $('#offsite_form #id_active').change(function(){
-            input_active = $('#offsite_form #id_active');
-            ps = input_active.parents().filter('p').siblings().filter(':not(p:last)');
-            if (input_active.attr('checked')) {
-                ps.slideDown();
-            } else {
-                ps.slideUp();
-            }
-        }).change();
-
-        var initial_upload = $("#id_upload_rate").val();
-        if(initial_upload == -1) {
-            $("#id_upload_rate").hide();
-            $("label[for=id_upload_rate]").hide();
-            $("#id_active_upload_rate").attr('checked', false).change();
-        } else {
-            $("#id_active_upload_rate").attr('checked', true).change();
-        }
-
-        $("#id_active_upload_rate").change(function(){
-            if ($("#id_active_upload_rate").is(':checked')){
-                $("#id_upload_rate").show();
-                $("label[for=id_upload_rate]").show();
-                if (initial_upload == -1)
-                    initial_upload = 200;
-                $("#id_upload_rate").val(initial_upload);
-            } else {
-                $("#id_upload_rate").hide();
-                $("label[for=id_upload_rate]").hide();
-                $("#id_upload_rate").val("-1");
-            }
-		});
     });
 
     function getAreaChoices() {
@@ -65,7 +33,6 @@
 
 </script>
 {% endblock %}
-{% endif %}
 
 {% block content %}
 
@@ -73,11 +40,16 @@
 
         {% include "form.html" %}
 
+        {% if recovery %}
+        <a href="{{ recovery }}" class="submit"><span>Iniciar</span></a> &nbsp;
+        {% endif %}
+
         <p class="input_submit">
             {% if previous %}
-            <a href="{{ previous }}" class="submit left"><span>Anterior</span></a> &nbsp;
+            <a href="{{ previous }}" class="css3button positive big floatleft">Anterior</a> &nbsp;
             {% endif %}
-            <input type="submit" class="submit right no_margin" value="Próximo" />
+
+            <button type="submit" class="css3button big positive floatright" value="Próximo">Próximo</button>
         </p>
 
         <input type="hidden" name="next" value="{{ next }}" />

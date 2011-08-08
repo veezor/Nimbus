@@ -4,10 +4,14 @@
 from django.conf import settings
 from django.contrib import admin
 
-from nimbus.schedules.models import Schedule, Monthly, Daily, Hourly, Weekly
+# from nimbus.schedules.models import Schedule, Month, Day, Hour, Week, BackupLevel, BackupKind, Run
+from nimbus.schedules.models import Schedule, Run, BackupLevel, BackupKind
 
 admin.site.register(Schedule)
-admin.site.register(Monthly)
-admin.site.register(Daily)
-admin.site.register(Weekly)
-admin.site.register(Hourly)
+admin.site.register(Run)
+admin.site.register(BackupLevel)
+admin.site.register(BackupKind)
+# admin.site.register(Month)
+# admin.site.register(Day)
+# admin.site.register(Week)
+# admin.site.register(Hour)

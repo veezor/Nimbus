@@ -37,6 +37,10 @@ class Storage(BaseModel):
     active = models.BooleanField(editable=False)
 
 
+
+    class Meta:
+        verbose_name = u"Dispositivo de armazenamento"
+
     @property
     def is_local(self):
         if self.address == get_nimbus_address():
@@ -52,7 +56,7 @@ class Storage(BaseModel):
     @property
     def get_computers(self):
         """Computadores que fazem backup neste storage."""
-        computers = Computer.objects.filter(procedure__profile__storage=self).\
+        computers = Computer.objects.filter(procedure__storage=self).\
             order_by('name').distinct()
         
         # computers = []
@@ -118,25 +122,28 @@ def create_default_device(storage):
 
 def update_device_file(device):
 
-    if device.storage.active:
+    try:
+        if device.storage.active:
 
-        name = device.bacula_name
-        storagename = device.storage.bacula_name
+            name = device.bacula_name
+            storagename = device.storage.bacula_name
 
-        filename = path.join( settings.NIMBUS_DEVICES_DIR, 
-                              name)
-        
-        storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
-                              storagename)
+            filename = path.join( settings.NIMBUS_DEVICES_DIR, 
+                                  name)
+            
+            storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
+                                  storagename)
 
-        render_to_file( filename,
-                        "device",
-                        name=name,
-                        archive_device=device.archive)
+            render_to_file( filename,
+                            "device",
+                            name=name,
+                            archive_device=device.archive)
 
-        render_to_file( storagefile,
-                        "storages",
-                        devices=Device.objects.all())
+            render_to_file( storagefile,
+                            "storages",
+                            devices=Device.objects.all())
+    except Storage.DoesNotExist:
+        pass #loaddata
 
 
 

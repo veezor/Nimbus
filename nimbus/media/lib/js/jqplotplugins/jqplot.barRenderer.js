@@ -548,7 +548,9 @@
     }
     
     function unhighlight (plot) {
-        var canvas = plot.plugins.barRenderer.highlightCanvas;
+        var barRenderer = plot.plugins.barRenderer;
+        if (barRenderer==undefined) return; // avoid error
+        var canvas = barRenderer.highlightCanvas;
         canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
         for (var i=0; i<plot.series.length; i++) {
             plot.series[i]._highlightedPoint = null;

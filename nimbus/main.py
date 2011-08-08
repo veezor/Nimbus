@@ -3,6 +3,7 @@
 
 import os
 import sys
+import getpass
 import functools
 
 
@@ -26,23 +27,27 @@ from django.conf import settings
 
 from nimbus.libs import offsite, graphsdata
 from nimbus.shared import utils
+from nimbus.libs.bacula import ( ReloadManager,
+                                 ReloadManagerService,
+                                 force_unlock_bacula_and_start)
 from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
 from nimbus.shared.middlewares import LogSetup
+from nimbus.security.models import register_administrative_nimbus_models
 
 
 
 
 class NimbusApplication(Application):
-    
+
     def init(self, parser, opts, args):
         self.project_path = 'nimbus'
         self.settings_modname = "nimbus.settings"
         self.cfg.set("default_proc_name", self.settings_modname)
         self.cfg.set("timeout", 2592000)
 
-        
+
     def load(self):
         os.environ['DJANGO_SETTINGS_MODULE'] = self.settings_modname
         return WSGIHandler()
@@ -53,7 +58,7 @@ class App(object):
     def create_database(self):
         call_command('syncdb',verbosity=0,interactive=False)
         if len(User.objects.all()) == 0:
-            u = User(username = "admin", 
+            u = User(username = "admin",
                      is_superuser=True,
                      email = "suporte@veezor.com")
             u.set_password("admin")
@@ -73,15 +78,20 @@ class App(object):
             computer = Computer.objects.get(id=1)
             computer.activate()
 
+            register_administrative_nimbus_models()
 
-            call_command('loaddata', 
-                          settings.ADMINISTRATIVE_MODELS_DATA_FILE)
+            reload_manager = ReloadManager()
+            reload_manager.force_reload()
+        else:
+            force_unlock_bacula_and_start()
+
+
 
 
     def update_graphs_data(self):
         graphs_data_manager = graphsdata.GraphDataManager()
         graphs_data_manager.update()
-        
+
 
     def shell(self):
         call_command('shell')
@@ -94,8 +104,10 @@ class App(object):
         try:
             args = sys.argv[2]
             volumes = args.split('|')
+            volumes = filter(None, volumes)
             volumes = offsite.get_volumes_abspath( volumes )
             manager = offsite.RemoteManager()
+
             for volume in volumes:
                 manager.create_upload_request( volume )
 
@@ -104,15 +116,38 @@ class App(object):
         except IndexError, error:
             # not args.
             pass
-        
+
 
     def upload_volumes(self):
         manager = offsite.RemoteManager()
         manager.process_pending_upload_requests()
 
+
     def delete_volumes(self):
         manager = offsite.RemoteManager()
         manager.process_pending_delete_requests()
+
+
+    def change_password(self):
+
+        while True:
+            password = getpass.getpass("new password: ")
+            confirm_password = getpass.getpass("confirm password: ")
+
+            if password != confirm_password:
+                print "password does not match"
+                print
+            else:
+                user = User.objects.get(id=1)
+                user.set_password(password)
+                user.save()
+                print "password changed"
+                break
+
+
+    def reload_manager_service(self):
+        service = ReloadManagerService()
+        service.run()
 
 
     def run(self):
@@ -123,7 +158,9 @@ class App(object):
             "--create-database" : self.create_database,
             "--upload-now" : self.upload_volumes,
             "--shell" : self.shell,
-            "--delete-volumes" : self.delete_volumes
+            "--delete-volumes" : self.delete_volumes,
+            "--change-password" : self.change_password,
+            "--start-reload-manager-service" : self.reload_manager_service
         }
 
         if len(sys.argv) > 1:

@@ -16,16 +16,16 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'NAME': 'nimbus',
-        'ENGINE' : 'django.db.backends.mysql',
-        'USER' : 'root',
+        'ENGINE' : 'django.db.backends.postgresql_psycopg2',
+        'USER' : 'nimbus',
         'PASSWORD' : 'n1mbus',
         'HOST' : 'localhost'
     },
     'bacula' : {
         'NAME': 'bacula',
-        'ENGINE' : 'django.db.backends.mysql',
-        'USER' : 'root',
-        'PASSWORD' : 'n1mbus',
+        'ENGINE' : 'django.db.backends.postgresql_psycopg2',
+        'USER' : 'bacula',
+        'PASSWORD' : 'bacula',
         'HOST' : 'localhost'
     }
 }
@@ -47,11 +47,13 @@ NIMBUS_SSLCONFIG = join(NIMBUS_ETC_DIR, "ssl.conf")
 
 
 NIMBUS_DEPLOY_PATH = join(ROOT_PATH, "var","www")
-
+NIMBUS_EXE = join(NIMBUS_DEPLOY_PATH, "nimbus")
 
 BACULA_LOCK_FILE = join(NIMBUS_HOME_DIR, "bacula.lock" )
 NIMBUS_GRAPHDATA_FILENAME = join(NIMBUS_HOME_DIR, "graphs.data" )
 
+
+NIMBUS_DEFAULT_ARCHIVE = '/bacula'
 
 NIMBUS_CUSTOM_DIR = join(NIMBUS_HOME_DIR, "custom" )
 NIMBUS_CONFIG_DIR = join(NIMBUS_CUSTOM_DIR, "config" )
@@ -73,8 +75,6 @@ BACULAFD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-fd.conf")
 BACULASD_CONF = join(NIMBUS_CONFIG_DIR, "bacula-sd.conf")
 LOGGING_CONF = join(NIMBUS_ETC_DIR, "logging.conf")
 INITIALDATA_FILE = join(NIMBUS_HOME_DIR, "initial_data.json")
-ADMINISTRATIVE_MODELS_DATA_FILE = join(NIMBUS_HOME_DIR, 
-                                        "administrative_models_data.json")
 PYBACULA_TEST = False
 
 
@@ -93,6 +93,27 @@ SERVE_STATIC_FILES = False
 
 
 NIMBUS_CLIENT_PORT = 11110
+
+QUEUE_SERVICE_MANAGER_PORT = 11112
+QUEUE_SERVICE_MANAGER_ADDRESS = '127.0.0.1'
+QUEUE_SERVICE_MANAGER_URL = "http://localhost:11112"
+QUEUE_MANAGER_START_SLEEP_TIME = 3
+
+
+NIMBUS_CENTRAL_USER_DATA_URL = "http://www.veezor.com/central/acesso_iam.php"
+
+
+NIMBUS_RELOAD_REQUESTS_THRESHOLD = 20
+NIMBUS_MIN_RELOAD_REQUESTS_INTERVAL = 60
+RELOAD_MANAGER_PORT = 11113
+RELOAD_MANAGER_ADDRESS = '127.0.0.1'
+RELOAD_MANAGER_URL = "http://localhost:11113"
+RELOAD_MANAGER_START_SLEEP_TIME = 3
+RELOAD_MANAGER_COMMAND = [NIMBUS_EXE,'--start-reload-manager-service']
+RELOAD_MANAGER_LOGGING_CONF = join(NIMBUS_ETC_DIR, "reload_manager_logging.conf")
+
+
+
 # END NIMBUS
 
 # Local time zone for this installation. Choices can be found here:
@@ -198,16 +219,15 @@ INSTALLED_APPS = (
     'nimbus.schedules',
     'nimbus.filesets',
     'nimbus.storages',
-    'nimbus.pools',
     'nimbus.procedures',
     'nimbus.timezone',
     'nimbus.offsite',
     'nimbus.wizard',
     'nimbus.computers',
-    'nimbus.backup',
     'nimbus.restore',
+    'nimbus.recovery',
     'nimbus.system',
-    'nimbus.security'
+    'nimbus.security',
 )
 
 if DEBUG:

@@ -3,7 +3,8 @@ $(document).ready(function(){
 	// Preload images
     // jQuery.preloadCssImages();
 	
-	
+	// uniform select fields
+	//$("select").uniform();
 	// CSS tweaks
 	jQuery('#header #nav li:last').addClass('nobg');
 	jQuery('.block_head ul').each(function() { jQuery('li:first', this).addClass('nobg'); });
@@ -43,11 +44,11 @@ $(document).ready(function(){
 		
 	
 	// Set WYSIWYG editor
-	jQuery('.wysiwyg').wysiwyg({css: "css/wysiwyg.css"});
+	//jQuery('.wysiwyg').wysiwyg({css: "css/wysiwyg.css"});
 	
 	
 	// Modal boxes - to all links with rel="facebox"
-	jQuery('a[rel*=facebox]').facebox()
+	//jQuery('a[rel*=facebox]').facebox()
 	
 	
 	// Messages
@@ -63,23 +64,23 @@ $(document).ready(function(){
 	
 	
 	// Form select styling
-	jQuery("form select.styled").select_skin();
+	//jQuery("form select.styled").select_skin();
 	
 	
 	// Tabs
-	jQuery(".tab_content").hide();
-	jQuery("ul.tabs li:first-child").addClass("active").show();
-	jQuery(".tab_content:first").show();
-
-	jQuery("ul.tabs li").click(function() {
-		jQuery(this).parent().find('li').removeClass("active");
-		jQuery(this).addClass("active");
-		jQuery(this).parents('.block').find(".tab_content").hide();
-
-		var activeTab = jQuery(this).find("a").attr("href");
-		jQuery(activeTab).show();
-		return false;
-	});
+    jQuery(".tab_content").hide();
+    jQuery("ul.tabs li:first-child").addClass("active").show();
+    jQuery(".tab_content:first").show();
+    
+    jQuery("ul.tabs li").click(function() {
+        jQuery(this).parent().find('li').removeClass("active");
+        jQuery(this).addClass("active");
+        jQuery(this).parents('.block').find(".tab_content").hide();
+    
+        var activeTab = jQuery(this).find("a").attr("href");
+        jQuery(activeTab).show();
+        return false;
+    });
 	
 	
 	// Sidebar Tabs
@@ -186,5 +187,44 @@ $(document).ready(function(){
 	
 	// IE6 PNG fix
 	jQuery(document).pngFix();
-		
+	
+	var data_hora = undefined;
+	function update_time() {
+		seconds = data_hora.getSeconds() + 1;
+		if (seconds > 60) {
+			seconds = 1;
+		}
+		data_hora.setSeconds(seconds);
+
+		time_string = data_hora.toTimeString().substr(0, 8);
+		$('#actual_time').html(time_string);
+		setTimeout(update_time, 1000);
+	}
+	
+	//$(':checkbox').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
+	$('input:checkbox:not(:checkbox.schedule):not(input:checkbox.no-style):not(input:checkbox.fileset):not(.tree input:checkbox)').not('').iphoneStyle({ checkedLabel: 'Sim', uncheckedLabel: 'Não' });
+	$('.filetree').each(function(){
+		var script = $(this).attr("ref");
+		$(this).fileTree({ root: '/media/lib/demo/', script: script }, function(file) { 
+			alert(file);
+		});
+	})
+	// $(".sparklines").sparkline('html', {width: "300", height: "150px" });
+	
+	var actual_time_html = $('#actual_time').html();
+    if (actual_time_html != null) {
+        var actual_time = actual_time_html.split(':');
+        var hours = actual_time[0];
+        var minutes = actual_time[1];
+        var seconds = actual_time[2];
+        data_hora = new Date(2010, 10, 10, hours, minutes, seconds);
+        update_time();
+    }
+            
+	$(".date_picker").mask('99/99/9999');
+	$(".date_picker").bind("blur focus change click keyup", function(){
+	   $(this).mask('99/99/9999');
+	});
+	$('.mascara_hora').mask('99:99');
+	$('.mascara_minuto').mask('99');
 });

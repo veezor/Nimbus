@@ -5,6 +5,7 @@
 import os
 import codecs
 import subprocess
+import locale
 import SocketServer, socket
 from time import sleep
 from glob import glob
@@ -64,8 +65,16 @@ class NimbusService(object):
 
     def list_dir(self, path):
         try:
+
+            def _convert_encoding_filename(filename):
+                if not isinstance(filename, unicode):
+                    return filename.decode(locale.getpreferredencoding())
+                return filename
+
+
             files = glob(os.path.join(path,'*'))
             files = map(is_dir, files)
+            files = [ _convert_encoding_filename(f) for f in files]
             return files
         except IOError, error:
             return []

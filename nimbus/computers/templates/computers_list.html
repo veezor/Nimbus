@@ -1,30 +1,9 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('.toggle').click(function(){
-            var target = $(this).attr('ref');
-            $(this).parent().parent().find('.' + target).slideToggle();
-            return false;
-        });
-    });
-</script>
-
-<style type="text/css" media="screen">
-    .computer.desativado {
-        background: #FFE5EB !important;
-        border: 2px solid #e7696d;
-        -moz-border-radius: 5px; 
-    }
-	
-	#computers-filter {
-		margin: 0 0 15px;
-		float: right;
-	}
-	
-	#computers { clear: both; }
-</style>
+<link rel="stylesheet" type="text/css" href="/media/css/computers.css" />
+<script type="text/javascript" src="/media/jquery.cookie.js"></script>
+<script type="text/javascript" src="/media/js/computers.js"></script>
 {% endblock %}
 
 {% block page %}
@@ -38,77 +17,79 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <div class="left"><a href="/computers/add">Adicionar computador</a></div>
+        <div class="left"><a href="/computers/add" class="css3button positive">Adicionar computador</a></div>
 		
 		<div id="computers-filter">
 			<form action="/computers/list" method="get">
-			<label for="computers-group">Filtrar por grupo</label>
-			<select name="group" id="computers-group">
-				<option value="">---</option>
+			<select name="group"   id="computers-group">
+				<option value="">Filtrar por Grupo</option>
 				{% for group in groups %}
 					<option value="{{group.name}}">{{group.name}}</option>
 				{% endfor%}
 			</select>
-			<input type="submit" class="submit tiny" value="Filtrar"/>
+			<button type="submit" class="css3button positive" value="Filtrar">Filtrar</button>
 			</form>
 		</div>
 		
         <div id="computers">
         {% for comp in computers %}
             {% ifchanged comp.groups.all %}
-            <h2>{% for g in comp.groups.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</h2>
             {% endifchanged %}
-            <div class="computer {% if not comp.active %}desativado{% endif %}" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
-                <div class="left" style="float: left; width: 250px">
+            <div class="computer {% if not comp.active %}desativado{% endif %}" >
+                <div class="left">
                     <div class="title">
-                        <img src="/media/icons/computer.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0"><a href="/computers/{{ comp.id }}/view">{{comp.name}}</a></h3>
-                        <small class="ip">{{comp.address}} - {{comp.operation_system|title}} - {% for g in comp.groups.all %}{{g.name}}{% endfor %}</small>
+                        <img src="/media/icons/computer.png" alt="" />
+                        <h3 class="name"><a href="/computers/{{ comp.id }}/view">{{comp.name}}</a></h3>
+                        <small class="ip">{{comp.address}} - {{comp.operation_system|title}} </small> <br/>
+                        <small class="ip">Grupos: {% for g in comp.groups.all %} {{g.name}} {% endfor %}</small>
                     </div>
-                    <p style="font-size: 10px; margin-top: 10px; line-height: 1.4em">{{comp.description}}</p>
-                    <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/computers/{{comp.id}}/edit/">Editar</a> - <a href="/computers/{{comp.id}}/delete/">Remover</a></p>
+                    <p class="description">{{comp.description}}</p>
+                    <p class="options">
+                        <a href="/computers/{{comp.id}}/edit/" class="css3button positive pill">Editar</a>
+                        <a href="/computers/{{comp.id}}/delete/" class="css3button negative pill">Remover</a>
+                    </p>
                 </div>
-                <div class="right" style="float: right; width: 600px">
-                    <div style="float: right">
+                <div class="right">
+                    <div class="floatright">
                         {% if not comp.active %}
-                        <form action="/computers/{{comp.id}}/activate/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        <form action="/computers/{{comp.id}}/activate/" method="post" class="floatright">
+                            <input type="submit" class="submit tiny" value="Ativar" />
                         </form>
                         {% endif %}
                         {% if comp.procedure_set.count %}
-                        <form action="/restore/{{comp.id}}/view/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Restaurar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        <form action="/restore/{{comp.id}}/view/" method="post" class="floatright">
+                            <button type="submit" class="css3button positive" value="Restaurar">Restaurar</button>
                         </form>
                         {% endif %}
-                        <form action="/backup/{{comp.id}}/add/" method="get" style="float: right">
-                            <input type="submit" class="submit tiny" value="Criar backup" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
-                        </form>
+                        <a href="/procedures/add/?comp_id={{ comp.id }}" class="floatright css3button positive">Criar Backup</a>
+                        <a href="/computers/{{comp.id}}/configure/" class="css3button positive">Reconfigurar</a>
+                        
                     </div>
                     {% if not comp.procedure_set.count %}
                         <p>Não existem procedimentos para este computador.</p>
                     {% else %}
-                        <h4 style="float: left">ARQUIVOS PARA BACKUP</h4>
+                        <h4 class="floatleft">ARQUIVOS PARA BACKUP</h4>
                         <div class="clear"></div>
-                        <div class="files" style="padding: 10px; -moz-border-radius: 5px; background: #FFF; margin-bottom: 20px; border: 1px solid #CCC">
+                        <div class="files">
                             {% for proc in comp.procedure_set.all %}
                             <div class="file">
                                 <div class="title">
                                     <a href="#" class="toggle" ref="fileset_detail">
-                                        <img src="/media/icons/folder.png" style="float: left; height: 32px; padding-right: 10px" />
-                                        <h4 class="name" style="margin: 0 0 -5px 0; padding: 0">{{proc.profile.fileset}}</h4>
-                                        <small class="ip">{% for file in proc.profile.fileset.files.all|slice:":3" %}{{file.path}} - {% endfor %}</small>
+                                        <img src="/media/icons/folder.png" alt=""/>
+                                        <h4 class="name">{{proc.fileset.name}}</h4>
+                                        <small class="ip">{% for file in proc.fileset.files.all|slice:":3" %}{{file.path}} - {% endfor %}</small>
                                     </a>
                                 </div>
-                                <div class="fileset_detail" style="display: none">
+                                <div class="fileset_detail">
                                     <br/>
                                     Offsite ativado? <strong>{% if proc.offsite_on %}Sim{% else %}Não{% endif %}</strong><br/>
-                                    Perfil de configuração: <strong>{{proc.profile.name}}</strong> <small>(<a href="{% url nimbus.procedures.views.profile_edit object_id=proc.profile.id %}">editar</a>)</small><br/>
-                                    Local de armazenamento: <strong><a href="/storages/{{proc.profile.storage.id}}/view"><span title="Endereço: {{proc.profile.storage.address}} - {{proc.profile.storage.description|slice:":25"}}...">{{proc.profile.storage.name}}</span></a></strong><br/>
-                                    Agendamento: <strong>{{proc.profile.schedule}}</strong> <small>(<a href="{% url nimbus.schedules.views.edit object_id=proc.profile.schedule.id %}">editar</a>)</small><br/>
-                                    Arquivos: <small>(<a href="{% url nimbus.filesets.views.edit object_id=proc.profile.fileset.id %}">editar</a>)</small>
+                                    Local de armazenamento: <strong><a href="/storages/{{proc.storage.id}}/view"><span title="Endereço: {{proc.storage.address}} - {{proc.storage.description|slice:":25"}}...">{{proc.storage.name}}</span></a></strong><br/>
+                                    Agendamento: <strong>{{proc.schedule}}</strong> <small>(<a href="/procedures/{{proc.id}}/edit">editar</a>)</small><br/>
+                                    Arquivos: <small>(<a href="/procedures/{{proc.id}}/edit/">editar</a>)</small>
+
                                     <ul>
-                                        {% for file in proc.profile.fileset.files.all %}
-                                        <li><strong>{{file}}</strong></li>
+                                        {% for file in proc.fileset.files.all %}
+                                        <li><strong>{{file.path}}</strong></li>
                                         {% endfor %}
                                     </ul>
                                 </div>

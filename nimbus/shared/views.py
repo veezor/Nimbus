@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-
 from django.http import Http404
 from django.views.generic.create_update import update_object, create_object
 from django.shortcuts import render_to_response as _render_to_response
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
+from django.contrib import messages
+
+from nimbus.shared.utils import block_ie_browser
 
 
 from nimbus.shared import forms
@@ -30,11 +32,12 @@ def edit_singleton_model(request, templatename, redirect_to,
                               post_save_redirect = reverse(redirect_to),
                               extra_context = extra_context )
 
-
-
-def render_to_response(request, template, dictionary ):
-     return _render_to_response( template, dictionary,
+def render_to_response(request, template, dictionary):
+    # renderiza a mensagem de erro para o internet explorer
+    # esta chamada está aqui por se tratar de um evento global, evitando repetição
+    block_ie_browser(request)
+    return _render_to_response( template, dictionary,
                                 context_instance=RequestContext(request))
-
+            
 
 

@@ -20,8 +20,5 @@ def render_to_file(filename, template, **kwargs):
     except Exception, e:
         logger.exception("Erro ao abrir arquivo %s" % filename)
 
-
-
-
 def render_to_string(template, **kwargs):
     return loader.render_to_string(template, kwargs)

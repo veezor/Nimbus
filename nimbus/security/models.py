@@ -15,4 +15,46 @@ class AdministrativeModel(models.Model):
 
 
 
+def register_object(model):
+    adm_model = AdministrativeModel.objects.create(content_object=model)
+
+
+def register_object_from_id(content_type, object_id):
+    model_object = content_type.get_object_for_this_type(id=object_id)
+    return register_object(model_object)
+
+
+def register_object_from_model_name(app_label, model_name, object_id):
+    content_type = ContentType.objects.get(app_label=app_label, model=model_name)
+    return register_object_from_id( content_type, object_id)
+
+
+def register_objects_from_tuple(*args):
+    for app_label, model_name, object_id in args:
+        register_object_from_model_name(app_label, model_name, object_id)
+
+
+def register_administrative_nimbus_models():
+    register_objects_from_tuple(
+            ("computers", "computer", 1),
+            ("computers", "cryptoinfo", 1),
+            ("filesets", "fileset", 1),
+            ("filesets", "filepath", 1),
+            ("filesets", "filepath", 2),
+            ("filesets", "filepath", 3),
+            ("filesets", "filepath", 4),
+            ("schedules", "schedule", 1),
+            ("schedules", "run", 1),
+            ("schedules", "run", 2),
+            ("schedules", "backupkind", 1),
+            ("schedules", "backupkind", 2),
+            ("schedules", "backupkind", 3),
+            ("schedules", "backupkind", 4),
+            ("schedules", "backuplevel", 1),
+            ("schedules", "backuplevel", 2),
+            ("procedures", "procedure", 1),
+            ("storages", "storage", 1),
+            ("storages", "device", 1),
+    )
+
 

@@ -1,43 +1,7 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('#offsite_form #id_active').change(function(){
-            input_active = $('#offsite_form #id_active');
-            ps = input_active.parents().filter('p').siblings().filter(':not(p:last)');
-            if (input_active.attr('checked')) {
-                ps.slideDown();
-            } else {
-                ps.slideUp();
-            }
-        }).change();
-
-		var initial_upload = $("#id_upload_rate").val();
-        if(initial_upload == -1) {
-            $("#id_upload_rate").hide();
-            $("label[for=id_upload_rate]").hide();
-            $("#id_active_upload_rate").attr('checked', false).change();
-        } else {
-            $("#id_active_upload_rate").attr('checked', true).change();
-        }
-
-        $("#id_active_upload_rate").change(function(){
-            if ($("#id_active_upload_rate").is(':checked')){
-                $("#id_upload_rate").show();
-                $("label[for=id_upload_rate]").show();
-                if (initial_upload == -1)
-                    initial_upload = 200;
-                $("#id_upload_rate").val(initial_upload);
-            } else {
-                $("#id_upload_rate").hide();
-                $("label[for=id_upload_rate]").hide();
-                $("#id_upload_rate").val("-1");
-            }
-		});
-    });
-</script>
-
+<script type="text/javascript" src="/media/js/offsite.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -57,7 +21,7 @@
             {% include "form.html" %}
 
             <p class="input_submit">
-                <input type="submit" class="submit mid" value="Atualizar" />
+                <button type="submit" class="css3button big positive" value="Atualizar">Atualizar</button>
             </p>
 
         </form>

@@ -2,79 +2,8 @@
 
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-    function update_table(table) {
-        table = $('.request_list');
-        $.post('{{script_name}}', {ajax: 1}, function(data)
-        {
-            if (!data.length) {
-                console.log('Não existem uploads ativos.');
-            }
-            
-            table.find('tbody tr').remove();
-            for (var item in data) {
-                down = data[item];
-                tr = $('<tr>');
-                caminho_arquivo = $('<td>').text(down.fields.filename);
-                criado_em = $('<td>').text(down.fields.created_at);
-                tentativas = $('<td>').html(down.fields.attempts + " <small>(última: " + down.fields.last_attempt + ")</small>");
-                transferencia = $('<td>').html(down.fields.friendly_rate + " <small>(restante: " + down.fields.estimated_transfer_time + ")</small>");
-                
-                wrapper = $('<div>').addClass("concluido_wrapper").attr({"title": down.fields.finished_percent + "% concluído."});
-                percent = $('<div>').addClass("concluido_percent").css("width", down.fields.finished_percent + "%").html("&nbsp;");
-                concluido = $('<td>').append(wrapper.append(percent));
-                
-                tr.append(caminho_arquivo).append(criado_em).append(tentativas).append(transferencia).append(concluido);
-                tr.appendTo(table.find('tbody'));
-            }
-        },
-        "json");
-    }
-    
-    
-    var countDownInterval = 20;
-    var countDownTime = countDownInterval + 1;
-    
-    function countDown(){
-        countDownTime--;
-        if (countDownTime <= 0){
-            $('.tempo_restante').text(countDownTime);
-            countDownTime = countDownInterval;
-            clearTimeout(counter);
-            // window.location="http://www.wallpaperama.com";
-            update_table();
-            return startit();
-        }
-        $('.tempo_restante').text(countDownTime);
-        counter=setTimeout("countDown()", 1000);
-    }
-
-    function startit(){
-        if (document.all||document.getElementById)
-            $('.tempo_restante').text(countDownTime);
-        countDown()
-    }
-
-    $(document).ready(function(){
-        startit()
-        $('.atualizar_agora').click(function(){
-            update_table();
-            countDownTime = countDownInterval;
-            clearTimeout(counter);
-            startit();
-        });
-    });
-</script>
-
-<style type="text/css" media="screen">
-    .concluido_wrapper {
-        width: 100%; border: 1px solid green;
-    }
-    
-    .concluido_percent {
-        background: #67ca1e;
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="/media/css/offsite.css" />
+<script type="text/javascript" src="/media/js/offsite.js"></script>
 {% endblock %}
 
 
@@ -87,16 +16,17 @@
 		<div class="bheadr"></div>
 		<h2>{{ title }}</h2>
 		<div class="right">
-            A lista será atualizada em <span class="tempo_restante">10</span> segundos. <small>(<a href="#" class="atualizar_agora">atualizar agora</a>)</small>
+            A lista será atualizada em <span class="tempo_restante">10</span> segundos. <small>(<a href="#" rel="{{script_name}}" class="atualizar_agora">atualizar agora</a>)</small>
+			
 		</div>
-	</div>		<!-- .block_head ends -->
+	</div>
 
     <div class="block_content">
 
         {% if not object_list %}
             <p>Não existem downloads ativos no momento.</p>
         {% else %}
-            <table class="request_list" style="width: 100%">
+            <table class="request_list">
                 <thead>
                     <tr>
                         <th>Caminho do arquivo</th>

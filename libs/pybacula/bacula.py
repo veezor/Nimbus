@@ -9,7 +9,8 @@ from backends import get_active_backend, BConsoleInitError
 
 valid_commands = """autodisplay automount add cancel create delete label
                     mount prune relabel release restore run setdebug status
-                    unmount update wait disable enable list llist use query reload purge"""
+                    unmount update wait disable enable list llist use query reload purge
+                    .bvfs_update .bvfs_lsdir .bvfs_lsfiles"""
 
 
 class CommandNotFound(Exception):
@@ -34,6 +35,10 @@ class BaculaCommandLine(object):
 
 
     def __getattr__(self, name):
+
+        if name.startswith("_"): # bacula special commands starts with dot
+            name = "." + name[1:]
+
         if name in valid_commands:
             return Command(name)    
         else:
@@ -54,7 +59,6 @@ class Command(object):
         return self
 
     def __getattr__(self, attr):
-
         content = object.__getattribute__(self, "content")
         content.append(attr)
         return self

@@ -6,14 +6,14 @@ from nimbus.schedules.models import Schedule, Daily, Monthly, Hourly, Weekly
 
 trigger_map = {
         "monthly" : "mensal",
-        "dayly" : "diário",
+        "daily" : "diário",
         "hourly" : "minuto",
         "weekly" : "semanal",
 }
 
 trigger_class = {
         "monthly" : Monthly,
-        "dayly" : Daily,
+        "daily" : Daily,
         "hourly" : Hourly,
         "weekly" : Weekly,
 }

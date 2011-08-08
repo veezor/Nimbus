@@ -98,4 +98,26 @@ $(document).ready(function() {
     set_toggles();
     set_backup_type();
     set_schedule_procedure();
+    $('input:text').addClass("text");
+    // asks: are you sure?
+    // Não importa se voce clica em 'ok' ou 'cancel', a acao eh executada assim mesmo
+    // $(".negative").click(function(){
+    //     if (!confirm("Tem certeza?"))
+    //         return false;
+    // });
+});
+
+/* minibuttons */
+jQuery.ready(function() {
+  jQuery('a.minibutton').bind({
+    mousedown: function() {
+      jQuery(this).addClass('mousedown');
+    },
+    blur: function() {
+      jQuery(this).removeClass('mousedown');
+    },
+    mouseup: function() {
+      jQuery(this).removeClass('mousedown');
+    }
+  });
 });

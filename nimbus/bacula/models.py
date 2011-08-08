@@ -2,23 +2,19 @@
 # -*- coding: UTF-8 -*-
 
 from datetime import datetime, timedelta
-
 from django.db import models
-from nimbus.shared import utils
-
-
-
 
 class Client(models.Model):
-    clientid = models.IntegerField(primary_key=True, db_column='ClientId') # Field name made lowercase.
-    name = models.TextField(unique=True, db_column='Name') # Field name made lowercase.
-    uname = models.TextField(db_column='Uname') # Field name made lowercase.
-    autoprune = models.IntegerField(null=True, db_column='AutoPrune', blank=True) # Field name made lowercase.
-    fileretention = models.BigIntegerField(null=True, db_column='FileRetention', blank=True) # Field name made lowercase.
-    jobretention = models.BigIntegerField(null=True, db_column='JobRetention', blank=True) # Field name made lowercase.
-    class Meta:
-        db_table = u'Client'
+    clientid = models.IntegerField(primary_key=True)
+    name = models.TextField(unique=True)
+    uname = models.TextField()
+    autoprune = models.IntegerField(null=True, blank=True)
+    fileretention = models.BigIntegerField(null=True, blank=True)
+    jobretention = models.BigIntegerField(null=True, blank=True)
 
+
+    class Meta:
+        db_table = u'client'
 
     @property
     def computer(self):
@@ -27,110 +23,176 @@ class Client(models.Model):
         return Computer.objects.get(uuid__uuid_hex=client_name)
 
 
-
-
 class File(models.Model):
-    fileid = models.BigIntegerField(primary_key=True, db_column='FileId') # Field name made lowercase.
-    fileindex = models.IntegerField(null=True, db_column='FileIndex', blank=True) # Field name made lowercase.
-    job = models.ForeignKey('Job',db_column='JobId') # Field name made lowercase.
-    path = models.ForeignKey('Path',db_column='PathId') # Field name made lowercase.
-    filename = models.ForeignKey('Filename', db_column='FilenameId') # Field name made lowercase.
-    markid = models.IntegerField(null=True, db_column='MarkId', blank=True) # Field name made lowercase.
-    lstat = models.TextField(db_column='LStat') # Field name made lowercase.
-    md5 = models.TextField(db_column='MD5', blank=True) # Field name made lowercase.
+    fileid = models.BigIntegerField(primary_key=True)
+    fileindex = models.IntegerField(null=True, blank=True)
+    job = models.ForeignKey('Job', db_column='jobid')
+    path = models.ForeignKey('Path', db_column='pathid')
+    filename = models.ForeignKey('Filename', db_column='filenameid')
+    markid = models.IntegerField(null=True, blank=True)
+    lstat = models.TextField()
+    md5 = models.TextField(blank=True)
+
+
     class Meta:
-        db_table = u'File'
+        db_table = u'file'
+
 
     @property
     def fullname(self):
         return self.path.path + self.filename.name
 
 
-
 class Fileset(models.Model):
-    filesetid = models.IntegerField(primary_key=True, db_column='FileSetId') # Field name made lowercase.
-    fileset = models.TextField(db_column='FileSet') # Field name made lowercase.
-    md5 = models.TextField(db_column='MD5', blank=True) # Field name made lowercase.
-    createtime = models.DateTimeField(null=True, db_column='CreateTime', blank=True) # Field name made lowercase.
+    filesetid = models.IntegerField(primary_key=True)
+    fileset = models.TextField()
+    md5 = models.TextField(blank=True)
+    createtime = models.DateTimeField(null=True, blank=True)
+
+
     class Meta:
-        db_table = u'FileSet'
+        db_table = u'fileset'
+
 
 class Filename(models.Model):
-    filenameid = models.IntegerField(primary_key=True, db_column='FilenameId') # Field name made lowercase.
-    name = models.TextField(db_column='Name') # Field name made lowercase.
+    filenameid = models.IntegerField(primary_key=True)
+    name = models.TextField()
+
+
     class Meta:
-        db_table = u'Filename'
+        db_table = u'filename'
 
 class Job(models.Model):
-    MESSAGES = [
-        'Criado mas sem executar ainda.',
-        'Executando',
-        'Bloqueado',
-        'Terminado com sucesso',
-        'Terminado com alertas',
-        'Terminado com erros',
-        'Erro nâo fatal',
-        'Erro fatal',
-        'Verificar diferenças',
-        'Cancelado pelo usuário',
-        'Incompleto',
-        'Esperando pelo cliente',
-        'Esperando',
-        'Gravando dados'
-    ]
+    MESSAGES = ['Criado mas sem executar ainda.',
+                'Executando',
+                'Bloqueado',
+                'Terminado com sucesso',
+                'Terminado com alertas',
+                'Terminado com erros',
+                'Erro nâo fatal',
+                'Erro fatal',
+                'Verificar diferenças',
+                'Cancelado pelo usuário',
+                'Incompleto',
+                'Esperando pelo cliente',
+                'Esperando',
+                'Gravando dados']
+    STATUS_MESSAGES_MAPPING = {'C': ('Created, not yet running', 0),
+                               'R': ('Running', 1),
+                               'B': ('Blocked', 2),
+                               'T': ('Completed successfully',3),
+                               'E': ('Terminated with errors',5),
+                               'e': ('Non-fatal error',6),
+                               'f': ('Fatal error',7),
+                               'D': ('Verify found differences',8),
+                               'A': ('Canceled by user',9),
+                               'F': ('Waiting for Client',11),
+                               'S': ('Waiting for Storage daemon',12),
+                               'm': ('Waiting for new media',12),
+                               'M': ('Waiting for media mount',12),
+                               's': ('Waiting for storage resource',12),
+                               'j': ('Waiting for job resource',12),
+                               'c': ('Waiting for client resource',12),
+                               'd': ('Waiting on maximum jobs',12),
+                               't': ('Waiting on start time',12),
+                               'p': ('Waiting on higher priority jobs',12),
+                               'i': ('Doing batch insert file records',13),
+                               'a': ('SD despooling attributes',12)}
+    jobid = models.IntegerField(primary_key=True )
+    job = models.TextField()
+    name = models.TextField()
+    type = models.CharField(max_length=1)
+    level = models.CharField(max_length=1)
+    client = models.ForeignKey(Client, null=True, blank=True, db_column='clientid')
+    jobstatus = models.CharField(max_length=1)
+    schedtime = models.DateTimeField(null=True, blank=True)
+    starttime = models.DateTimeField(null=True, blank=True)
+    endtime = models.DateTimeField(null=True, blank=True)
+    realendtime = models.DateTimeField(null=True, blank=True)
+    jobtdate = models.BigIntegerField(null=True, blank=True)
+    volsessionid = models.IntegerField(null=True, blank=True)
+    volsessiontime = models.IntegerField(null=True, blank=True)
+    jobfiles = models.IntegerField(null=True, blank=True)
+    jobbytes = models.BigIntegerField(null=True, blank=True)
+    readbytes = models.BigIntegerField(null=True, blank=True)
+    joberrors = models.IntegerField(null=True, blank=True)
+    jobmissingfiles = models.IntegerField(null=True, blank=True)
+    pool = models.ForeignKey('Pool', null=True, blank=True, db_column='poolid')
+    fileset = models.ForeignKey('FileSet', null=True, blank=True, db_column='filesetid')
+    priorjobid = models.IntegerField(null=True, blank=True)
+    purgedfiles = models.IntegerField(null=True, blank=True)
+    hasbase = models.IntegerField(null=True, blank=True)
 
-    STATUS_MESSAGES_MAPPING = {
-        'C' : MESSAGES[0],
-        'R' : MESSAGES[1],
-        'B' : MESSAGES[2],
-        'T' : MESSAGES[3],
-        'W' : MESSAGES[4],
-        'E' : MESSAGES[5],
-        'e' : MESSAGES[6],
-        'f' : MESSAGES[7],
-        'D' : MESSAGES[8],
-        'A' : MESSAGES[9],
-        'I' : MESSAGES[10],
-        'F' : MESSAGES[11],
-        'S' : MESSAGES[12],
-        'm' : MESSAGES[12],
-        'M' : MESSAGES[12],
-        's' : MESSAGES[12],
-        'j' : MESSAGES[12],
-        'c' : MESSAGES[12],
-        'd' : MESSAGES[12],
-        't' : MESSAGES[12],
-        'p' : MESSAGES[12],
-        'i' : MESSAGES[12],
-        'a' : MESSAGES[12],
-        'l' : MESSAGES[12],
-        'L' : MESSAGES[13],
-    }
 
-    jobid = models.IntegerField(primary_key=True, db_column='JobId') # Field name made lowercase.
-    job = models.TextField(db_column='Job') # Field name made lowercase.
-    name = models.TextField(db_column='Name') # Field name made lowercase.
-    type = models.CharField(max_length=1, db_column='Type') # Field name made lowercase.
-    level = models.CharField(max_length=1, db_column='Level') # Field name made lowercase.
-    client = models.ForeignKey(Client, null=True, db_column='ClientId', blank=True) # Field name made lowercase.
-    jobstatus = models.CharField(max_length=1, db_column='JobStatus') # Field name made lowercase.
-    schedtime = models.DateTimeField(null=True, db_column='SchedTime', blank=True) # Field name made lowercase.
-    starttime = models.DateTimeField(null=True, db_column='StartTime', blank=True) # Field name made lowercase.
-    endtime = models.DateTimeField(null=True, db_column='EndTime', blank=True) # Field name made lowercase.
-    realendtime = models.DateTimeField(null=True, db_column='RealEndTime', blank=True) # Field name made lowercase.
-    jobtdate = models.BigIntegerField(null=True, db_column='JobTDate', blank=True) # Field name made lowercase.
-    volsessionid = models.IntegerField(null=True, db_column='VolSessionId', blank=True) # Field name made lowercase.
-    volsessiontime = models.IntegerField(null=True, db_column='VolSessionTime', blank=True) # Field name made lowercase.
-    jobfiles = models.IntegerField(null=True, db_column='JobFiles', blank=True) # Field name made lowercase.
-    jobbytes = models.BigIntegerField(null=True, db_column='JobBytes', blank=True) # Field name made lowercase.
-    readbytes = models.BigIntegerField(null=True, db_column='ReadBytes', blank=True) # Field name made lowercase.
-    joberrors = models.IntegerField(null=True, db_column='JobErrors', blank=True) # Field name made lowercase.
-    jobmissingfiles = models.IntegerField(null=True, db_column='JobMissingFiles', blank=True) # Field name made lowercase.
-    pool = models.ForeignKey('Pool', null=True, db_column='PoolId', blank=True) # Field name made lowercase.
-    fileset = models.ForeignKey('FileSet', null=True, db_column='FileSetId', blank=True) # Field name made lowercase.
-    priorjobid = models.IntegerField(null=True, db_column='PriorJobId', blank=True) # Field name made lowercase.
-    purgedfiles = models.IntegerField(null=True, db_column='PurgedFiles', blank=True) # Field name made lowercase.
-    hasbase = models.IntegerField(null=True, db_column='HasBase', blank=True) # Field name made lowercase.
+    class Meta:
+        db_table = u'job'
+
+    @property
+    def human_readable_size(self):
+        size = float(self.jobbytes)
+        if size > 1073741824:
+            size = size/1073741824.0
+            unit = 'GB'
+        elif size > 1048576:
+            size = size/1048576.0
+            unit = 'MB'
+        elif size > 1024:
+            size = size/1024.0
+            unit = 'KB'
+        else:
+            unit = 'B'
+        return {'size': '%.2f' % size,
+                'raw_size': size,
+                'unit': unit}
+
+
+    @property
+    def general_status(self):
+        if self.jobstatus in ['R', 'i', 'a']:
+            return 'running'
+        elif self.jobstatus in ['F', 'S', 'm', 'M', 's', 'j', 'c', 'd', 't', 'p', 'C']:
+            return 'waiting'
+        elif self.jobstatus in ['e', 'D']:
+            return 'warning'
+        elif self.jobstatus in ['E','B', 'f','A']:
+            return 'error'
+        else:
+            return 'ok'
+
+
+    @property
+    def human_general_status(self):
+        status = self.general_status
+        _status_mapping = {
+            'error' : 'erro',
+            'warning' : 'alerta',
+            'waiting' : 'esperando',
+            'running' : 'executando'
+        }
+        return _status_mapping.get(status, 'ok')
+
+    @property
+    def backup_level(self):
+        if self.level == 'F':
+            return 'Full'
+        elif self.level == 'I':
+            return 'Incremental'
+
+    @property
+    def end_time(self):
+        return self.endtime.strftime('%H:%M:%S - %d/%m')
+
+    @property
+    def schedule_time(self):
+        return self.schedtime.strftime('%H:%M - %d/%m')
+
+    @property
+    def start_time(self):
+        return self.starttime.strftime('%H:%M:%S - %d/%m')
+
+    @property
+    def real_end_time(self):
+        return self.realendtime.strftime('%H:%M:%S - %d/%m')
 
 
     @classmethod
@@ -142,89 +204,73 @@ class Job(models.Model):
 
     @classmethod
     def get_jobs_by_day_between(cls, start, end):
-
         diff = end - start
         days = diff.days
         oneday = timedelta(1)
         day = start
         count = 0
-
         result = []
-
-
         while count <= days:
             result.append( (day, cls.get_jobs_by_day(day)) )
             day = day + oneday
             count += 1
-
         return result
-
 
     @classmethod
     def get_jobs_from_last_seven_days(cls):
-
         now = datetime.now()
         start = now - timedelta(6)
         start = datetime(start.year, start.month, start.day)
         return cls.get_jobs_by_day_between(start, now)
 
-
     @classmethod
     def get_files_from_last_jobs(cls):
         jobs_by_day = cls.get_jobs_from_last_seven_days()
         result = {}
-
         for day, jobs in jobs_by_day:
             files = jobs.aggregate(total=models.Sum('jobfiles'))
             nfiles = files['total'] or 0
             result[day] = nfiles
-
         return result
-
 
     @classmethod
     def get_bytes_from_last_jobs(cls):
         jobs_by_day = cls.get_jobs_from_last_seven_days()
-
         result = {}
-
         for day, jobs in jobs_by_day:
             bytes = jobs.aggregate(total=models.Sum('jobbytes'))
             nbytes =  bytes['total']  or 0
             result[day] = nbytes
-
-
         return result
-
-
 
     @property
     def procedure(self):
         from nimbus.procedures.models import Procedure
         procedure_name = self.name.split('_')[0]
-        return Procedure.objects.get(uuid__uuid_hex=procedure_name)
+
+        if not hasattr(self, '_procedure'):
+            try:
+                self._procedure = Procedure.objects.select_related().get(uuid__uuid_hex=procedure_name)
+            except Procedure.DoesNotExist, error:
+                self._procedure = None
+
+        return self._procedure
 
 
     @property
     def status_friendly(self):
         if self.jobstatus == 'T':
             return 'ok'
-
         if self.jobstatus in ('e', 'E', 'f'):
             return 'error'
-
         if self.jobstatus == 'W':
             return 'warn'
-
         return 'running'
 
     @property
     def status_message(self):
-        return self.STATUS_MESSAGES_MAPPING.get(self.jobstatus, "Desconhecido")
-
-
-
-
+        #FIX-ME
+        return self.MESSAGES[self.STATUS_MESSAGES_MAPPING.get(self.jobstatus, "Desconhecido")[1]]
 
     @property
     def duration(self):
@@ -233,129 +279,108 @@ class Job(models.Model):
         else:
             datetime.now() - self.starttime
 
-    class Meta:
-        db_table = u'Job'
 
 
 class JobMedia(models.Model):
-    jobmediaid = models.IntegerField(primary_key=True, db_column='JobMediaId') # Field name made lowercase.
-    job = models.ForeignKey(Job, db_column='JobId') # Field name made lowercase.
-    media = models.ForeignKey('Media', db_column='MediaId') # Field name made lowercase.
-    firstindex = models.IntegerField(null=True, db_column='FirstIndex', blank=True) # Field name made lowercase.
-    lastindex = models.IntegerField(null=True, db_column='LastIndex', blank=True) # Field name made lowercase.
-    startfile = models.IntegerField(null=True, db_column='StartFile', blank=True) # Field name made lowercase.
-    endfile = models.IntegerField(null=True, db_column='EndFile', blank=True) # Field name made lowercase.
-    startblock = models.IntegerField(null=True, db_column='StartBlock', blank=True) # Field name made lowercase.
-    endblock = models.IntegerField(null=True, db_column='EndBlock', blank=True) # Field name made lowercase.
-    volindex = models.IntegerField(null=True, db_column='VolIndex', blank=True) # Field name made lowercase.
-    copy = models.IntegerField(null=True, db_column='Copy', blank=True) # Field name made lowercase.
-    stripe = models.IntegerField(null=True, db_column='Stripe', blank=True) # Field name made lowercase.
+    jobmediaid = models.IntegerField(primary_key=True)
+    job = models.ForeignKey(Job, db_column='jobid')
+    media = models.ForeignKey('Media', db_column='mediaid')
+    firstindex = models.IntegerField(null=True, blank=True)
+    lastindex = models.IntegerField(null=True, blank=True)
+    startfile = models.IntegerField(null=True, blank=True)
+    endfile = models.IntegerField(null=True, blank=True)
+    startblock = models.IntegerField(null=True, blank=True)
+    endblock = models.IntegerField(null=True, blank=True)
+    volindex = models.IntegerField(null=True, blank=True)
+    copy = models.IntegerField(null=True, blank=True)
+    stripe = models.IntegerField(null=True, blank=True)
+
     class Meta:
-        db_table = u'JobMedia'
+        db_table = u'jobmedia'
 
 class Media(models.Model):
-    mediaid = models.IntegerField(primary_key=True, db_column='MediaId') # Field name made lowercase.
-    volumename = models.TextField(unique=True, db_column='VolumeName') # Field name made lowercase.
-    slot = models.IntegerField(null=True, db_column='Slot', blank=True) # Field name made lowercase.
-    pool = models.ForeignKey("Pool", null=True, db_column='PoolId', blank=True) # Field name made lowercase.
-    mediatype = models.TextField(db_column='MediaType') # Field name made lowercase.
-    mediatypeid = models.IntegerField(null=True, db_column='MediaTypeId', blank=True) # Field name made lowercase.
-    labeltype = models.IntegerField(null=True, db_column='LabelType', blank=True) # Field name made lowercase.
-    firstwritten = models.DateTimeField(null=True, db_column='FirstWritten', blank=True) # Field name made lowercase.
-    lastwritten = models.DateTimeField(null=True, db_column='LastWritten', blank=True) # Field name made lowercase.
-    labeldate = models.DateTimeField(null=True, db_column='LabelDate', blank=True) # Field name made lowercase.
-    voljobs = models.IntegerField(null=True, db_column='VolJobs', blank=True) # Field name made lowercase.
-    volfiles = models.IntegerField(null=True, db_column='VolFiles', blank=True) # Field name made lowercase.
-    volblocks = models.IntegerField(null=True, db_column='VolBlocks', blank=True) # Field name made lowercase.
-    volmounts = models.IntegerField(null=True, db_column='VolMounts', blank=True) # Field name made lowercase.
-    volbytes = models.BigIntegerField(null=True, db_column='VolBytes', blank=True) # Field name made lowercase.
-    volparts = models.IntegerField(null=True, db_column='VolParts', blank=True) # Field name made lowercase.
-    volerrors = models.IntegerField(null=True, db_column='VolErrors', blank=True) # Field name made lowercase.
-    volwrites = models.IntegerField(null=True, db_column='VolWrites', blank=True) # Field name made lowercase.
-    volcapacitybytes = models.BigIntegerField(null=True, db_column='VolCapacityBytes', blank=True) # Field name made lowercase.
-    volstatus = models.CharField(max_length=27, db_column='VolStatus') # Field name made lowercase.
-    enabled = models.IntegerField(null=True, db_column='Enabled', blank=True) # Field name made lowercase.
-    recycle = models.IntegerField(null=True, db_column='Recycle', blank=True) # Field name made lowercase.
-    actiononpurge = models.IntegerField(null=True, db_column='ActionOnPurge', blank=True) # Field name made lowercase.
-    volretention = models.BigIntegerField(null=True, db_column='VolRetention', blank=True) # Field name made lowercase.
-    voluseduration = models.BigIntegerField(null=True, db_column='VolUseDuration', blank=True) # Field name made lowercase.
-    maxvoljobs = models.IntegerField(null=True, db_column='MaxVolJobs', blank=True) # Field name made lowercase.
-    maxvolfiles = models.IntegerField(null=True, db_column='MaxVolFiles', blank=True) # Field name made lowercase.
-    maxvolbytes = models.BigIntegerField(null=True, db_column='MaxVolBytes', blank=True) # Field name made lowercase.
-    inchanger = models.IntegerField(null=True, db_column='InChanger', blank=True) # Field name made lowercase.
-    storageid = models.IntegerField(null=True, db_column='StorageId', blank=True) # Field name made lowercase.
-    deviceid = models.IntegerField(null=True, db_column='DeviceId', blank=True) # Field name made lowercase.
-    mediaaddressing = models.IntegerField(null=True, db_column='MediaAddressing', blank=True) # Field name made lowercase.
-    volreadtime = models.BigIntegerField(null=True, db_column='VolReadTime', blank=True) # Field name made lowercase.
-    volwritetime = models.BigIntegerField(null=True, db_column='VolWriteTime', blank=True) # Field name made lowercase.
-    endfile = models.IntegerField(null=True, db_column='EndFile', blank=True) # Field name made lowercase.
-    endblock = models.IntegerField(null=True, db_column='EndBlock', blank=True) # Field name made lowercase.
-    locationid = models.IntegerField(null=True, db_column='LocationId', blank=True) # Field name made lowercase.
-    recyclecount = models.IntegerField(null=True, db_column='RecycleCount', blank=True) # Field name made lowercase.
-    initialwrite = models.DateTimeField(null=True, db_column='InitialWrite', blank=True) # Field name made lowercase.
-    scratchpoolid = models.IntegerField(null=True, db_column='ScratchPoolId', blank=True) # Field name made lowercase.
-    recyclepoolid = models.IntegerField(null=True, db_column='RecyclePoolId', blank=True) # Field name made lowercase.
-    comment = models.TextField(db_column='Comment', blank=True) # Field name made lowercase.
+    mediaid = models.IntegerField(primary_key=True)
+    volumename = models.TextField(unique=True)
+    slot = models.IntegerField(null=True, blank=True)
+    pool = models.ForeignKey("Pool", null=True, blank=True, db_column='poolid')
+    mediatype = models.TextField()
+    mediatypeid = models.IntegerField(null=True, blank=True)
+    labeltype = models.IntegerField(null=True, blank=True)
+    firstwritten = models.DateTimeField(null=True, blank=True)
+    lastwritten = models.DateTimeField(null=True, blank=True)
+    labeldate = models.DateTimeField(null=True, blank=True)
+    voljobs = models.IntegerField(null=True, blank=True)
+    volfiles = models.IntegerField(null=True, blank=True)
+    volblocks = models.IntegerField(null=True, blank=True)
+    volmounts = models.IntegerField(null=True, blank=True)
+    volbytes = models.BigIntegerField(null=True, blank=True)
+    volparts = models.IntegerField(null=True, blank=True)
+    volerrors = models.IntegerField(null=True, blank=True)
+    volwrites = models.IntegerField(null=True, blank=True)
+    volcapacitybytes = models.BigIntegerField(null=True, blank=True)
+    volstatus = models.CharField(max_length=27)
+    enabled = models.IntegerField(null=True, blank=True)
+    recycle = models.IntegerField(null=True, blank=True)
+    actiononpurge = models.IntegerField(null=True, blank=True)
+    volretention = models.BigIntegerField(null=True, blank=True)
+    voluseduration = models.BigIntegerField(null=True, blank=True)
+    maxvoljobs = models.IntegerField(null=True, blank=True)
+    maxvolfiles = models.IntegerField(null=True, blank=True)
+    maxvolbytes = models.BigIntegerField(null=True, blank=True)
+    inchanger = models.IntegerField(null=True, blank=True)
+    storageid = models.IntegerField(null=True, blank=True)
+    deviceid = models.IntegerField(null=True, blank=True)
+    mediaaddressing = models.IntegerField(null=True, blank=True)
+    volreadtime = models.BigIntegerField(null=True, blank=True)
+    volwritetime = models.BigIntegerField(null=True, blank=True)
+    endfile = models.IntegerField(null=True, blank=True)
+    endblock = models.IntegerField(null=True, blank=True)
+    locationid = models.IntegerField(null=True, blank=True)
+    recyclecount = models.IntegerField(null=True, blank=True)
+    initialwrite = models.DateTimeField(null=True, blank=True)
+    scratchpoolid = models.IntegerField(null=True, blank=True)
+    recyclepoolid = models.IntegerField(null=True, blank=True)
+    comment = models.TextField(blank=True)
+    
     class Meta:
-        db_table = u'Media'
+        db_table = u'media'
 
 
 class Path(models.Model):
-    pathid = models.IntegerField(primary_key=True, db_column='PathId') # Field name made lowercase.
-    path = models.TextField(db_column='Path') # Field name made lowercase.
+    pathid = models.IntegerField(primary_key=True)
+    path = models.TextField()
+
     class Meta:
-        db_table = u'Path'
+        db_table = u'path'
 
 class Pool(models.Model):
-    poolid = models.IntegerField(primary_key=True, db_column='PoolId') # Field name made lowercase.
-    name = models.TextField(unique=True, db_column='Name') # Field name made lowercase.
-    numvols = models.IntegerField(null=True, db_column='NumVols', blank=True) # Field name made lowercase.
-    maxvols = models.IntegerField(null=True, db_column='MaxVols', blank=True) # Field name made lowercase.
-    useonce = models.IntegerField(null=True, db_column='UseOnce', blank=True) # Field name made lowercase.
-    usecatalog = models.IntegerField(null=True, db_column='UseCatalog', blank=True) # Field name made lowercase.
-    acceptanyvolume = models.IntegerField(null=True, db_column='AcceptAnyVolume', blank=True) # Field name made lowercase.
-    volretention = models.BigIntegerField(null=True, db_column='VolRetention', blank=True) # Field name made lowercase.
-    voluseduration = models.BigIntegerField(null=True, db_column='VolUseDuration', blank=True) # Field name made lowercase.
-    maxvoljobs = models.IntegerField(null=True, db_column='MaxVolJobs', blank=True) # Field name made lowercase.
-    maxvolfiles = models.IntegerField(null=True, db_column='MaxVolFiles', blank=True) # Field name made lowercase.
-    maxvolbytes = models.BigIntegerField(null=True, db_column='MaxVolBytes', blank=True) # Field name made lowercase.
-    autoprune = models.IntegerField(null=True, db_column='AutoPrune', blank=True) # Field name made lowercase.
-    recycle = models.IntegerField(null=True, db_column='Recycle', blank=True) # Field name made lowercase.
-    actiononpurge = models.IntegerField(null=True, db_column='ActionOnPurge', blank=True) # Field name made lowercase.
-    pooltype = models.CharField(max_length=27, db_column='PoolType') # Field name made lowercase.
-    labeltype = models.IntegerField(null=True, db_column='LabelType', blank=True) # Field name made lowercase.
-    labelformat = models.TextField(db_column='LabelFormat', blank=True) # Field name made lowercase.
-    enabled = models.IntegerField(null=True, db_column='Enabled', blank=True) # Field name made lowercase.
-    scratchpoolid = models.IntegerField(null=True, db_column='ScratchPoolId', blank=True) # Field name made lowercase.
-    recyclepoolid = models.IntegerField(null=True, db_column='RecyclePoolId', blank=True) # Field name made lowercase.
-    nextpoolid = models.IntegerField(null=True, db_column='NextPoolId', blank=True) # Field name made lowercase.
-    migrationhighbytes = models.BigIntegerField(null=True, db_column='MigrationHighBytes', blank=True) # Field name made lowercase.
-    migrationlowbytes = models.BigIntegerField(null=True, db_column='MigrationLowBytes', blank=True) # Field name made lowercase.
-    migrationtime = models.BigIntegerField(null=True, db_column='MigrationTime', blank=True) # Field name made lowercase.
+    poolid = models.IntegerField(primary_key=True)
+    name = models.TextField(unique=True)
+    numvols = models.IntegerField(null=True, blank=True)
+    maxvols = models.IntegerField(null=True, blank=True)
+    useonce = models.IntegerField(null=True, blank=True)
+    usecatalog = models.IntegerField(null=True, blank=True)
+    acceptanyvolume = models.IntegerField(null=True, blank=True)
+    volretention = models.BigIntegerField(null=True, blank=True)
+    voluseduration = models.BigIntegerField(null=True, blank=True)
+    maxvoljobs = models.IntegerField(null=True, blank=True)
+    maxvolfiles = models.IntegerField(null=True, blank=True)
+    maxvolbytes = models.BigIntegerField(null=True, blank=True)
+    autoprune = models.IntegerField(null=True, blank=True)
+    recycle = models.IntegerField(null=True, blank=True)
+    actiononpurge = models.IntegerField(null=True, blank=True)
+    pooltype = models.CharField(max_length=27)
+    labeltype = models.IntegerField(null=True, blank=True)
+    labelformat = models.TextField(blank=True)
+    enabled = models.IntegerField(null=True, blank=True)
+    scratchpoolid = models.IntegerField(null=True, blank=True)
+    recyclepoolid = models.IntegerField(null=True, blank=True)
+    nextpoolid = models.IntegerField(null=True, blank=True)
+    migrationhighbytes = models.BigIntegerField(null=True, blank=True)
+    migrationlowbytes = models.BigIntegerField(null=True, blank=True)
+    migrationtime = models.BigIntegerField(null=True, blank=True)
+
     class Meta:
-        db_table = u'Pool'
+        db_table = u'pool'
 
-
-
-
-class Temp(models.Model):
-    jobid = models.ForeignKey(Job, db_column='JobId', primary_key=True) # Field name made lowercase.
-    jobtdate = models.BigIntegerField(null=True, db_column='JobTDate', blank=True) # Field name made lowercase.
-    client = models.ForeignKey(Client, db_column='ClientId') # Field name made lowercase.
-    level = models.CharField(max_length=3, db_column='Level') # Field name made lowercase.
-    jobfiles = models.IntegerField(null=True, db_column='JobFiles', blank=True) # Field name made lowercase.
-    jobbytes = models.BigIntegerField(null=True, db_column='JobBytes', blank=True) # Field name made lowercase.
-    starttime = models.DateTimeField(null=True, db_column='StartTime', blank=True) # Field name made lowercase.
-    volumename = models.CharField(max_length=384, db_column='VolumeName') # Field name made lowercase.
-    startfile = models.IntegerField(null=True, db_column='StartFile', blank=True) # Field name made lowercase.
-    volsessionid = models.IntegerField(null=True, db_column='VolSessionId', blank=True) # Field name made lowercase.
-    volsessiontime = models.IntegerField(null=True, db_column='VolSessionTime', blank=True) # Field name made lowercase.
-    class Meta:
-        db_table = u'temp'
-
-class Temp1(models.Model):
-    job = models.ForeignKey(Job, db_column='JobId', primary_key=True) # Field name made lowercase.
-    jobtdate = models.BigIntegerField(null=True, db_column='JobTDate', blank=True) # Field name made lowercase.
-    class Meta:
-        db_table = u'temp1'
 

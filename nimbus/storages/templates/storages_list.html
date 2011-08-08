@@ -1,22 +1,8 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('.toggle').click(function(){
-            var target = $(this).attr('ref');
-            $(this).parent().parent().find('.' + target).slideToggle();
-        });
-    });
-</script>
-
-<style type="text/css" media="screen">
-    .storage.desativado {
-        background: #FFE5EB !important;
-        border: 2px solid #e7696d;
-        -moz-border-radius: 5px; 
-    }
-</style>
+<script type="text/javascript" src="/media/js/storages.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/css/storages.css" />
 {% endblock %}
 
 {% block page %}
@@ -27,95 +13,33 @@
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
 		<h2>{{title}}</h2>
-	</div>		<!-- .block_head ends -->
+	</div>
 
     <div class="block_content">
-        <p><a href="/storages/add">Adicionar armazenamento</a></p>
+        <p><a href="/storages/add" class="css3button positive">Adicionar armazenamento</a></p>
         <div class="storages">
         {% for storage in storages %}
-            <div class="storage {% if not storage.active %}desativado{% endif %}" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
+            <div class="storage {% if not storage.active %}desativado{% endif %}">
                 {% if not storage.active %}<p><strong>Este armazenamento está desativado.</strong></p>{% endif %}
-                <div class="left" style="float: left; width: 250px">
+                <div class="left">
                     <div class="title">
-                        <img src="/media/icons/storage.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0"><a href="/storages/{{ storage.id }}/view">{{storage.name}}</a></h3>
+                        <img src="/media/icons/storage.png"/>
+                        <h3 class="name"><a href="/storages/{{ storage.id }}/view">{{storage.name}}</a></h3>
                         <small class="ip">{{storage.address}}</small>
                     </div>
-                    <p style="font-size: 10px; margin-top: 10px; line-height: 1.4em">{{storage.description}}</p>
-                    <p style="font-size: 10px; margin: 0; padding: 0; line-height: 1.4em"><a href="/storages/{{storage.id}}/edit/">Editar</a></p>
+                    <p class="description">{{storage.description}}</p>
+                    <p class="options"><a href="/storages/{{storage.id}}/edit/" class="css3button positive">Editar</a></p>
                     
                 </div>
-                <div class="right" style="float: right; width: 600px">
-                    <div style="float: right">
+                <div class="right">
+                    <div class="floatright">
                         {% if not storage.active %}
-                        <form action="/storages/{{storage.id}}/activate/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        <form action="/storages/{{storage.id}}/activate/" method="post" class="floatright">
+                            <button type="submit" class="css3button positive" value="Ativar">Ativar</button>
                         </form>
                         {% endif %}
                     </div>
-                    {% if not storage.profile_set.count %}
-                        <div class="message warning">
-                            <p>Não existem procedimentos relacionados a este armazenamento.</p>
-                        </div>
-                    {% else %}
-                        <h4>COMPUTADORES RELACIONADOS</h4>
-                        
-                        <div style="background: #FFF; border: 1px solid #DDD; -moz-border-radius: 5px; padding: 10px">
-                        {% for computer in storage.get_computers %}
-                            <div class="computers">
-                                <div class="title">
-                                    <a href="#" class="toggle" ref="computer_detail">
-                                        <img src="/media/icons/computer.png" style="float: left; padding-right: 10px" />
-                                        <h4 style="display: inline">{{computer.name}}</h4>
-                                    </a>
-                                </div>
-                                <div class="computer_detail" style="display: none">
-                                    {% for proc in computer.procedure_set.all %}
-                                        <h4 class="name">{{proc.name}} <small><a href="{% url nimbus.procedures.views.edit object_id=proc.id %}">(editar)</a></small></h4>
-                                        Offsite ativado: {% if proc.offsite_on %}Sim{% else %}Não{% endif %}<br/>
-                                        Perfil de configuração: <a href="{% url nimbus.procedures.views.profile_edit object_id=proc.profile.id %}">{{proc.profile.name}}</a><br/>
-                                        Agendamento: <a href="{% url nimbus.schedules.views.edit object_id=proc.profile.schedule.id %}">{{proc.profile.schedule}}</a><br/>
-                                        Conjunto de arquivos: <a href="{% url nimbus.filesets.views.edit object_id=proc.profile.fileset.id %}">{{proc.profile.fileset}}</a>
-                                        <p></p>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                        {% if 0 %}
-                        {% for profile in storage.profile_set.all %}
-                            {% for proc in profile.procedure_set.all %}
-                            <div class="computers">
-                                <div class="title">
-                                    <a href="#" class="toggle" ref="computer_detail">
-                                        <img src="/media/icons/computer.png" style="float: left; padding-right: 10px" />
-                                        <h4 style="display: inline">{{proc.computer.name}} - </h4>
-                                        <h4 style="display: inline">{{proc.name}}</h4>
-                                    </a>
-                                </div>
-                                <div class="computer_detail" style="display: none">
-                                    <h4 class="name">{{proc.name}}</h4>
-                                    <small><a href="/computers/{{proc.computer.id}}/view">Visualizar computador</a></small><br/>
-                                    Offsite: {% if proc.offsite_on %}Sim{% else %}Não{% endif %}<br/>
-                                    Pool: <span title="{{proc.pool.pool_size}} MB - {{proc.pool.retention_time}} dias">{{proc.pool.name}}</span><br/>
-                                    Profile: {{proc.profile.name}}<br/>
-                                    Storage: <span title="Endereço: {{proc.profile.storage.address}} - {{proc.profile.storage.description|slice:":25"}}...">{{proc.profile.storage.name}}</span><br/>
-                                    Schedule: {{proc.profile.schedule}}<br/>
-                                    Fileset: {{proc.profile.fileset}}
-                                    {% if proc.profile.fileset.files.count %}
-                                    <ul>
-                                        {% for file in proc.profile.fileset.files.all %}
-                                        <li>{{file.path}}</li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        {% endfor %}
-                        {% endif %}
-                        </div>
-                    {% endif %}
-                </div>
+               </div>
                 <div class="clear"></div>
             </div>
         {% empty %}

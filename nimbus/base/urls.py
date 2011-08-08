@@ -6,6 +6,6 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('nimbus.base.views',
     (r'^$', 'home' ),
     (r'^home/$', 'home' ),
-    (r'^historico/$', 'historico' ),
+    (r'^ie_error/$', 'ie_error' ),
 )
 

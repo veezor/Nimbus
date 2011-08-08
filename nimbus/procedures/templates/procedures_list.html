@@ -1,81 +1,89 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('.toggle').click(function(){
-            var target = $(this).attr('ref');
-            $(this).parent().parent().find('.' + target).slideToggle();
-            return false;
-        });
-    });
-</script>
+<script type="text/javascript" src="/media/js/procedures.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/css/procedures.css" />
 
-<style type="text/css" media="screen">
-    .procedure.desativado {
-        background: #FFE5EB !important;
-        border: 2px solid #e7696d;
-        -moz-border-radius: 5px; 
-    }
-</style>
 {% endblock %}
 
 {% block page %}
 
 <div class="block">
-
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
 		<h2>{{title}}</h2>
-	</div>		<!-- .block_head ends -->
+	</div>
 
     <div class="block_content">
         <p></p>
         <div class="procedures">
         {% for procedure in procedures %}
-            <div class="procedure" style="padding: 20px; -moz-border-radius: 5px; background: #EEE; margin-bottom: 20px">
-                <div class="left" style="float: left; width: 250px">
+            <div class="procedure">
+                <div class="left">
                     <div class="title">
-                        <img src="/media/icons/engine.png" style="float: left; height: 32px; padding-right: 10px" />
-                        <h3 class="name" style="margin: 0 0 -5px 0; padding: 0">{{procedure.name}}</h3>
+                        <img src="/media/icons/engine.png" alt=""/>
+                        <h3 class="name">{{procedure.name}}</h3>
                         <small>Computador: {{procedure.computer.name}} ({{procedure.computer.operation_system|title}})</small>
                     </div>
-                    <p style="font-size: 10px; margin: 0px; padding: 0; line-height: 1.4em"><a href="/procedures/{{procedure.id}}/edit/">Editar</a> - <a href="/procedures/{{procedure.id}}/delete/">Remover</a></p>
+                    <p class="options">
+                        <a href="/procedures/{{procedure.id}}/edit/" class="css3button positive pill">Editar</a>
+                        <a href="/procedures/{{procedure.id}}/delete/" class="css3button negative pill">Remover</a>
+                    </p>
                 </div>
-                <div class="right" style="float: right; width: 600px">
-                    <div style="float: right">
-                        <form action="/procedures/{{procedure.id}}/execute/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Executar agora" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                <div class="right">
+                    <div class="floatright align-left">
+                        <form action="/procedures/{{procedure.id}}/execute/" method="post" class="floatright">
+                            <button type="submit" class="css3button positive" value="Executar agora">Executar Agora</button>
                         </form>
                         {%  if offsite_on %}
                             {% if not procedure.offsite_on %}
-                            <form action="/procedures/{{procedure.id}}/activate_offsite/" method="post" style="float: right">
-                                <input type="submit" class="submit tiny" value="Ativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                            <form action="/procedures/{{procedure.id}}/activate_offsite/" method="post" class="floatright">
+                                <button type="submit" class="css3button positive" value="Ativar Offsite">Ativar Offsite</button>
                             </form>
                             {% else %}
-                            <form action="/procedures/{{procedure.id}}/deactivate_offsite/" method="post" style="float: right">
-                                <input type="submit" class="submit tiny" value="Desativar Offsite" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                            <form action="/procedures/{{procedure.id}}/deactivate_offsite/" method="post" class="floatright">
+                                <button type="submit" class="css3button negative" value="Desativar Offsite">desativar Offsite</button>
                             </form>
                             {% endif %}
                         {% endif %}
                         {% if not procedure.active %}
-                        <form action="/procedures/{{procedure.id}}/activate/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Ativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        <form action="/procedures/{{procedure.id}}/activate/" method="post" class="floatright">
+                            <button type="submit" class="css3button positive" value="Ativar">Ativar</button>
                         </form>
                         {% else %}
-                        <form action="/procedures/{{procedure.id}}/deactivate/" method="post" style="float: right">
-                            <input type="submit" class="submit tiny" value="Desativar" style="float: right; font-size: 11px; margin-right: 0; margin-left: 5px;" />
+                        <form action="/procedures/{{procedure.id}}/deactivate/" method="post" class="floatright">
+                            <button type="submit" class="css3button negative" value="Desativar">Desativar</button>
                         </form>
                         {% endif %}
                     </div>
                     <h4>CONFIGURAÇÕES DO PROCEDIMENTO</h4>
-                    <div class="" style="background: #FFF; -moz-border-radius: 5px; padding: 10px; border: 1px solid #CCC">
-                        <p>
+                    <div class="procedure-config">
+                        <div style="width: 69%; float: left;">
                             Offsite ativado: <strong>{{procedure.offsite_on|yesno:"Sim,Não"}}</strong><br/>
-                            Perfil de configuração: <strong>{{procedure.profile.name}}</strong><br/>
-                            Tempo de retenção dos arquivos: <strong>{{procedure.pool.retention_time}}</strong><br/>
-                        </p>
+                            Conjunto de arquivos: <strong>{{procedure.fileset.name}}</strong>
+							{% if procedure.fileset.is_model %}
+								[Perfil]
+							{% endif %}
+							<br/>
+                            Agendamento: <strong>{{procedure.schedule.name}}</strong>
+							{% if procedure.schedule.is_model %}
+								[Perfil]
+							{% endif %}
+							<br/>
+                            Tempo de retenção dos arquivos: <strong>{{procedure.pool_retention_time}}</strong>
+                        </div>
+                        <div style="width: 29%; float: right;">
+                            &nbsp;
+                            <!-- Use this div to display any content you need to. The following images are just for testing.
+<img src="/media/icons/exchange32.png" alt="Running" />
+                            <img src="/media/icons/check32.png" alt="Check" />
+                            <img src="/media/icons/stop32.png" alt="Stop" />
+                            <img src="/media/icons/sleep32.png" alt="Sleep" />
+                            <img src="/media/icons/warning32.png" alt="Warn" />
+-->
+                        </div>
+                        <div class="clear"></div>
                     </div>
                 </div>
                 <div class="clear"></div>
@@ -84,22 +92,37 @@
             <p>Não existem procedimentos adicionados.</p>
         {% endfor %}
         </div>
-        
-        <div class="block-executados">
-            {% with procedimentos_em_execucao_executados as item %}
-    		    <div class="stat_block">
-                {% include "stat_block.html" %}
-                </div>
-    		{% endwith %}
-    	    <div class="clear"></div>
-    	    <p></p>
-    	</div>
-    
+
     </div>
     
     <div class="bendl"></div>
 	<div class="bendr"></div>
 
 </div>
+
+        <div class="block">
+
+    		<div class="block_head">
+    			<div class="bheadl"></div>
+    			<div class="bheadr"></div>
+
+    			<h2 class="floatleft">Histórico de Procedimentos</h2>&nbsp;&nbsp;
+    			<a href="/procedures/history" class="css3button positive">Listar todos os procedimentos</a>
+
+    		</div>		<!-- .block_head ends -->
+
+            <div class="block_content">
+		    {% with backups_com_falhas as item %}
+    		    <div class="stat_block">
+                {% include "stat_block.html" %}
+                </div>
+    		{% endwith %}
+    		</div>
+
+    		<div class="bendl"></div>
+    		<div class="bendr"></div>
+    	</div>		<!-- .block ends -->
+    
+
 
 {% endblock %}

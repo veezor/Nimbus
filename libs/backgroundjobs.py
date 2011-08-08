@@ -110,7 +110,7 @@ class WorkerThread(Thread):
             self._heavyweight_jobs += 1
 
         self.logger.info("Add to %s WorkerThrad" % \
-                (job))
+                (job.description))
 
     @synchronized
     def get_num_heavyweight_jobs(self):

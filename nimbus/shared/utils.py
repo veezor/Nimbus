@@ -2,43 +2,61 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import time
 import string
 from random import choice
 from itertools import izip
 
 from django.conf import settings
+from django.contrib import messages
 
+class Referer(object):
+    def __init__(self, request):
+        self.raw = request.META.get('HTTP_REFERER')
+        if self.raw:
+            self.local = self.local_address()
+        else:
+            self.local = ''
+    
+    def local_address(self):
+        if self.raw.startswith('http://'):
+            return '/' + '/'.join(self.raw.replace('http://','').split('/')[1:])
+    
 
-def pathdepth(path):
-    depth = path.count("/")
-
-    if path.endswith("/"):
-        depth -=  1
-
-    return depth
-
-
-
-def filesizeformat(bytes):
+def filesizeformat(bytes, unit=""):
+    
     bytes = float(bytes)
-
     KB = 1024
     MB = 1024*KB
     GB = 1024*MB
     TB = 1024*GB
-
-    if bytes < KB:
-        return "%.2f bytes" % bytes
-
-    elif bytes < MB:
-        return "%.2f Kb" % (bytes/KB)
-    elif bytes < GB:
-        return "%.2f Mb" % (bytes/MB)
-    elif bytes < TB:
-        return "%.2f Gb" % (bytes/GB)
+    if unit:
+        if unit == "B":
+            return "%.2f bytes" % bytes
+        elif unit == "KB":
+            return "%.2f Kb" % (bytes/KB)
+        elif unit == "MB":
+            return "%.2f Mb" % (bytes/MB)
+        elif unit == "GB":
+            return "%.2f Gb" % (bytes/GB)
+        elif unit == "TB":
+            return "%.2f Tb" % (bytes/TB)
+        else:
+            return bytes
     else:
-        return "%.2f Tb" % (bytes/TB)
+        if bytes < KB:
+            return "%.2f bytes" % bytes
+        elif bytes < MB:
+            return "%.2f Kb" % (bytes/KB)
+        elif bytes < GB:
+            return "%.2f Mb" % (bytes/MB)
+        elif bytes < TB:
+            return "%.2f Gb" % (bytes/GB)
+        else:
+            return "%.2f Tb" % (bytes/TB)
+
+
 
 def int_or_string(value):
     try:
@@ -46,6 +64,7 @@ def int_or_string(value):
     except ValueError, error:
         return value
 
+    
 def dict_from_querydict(querydict, lists=()):
     d = {}
     for key, value in querydict.items():
@@ -62,28 +81,9 @@ def dict_from_querydict(querydict, lists=()):
     return d
 
 
-def new_procedure_schedule(proc_id, request, type='Weekly', wizard=False):
-    script_name = request.META['SCRIPT_NAME']
-    location = "%s/procedure/%s/schedule/new" % (script_name, proc_id)
-    location += "?type=%s" % type
-    if wizard:
-        location += "&wizard=%s" % wizard
-    return  location
-
-
-def schedule_inverse(type):
-    if type == 'Weekly':
-        return 'Monthly'
-    elif type == 'Monthly':
-        return 'Weekly'
-
-
-
 def ordered_dict_value_to_formatted_float(dictionary):
     return [ ("%.2f" % v) for k,v in sorted( dictionary.items() ) ]
 
-def ordered_dict_value_to_formatted_int(dictionary):
-    return [ ("%d" % v) for k,v in sorted( dictionary.items() ) ]
 
 def bytes_to_mb(size):
     return size/1024.0/1024
@@ -93,47 +93,12 @@ def random_password(size=20):
     return ''.join([choice(string.letters + string.digits) for i in range(size)])
     
     
-def dictfetch(cursor):
-    """Returns a list with dicts of an unfetched cursor"""
-    col_names = [desc[0] for desc in cursor.description]
-    result = []
-    while True:
-        row = cursor.fetchone()
-        if row is None:
-            break
-        row_dict = dict(izip(col_names, row))
-        result.append(row_dict)
-    return result
 
-
-###
-###   Time Handling Specific Definitions
-###
-
-
-def current_time(uct=False):
-    if uct:
-        time_function = time.gmtime
-    else:
-        time_function = time.localtime
-    return time.strftime("%d-%m-%Y %H:%M:%S", time_function())
 
 
 ###
 ###   File Handling Specific Definitions
 ###
-
-
-def create_or_leave(dirpath):
-    "create dir if dont exists"
-    try:
-        os.makedirs(dirpath)
-    except OSError:
-        if os.path.isdir(dirpath):
-            pass
-        else:
-            #TODO: adicionar entrada no log
-            pass
 
 
 def remove_or_leave(filepath):
@@ -142,15 +107,6 @@ def remove_or_leave(filepath):
         os.remove(filepath)
     except os.error:
         pass
-
-
-def prepare_to_write(filename,rel_dir,mod="w",remove_old=False):
-    "make sure base_dir exists and open filename"
-    base_dir,filepath = mount_path(filename,rel_dir)
-    create_or_leave(base_dir)
-    if remove_old:
-        remove_or_leave(filepath)
-    return open(filepath, mod)
 
 
 def mount_path(filename,rel_dir):
@@ -179,60 +135,6 @@ def isdir(path):
         return False
 
 
-#
-# Atenção:
-#
-# Não mude nada aqui a menos
-# que tenha absoluta certeza
-# do que está fazendo.
-#
-def parse_filetree(files):
-    """
-    Parse a list of files creating a new hierarchical data structure.
-    
-    Dict are for directories and lists are for files.
-    # {'var': [{'tmp': ['a']}]}
-    
-    >>> files = ['/var/tmp/a', '/var/tmp/b', '/etc/httpd/httpd.conf', \
-        '/etc/httpd/sites-available/a', '/etc/httpd/sites-available/b', \
-        '/var/tmp/lixo', '/usr/contrib/']
-    >>> tree = parse_filetree(files)
-    >>> assert tree == {'var': [{'tmp': ['a', 'b', 'lixo']}], 'etc': [{'httpd': ['httpd.conf', {'sites-available': ['a', 'b']}]}], 'urs': [{'contrib': []}]}
-    """
-    file_tree = {}
-            
-    for f in files:
-        f, fid = f.rsplit(':', 1)
-        file_path = [x for x in f.split('/') if x]
-        if isdir(f):
-            file_name = None
-        else:
-            file_name = '%s:%s' % (file_path.pop(), fid)
-        file_path = ['%s/' % x for x in file_path]
-                
-        local_tree = file_tree
-        for n, fp in enumerate(file_path):
-            if fp in local_tree:
-                local_tree = local_tree[fp]
-            else:
-                if isinstance(local_tree, list):
-                    for i in local_tree:
-                        if isinstance(i, dict) and i.has_key(fp):
-                            local_tree = i[fp]
-                            break
-                    else:
-                        local_tree.append({fp: []})
-                        local_tree = local_tree[-1][fp]
-                    if n == len(file_path) - 1 and file_name:
-                        local_tree.append(file_name)
-                else:
-                    local_tree[fp] = []
-                    local_tree = local_tree[fp]
-                    if n == len(file_path) - 1 and file_name:
-                        local_tree.append(file_name)
-    return file_tree
-
-
 def get_filesize_from_lstat(lstat):
     b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     val = 0
@@ -246,3 +148,15 @@ def get_filesize_from_lstat(lstat):
 def project_port(request):
     return (':%s' % request.META['SERVER_PORT']) if request.META['SERVER_PORT'] else ''
 
+
+def block_ie_browser(request):
+    # detects browser
+    browser = request.META['HTTP_USER_AGENT']
+    init_message = ""
+    if re.search("MSIE", browser):
+        #TODO: Insert facebox message on templates
+        init_message = "$(document).ready(function(){\
+                        $.facebox.settings.opacity = 0.5;\
+                        jQuery.facebox({ ajax : ie_error});\
+                        });"
+        return messages.warning(request, "Navegador incompativel com o Nimbus. Sistema testado apenas para Google Chrome e Mozilla Firefox.")

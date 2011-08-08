@@ -3,6 +3,7 @@
 
 import os
 import sys
+import re
 import logging
 import traceback
 import logging.config

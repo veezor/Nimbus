@@ -2,14 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 import logging
+import os
+from os import path
 from os.path import join, exists
 
+from django.utils.translation import ugettext as _
 from django.db import models, connections
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
-
-from nimbus.shared import utils, signals, fields
-import nimbus.shared.sqlqueries as sql
 
 from pybacula import BConsoleInitError
 
@@ -18,75 +18,85 @@ from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.filesets.models import FileSet
 from nimbus.schedules.models import Schedule
-from nimbus.bacula.models import Media
-from nimbus.pools.models import Pool
+from nimbus.bacula.models import Media, Job, File
+# from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
-from nimbus.libs.bacula import Bacula
+from nimbus.libs.bacula import Bacula, ReloadManager
 from nimbus.offsite.models import Offsite
+from nimbus.offsite.models import is_active
 from nimbus.libs import offsite
-
-
-
-from nimbus.bacula.models import Job, File
-
-
-class Profile(models.Model):
-    name = models.CharField(max_length=255 ,unique=True,
-                            blank=True, null=False)
-    storage = models.ForeignKey(Storage, null=False, blank=False)
-    fileset = models.ForeignKey(FileSet, null=False, blank=False)
-    schedule = models.ForeignKey(Schedule, null=False, blank=False)
-
-    def __unicode__(self):
-        return self.name
-
-
+from nimbus.shared import utils, enums, signals, fields
 
 
 class Procedure(BaseModel):
+    pool_name = models.CharField(max_length=255)
+    pool_size = models.FloatField(blank=False, null=False, default=5242880,
+                                  editable=False)
+    pool_retention_time = models.IntegerField(verbose_name=_("Retention Time (days)"),
+                                              blank=False, null=False,
+                                              default=30)
+    computer = models.ForeignKey(Computer, verbose_name=_("Computador"),
+                                 blank=False, null=False)
+    offsite_on = models.BooleanField(default=is_active, blank=False, null=False)
+    active = models.BooleanField(default=True, blank=True, null=False)
+    schedule = models.ForeignKey(Schedule, verbose_name=_("Schedule"),
+                                 related_name='procedures')
+    fileset = models.ForeignKey(FileSet, verbose_name=_("Fileset"),
+                                related_name='procedures')
+    storage = models.ForeignKey(Storage, verbose_name=_("Dispositivo de Armazenamento"), null=False,
+                                blank=False)
+    name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
+                            null=False)
 
-    name = models.CharField(max_length=255, blank=False, null=False,
-                            validators=[fields.check_model_name])
-    computer = models.ForeignKey(Computer, blank=False, null=False)
-    profile = models.ForeignKey(Profile, blank=False, null=False)
-    pool = models.ForeignKey(Pool, blank=False, null=False, editable=False)
-    offsite_on = models.BooleanField(default=False, blank=False, null=False)
-    active = models.BooleanField(default=True, blank=False, null=False, editable=False)
+
+    class Meta:
+        verbose_name = u"Procedimento"
+
 
     def fileset_bacula_name(self):
-        return self.profile.fileset.bacula_name
+        return self.fileset.bacula_name
+        # return self.profile.fileset.bacula_name
     
     def restore_bacula_name(self):
         return "%s_restorejob" % self.uuid.uuid_hex
         
     def schedule_bacula_name(self):
-        return self.profile.schedule.bacula_name
+        return self.schedule.bacula_name
+        # return self.profile.schedule.bacula_name
 
     def storage_bacula_name(self):
-        return self.profile.storage.bacula_name
+        return self.storage.bacula_name
+        # return self.profile.storage.bacula_name
 
     def pool_bacula_name(self):
-        return self.pool.bacula_name
-
+        return '%s_pool' % self.bacula_name
 
     def last_success_date(self):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
                 .order_by('-endtime')[0]
 
+    @property
+    def jobs_id_to_cancel(self):
+        status = ('R','p','j','c','d','s','M','m','s','F','B', 'C') #TODO: refactor
+        return Job.objects.filter(name=self.bacula_name,
+                                  jobstatus__in=status).values_list('jobid', flat=True)
+
+    @property
+    def all_my_jobs(self):
+        jobs = Job.objects.filter(name=self.bacula_name)
+        return jobs
+        
+    @classmethod
+    def all_jobs(cls):
+        job_names = [ p.bacula_name for p in cls.objects.all() ]
+        jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
+        return jobs
+
 
     def restore_jobs(self):
-        return Job.objects.filter( client__name=self.computer.bacula_name,
-                                   fileset__fileset=self.fileset_bacula_name,
-                                   jobstatus='T').order_by('-endtime').distinct()[:15]
-
- 
-    def get_file_tree(self, job_id):
-        """Retrieves tree with files from a job id list"""
-        # build list with all job ids
-        ids = self.build_jid_list( job_id )    
-        files = File.objects.filter(job__jobid__in=ids)\
-                .distinct()
-
+        return Job.objects.filter(client__name=self.computer.bacula_name,
+                                  fileset__fileset=self.fileset_bacula_name,
+                                  jobstatus='T').order_by('-endtime').distinct()[:15]
 
     def get_backup_jobs_between(self, start, end):
         jobs = Job.objects.filter(realendtime__range=(start,end), 
@@ -94,157 +104,104 @@ class Procedure(BaseModel):
                                   jobstatus='T',
                                   type='B',
                                   name=self.bacula_name)\
-                 .order_by('-endtime').distinct()
-
+                                                .order_by('-endtime').distinct()
         return jobs
-    
-        
 
     def __unicode__(self):
         return self.name 
 
-
     def run(self):
         bacula = Bacula()
-        bacula.run_backup(  self.bacula_name, 
-                            client_name=self.computer.bacula_name)
+        bacula.run_backup(self.bacula_name, 
+                          client_name=self.computer.bacula_name)
    
-
     @classmethod
     def disable_offsite(cls):
         cls.objects.filter(offsite_on=True).update(offsite_on=False)
 
-
     @staticmethod
-    def locate_files(jobid, path="/"):
-        depth = utils.pathdepth(path)
+    def list_files(jobid, path, computer):
+        bacula = Bacula()
 
-        cursor = connections['bacula'].cursor()
+        if computer.operation_system == "windows" and not ':' in path:
+            path = 'C:' + path #FIX: get windows drivers from restore
 
-        regex = r"^([a-zA-Z]:)?%s.*$" % path
-
-
-        if path == "/": # get min depth files
-            cursor.execute(sql.SELECT_MIN_FILES_DEPTH, params=(jobid,))
-            depth = cursor.fetchone()[0]
-
-            cursor.execute(sql.SELECT_FILES_FROM_JOB_PATH_DEPTH, 
-                              params=(jobid, regex, depth))
-
-
-            files = [ row[0] for row in cursor.fetchall() ]
-
-            for filename in list(files):
-                like = "%s%%"  % filename
-                cursor.execute(sql.SELECT_NEXT_FILES_ON_DEPTH, params=(like, jobid,depth))
-                nextdepth = cursor.fetchone()[0]
-
-                cursor.execute(sql.SELECT_MORE_FILES_FROM_JOB_PATH_DEPTH, 
-                                          params=(jobid, like, nextdepth))
-
-                files.extend(  [ row[0] for row in cursor.fetchall() ]  )
-
-        else:
-            cursor.execute(sql.SELECT_NEXT_FILES_DEPTH, params=(jobid,depth))
-            depth = cursor.fetchone()[0]
-
-            cursor.execute(sql.SELECT_FILES_FROM_JOB_PATH_DEPTH, 
-                                  params=(jobid, regex, depth))
-
-            files = [ row[0] for row in cursor.fetchall() ]
-            # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
-            #             for row in cursor.fetchall() ]
-
-        files = list(set(files)) # remove duplicates
-        files.sort()
-        return files
-
+        return bacula.list_files(jobid, path)
 
     @staticmethod
     def search_files(jobid, pattern):
-
-        cursor = connections['bacula'].cursor()
-
-        pattern = '%'+ pattern + '%'
-
-        cursor.execute(sql.SELECT_FILES_FROM_PATTERN,
-                              params=(jobid, pattern))
-
-        files = [ row[0] for row in cursor.fetchall() ]
-        # files = [ (row[0], utils.get_filesize_from_lstat(row[1]))\
-        #             for row in cursor.fetchall() ]
+        files = File.objects.filter(
+                models.Q(filename__name__icontains=pattern) | models.Q(
+                path__path__icontains=pattern), job__jobid=jobid).distinct()
+        files = [f.fullname for f in files]
         files.sort()
         return files
-
 
 
 def update_procedure_file(procedure):
     """Procedure update file"""
-
     name = procedure.bacula_name
-
     filename = join(settings.NIMBUS_JOBS_DIR, name)
+    render_to_file(filename,
+                   "job",
+                   name=name,
+                   schedule=procedure.schedule_bacula_name(),
+                   storage=procedure.storage_bacula_name(),
+                   fileset=procedure.fileset_bacula_name(),
+                   priority="10",
+                   offsite=procedure.offsite_on,
+                   active=procedure.active,
+                   offsite_param="--upload-requests %v",
+                   client=procedure.computer.bacula_name,
+                   pool=procedure.pool_bacula_name() )
 
-    render_to_file( filename,
-                    "job",
-                    name=name,
-                    schedule=procedure.schedule_bacula_name(),
-                    storage=procedure.storage_bacula_name(),
-                    fileset=procedure.fileset_bacula_name(),
-                    priority="10",
-                    offsite=procedure.offsite_on,
-                    active=procedure.active,
-                    offsite_param="--upload-requests %v",
-                    client=procedure.computer.bacula_name,
-                    pool=procedure.pool_bacula_name() )
+
+    update_pool_file(procedure)
 
     if not exists(settings.NIMBUS_RESTORE_FILE):
+        render_to_file(settings.NIMBUS_RESTORE_FILE,
+                       "restore",
+                       name=name + "restore",
+                       storage=procedure.storage_bacula_name(),
+                       fileset=procedure.fileset_bacula_name(),
+                       client=procedure.computer.bacula_name,
+                       pool=procedure.pool_bacula_name())
 
-        render_to_file( settings.NIMBUS_RESTORE_FILE,
-                        "restore",
-                        name=name + "restore",
-                        storage=procedure.storage_bacula_name(),
-                        fileset=procedure.fileset_bacula_name(),
-                        client=procedure.computer.bacula_name,
-                        pool=procedure.pool_bacula_name() )
-
+    reload_manager = ReloadManager()
+    reload_manager.force_reload()
 
 def remove_procedure_file(procedure):
     """remove procedure file"""
-    base_dir,filepath = utils.mount_path( procedure.bacula_name,
-                                          settings.NIMBUS_JOBS_DIR)
+    base_dir,filepath = utils.mount_path(procedure.bacula_name,
+                                         settings.NIMBUS_JOBS_DIR)
     utils.remove_or_leave(filepath)
-
-
-   
+    remove_pool_file(procedure)
 
 
 def remove_procedure_volumes(procedure):
-
     pool_name = procedure.pool_bacula_name()
     medias = Media.objects.filter(pool__name=pool_name).distinct()
-    volumes = [ m.volumename for m in medias ]
-
+    volumes = [m.volumename for m in medias]
     try:
         bacula = Bacula()
+        bacula.cancel_procedure(procedure)
         bacula.purge_volumes(volumes, pool_name)
         bacula.truncate_volumes(pool_name)
         bacula.delete_pool(pool_name)
+        for volume in volumes:
+            volume_abs_path = join(settings.NIMBUS_DEFAULT_ARCHIVE, volume)
+            if exists(volume_abs_path):
+                os.remove(volume_abs_path)
+
+        reload_manager = ReloadManager()
+        reload_manager.force_reload()
+
     except BConsoleInitError, error:
         logger = logging.getLogger(__name__)
         logger.exception("Erro na comunicação com o bacula")
-
-
-    procedure.pool.delete()
-
     if procedure.offsite_on:
-
         remote_manager = offsite.RemoteManager()
         remote_manager.create_deletes_request( volumes )
-
-
-
-
 
 def offsiteconf_check(procedure):
     offsite = Offsite.get_instance()
@@ -252,9 +209,24 @@ def offsiteconf_check(procedure):
         procedure.offsite_on = False
 
 
+def update_pool_file(procedure):
+    """Pool update pool bacula file""" 
+    name = procedure.pool_bacula_name()
+    filename = path.join(settings.NIMBUS_POOLS_DIR, name)
+    render_to_file(filename, "pool", name=name, max_vol_bytes=procedure.pool_size,
+                   days=procedure.pool_retention_time)
+
+def remove_pool_file(procedure):
+    """pool remove file"""
+    name = procedure.pool_bacula_name()
+    filename = path.join(settings.NIMBUS_POOLS_DIR, name)
+    utils.remove_or_leave(filename)
+
+#signals.connect_on(update_pool_file, Procedure, post_save)
+#signals.connect_on(remove_pool_file, Procedure, post_delete)
 
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
-signals.connect_on( remove_procedure_file, Procedure, post_delete)
 signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
+signals.connect_on( remove_procedure_file, Procedure, post_delete)
 
