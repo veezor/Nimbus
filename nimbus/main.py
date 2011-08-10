@@ -34,7 +34,11 @@ import getpass
 import functools
 
 
-
+sys.path.extend( ['/var/nimbus/deps/',
+                  '/var/nimbus/deps/gunicorn-0.11.1-py2.6.egg/',
+                  '/usr/lib/python2.6/dist-packages',
+                  '/usr/lib/python2.6/lib-dynload',
+                  '/usr/lib/python2.6/'] )
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nimbus.settings'
 
