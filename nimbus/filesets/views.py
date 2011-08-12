@@ -87,8 +87,11 @@ def do_edit(request, fileset_id):
         else:
             return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos fileset","error":0}')
 
-
-
+def try_tree(request):
+    # temporário. será removido
+    content = {}
+    return render_to_response(request, "try_tree.html", content)
+    
 @login_required
 def get_tree(request):
     if request.method == "POST":
@@ -108,7 +111,6 @@ def get_tree(request):
             return HttpResponse(response, mimetype="text/plain")
         except Exception:
             traceback.print_exc()
-
 
 @login_required
 def delete(request, fileset_id):

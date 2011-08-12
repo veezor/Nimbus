@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#botao").click(function(){
+				ITEM_INDEX = 0;
+				var path = $("#path_field").val();
+				var computer = $("#computer_field").val();
+				var click_event = "fetch_dir_content('" + path + "', '" + computer + "', '" + ITEM_INDEX + "')"
+				var new_line = "<li id='li_" + ITEM_INDEX + "'>" +
+								"<input type='checkbox'></input><span onClick=\"" + click_event + "\">" + path +
+								"</span></li><ul id='" + ITEM_INDEX + "'>" + 
+								"</ul>"
+				$("#arvore").append(new_line);
+				ITEM_INDEX++;
+				// fetch_dir_content(path, computer, ITEM_INDEX);
+			});
+		});
+		function fetch_dir_content(path, computer, id) {
+			console.log(path, computer, id);
+			ul_of_this_item = $("#" + id);
+			this_item_li = $("#li_" + id);
+			if (ul_of_this_item.hasClass("open") == true) {
+				ul_of_this_item.hide("slow");
+				ul_of_this_item.removeClass("open")
+				this_item_li.removeClass("open");
+				return false;
+			} else {
+				ul_of_this_item.addClass("open");
+				this_item_li.addClass("open");
+				ul_of_this_item.show("slow");
+				if (ul_of_this_item.hasClass("filled") == true) {
+					return false;
+				};
+				ul_of_this_item.addClass("filled");
+			}
+			$.ajax({
+				type: "POST",
+				async: false,
+				url: "http://192.168.50.129/filesets/get_tree/",
+				data: "computer_id=" + computer + "&path=" + path,
+				dataType: "json",
+				success: function(file_list) {
+					console.log(file_list);
+					for (var i in file_list) {
+						var full_path = file_list[i];
+						var new_path = full_path.slice(path.length);
+						var click_event = "fetch_dir_content('" + full_path + "', '" + computer + "', '" + ITEM_INDEX + "')"
+						var new_line = "<li id='li_" + ITEM_INDEX + "'>" +
+										"<input type='checkbox'></input><span onClick=\"" + click_event + "\">" + new_path +
+										"</span></li><ul id='" + ITEM_INDEX + "'>" + 
+										"</ul>"
+						ul_of_this_item.append(new_line);
+						ITEM_INDEX++;
+					}
+				}
+			});
+		};
+		// });
+		</script>
+		<style type="text/css">
+			ul#arvore { border: solid 1px;}
+			ul {display: hidden;}
+			li.open {color: #FF0000;}
+		</style>
+	</head>
+	<body>
+		<form method="POST" id="test_form">
+			<input type="text" name="computer_id" id="computer_field" value="1">
+			<input type="text" name="path" id="path_field" value="/">
+			<a href="#" id="botao">Enviar</a>
+		</form>
+		<div>
+			<ul id="arvore">
+				
+			</ul>
+		</div>					
+	</body>
+</html>
