@@ -4,6 +4,7 @@
 import re
 import logging
 import time
+import subprocess
 from operator import itemgetter
 from xmlrpclib import ServerProxy
 
@@ -28,6 +29,9 @@ DOMAIN_RE = re.compile(
     r'(?::\d+)?' # optional port
     r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
+
+NTP_CHECK_SERVER = [ "/usr/sbin/ntpdate", "-q" ]
+
 EMPTY_CHOICES = [('', '----------')]
 
 COUNTRY_CHOICES = [ item \
@@ -50,6 +54,15 @@ class Timezone(BaseModel):
     area = models.CharField('Região', max_length=255, blank=False, 
                              null=False)
 
+
+
+    def clean(self):
+        command = NTP_CHECK_SERVER + [self.ntp_server]
+        try:
+            subprocess.check_call(command, stdout = subprocess.PIPE,
+                                  stderr = subprocess.PIPE)
+        except subprocess.CalledProcessError:
+            raise ValidationError(u"Impossível sincronizar com o servidor ntp")
 
     class Meta:
         verbose_name = u"Fuso horário"
