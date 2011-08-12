@@ -106,3 +106,4 @@ def create_or_view_network_tool(request):
         response = simplejson.dumps({'msg': output})
         return HttpResponse(response, mimetype="text/plain")
 
+
