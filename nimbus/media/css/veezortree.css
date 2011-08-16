@@ -1,0 +1,15 @@
+ul.veezortree { border: solid 1px;
+			background: #FEFCC6;
+			padding: 10px;
+		  }
+ul {display: hidden;}
+li {margin-top: 3px;}
+.end_path { padding-left: 24px;}
+li.directory {background: url('/media/icons/folder.png') no-repeat 20 0;}
+li.open {background: url('/media/icons/folder-open.png') no-repeat 20 0;}
+li.file {background: url('/media/icons/file_generic.png') no-repeat 20 0;}
+div#wait {position: absolute;
+		   border: solid 1px;
+		   background: #AAAAAA;
+		 }
+ul {list-style: none;}
