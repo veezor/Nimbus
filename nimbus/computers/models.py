@@ -161,7 +161,9 @@ class Computer(BaseModel):
         self.active = True
         self.save()
 
-    def get_file_tree(self, path):
+    def get_file_tree(self, path="/"):
+        if path == "":
+            path = "/"
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
         proxy = xmlrpclib.ServerProxy(url)
         if self.operation_system == "windows" and path == "/":

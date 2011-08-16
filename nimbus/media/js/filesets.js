@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    $("input:checkbox").addClass("no-style");
     $('#filepath_template').clone().appendTo('.filepaths').show();
     
     $('.toggle').click(function(){
