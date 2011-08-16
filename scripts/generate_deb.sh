@@ -50,9 +50,10 @@ cp LICENSE deb/var/www/
 cp third_part_software.txt deb/var/www
 cp -a doc deb/var/www
 cp README deb/var/www
+cp version deb/var/www/media/
  
-
-dpkg-deb -b deb nimbus.deb
+VERSION=`cat version`
+dpkg-deb -b deb nimbus-$VERSION.deb
 
 rm -rf deb/var/www
 rm -rf deb/etc
