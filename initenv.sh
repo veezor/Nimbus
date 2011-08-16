@@ -9,3 +9,5 @@ fi
 
 # sobrescrevendo PYTHONPATH
 export PYTHONPATH=$PYTHONPATH:$(pwd)/libs:$(pwd)/webservices/manager
+export BUMP_VERSION_FILE=version
+export BUMP_DEBIAN_CONTROL_FILE=deb/DEBIAN/control
