@@ -19,15 +19,9 @@ from django.core.exceptions import ValidationError
 
 from nimbus.shared import signals
 from nimbus.libs import systemprocesses
+from nimbus.shared.fields import check_domain
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
-
-DOMAIN_RE = re.compile(
-    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|' #domain...
-    r'localhost|' #localhost...
-    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
-    r'(?::\d+)?' # optional port
-    r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 
 NTP_CHECK_SERVER = [ "/usr/sbin/ntpdate", "-q" ]
@@ -38,10 +32,6 @@ COUNTRY_CHOICES = [ item \
                     for item in \
                     sorted(country_names.items(), key=itemgetter(1)) ]
 
-
-def check_domain(value):
-    if not DOMAIN_RE.match(value):
-        raise ValidationError("ntp_server must be a domain")
 
 
 
