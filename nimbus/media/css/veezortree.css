@@ -2,12 +2,12 @@ ul.veezortree { border: solid 1px;
 			background: #FEFCC6;
 			padding: 10px;
 		  }
-ul {display: hidden;}
-li {margin-top: 3px;}
-.end_path { padding-left: 24px;}
-li.directory {background: url('/media/icons/folder.png') no-repeat 20 0;}
-li.open {background: url('/media/icons/folder-open.png') no-repeat 20 0;}
-li.file {background: url('/media/icons/file_generic.png') no-repeat 20 0;}
+.veezortree ul {display: hidden; padding-left: 17px}
+.veezortree li {margin-top: 3px;}
+.end_path { padding-left: 26px;}
+li.directory {background: url(../icons/folder.png) no-repeat 20px 0px;}
+li.open {background: url(../icons/folder-open.png) no-repeat 20px 0px;}
+li.file {background: url(../icons/file_generic.png) no-repeat 20px 0px;}
 div#wait {position: absolute;
 		   border: solid 1px;
 		   background: #AAAAAA;

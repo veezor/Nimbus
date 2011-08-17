@@ -34,6 +34,7 @@ def add(request, computer_id=None):
                'computer': computer,
                'fileset_form': fileset_form,
                'hide_name': hide_name}
+    print computer.operation_system
     return render_to_response(request, "add_fileset.html", content)
 
 

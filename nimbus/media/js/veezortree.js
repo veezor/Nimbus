@@ -40,7 +40,7 @@ function create_tree(Tree) {
 		var path = "/";
 		var click_event = "fetch_dir_content('" + Tree.CONTAINER + "', '" + path + "', '" + Tree.computer + "', '" +Tree.CONTAINER+Tree.ITEM_INDEX + "')"
 		var new_line = "<li class='directory'id='li_" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" +
-						"<input type='" + Tree.CHECK_TYPE + "' name='"+ Tree.CONTAINER +"_restore_path' value=\"" + path + "\"></input><span class='end_path' onClick=\"" + click_event + "\">/" +
+						"<input type='" + Tree.CHECK_TYPE + "' name='"+ Tree.CONTAINER +"_restore_path' value=\"" + path + "\" class='full_path'></input><span class='end_path' onClick=\"" + click_event + "\">/" +
 						"</span></li><ul id='" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" + 
 						"</ul>"
 	};
@@ -81,7 +81,7 @@ function fetch_dir_content(container, path, computer, id) {
 	$.ajax({
 		type: "POST",
 		// async: false,
-		url: "http://192.168.50.129/filesets/get_tree/",
+		url: "/filesets/get_tree/",
 		data: "computer_id=" + computer + "&path=" + path,
 		dataType: "json",
 		success: function(file_list) {
@@ -96,7 +96,7 @@ function fetch_dir_content(container, path, computer, id) {
 				}
 				var new_path = full_path.slice(path.length);
 				var new_line = "<li class='" + location_type + "'id='li_" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" +
-								"<input type='" + Tree.CHECK_TYPE + "' name='"+ Tree.CONTAINER +"_restore_path' value=\"" + full_path + "\"></input><span class='end_path' onClick=\"" + click_event + "\">" + new_path +
+								"<input type='" + Tree.CHECK_TYPE + "' name='"+ Tree.CONTAINER +"_restore_path' value=\"" + full_path + "\" class='full_path'></input><span class='end_path' onClick=\"" + click_event + "\">" + new_path +
 								"</span></li><ul id='" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" + 
 								"</ul>"
 				if ((Tree.HIDE_FILES == false) || (location_type != "file")) {
