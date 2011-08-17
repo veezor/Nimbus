@@ -56,7 +56,6 @@ function find_tree_object(container) {
 	return false;
 };
 function fetch_dir_content(container, path, computer, id) {
-	console.log(container, path, computer, id);
 	var Tree = find_tree_object(container);
 	ul_of_this_item = $("#" + id);
 	this_item_li = $("#li_" + id);
@@ -86,7 +85,6 @@ function fetch_dir_content(container, path, computer, id) {
 		data: "computer_id=" + computer + "&path=" + path,
 		dataType: "json",
 		success: function(file_list) {
-			console.log(file_list);
 			for (var i in file_list) {
 				var full_path = file_list[i];
 				if (full_path[full_path.length -1] == "/") {
