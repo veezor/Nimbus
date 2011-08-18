@@ -120,7 +120,9 @@ class Procedure(BaseModel):
         cls.objects.filter(offsite_on=True).update(offsite_on=False)
 
     @staticmethod
-    def list_files(jobid, path, computer):
+    def list_files(jobid, computer, path="/"):
+        if path == "":
+            path = "/"
         bacula = Bacula()
 
         if computer.operation_system == "windows" and path == '/':

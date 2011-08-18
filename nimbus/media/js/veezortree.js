@@ -1,27 +1,36 @@
 $(document).ready(function(){
-    // Tudo começa aqui
+    veezortree_startup();
+});
+function veezortree_startup() {
 	TREES = find_containers();
 	for (var t = 0; t < TREES.length; t++) {
 		create_tree(TREES[t]);
-	};
-});
+	};    
+};
 function find_containers() {
     // encontra os objetos da classe veezortree
 	var TREES = new Array();
 	for (var o = 0; o < $(".veezortree").length; o++) {
 		Tree = new Object();
 		Tree.CONTAINER = $(".veezortree")[o].id;
-		Tree.CHECK_TYPE = $(".veezortree")[o].attributes["check_type"].value;
 		Tree.computer = $(".veezortree")[o].attributes["computer"].value;
 		if ($(".veezortree")[o].attributes["is_windows"].value == "true") {
 			Tree.IS_WINDOWS = true;
 		} else {
 			Tree.IS_WINDOWS = false;
 		};
-		if ($(".veezortree")[o].attributes["hide_files"].value == "true") {
+		if ($(".veezortree")[o].attributes["restore"].value == "true") {
+			Tree.RESTORE = true;
+    		Tree.job = $(".veezortree")[o].attributes["job"].value;
+		} else {
+			Tree.RESTORE = false;
+		};
+		if ($(".veezortree")[o].attributes["destination"].value == "true") {
 			Tree.HIDE_FILES = true;
+			Tree.CHECK_TYPE = "radio";
 		} else {
 			Tree.HIDE_FILES = false;
+			Tree.CHECK_TYPE = "checkbox";
 		};
 		Tree.ITEM_INDEX = 0;
 		TREES.push(Tree);				
@@ -78,11 +87,21 @@ function fetch_dir_content(container, path, computer, id) {
 	} else {
 		$("#" + Tree.CONTAINER).append("<div id='wait'>Aguarde <img src='/media/icons/loading_bar.gif'/></div>");
 	}
+	if (Tree.RESTORE == true) {
+        var submit_data = "job_id=" + Tree.job + "&computer_id=" + computer + "&path=" + path;
+        var tree_url = "/restore/get_tree/";
+        // var submit_data = "computer_id=" + computer + "&path=" + path;
+        // var tree_url = "/restore/get_client_tree/";
+	} else {
+	    var submit_data = "computer_id=" + computer + "&path=" + path;
+	    var tree_url = "/filesets/get_tree/";
+	}
 	$.ajax({
 		type: "POST",
 		// async: false,
-		url: "/filesets/get_tree/",
-		data: "computer_id=" + computer + "&path=" + path,
+        // url: "/restore/get_tree/",
+        url: tree_url,
+		data: submit_data,
 		dataType: "json",
 		success: function(file_list) {
 			for (var i in file_list) {

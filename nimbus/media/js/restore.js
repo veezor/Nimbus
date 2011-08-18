@@ -5,27 +5,27 @@ $(document).ready(function(){
         return false;
     });
     
-    $(".tree a").click(function()
-    {
-        /*
-get_tree_path = "/restore/get_tree/";
-        update_tree($(this).attr("path"), get_tree_path, '.tree');
-*/
-        get_tree_path = "/restore/get_tree/";
-        if (!document.getElementsByClassName('wait')[0]) {
-            update_tree($(this).attr("path"), get_tree_path, '.tree');
-        } else {
-            $('.wait').remove();
-        }
-        return false;
-    });
-
-    $(".tree_computer a").click(function()
-    {
-        get_tree_path = "/restore/get_client_tree/";
-        update_tree($(this).attr("path"), get_tree_path, ".tree_computer", "radio", "path_restore");
-        return false;
-    });
+//     $(".tree a").click(function()
+//     {
+//         /*
+// get_tree_path = "/restore/get_tree/";
+//         update_tree($(this).attr("path"), get_tree_path, '.tree');
+// */
+//         get_tree_path = "/restore/get_tree/";
+//         if (!document.getElementsByClassName('wait')[0]) {
+//             update_tree($(this).attr("path"), get_tree_path, '.tree');
+//         } else {
+//             $('.wait').remove();
+//         }
+//         return false;
+//     });
+// 
+//     $(".tree_computer a").click(function()
+//     {
+//         get_tree_path = "/restore/get_client_tree/";
+//         update_tree($(this).attr("path"), get_tree_path, ".tree_computer", "radio", "path_restore");
+//         return false;
+//     });
 
     $('#buscar_arquivos').click(function(){
         get_tree_path = "/restore/get_tree/";
@@ -57,6 +57,9 @@ get_tree_path = "/restore/get_tree/";
     $('#computer_id').change(function()
     {
         var computer_id = $(this).val();
+        $("#files")[0].attributes["computer"].value = computer_id;
+        $("#destination")[0].attributes["computer"].value = computer_id;
+        
         $.getJSON('/restore/get_procedures/' + computer_id + '/', {}, function(data)
         {
             if (data['error']) {
@@ -147,9 +150,12 @@ get_tree_path = "/restore/get_tree/";
             $('.restore_step_3').slideUp();
             
             $('.tree .directory.first ul').remove().removeClass("open");
-            
+            $("#files")[0].attributes["job"].value = $("#jobs_list")[0].value;
+            $("#files").addClass("veezortree");
+            $("#destination").addClass("veezortree");
             if ($(this).val()) {
                 $('.restore_step_3').slideDown();
+                veezortree_startup();
             } else {
                 $('.restore_step_3').slideUp();
             }

@@ -62,13 +62,14 @@ def restore_files(request):
     # path (lista)
     
     if request.method == "POST":
+        print request.POST
         computer = Computer.objects.get(id=request.POST["computer_id"])
         jobid = int(request.POST["job_id"])
-        target = request.POST.get("path_restore", "")
-        files = request.POST.getlist("path")
+        target = request.POST.get("destination_path_restore", "")
+        files = request.POST.getlist("files_restore_path")
 
         bacula = Bacula()
-        bacula.run_restore( computer.bacula_name, jobid, target, files)
+        bacula.run_restore(computer.bacula_name, jobid, target, files)
 
         messages.success(request, "Recuperação iniciada com sucesso")
     
@@ -130,7 +131,7 @@ def get_tree(request):
     computer_id = request.POST['computer_id']
     computer = Computer.objects.get(id=computer_id)
     
-    files = Procedure.list_files(job_id, path, computer)
+    files = Procedure.list_files(job_id, computer, path)
     # teste que força o retorno da lista de arquivos
     #files = ["/home/lucas/arquivo1.txt", "/home/lucas/arquivo2.txt"];
     response = simplejson.dumps(files)

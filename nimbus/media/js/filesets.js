@@ -122,7 +122,6 @@ $(document).ready(function(){
 });
 
 function discard_unused_fileset(fileset_id) {
-    console.log(fileset_id);
     $.ajax({
         type: "POST",
         url: "/filesets/reckless_discard/",

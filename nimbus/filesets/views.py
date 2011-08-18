@@ -34,7 +34,6 @@ def add(request, computer_id=None):
                'computer': computer,
                'fileset_form': fileset_form,
                'hide_name': hide_name}
-    print computer.operation_system
     return render_to_response(request, "add_fileset.html", content)
 
 
@@ -42,7 +41,6 @@ def add(request, computer_id=None):
 def do_add(request):
     if request.method == 'POST':
         data = request.POST
-        print data
         fileset_form = forms.FileSetForm(data, prefix="fileset")
         if fileset_form.is_valid():
             new_fileset = fileset_form.save()
@@ -147,7 +145,6 @@ def do_delete(request, fileset_id):
 @login_required
 def reckless_discard(request):
     if request.method == 'POST':
-        print request.POST
         fileset_id = request.POST["fileset_id"]
         f = get_object_or_404(FileSet, pk=fileset_id)
         # not so reckless
