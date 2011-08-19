@@ -80,6 +80,7 @@ PYBACULA_TEST = True
 
 NIMBUS_UNDEPLOYED_CONF_FILES = join( dirname(__file__), 'confs')
 NIMBUS_UNDEPLOYED_LOG_CONF = join(NIMBUS_UNDEPLOYED_CONF_FILES, "logging.conf")
+NIMBUS_UNDEPLOYED_RELOAD_MANAGER_LOG_CONF = join(NIMBUS_UNDEPLOYED_CONF_FILES, "reload_manager_logging.conf")
 
 RESTORE_POINT_DEFAULT = "/tmp/bacula-restore"
 
