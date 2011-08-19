@@ -164,6 +164,7 @@ LOGIN_URL = "/session/login"
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "nimbus.shared.contextprocessors.script_name",
+    "nimbus.shared.contextprocessors.block_ie_browser",
     "django.core.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
