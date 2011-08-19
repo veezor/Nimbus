@@ -6,6 +6,7 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('nimbus.restore.views',
     (r'^(?P<object_id>\d+)/view/$', 'view'), 
     (r'^view/$', 'view'), 
+    (r'^teste/$', 'teste'), 
     (r'^restore_files', 'restore_files'),
     (r'^get_tree/$', 'get_tree'),
     (r'^get_client_tree/$', 'get_client_tree'),

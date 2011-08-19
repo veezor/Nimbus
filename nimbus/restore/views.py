@@ -46,6 +46,12 @@ def view(request, object_id=None):
     }
     return render_to_response(request, "restore_list.html", extra_content)
 
+def teste(request):
+    extra_content = {
+        'title': u"Restauração de arquivos"
+    }
+    return render_to_response(request, "teste.html", extra_content)
+
 
 
 @login_required

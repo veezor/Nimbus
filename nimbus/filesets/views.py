@@ -86,11 +86,6 @@ def do_edit(request, fileset_id):
                 return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos arquivos","error":1}')
         else:
             return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos fileset","error":0}')
-
-def try_tree(request):
-    # temporário. será removido
-    content = {}
-    return render_to_response(request, "try_tree.html", content)
     
 @login_required
 def get_tree(request):
