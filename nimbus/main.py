@@ -34,6 +34,7 @@ from nimbus.config.models import Config
 from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
 from nimbus.shared.middlewares import LogSetup
+from nimbus.reports.models import send_email_report
 from nimbus.security.models import register_administrative_nimbus_models
 
 
@@ -149,6 +150,9 @@ class App(object):
         service = ReloadManagerService()
         service.run()
 
+    def send_email_report(self):
+        job_id =  int(sys.argv[2])
+        send_email_report(job_id)
 
     def run(self):
         commands = {
@@ -160,7 +164,8 @@ class App(object):
             "--shell" : self.shell,
             "--delete-volumes" : self.delete_volumes,
             "--change-password" : self.change_password,
-            "--start-reload-manager-service" : self.reload_manager_service
+            "--start-reload-manager-service" : self.reload_manager_service,
+            "--email-report": self.send_email_report
         }
 
         if len(sys.argv) > 1:

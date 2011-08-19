@@ -1,9 +1,5 @@
 {% extends "base.html" %}
 
-{% block headtags %}
-<script type="text/javascript" src="/media/js/timezone.js"></script>
-{% endblock %}
-
 
 {% block page %}
 
@@ -12,17 +8,14 @@
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
-		<h2>Configurações de notificação por email</h2>
+		<h2>Configuração de notificações por email</h2>
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
     
         <form method="post" action="{% url nimbus.reports.views.email_conf %}">
             {% include "form.html" %}
-
-            <a href="{% url nimbus.reports.views.email_test %}" class="css3button positive big floatright">Testar configuração</a>
             <p><button type="submit" class="css3button big positive floatleft" value="Atualizar">Atualizar</button></p>
-
         </form>
 
 
