@@ -7,7 +7,7 @@ from nimbus.reports.models import EmailConf
 
 
 class EmailConfForm(forms.ModelForm):
-    password = forms.CharField(label=u'Senha',widget=forms.PasswordInput(render_value=False))
+    email_password = forms.CharField(label=u'Senha',widget=forms.PasswordInput(render_value=False))
 
     class Meta:
         model = EmailConf
