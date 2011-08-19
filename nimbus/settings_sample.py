@@ -48,7 +48,11 @@ NIMBUS_SSLCONFIG = join(NIMBUS_ETC_DIR, "ssl.conf")
 
 
 NIMBUS_DEPLOY_PATH = join(ROOT_PATH, "var", "www")
-NIMBUS_EXE = join(NIMBUS_DEPLOY_PATH, "nimbus")
+#NIMBUS_EXE = join(NIMBUS_DEPLOY_PATH, "nimbus")
+
+#developer only
+NIMBUS_EXE = join( dirname(__file__), 'main.py')
+
 
 BACULA_LOCK_FILE = join(NIMBUS_HOME_DIR, "bacula.lock" )
 NIMBUS_GRAPHDATA_FILENAME = join(NIMBUS_HOME_DIR, "graphs.data" )
