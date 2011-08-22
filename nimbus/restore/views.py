@@ -18,6 +18,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from nimbus.bacula.models import Job
 from nimbus.computers.models import Computer
 from nimbus.procedures.models import Procedure
 from nimbus.shared.views import render_to_response
@@ -46,6 +47,107 @@ def view(request, object_id=None):
     }
     return render_to_response(request, "restore_list.html", extra_content)
 
+@login_required
+def step1(request):
+    computers = Computer.objects.filter(active=True,id__gt=1)
+    extra_content = {
+        'computers': computers,
+        'title': u"Restauração de arquivos"
+    }
+    return render_to_response(request, "step1.html", extra_content)
+
+@login_required
+def step2(request):
+    if request.method == "POST":
+        data = request.POST
+        print data
+        computer = Computer.objects.get(id=data["computer_id"])
+        extra_content = {
+            'computer': computer,
+            'title': u"Restauração de arquivos"
+        }
+        return render_to_response(request, "step2.html", extra_content)
+    else:
+        return redirect('nimbus.restore.views.step1')
+
+@login_required
+def step3(request):
+    if request.method == "POST":
+        data = request.POST
+        print data
+        computer = Computer.objects.get(id=data["computer_id"])
+        procedure = Procedure.objects.get(id=data["procedure_id"])
+        jobs = procedure.all_my_jobs
+        extra_content = {
+            'computer': computer,
+            'procedure': procedure,
+            'jobs': jobs,
+            'title': u"Restauração de arquivos"
+        }
+        return render_to_response(request, "step3.html", extra_content)
+    else:
+        return redirect('nimbus.restore.views.step1')
+
+@login_required
+def step4(request):
+    if request.method == "POST":
+        data = request.POST
+        print data
+        computer = Computer.objects.get(id=data["computer_id"])
+        procedure = Procedure.objects.get(id=data["procedure_id"])
+        job = Job.objects.get(jobid=data["job_id"])
+        extra_content = {
+            'computer': computer,
+            'procedure': procedure,
+            'job': job,
+            'title': u"Restauração de arquivos"
+        }
+        return render_to_response(request, "step4.html", extra_content)
+    else:
+        return redirect('nimbus.restore.views.step1')
+
+@login_required
+def step5(request):
+    if request.method == "POST":
+        data = request.POST
+        computer = Computer.objects.get(id=data["computer_id"])
+        procedure = Procedure.objects.get(id=data["procedure_id"])
+        job = Job.objects.get(jobid=data["job_id"])
+        files = data.getlist("paths")
+        extra_content = {
+            'computer': computer,
+            'procedure': procedure,
+            'job': job,
+            'files': files,
+            'title': u"Restauração de arquivos"
+        }
+        return render_to_response(request, "step5.html", extra_content)
+    else:
+        return redirect('nimbus.restore.views.step1')
+
+@login_required
+def step6(request):
+    if request.method == "POST":
+        data = request.POST
+        print data
+        computer = Computer.objects.get(id=data["computer_id"])
+        procedure = Procedure.objects.get(id=data["procedure_id"])
+        job = Job.objects.get(jobid=data["job_id"])
+        files = data.getlist("paths")
+        destination = data.get("destination_restore_path", "")
+        extra_content = {
+            'computer': computer,
+            'procedure': procedure,
+            'job': job,
+            'files': files,
+            'destination': destination,
+            'title': u"Restauração de arquivos"
+        }
+        return render_to_response(request, "step6.html", extra_content)
+    else:
+        return redirect('nimbus.restore.views.step1')
+
+
 def teste(request):
     extra_content = {
         'title': u"Restauração de arquivos"
@@ -71,15 +173,15 @@ def restore_files(request):
         print request.POST
         computer = Computer.objects.get(id=request.POST["computer_id"])
         jobid = int(request.POST["job_id"])
-        target = request.POST.get("destination_path_restore", "")
-        files = request.POST.getlist("files_restore_path")
+        target = request.POST["destination"]
+        files = request.POST.getlist("paths")
 
         bacula = Bacula()
         bacula.run_restore(computer.bacula_name, jobid, target, files)
 
         messages.success(request, "Recuperação iniciada com sucesso")
     
-        return redirect('nimbus.restore.views.view')
+        return redirect('/procedures/list/')
 
 
 

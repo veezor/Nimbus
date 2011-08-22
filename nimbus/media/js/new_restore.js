@@ -3,12 +3,12 @@ $(document).ready(function(){
         get_tree_path = "/restore/get_tree/";
         $(".search_result").remove();
     
-        job_id = "745"
+        // jobid = job_id.value
         pattern = $('#pattern').val();
         root_path = '/';
     
         $.post("/restore/get_tree_search_file/",
-               {job_id: job_id, pattern: pattern},
+               {job_id: job_id.value, pattern: pattern},
                function(data) {
                    if (data.length == 0) {
                        $("#search_result_list").append("<li class='search_result'>Nenhum arquivo encontrado</li>");
@@ -28,6 +28,13 @@ $(document).ready(function(){
             }
         }
         return false;
+    });
+    $("#submit_files").click(function() {
+        for (var f = 0; f < $(".added_file").length; f++) {
+            console.log($(".added_file")[f].textContent);
+            $("#restore_form").append("<input type='hidden' name='paths' value='"+ $(".added_file")[f].textContent +"'></input>");
+        }
+        $("#restore_form").submit();
     });
 });
     function path_kind(path) {

@@ -85,6 +85,11 @@ class Procedure(BaseModel):
     def all_my_jobs(self):
         jobs = Job.objects.filter(name=self.bacula_name)
         return jobs
+
+    @property
+    def all_my_good_jobs(self):
+        jobs = Job.objects.filter(name=self.bacula_name, jobstatus="T").order_by('-starttime')
+        return jobs
         
     @classmethod
     def all_jobs(cls):

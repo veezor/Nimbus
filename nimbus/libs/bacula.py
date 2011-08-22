@@ -103,7 +103,8 @@ class Bacula(object):
         date = now.strftime("%Y-%m-%d %H:%M:%S")
         if client_name:
             return self.cmd.run.client[client_name].\
-            job[job_name].level["Full"].when[date].yes.run()
+            job[job_name].yes.run()
+            # job[job_name].level["Full"].when[date].yes.run()
 
 
     def cancel_procedure(self, procedure):

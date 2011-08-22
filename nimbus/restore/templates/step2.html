@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block headtags %}
+<link rel="stylesheet" type="text/css" href="/media/css/new_restore.css" />
+{% endblock %}
+
+{% block page %}
+
+<div class="block">
+
+	<div class="block_head">
+		<div class="bheadl"></div>
+		<div class="bheadr"></div>
+		<h2>{{title}}</h2>
+	</div>
+
+    <div class="block_content">
+	<h2>Passo 2: Selecionar o procedimento</h2><br />
+        <form action="/restore/step3/" id="restore_form" method="post">
+			<p>
+				<label>Computador:</label> {{computer.name}}
+			</p>
+			<p>
+                <label for="procedure_id">Selecione o procedimento:</label>
+                <select name="procedure_id" id="procedure_id" >
+                    <option value=""> - Selecione - </option>
+                    {% for procedure in computer.procedure_set.all %}
+                    <option value="{{procedure.id}}">{{procedure.name}}</option>
+                    {% endfor %}
+                </select>
+            </p>
+			<input type="hidden" name="computer_id" value="{{computer.id}}"></input>
+			<div>
+				<a href="#" class="css3button negative last_step"><span>Voltar ao passo 1: Escolher o computador</span></a>
+				<button type="submit" class="css3button positive next_step">Passo 3 - Escolher o backup</button>
+			</div>
+        </form>
+        
+        <div class="clear"></div>
+        <p></p>
+    </div>
+    
+    <div class="bendl"></div>
+	<div class="bendr"></div>
+
+</div>
+
+{% endblock %}
