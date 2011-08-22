@@ -29,7 +29,7 @@ def email_test(request):
     elif request.method == "POST":
         try:
             send_hello_message()
-            messages.sucesss(request, u"Email enviado corretamente, verifique sua caixa postal")
+            messages.success(request, u"Email enviado corretamente, verifique sua caixa postal")
         except (smtplib.SMTPException, socket.error):
             messages.error(request, u"Impossível enviar email, verifique configurações")
         return redirect('nimbus.reports.views.email_conf')
