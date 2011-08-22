@@ -29,23 +29,23 @@ from nimbus.libs.bacula import Bacula
 
 
 @login_required
-def view(request, object_id=None):
-    computer = None
-
-    if object_id:
-        try:
-            computer = Computer.objects.get(id=object_id, active=True)
-        except Computer.DoesNotExist, error:
-            return redirect('nimbus.restore.views.view')
-
-    computers = Computer.objects.filter(active=True,id__gt=1)
-    
-    extra_content = {
-        'computer': computer,
-        'computers': computers,
-        'title': u"Restauração de arquivos"
-    }
-    return render_to_response(request, "restore_list.html", extra_content)
+# def view(request, object_id=None):
+#     computer = None
+# 
+#     if object_id:
+#         try:
+#             computer = Computer.objects.get(id=object_id, active=True)
+#         except Computer.DoesNotExist, error:
+#             return redirect('nimbus.restore.views.view')
+# 
+#     computers = Computer.objects.filter(active=True,id__gt=1)
+#     
+#     extra_content = {
+#         'computer': computer,
+#         'computers': computers,
+#         'title': u"Restauração de arquivos"
+#     }
+#     return render_to_response(request, "restore_list.html", extra_content)
 
 @login_required
 def step1(request):
@@ -60,7 +60,6 @@ def step1(request):
 def step2(request):
     if request.method == "POST":
         data = request.POST
-        print data
         computer = Computer.objects.get(id=data["computer_id"])
         extra_content = {
             'computer': computer,
@@ -74,7 +73,6 @@ def step2(request):
 def step3(request):
     if request.method == "POST":
         data = request.POST
-        print data
         computer = Computer.objects.get(id=data["computer_id"])
         procedure = Procedure.objects.get(id=data["procedure_id"])
         jobs = procedure.all_my_jobs
@@ -92,7 +90,6 @@ def step3(request):
 def step4(request):
     if request.method == "POST":
         data = request.POST
-        print data
         computer = Computer.objects.get(id=data["computer_id"])
         procedure = Procedure.objects.get(id=data["procedure_id"])
         job = Job.objects.get(jobid=data["job_id"])
@@ -129,7 +126,6 @@ def step5(request):
 def step6(request):
     if request.method == "POST":
         data = request.POST
-        print data
         computer = Computer.objects.get(id=data["computer_id"])
         procedure = Procedure.objects.get(id=data["procedure_id"])
         job = Job.objects.get(jobid=data["job_id"])
@@ -148,14 +144,6 @@ def step6(request):
         return redirect('nimbus.restore.views.step1')
 
 
-def teste(request):
-    extra_content = {
-        'title': u"Restauração de arquivos"
-    }
-    return render_to_response(request, "teste.html", extra_content)
-
-
-
 @login_required
 def restore_files(request):
     """docstring for restore_files"""
@@ -170,7 +158,6 @@ def restore_files(request):
     # path (lista)
     
     if request.method == "POST":
-        print request.POST
         computer = Computer.objects.get(id=request.POST["computer_id"])
         jobid = int(request.POST["job_id"])
         target = request.POST["destination"]
