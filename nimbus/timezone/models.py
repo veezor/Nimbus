@@ -33,11 +33,21 @@ COUNTRY_CHOICES = [ item \
                     sorted(country_names.items(), key=itemgetter(1)) ]
 
 
+NTP_SERVERS = [
+    "a.ntp.br",
+    "b.ntp.br",
+    "c.ntp.br",
+    "d.ntp.br",
+    "pool.ntp.br",
+    "pool.ntp.org"
+]
+
+
 
 
 class Timezone(BaseModel):
     ntp_server = models.CharField('Servidor ntp', max_length=255, blank=False,
-                                   null=False, default="a.ntp.br",
+                                   null=False, default="pool.ntp.br",
                                    validators=[check_domain])
     country = models.CharField('País', max_length=255, blank=False, 
                                 choices=COUNTRY_CHOICES)
@@ -47,12 +57,18 @@ class Timezone(BaseModel):
 
 
     def clean(self):
+
+        if self.ntp_server in NTP_SERVERS:
+            return
+
+
         command = NTP_CHECK_SERVER + [self.ntp_server]
         try:
             subprocess.check_call(command, stdout = subprocess.PIPE,
                                   stderr = subprocess.PIPE)
         except subprocess.CalledProcessError:
-            raise ValidationError(u"Impossível sincronizar com o servidor ntp")
+            raise ValidationError(u"Impossível sincronizar com o servidor ntp. Verifique endereço e conectividade")
+
 
     class Meta:
         verbose_name = u"Fuso horário"
