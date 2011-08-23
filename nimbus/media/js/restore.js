@@ -1,179 +1,55 @@
 $(document).ready(function(){
-    $('.toggle').click(function(){
-        var target = $(this).attr('ref');
-        $(this).parent().parent().find('.' + target).slideToggle();
-        return false;
-    });
-    
-//     $(".tree a").click(function()
-//     {
-//         /*
-// get_tree_path = "/restore/get_tree/";
-//         update_tree($(this).attr("path"), get_tree_path, '.tree');
-// */
-//         get_tree_path = "/restore/get_tree/";
-//         if (!document.getElementsByClassName('wait')[0]) {
-//             update_tree($(this).attr("path"), get_tree_path, '.tree');
-//         } else {
-//             $('.wait').remove();
-//         }
-//         return false;
-//     });
-// 
-//     $(".tree_computer a").click(function()
-//     {
-//         get_tree_path = "/restore/get_client_tree/";
-//         update_tree($(this).attr("path"), get_tree_path, ".tree_computer", "radio", "path_restore");
-//         return false;
-//     });
-
     $('#buscar_arquivos').click(function(){
         get_tree_path = "/restore/get_tree/";
-        
-        job_id = $('#jobs_list').val();
+        $(".search_result").remove();
+    
+        // jobid = job_id.value
         pattern = $('#pattern').val();
         root_path = '/';
-        $('.tree .directory.first ul').remove().removeClass("open");
-        
-        $.post($("#url_tree").val(),
-               {job_id: job_id, pattern: pattern},
+    
+        $.post("/restore/get_tree_search_file/",
+               {job_id: job_id.value, pattern: pattern},
                function(data) {
-                   mount_tree(data, root_path, get_tree_path)
+                   if (data.length == 0) {
+                       $("#search_result_list").append("<li class='search_result'>Nenhum arquivo encontrado</li>");
+                   } else {
+                       for (var f = 0; f < data.length; f++) {
+                           append_file_to_search(data[f]);
+                       }
+                   }
                },
                "json");
         return false;
     });
-    
-    $('#procedure_id').change(function()
-    {
-        if ($(this).val()) {
-            $('.restore_step_1').slideDown();
-        } else {
-            $('.restore_step_1').slideUp();
-        }
-    });
-    $('#procedure_id').change();
-    
-    $('#computer_id').change(function()
-    {
-        var computer_id = $(this).val();
-        $("#files")[0].attributes["computer"].value = computer_id;
-        $("#destination")[0].attributes["computer"].value = computer_id;
-        
-        $.getJSON('/restore/get_procedures/' + computer_id + '/', {}, function(data)
-        {
-            if (data['error']) {
-
-                //help-me fix-me
-                $('.computer_error').html($('<p>').text(data['error'])).addClass("message error").append('<span class="close" title="Dismiss"></span>').fadeIn('slow');
-            	jQuery('.message .close').hover(
-        		function() { jQuery(this).addClass('hover'); },
-        		function() { jQuery(this).removeClass('hover'); }
-	            );
-
-                jQuery('.message .close').click(function() {
-                    jQuery(this).parent().fadeOut('slow', function() { jQuery(this).remove(); });
-                });
-                
-
+    $('#add_checked').click(function(){
+        for (var f = 0; f < $(".full_path").length; f++) {
+            if ($(".full_path")[f].checked == true) {
+                append_file_to_restore($(".full_path")[f].value)
             }
-        
-            $('#procedure_id').empty();
-            $('<option>').attr('value', '').text(' - Selecione - ').appendTo('#procedure_id');
-            for (proc in data) {
-                proc = data[proc];
-                if (proc['fields'] && proc['fields']['name']) {
-                    $('<option>').attr('value', proc['pk']).text(proc['fields']['name']).appendTo("#procedure_id");
-                }
-            }
-            $('.procedure_select').slideDown();
-        });
-    });
-    $('#computer_id').change();
-
-    $('#procedure_id').change(function()
-    {
-        if ($(this).val()) {
-            $('.restore_step_1').slideDown();
-        } else {
-            $('.restore_step_1').slideUp();
         }
-    });
-    $('#procedure_id').change();
-    
-    $('.submit_step_1').click(function(){
-        data_inicio = $('#data_inicio').val();
-        data_inicio = data_inicio.replace(/\//gi,"-");
-        data_fim = $('#data_fim').val();
-        data_fim = data_fim.replace(/\//gi,"-");
-        computer_id = $('#computer_id').val();
-        procedure_id = $('#procedure_id').val();
-    
-        $('.restore_step_2').slideUp();
-        $('.restore_step_3').slideUp();
-        $('.restore_step_4').slideUp();
-        $('.restore_step_5').slideUp();
-        
-        if (data_inicio && data_fim) {
-            //alert('/restore/get_jobs/' + procedure_id + '/' + data_inicio + '/' + data_fim + '/');
-            $.getJSON(
-                '/restore/get_jobs/' + procedure_id + '/' + data_inicio + '/' + data_fim + '/',
-                function(data)
-                {
-                    $("#jobs_list").empty();
-                    if (data) {
-                        // TODO: Populate the jobs list.
-                        $("<option>").val("").text(" - " + data.length + " jobs, selecione um  - ").attr("selected", "selected").appendTo("#jobs_list");
-                        // exemplo
-                        //$("<option>").val("2").text(" Job de exemplo, selecione este ").attr("selected", "selected").appendTo("#jobs_list");
-                        for (var i in data) {
-                            job = data[i];
-                            if (job.fields && job.fields.realendtime) {
-                                $("<option>").val(job.pk).text(job.fields.realendtime + ' - ' + job.fields.jobfiles + ' arquivos').appendTo("#jobs_list");
-                            }
-                        }
-                        $("#jobs_list").change();
-                        $('.restore_step_2').slideDown();
-                    }
-                }
-            );
-        }
-    
         return false;
     });
-    
-    $('.submit_step_1').click();
-    
-    
-    $('#jobs_list').change(
-        function(){
-            $('.restore_step_3').slideUp();
-            
-            $('.tree .directory.first ul').remove().removeClass("open");
-            $("#files")[0].attributes["job"].value = $("#jobs_list")[0].value;
-            $("#files").addClass("veezortree");
-            $("#destination").addClass("veezortree");
-            if ($(this).val()) {
-                $('.restore_step_3').slideDown();
-                veezortree_startup();
-            } else {
-                $('.restore_step_3').slideUp();
-            }
+    $("#submit_files").click(function() {
+        for (var f = 0; f < $(".added_file").length; f++) {
+            console.log($(".added_file")[f].textContent);
+            $("#restore_form").append("<input type='hidden' name='paths' value='"+ $(".added_file")[f].textContent +"'></input>");
         }
-    ).click();
-    
-    $(".open_step_4").click(function(){
-        $(".restore_step_4").slideDown();
-        return false;
+        $("#restore_form").submit();
     });
-    
-    
-    $('#pattern').keydown(
-        function(e){
-            if (e.keyCode == 13) {
-                $('#buscar_arquivos').click();
-                return false;
-            }
-        }
-    )
 });
+    function path_kind(path) {
+        if (path[path.length -1] == "/") {
+            var kind = "directory";
+        } else {
+            var kind = "file";
+        };
+        return kind
+    };
+    function append_file_to_search(file) {
+        var kind = path_kind(file);
+        $("#search_result_list").append('<li class="'+kind+' search_result" onClick="append_file_to_restore($(this)[0].textContent);"><span class="listed_file">' + file + '</span></li>')
+    };
+    function append_file_to_restore(file) {
+        var kind = path_kind(file);
+        $("#restore_file_list").append('<li class="'+kind+' selected_file" onClick="$(this).remove();"><span class="added_file">' + file + '</span></li>')
+    }
