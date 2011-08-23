@@ -18,3 +18,4 @@ input#pattern {width: 260px;
 .filebox p {height: 30px;}
 .next_step {float: right;}
 .last_step {float: left;}
+#file_list_to_restore li {padding-left: 40px;}

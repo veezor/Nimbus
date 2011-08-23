@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" src="/media/js/new_restore.js"></script>
+<script type="text/javascript" src="/media/js/restore.js"></script>
 <script type="text/javascript" src="/media/js/veezortree.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/veezortree.css"/>
-<link rel="stylesheet" type="text/css" href="/media/css/new_restore.css" />
+<link rel="stylesheet" type="text/css" href="/media/css/restore.css" />
 {% endblock %}
 
 {% block page %}
@@ -51,7 +51,7 @@
 			<input type="hidden" name="procedure_id" value="{{procedure.id}}"></input>
 			<input type="hidden" name="job_id" id="job_id" value="{{job.jobid}}"></input>
 			<div>
-				<a href="#" class="css3button positive last_step"><span>Passo 3: Escolher Backup</span></a>
+				<a href="#" class="css3button positive last_step" onClick="$('#restore_form')[0].action = '/restore/step3/'; $('#restore_form')[0].submit();"><span>Passo 3: Escolher Backup</span></a>
 				<a href="#" id="submit_files" class="css3button positive next_step"><span>Passo 5: Escolher local para restauração</span></a>
 			</div>
 		</form>

@@ -35,8 +35,11 @@ def step1(request):
 
 @login_required
 def step2(request):
-    if request.method == "POST":
-        data = request.POST
+    if (request.method == "POST") or (request.method == "GET"):
+        if (request.method == "POST"):
+            data = request.POST
+        elif (request.method == "GET"):
+            data = request.GET
         computer = Computer.objects.get(id=data["computer_id"])
         extra_content = {
             'computer': computer,
@@ -88,6 +91,8 @@ def step5(request):
         procedure = Procedure.objects.get(id=data["procedure_id"])
         job = Job.objects.get(jobid=data["job_id"])
         files = data.getlist("paths")
+        files = list(set(files))
+        files.sort()
         extra_content = {
             'computer': computer,
             'procedure': procedure,

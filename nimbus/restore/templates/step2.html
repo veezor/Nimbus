@@ -31,7 +31,7 @@
             </p>
 			<input type="hidden" name="computer_id" value="{{computer.id}}"></input>
 			<div>
-				<a href="#" class="css3button negative last_step"><span>Voltar ao passo 1: Escolher o computador</span></a>
+				<a href="#" class="css3button negative last_step" onClick="$('#restore_form')[0].action = '/restore/step1/'; $('#restore_form')[0].submit();"><span>Voltar ao passo 1: Escolher o computador</span></a>
 				<button type="submit" class="css3button positive next_step">Passo 3 - Escolher o backup</button>
 			</div>
         </form>
