@@ -25,7 +25,11 @@
                 <select name="procedure_id" id="procedure_id" >
                     <option value=""> - Selecione - </option>
                     {% for procedure in computer.procedure_set.all %}
-                    <option value="{{procedure.id}}">{{procedure.name}}</option>
+					{% if procedure.all_my_good_jobs|length == 1%}
+                    <option value="{{procedure.id}}">{{procedure.name}} ({{procedure.all_my_good_jobs|length}} backup disponível)</option>
+					{% else %}
+                    <option value="{{procedure.id}}">{{procedure.name}} ({{procedure.all_my_good_jobs|length}} backups disponíveis)</option>
+					{% endif %}
                     {% endfor %}
                 </select>
             </p>

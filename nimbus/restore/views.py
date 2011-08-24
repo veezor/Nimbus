@@ -6,7 +6,7 @@ import os
 import simplejson
 import xmlrpclib
 from glob import glob
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 from django.conf import settings
@@ -55,11 +55,22 @@ def step3(request):
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
         procedure = Procedure.objects.get(id=data["procedure_id"])
-        jobs = procedure.all_my_jobs
+        if data.has_key("start_date") and data.has_key("end_date"):
+            start_date = datetime.strptime(data["start_date"], "%d/%m/%Y")
+            end_date = datetime.strptime(data["end_date"], "%d/%m/%Y")
+            print data, start_date, end_date
+            jobs = procedure.get_backup_jobs_between(start_date, end_date)
+        else:
+            end_date = datetime.today()
+            start_date = end_date - timedelta(30)
+            jobs = procedure.get_backup_jobs_between(start_date, end_date)
+            # jobs = procedure.all_my_good_jobs
         extra_content = {
             'computer': computer,
             'procedure': procedure,
             'jobs': jobs,
+            'start_date': start_date.strftime("%d/%m/%Y"),
+            'end_date': end_date.strftime("%d/%m/%Y"),
             'title': u"Restauração de arquivos"
         }
         return render_to_response(request, "step3.html", extra_content)
