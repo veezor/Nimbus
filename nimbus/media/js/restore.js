@@ -1,26 +1,7 @@
 // Todo o código abaixo e referente apenas ao STEP 4
 $(document).ready(function(){
     $('#buscar_arquivos').click(function(){
-        get_tree_path = "/restore/get_tree/";
-        $(".search_result").remove();
-    
-        // jobid = job_id.value
-        pattern = $('#pattern').val();
-        root_path = '/';
-    
-        $.post("/restore/get_tree_search_file/",
-               {job_id: job_id.value, pattern: pattern},
-               function(data) {
-                   if (data.length == 0) {
-                       $("#search_result_list").append("<li class='search_result'>Nenhum arquivo encontrado</li>");
-                   } else {
-                       for (var f = 0; f < data.length; f++) {
-                           append_file_to_search(data[f]);
-                       }
-                   }
-               },
-               "json");
-        return false;
+        do_search();
     });
     $('#add_checked').click(function(){
         for (var f = 0; f < $(".full_path").length; f++) {
@@ -42,7 +23,37 @@ $(document).ready(function(){
             $("#step4_form").submit();
         }
     });
+    // Trata se alguem apertar ENTER no campo de busca de arquivos
+    $("#pattern").keypress(function(e) {
+        code= (e.keyCode ? e.keyCode : e.which);
+        if (code == 13) {
+            do_search();
+            e.preventDefault();
+        }
+    });
 });
+    function do_search() {
+        get_tree_path = "/restore/get_tree/";
+        $(".search_result").remove();
+    
+        // jobid = job_id.value
+        pattern = $('#pattern').val();
+        root_path = '/';
+    
+        $.post("/restore/get_tree_search_file/",
+               {job_id: job_id.value, pattern: pattern},
+               function(data) {
+                   if (data.length == 0) {
+                       $("#search_result_list").append("<li class='search_result'>Nenhum arquivo encontrado</li>");
+                   } else {
+                       for (var f = 0; f < data.length; f++) {
+                           append_file_to_search(data[f]);
+                       }
+                   }
+               },
+               "json");
+        return false;
+    }
     function path_kind(path) {
         if (path[path.length -1] == "/") {
             var kind = "directory";
