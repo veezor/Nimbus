@@ -1,3 +1,4 @@
+// Todo o código abaixo e referente apenas ao STEP 4
 $(document).ready(function(){
     $('#buscar_arquivos').click(function(){
         get_tree_path = "/restore/get_tree/";
@@ -30,11 +31,16 @@ $(document).ready(function(){
         return false;
     });
     $("#submit_files").click(function() {
-        for (var f = 0; f < $(".added_file").length; f++) {
-            console.log($(".added_file")[f].textContent);
-            $("#restore_form").append("<input type='hidden' name='paths' value='"+ $(".added_file")[f].textContent +"'></input>");
+        if ($(".added_file").length == 0) {
+            alert("Nenhum arquivo foi selecionado para restauração");
+            return false;
+        } else {
+            for (var f = 0; f < $(".added_file").length; f++) {
+                console.log($(".added_file")[f].textContent);
+                $("#step4_form").append("<input type='hidden' name='paths' value='"+ $(".added_file")[f].textContent +"'></input>");
+            }
+            $("#step4_form").submit();
         }
-        $("#restore_form").submit();
     });
 });
     function path_kind(path) {
@@ -53,3 +59,4 @@ $(document).ready(function(){
         var kind = path_kind(file);
         $("#restore_file_list").append('<li class="'+kind+' selected_file" onClick="$(this).remove();"><span class="added_file">' + file + '</span></li>')
     }
+// Fim do código do STEP 4

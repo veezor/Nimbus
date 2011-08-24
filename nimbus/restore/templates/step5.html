@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block headtags %}
-<script type="text/javascript" src="/media/js/restore.js"></script>
 <script type="text/javascript" src="/media/js/veezortree.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/veezortree.css"/>
 <link rel="stylesheet" type="text/css" href="/media/css/restore.css" />
@@ -19,7 +18,7 @@
 
     <div class="block_content">
 	<h2>Passo 5: Selecionar o local de destino dos arquivos</h2><br />
-        <form action="/restore/step6/" id="restore_form" method="post">
+        <form action="/restore/step6/" id="step5_form" method="post">
 			<p>
 				<label>Computador:</label> {{computer.name}}
 			</p>	
@@ -48,7 +47,7 @@
 			<input type="hidden" name="paths" value="{{file}}"></input>
 			{% endfor %}
 			<div>
-				<a href="#" class="css3button negative last_step" onClick="$('#restore_form')[0].action = '/restore/step4/'; $('#restore_form')[0].submit();"><span>Voltar ao passo 4: Escolher os arquivos</span></a>
+				<a href="#" class="css3button negative last_step" onClick="$('#step5_form')[0].action = '/restore/step4/'; $('#step5_form')[0].submit();"><span>Voltar ao passo 4: Escolher os arquivos</span></a>
 				<button type="submit" class="css3button positive next_step">Passo 6 - Resumo</button>
 			</div>
         </form>

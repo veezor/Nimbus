@@ -39,7 +39,10 @@ def step2(request):
         if (request.method == "POST"):
             data = request.POST
         elif (request.method == "GET"):
-            data = request.GET
+            if request.GET.has_key("computer_id") == False:
+                return redirect('nimbus.restore.views.step1')
+            else:
+                data = request.GET
         computer = Computer.objects.get(id=data["computer_id"])
         extra_content = {
             'computer': computer,

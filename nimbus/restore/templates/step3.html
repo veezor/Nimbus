@@ -16,7 +16,7 @@
 
     <div class="block_content">
 	<h2>Passo 3: Selecionar o backup</h2><br />
-        <form action="/restore/step4/" id="restore_form" method="post">
+        <form action="/restore/step4/" id="step3_form" method="post">
 			<p>
 				<label>Computador:</label> {{computer.name}}
 			</p>	
@@ -41,13 +41,13 @@
 				<input type="text" class="date_picker" name="start_date" value="{{start_date}}" />
 				<label>Data final:</label> 
 				<input type="text" class="date_picker" name="end_date" value="{{end_date}}" />
-				<a href="#" class="css3button positive" onClick="$('#restore_form')[0].action = '/restore/step3/'; $('#restore_form')[0].submit();"><span>Filtrar</span></a>
+				<a href="#" class="css3button positive" onClick="$('#step3_form')[0].action = '/restore/step3/'; $('#step3_form')[0].submit();"><span>Filtrar</span></a>
 			</p>
 			<input type="hidden" name="computer_id" value="{{computer.id}}"></input>
 			<input type="hidden" name="procedure_id" value="{{procedure.id}}"></input>
 			<div>
-				<a href="#" class="css3button negative last_step" onClick="$('#restore_form')[0].action = '/restore/step2/'; $('#restore_form')[0].submit();"><span>Voltar ao passo 2: Escolher o procedimento</span></a>
-				<button type="submit" class="css3button positive next_step">Passo 4 - Escolher os arquivos</button>
+				<a href="#" class="css3button negative last_step" onClick="$('#step3_form')[0].action = '/restore/step2/'; $('#step3_form')[0].submit();"><span>Voltar ao passo 2: Escolher o procedimento</span></a>
+				<button type="submit" class="css3button positive next_step" onClick="if ($('#step3_form')[0].job_id.value == '') {alert('Nenhum backup foi selecionado'); return false}">Passo 4 - Escolher os arquivos</button>
 			</div>
         </form>
         

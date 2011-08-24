@@ -16,7 +16,7 @@
 
     <div class="block_content">
 	<h2>Passo 2: Selecionar o procedimento</h2><br />
-        <form action="/restore/step3/" id="restore_form" method="post">
+        <form action="/restore/step3/" id="step2_form" method="post">
 			<p>
 				<label>Computador:</label> {{computer.name}}
 			</p>
@@ -35,8 +35,8 @@
             </p>
 			<input type="hidden" name="computer_id" value="{{computer.id}}"></input>
 			<div>
-				<a href="#" class="css3button negative last_step" onClick="$('#restore_form')[0].action = '/restore/step1/'; $('#restore_form')[0].submit();"><span>Voltar ao passo 1: Escolher o computador</span></a>
-				<button type="submit" class="css3button positive next_step">Passo 3 - Escolher o backup</button>
+				<a href="/restore/step1/" class="css3button negative last_step"><span>Voltar ao passo 1: Escolher o computador</span></a>
+				<button type="submit" class="css3button positive next_step" onClick="if ($('#step2_form')[0].procedure_id.value == '') {alert('Nenhum procedimento foi selecionado'); return false}">Passo 3 - Escolher o backup</button>
 			</div>
         </form>
         

@@ -16,7 +16,7 @@
 
     <div class="block_content">
 	<h2>Passo 1: Selecionar o computador</h2><br />
-        <form action="/restore/step2/" id="restore_form" method="post">
+        <form action="/restore/step2/" id="step1_form" method="post">
 			<p>
                 <label for="computer_id">Selecione o computador:</label>
                 <select name="computer_id" id="computer_id" >
@@ -27,7 +27,7 @@
                 </select>
             </p>
 			<div>
-				<button type="submit" class="css3button positive next_step">Passo 2 - Escolher o procedimento</button>
+				<button type="submit" class="css3button positive next_step" onClick="if ($('#step1_form')[0].computer_id.value == '') {alert('Nenhum computador foi selecionado'); return false}">Passo 2 - Escolher o procedimento</button>
 			</div>
         </form>
         
