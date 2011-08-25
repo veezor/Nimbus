@@ -11,6 +11,7 @@ span.added_file {background: url("/media/icons/41.png") no-repeat;
 div.filebox {position: relative;
 			 width: 48%;
 			 margin-bottom: 10px;}
+.file_lists li {cursor:pointer;}
 div.searchbox {float: right;}
 div.navigatebox {float: left;}
 input#pattern {width: 260px;
