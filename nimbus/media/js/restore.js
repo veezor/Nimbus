@@ -35,7 +35,7 @@ $(document).ready(function(){
     function do_search() {
         get_tree_path = "/restore/get_tree/";
         $(".search_result").remove();
-    
+		$("#search_result_list").append("<li class='search_result'>Buscando arquivos <img src='/media/icons/loading_bar.gif'/></li>");    
         // jobid = job_id.value
         pattern = $('#pattern').val();
         root_path = '/';
@@ -43,6 +43,7 @@ $(document).ready(function(){
         $.post("/restore/get_tree_search_file/",
                {job_id: job_id.value, pattern: pattern},
                function(data) {
+                   $(".search_result").remove();
                    if (data.length == 0) {
                        $("#search_result_list").append("<li class='search_result'>Nenhum arquivo encontrado</li>");
                    } else {
