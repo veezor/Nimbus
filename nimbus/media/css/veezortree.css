@@ -8,8 +8,9 @@ ul.veezortree { border: solid 1px;
 li.directory {background: url(../icons/folder.png) no-repeat 20px;}
 li.open {background: url(../icons/folder-open.png) no-repeat 20px;}
 li.file {background: url(../icons/file_generic.png) no-repeat 20px;}
-div#wait {position: absolute;
-		   border: solid 1px;
+div#wait { position: absolute;
+           border: solid 1px;
 		   background: #AAAAAA;
+/*           display: none;*/
 		 }
 ul {list-style: none;}

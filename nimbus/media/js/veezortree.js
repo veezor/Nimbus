@@ -86,6 +86,8 @@ function fetch_dir_content(container, path, computer, id) {
 		return false
 	} else {
 		$("#" + Tree.CONTAINER).append("<div id='wait'>Aguarde <img src='/media/icons/loading_bar.gif'/></div>");
+		$("#wait").offset(this_item_li.offset());
+		$("#wait").width(this_item_li.width());
 	}
 	if (Tree.RESTORE == true) {
         var submit_data = "job_id=" + Tree.job + "&computer_id=" + computer + "&path=" + path;
@@ -123,7 +125,7 @@ function fetch_dir_content(container, path, computer, id) {
 				} 
 				Tree.ITEM_INDEX++;
 			}
-			$("#wait").remove();
+            $("#wait").remove();
 		}
 	});
 };
