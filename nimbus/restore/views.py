@@ -26,6 +26,7 @@ from nimbus.libs.bacula import Bacula
 
 @login_required
 def step1(request):
+    """Selecionar o computador"""
     computers = Computer.objects.filter(active=True,id__gt=1)
     extra_content = {
         'computers': computers,
@@ -35,6 +36,7 @@ def step1(request):
 
 @login_required
 def step2(request):
+    """Selecionar do procedure"""
     if (request.method == "POST") or (request.method == "GET"):
         if (request.method == "POST"):
             data = request.POST
@@ -54,18 +56,18 @@ def step2(request):
 
 @login_required
 def step3(request):
+    """Selecionar o JOB"""
     if request.method == "POST":
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
         procedure = Procedure.objects.get(id=data["procedure_id"])
         if data.has_key("start_date") and data.has_key("end_date"):
             start_date = datetime.strptime(data["start_date"], "%d/%m/%Y")
-            end_date = datetime.strptime(data["end_date"], "%d/%m/%Y")
-            print data, start_date, end_date
+            end_date = datetime.strptime(data["end_date"] + " 23:59:59", "%d/%m/%Y %H:%M:%S")
             jobs = procedure.get_backup_jobs_between(start_date, end_date)
         else:
-            end_date = datetime.today()
-            start_date = end_date - timedelta(30)
+            end_date = datetime.now()
+            start_date = datetime.today() - timedelta(30)
             jobs = procedure.get_backup_jobs_between(start_date, end_date)
             # jobs = procedure.all_my_good_jobs
         extra_content = {
@@ -82,6 +84,7 @@ def step3(request):
 
 @login_required
 def step4(request):
+    """Escolher os arquivos"""
     if request.method == "POST":
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
@@ -99,6 +102,7 @@ def step4(request):
 
 @login_required
 def step5(request):
+    """Definir o destino dos arquivos"""
     if request.method == "POST":
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
@@ -120,6 +124,7 @@ def step5(request):
 
 @login_required
 def step6(request):
+    """Resumo e restore"""
     if request.method == "POST":
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
