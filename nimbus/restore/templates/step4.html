@@ -46,7 +46,11 @@
 			</div>
 			<div class="clear"></div>
 			<p><label>Arquivos selecionados para restauração:</label></p>
-			<ul id="restore_file_list" class="file_lists"></ul>
+			<ul id="restore_file_list" class="file_lists">
+				{% for path in paths %}
+				<li class="{% if path|last == "/"%}directory{% else %}file{% endif%} selected_file" onclick="$(this).remove();"><span class="added_file">{{path}}</span></li>
+				{% endfor %}
+			</ul>
 			<input type="hidden" name="computer_id" value="{{computer.id}}"></input>
 			<input type="hidden" name="procedure_id" value="{{procedure.id}}"></input>
 			<input type="hidden" name="job_id" id="job_id" value="{{job.jobid}}"></input>

@@ -87,6 +87,7 @@ def step4(request):
     """Escolher os arquivos"""
     if request.method == "POST":
         data = request.POST
+        print data
         computer = Computer.objects.get(id=data["computer_id"])
         procedure = Procedure.objects.get(id=data["procedure_id"])
         job = Job.objects.get(jobid=data["job_id"])
@@ -96,6 +97,9 @@ def step4(request):
             'job': job,
             'title': u"Restauração de arquivos"
         }
+        if data.has_key('paths'):
+            paths = data.getlist("paths")
+            extra_content['paths'] = paths
         return render_to_response(request, "step4.html", extra_content)
     else:
         return redirect('nimbus.restore.views.step1')
