@@ -106,25 +106,29 @@ function fetch_dir_content(container, path, computer, id) {
 		data: submit_data,
 		dataType: "json",
 		success: function(file_list) {
-			for (var i in file_list) {
-				var full_path = file_list[i];
-				if (full_path[full_path.length -1] == "/") {
-					var click_event = "fetch_dir_content('" + Tree.CONTAINER + "', '" + full_path + "', '" + computer + "', '" + Tree.CONTAINER+Tree.ITEM_INDEX + "')"
-					var location_type = "directory";
-				} else {
-					var click_event = ""
-					var location_type = "file";
-				}
-				var new_path = full_path.slice(path.length);
-				var new_line = "<li class='" + location_type + "'id='li_" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" +
-								"<input type='" + Tree.CHECK_TYPE + "' name='"+ Tree.CONTAINER +"_restore_path' value=\"" + full_path + "\" class='full_path'></input><span class='end_path' onClick=\"" + click_event + "\">" + new_path +
-								"</span></li><ul id='" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" + 
-								"</ul>"
-				if ((Tree.HIDE_FILES == false) || (location_type != "file")) {
-					ul_of_this_item.append(new_line);
-				} 
-				Tree.ITEM_INDEX++;
-			}
+		    if (file_list['type'] == 'error') {
+		        alert(file_list['message']);
+		    } else {
+    			for (var i in file_list) {
+    				var full_path = file_list[i];
+    				if (full_path[full_path.length -1] == "/") {
+    					var click_event = "fetch_dir_content('" + Tree.CONTAINER + "', '" + full_path + "', '" + computer + "', '" + Tree.CONTAINER+Tree.ITEM_INDEX + "')"
+    					var location_type = "directory";
+    				} else {
+    					var click_event = ""
+    					var location_type = "file";
+    				}
+    				var new_path = full_path.slice(path.length);
+    				var new_line = "<li class='" + location_type + "'id='li_" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" +
+    								"<input type='" + Tree.CHECK_TYPE + "' name='"+ Tree.CONTAINER +"_restore_path' value=\"" + full_path + "\" class='full_path'></input><span class='end_path' onClick=\"" + click_event + "\">" + new_path +
+    								"</span></li><ul id='" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" + 
+    								"</ul>"
+    				if ((Tree.HIDE_FILES == false) || (location_type != "file")) {
+    					ul_of_this_item.append(new_line);
+    				} 
+    				Tree.ITEM_INDEX++;
+    			}
+		    }
             $("#wait").remove();
 		}
 	});
