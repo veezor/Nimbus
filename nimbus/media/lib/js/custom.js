@@ -121,12 +121,12 @@ $(document).ready(function(){
 	
 	
 	// Style file input
-	jQuery("input[type=file]").filestyle({ 
-	    image: "/media/lib/images/upload.gif",
-	    imageheight : 30,
-	    imagewidth : 80,
-	    width : 250
-	});
+    // jQuery("input[type=file]").filestyle({ 
+    //     image: "/media/lib/images/upload.gif",
+    //     imageheight : 30,
+    //     imagewidth : 80,
+    //     width : 250
+    // });
 	
 	
 	// File upload
