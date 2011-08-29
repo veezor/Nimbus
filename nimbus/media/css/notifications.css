@@ -1,0 +1,32 @@
+div#notifier {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    text-align: center;
+    z-index: 999;
+    line-height: 25px;
+}
+div.noteblock {
+    margin: 5px;
+}
+span.notebox {
+    color: #FFFFFF;
+    background: #898989;
+    opacity:0.9;
+    -webkit-border-radius: 10px; -moz-border-radius: 10px; border-radius: 10px;
+    -moz-box-shadow: 5px 5px 5px #AAA;
+    -webkit-box-shadow: 5px 5px 5px #AAA;
+    box-shadow: 2px 2px 2px #AAA;
+    margin: 5px;
+    padding-right: 15px;
+    padding-left: 15px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+span.ack {
+    position: relative;
+    top: 0px;
+    left: -15px;
+    background: url("/media/lib/images/close.png") 0 0 no-repeat;
+    padding: 8px;
+}

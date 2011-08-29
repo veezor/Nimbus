@@ -2,10 +2,9 @@
 # Create your views here.
 
 import operator
-
 import systeminfo
-
 import re
+import simplejson
 
 from django.contrib.auth.decorators import login_required
 
@@ -13,8 +12,27 @@ from nimbus.shared import utils
 from nimbus.shared.views import render_to_response
 from nimbus.bacula.models import Job
 from nimbus.libs import graphsdata
+from django.http import HttpResponse
+from nimbus.base.models import Notification
 
 from nimbus.procedures.models import Procedure
+
+@login_required
+def notifications(request):
+    notifications = Notification.objects.filter(ack=False)
+    notes = []
+    for note in notifications:
+        notes.append({"id": note.id, "message": note.message, "link": note.link})
+    response = simplejson.dumps(notes)
+    return HttpResponse(response)
+
+@login_required
+def ack_notification(request):
+    note_id = request.GET['id']
+    note = Notification.objects.get(id=note_id)
+    note.ack = True
+    note.save()
+    return HttpResponse("")
 
 
 @login_required

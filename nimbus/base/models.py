@@ -13,6 +13,14 @@ UUID_NONE="none"
 logger = logging.getLogger(__name__)
 
 
+class Notification(models.Model):
+    message = models.CharField(max_length=255)
+    link = models.CharField(max_length=255)
+    ack = models.BooleanField(default=False)
+    
+    def __unicode__(self):
+        return u"%s" % self.message
+
 class SingletonBaseModel(models.Model):
 
     @classmethod

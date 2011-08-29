@@ -8,3 +8,4 @@ from django.contrib import admin
 from nimbus.base import models
 
 admin.site.register(models.UUID)
+admin.site.register(models.Notification)
