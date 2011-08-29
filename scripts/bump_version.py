@@ -125,6 +125,9 @@ def main():
         elif param == '--patch-level':
             with Bumper(version_file, debian_control_file) as b:
                 b.next_patch_level()
+        elif param == '--update-git-hash':
+            with Bumper(version_file, debian_control_file) as b:
+                pass
         else:
             usage()
 
