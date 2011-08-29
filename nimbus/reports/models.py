@@ -44,7 +44,7 @@ class EmailConf(BaseModel):
     tls_support =  models.BooleanField(u"TLS",default=False)
 
     class Meta:
-        verbose_name = u"Configuração de notificações por email"
+        verbose_name = u"Configuração de email"
 
 
 
