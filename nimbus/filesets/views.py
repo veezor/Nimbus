@@ -115,9 +115,7 @@ def do_edit(request, fileset_id):
                 return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos arquivos","error":1}')
         else:
             return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos fileset","error":0}')
-
-
-
+    
 @login_required
 def get_tree(request):
     if request.method == "POST":
@@ -137,7 +135,6 @@ def get_tree(request):
             return HttpResponse(response, mimetype="text/plain")
         except Exception:
             traceback.print_exc()
-
 
 @login_required
 def delete(request, fileset_id):
@@ -172,7 +169,6 @@ def do_delete(request, fileset_id):
 @login_required
 def reckless_discard(request):
     if request.method == 'POST':
-        print request.POST
         fileset_id = request.POST["fileset_id"]
         f = get_object_or_404(FileSet, pk=fileset_id)
         # not so reckless

@@ -37,16 +37,13 @@ import systeminfo
 import re
 
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 
-from nimbus.shared import utils, middlewares
+from nimbus.shared import utils
 from nimbus.shared.views import render_to_response
-from nimbus.shared.utils import block_ie_browser
 from nimbus.bacula.models import Job
 from nimbus.libs import graphsdata
 
 from nimbus.procedures.models import Procedure
-from nimbus.computers.models import Computer
 
 
 @login_required

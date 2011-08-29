@@ -108,6 +108,11 @@ class Procedure(BaseModel):
     def all_my_jobs(self):
         jobs = Job.objects.filter(name=self.bacula_name)
         return jobs
+
+    @property
+    def all_my_good_jobs(self):
+        jobs = Job.objects.filter(name=self.bacula_name, jobstatus="T").order_by('-starttime')
+        return jobs
         
     @classmethod
     def all_jobs(cls):
@@ -139,7 +144,9 @@ class Procedure(BaseModel):
                           client_name=self.computer.bacula_name)
    
     @staticmethod
-    def list_files(jobid, path, computer):
+    def list_files(jobid, computer, path="/"):
+        if path == "":
+            path = "/"
         bacula = Bacula()
 
         if computer.operation_system == "windows" and path == '/':

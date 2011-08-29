@@ -99,7 +99,7 @@ class Bacula(object):
         files = self.cmd._bvfs_lsfiles.jobid[jobid].path[path].run()
         result.extend( self._get_items_from_bconsole_output(files) )
         result.sort()
-        result = [ path + p for p in result ]
+        result = [ path + p.decode("utf-8") for p in result ]
         return result
 
     def run_restore(self, client_name, jobid, where, files):
@@ -113,7 +113,10 @@ class Bacula(object):
                 files.extend( s.fullname for s in subfiles  )
         with file(filename, "w") as f:
             for fname in files:
-                f.write( fname + "\n" )
+                f.write( fname.encode("utf-8") + "\n" )
+        a = open(filename)
+        print a.read()
+        a.close()
         return self.cmd.restore.\
                 client[client_name].\
                 file["<" + filename].\
@@ -129,7 +132,8 @@ class Bacula(object):
         date = now.strftime("%Y-%m-%d %H:%M:%S")
         if client_name:
             return self.cmd.run.client[client_name].\
-            job[job_name].level["Full"].when[date].yes.run()
+            job[job_name].yes.run()
+            # job[job_name].level["Full"].when[date].yes.run()
 
 
     def cancel_procedure(self, procedure):

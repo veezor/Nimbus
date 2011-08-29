@@ -167,7 +167,7 @@ def view(request, object_id):
     try:
         for job in last_jobs:
             last_procedures_content.append({
-                    'type' : job.status_friendly,
+                    'type' : job.general_status,
                     'label' : job.procedure.name,
                     'date' : job.endtime,
                     'tooltip' : job.status_message,
@@ -182,7 +182,7 @@ def view(request, object_id):
     try:
         for job in errors_jobs:
             errors_procedures_content.append({
-                    'type' : job.status_friendly,
+                    'type' : job.general_status,
                     'label' : job.procedure.name,
                     'date' : job.endtime,
                     'tooltip' : job.status_message,
@@ -236,11 +236,11 @@ def activate(request, object_id):
         messages.error(request, u'Impossível ativar computador, computador inexistente')
         return redirect('nimbus.computers.views.add')
     except ComputerAlreadyActive, error:
-        messages.info(request, "O computador já esta ativo")
-        return redirect('nimbus.computers.views.list')
+        messages.error(request, "O computador já esta ativo")
+        return redirect('nimbus.computers.views.add')
     except (socket.error, xmlrpclib.Fault), error:
         messages.error(request, u'Impossível ativar computador, verifique a conexão')
-        return redirect('nimbus.computers.views.list')
+        return redirect('nimbus.computers.views.add')
     messages.success(request, u'Computador ativado com sucesso.')
     return redirect('nimbus.computers.views.list')
 
