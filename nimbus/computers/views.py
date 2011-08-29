@@ -207,11 +207,11 @@ def activate(request, object_id):
         messages.error(request, u'Impossível ativar computador, computador inexistente')
         return redirect('nimbus.computers.views.add')
     except ComputerAlreadyActive, error:
-        messages.info(request, "O computador já esta ativo")
-        return redirect('nimbus.computers.views.list')
+        messages.error(request, "O computador já esta ativo")
+        return redirect('nimbus.computers.views.add')
     except (socket.error, xmlrpclib.Fault), error:
         messages.error(request, u'Impossível ativar computador, verifique a conexão')
-        return redirect('nimbus.computers.views.list')
+        return redirect('nimbus.computers.views.add')
     messages.success(request, u'Computador ativado com sucesso.')
     return redirect('nimbus.computers.views.list')
 
