@@ -167,7 +167,7 @@ class App(object):
             try:
                 commands[sys.argv[1]]()
             except KeyError, error:
-                print "option not found"
+                print "option not found:",sys.argv[1]
                 sys.exit(1)
         else:
             self.run_server()
