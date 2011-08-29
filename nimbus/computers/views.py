@@ -22,6 +22,7 @@ from nimbus.shared.views import render_to_response
 from nimbus.shared import enums
 from nimbus.shared.forms import form
 from nimbus.computers import forms as forms
+from nimbus.base.models import Notification
 
 @login_required
 def add(request):
@@ -66,6 +67,10 @@ def new(request):
                                 description="Computador identificado automaticamente")
             computer.save()
             logger.info("Computador adicionado com sucesso")
+            note = Notification()
+            note.message = "Existe um novo computador aguardando para ser ativado"
+            note.link = "/computers/add/"
+            note.save()
             return HttpResponse(status=200)
         except (KeyError, IntegrityError), e:
             logger.exception("Erro ao adicionar o computador")
