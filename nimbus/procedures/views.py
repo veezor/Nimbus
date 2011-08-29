@@ -30,14 +30,21 @@ from nimbus.schedules.models import Schedule
 
 @login_required
 def add(request, teste=None):
-    comp_id = 0
-    if request.GET:
-        comp_id = request.GET["comp_id"]
+
+    initial = {}
+    if request.method == "GET":
+        computer = request.GET.get("comp_id", 0)
+
+        if computer:
+            initial = {"computer" : computer}
+        else:
+            initial = {}
+
     title = u"Adicionar backup"
-    form = ProcedureForm(prefix="procedure")
+    form = ProcedureForm(initial=initial, prefix="procedure")
+
     content = {'title': title,
-                'form':form,
-                'comp_id': comp_id}
+                'form':form}
     if request.method == "POST":
         data = copy(request.POST)
         if data["procedure-fileset"]:
