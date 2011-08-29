@@ -138,7 +138,7 @@ def view(request, object_id):
     try:
         for job in last_jobs:
             last_procedures_content.append({
-                    'type' : job.status_friendly,
+                    'type' : job.general_status,
                     'label' : job.procedure.name,
                     'date' : job.endtime,
                     'tooltip' : job.status_message,
@@ -153,7 +153,7 @@ def view(request, object_id):
     try:
         for job in errors_jobs:
             errors_procedures_content.append({
-                    'type' : job.status_friendly,
+                    'type' : job.general_status,
                     'label' : job.procedure.name,
                     'date' : job.endtime,
                     'tooltip' : job.status_message,
