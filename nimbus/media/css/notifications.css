@@ -2,7 +2,7 @@ div#notifier {
     position: absolute;
     top: 50px;
     right: 50px;
-    text-align: center;
+    text-align: right;
     z-index: 999;
     line-height: 25px;
 }
@@ -10,6 +10,7 @@ div.noteblock {
     margin: 5px;
 }
 span.notebox {
+    min-width: 100%;
     color: #FFFFFF;
     background: #898989;
     opacity:0.9;
@@ -29,4 +30,5 @@ span.ack {
     left: -15px;
     background: url("/media/lib/images/close.png") 0 0 no-repeat;
     padding: 8px;
+    cursor: pointer;
 }
