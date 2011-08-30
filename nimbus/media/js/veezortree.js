@@ -85,9 +85,12 @@ function fetch_dir_content(container, path, computer, id) {
 	if ($("#wait")[0] != undefined) {
 		return false
 	} else {
-		$("#" + Tree.CONTAINER).append("<div id='wait'>Aguarde <img src='/media/icons/loading_bar.gif'/></div>");
-		$("#wait").offset(this_item_li.offset());
-		$("#wait").width(this_item_li.width());
+		$("#" + Tree.CONTAINER).append("<div id='wait'><span>Aguarde <img src='/media/icons/loading_bar.gif'/></span></div>");
+        $("#" + container).offset()
+        $("#wait").offset($("#" + container).offset());
+        // $("#wait").offset(this_item_li.offset());
+		$("#wait").width($("#" + container).outerWidth());
+		$("#wait").height($("#" + container).outerHeight());
 	}
 	if (Tree.RESTORE == true) {
         var submit_data = "job_id=" + Tree.job + "&computer_id=" + computer + "&path=" + path;
