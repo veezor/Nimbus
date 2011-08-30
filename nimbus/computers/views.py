@@ -27,7 +27,7 @@ from nimbus.base.models import Notification
 @login_required
 def add(request):
     lforms = [ forms.ComputerForm ]
-    content = {'title':u'Adicionar Computador',
+    content = {'title':u'Ativar novo Computador',
                'forms':lforms,
                'computers':Computer.objects.filter(active=False)
               }
