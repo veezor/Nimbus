@@ -133,7 +133,7 @@ def list_all(request):
     offsite = Offsite.get_instance()
     offsite_on = offsite.active
     title = u"Procedimentos de backup"
-    last_jobs = Procedure.all_jobs()[:10]
+    last_jobs = Procedure.all_non_self_jobs()[:10]
     return render_to_response(request, "procedures_list.html", locals())
 
 @login_required
@@ -200,7 +200,7 @@ def history(request, object_id=False):
     except ValueError:
         page = 1
     #get all jobs
-    all_jobs = Procedure.all_jobs()
+    all_jobs = Procedure.all_non_self_jobs()
     paginator = Paginator(all_jobs, 20)
     try:
         jobs = paginator.page(page)

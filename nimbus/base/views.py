@@ -16,6 +16,7 @@ from django.http import HttpResponse
 from nimbus.base.models import Notification
 
 from nimbus.procedures.models import Procedure
+from nimbus.computers.models import Computer
 
 @login_required
 def notifications(request):
@@ -109,7 +110,7 @@ def home(request):
     # - date
     # - message
 
-    last_jobs = Procedure.all_jobs()[:5]
+    last_jobs = Procedure.all_non_self_jobs()[:5]
 
     return render_to_response(request, "home.html", locals())
 
@@ -119,5 +120,25 @@ def ie_error(request):
 def license(request):
     return render_to_response(request, "license_general.html", locals())
 
+def about(request):
+    # TODO:
+    # dar um jeito de pegar a versão automáticamente
+    # dar um jeito de pegar o release automaticamente
+    computers = len(Computer.objects.exclude(id=1))
+    all_procedures = Procedure.objects.exclude(id=1)
+    jobs = 0
+    for procedure in all_procedures:
+        jobs += len(procedure.all_my_good_jobs)
+    procedures = len(all_procedures)
+    # jobs = len(Job.objects.filter(jobstatus='T')) - len(Procedure.objects.get(id=1).all_my_good_jobs)
+    last_backup = Procedure.objects.get(id=1).last_success_date().endtime.strftime("%d/%m/%Y - %H:%M:%S")
+    data = {'computers': computers,
+            'procedures': procedures,
+            'jobs': jobs,
+            'last_backup': last_backup,
+            'version': "1.0",
+            'release': "234245"
+            }
+    return render_to_response(request, "about.html", data)
 
 

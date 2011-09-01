@@ -24,6 +24,27 @@ from nimbus.shared.forms import form
 from nimbus.computers import forms as forms
 from nimbus.base.models import Notification
 
+def check_my_status(request):
+    ip = request.META.get('REMOTE_ADDR', None)
+    print ip
+    computers = Computer.objects.filter(address=ip)
+    if computers:
+        computer = computers[0]
+        if computer.procedure_set.filter(active=True):
+            status = {'status': "OK", 'ip': ip, 'name': computer.name}
+            message = u"Olá %s! Seu computador está protegido! Seu IP é: %s" % (computer.name, ip)
+        elif computer.procedure_set.all():
+            status = {'status': "inactive_jobs", 'ip': ip, 'name': computer.name}
+            message = u"Olá %s! Atenção! Os procedimentos para seu computador estão desativados! Seu IP é: %s" % (computer.name, ip)
+        else:
+            status = {'status': "no_jobs", 'ip': ip, 'name': computer.name}
+            message = u"Olá %s! Atenção! Seu computador está cadastrado mas não existe nenhum backup programado! Seu IP é: %s" % (computer.name, ip)
+    else:
+        status = {'status': "ERROR", 'ip': ip, 'name': None}
+        message = "Atenção! Seu computador parece estar desprotegido!"
+    # return HttpResponse(simplejson.dumps(status))
+    return HttpResponse(message)
+
 @login_required
 def add(request):
     lforms = [ forms.ComputerForm ]
