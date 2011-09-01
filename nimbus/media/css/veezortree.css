@@ -9,8 +9,10 @@ li.directory {background: url(../icons/folder.png) no-repeat 20px;}
 li.open {background: url(../icons/folder-open.png) no-repeat 20px;}
 li.file {background: url(../icons/file_generic.png) no-repeat 20px;}
 div#wait { position: absolute;
-           border: solid 1px;
-		   background: #AAAAAA;
-/*           display: none;*/
+		   background: #CCCCCC;
+           opacity: 0.8;
+           text-align: center;
+           display: table;
 		 }
+#wait span {display: table-cell; vertical-align: middle;}
 ul {list-style: none;}

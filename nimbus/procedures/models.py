@@ -120,6 +120,12 @@ class Procedure(BaseModel):
         jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
+    @classmethod
+    def all_non_self_jobs(cls):
+        job_names = [ p.bacula_name for p in cls.objects.exclude(id=1) ]
+        print job_names
+        jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
+        return jobs
 
     def restore_jobs(self):
         return Job.objects.filter(client__name=self.computer.bacula_name,
