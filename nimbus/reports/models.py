@@ -30,6 +30,7 @@
 
 
 import re
+import socket
 import fileinput
 
 from django.db import models
@@ -46,7 +47,8 @@ EMAIL_TEST_SUBJECT=u"Nimbus: Email de teste"
 EMAIL_TEST_MESSAGE=u"""
 Este email foi enviado a seu pedido para verificação da configuração de email do Nimbus.
 """
-
+DEFAULT_SOCKET_TIMEOUT=10
+socket.setdefaulttimeout(DEFAULT_SOCKET_TIMEOUT)
 
 
 FIELD_RE = ":\s*(.*)"
