@@ -100,7 +100,6 @@ class Procedure(BaseModel):
     @classmethod
     def all_non_self_jobs(cls):
         job_names = [ p.bacula_name for p in cls.objects.exclude(id=1) ]
-        print job_names
         jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
@@ -111,7 +110,7 @@ class Procedure(BaseModel):
 
     def get_backup_jobs_between(self, start, end):
         jobs = Job.objects.filter(realendtime__range=(start,end), 
-                                  jobfiles__gt=0,
+                                  jobfiles__gt=0, 
                                   jobstatus='T',
                                   type='B',
                                   name=self.bacula_name)\
