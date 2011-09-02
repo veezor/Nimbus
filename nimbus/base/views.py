@@ -129,7 +129,6 @@ def about(request):
     for procedure in all_procedures:
         jobs += len(procedure.all_my_good_jobs)
     procedures = len(all_procedures)
-    # jobs = len(Job.objects.filter(jobstatus='T')) - len(Procedure.objects.get(id=1).all_my_good_jobs)
     last_backup = Procedure.objects.get(id=1).last_success_date().endtime.strftime("%d/%m/%Y - %H:%M:%S")
     data = {'computers': computers,
             'procedures': procedures,

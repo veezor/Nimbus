@@ -116,7 +116,6 @@ def step4(request):
     """Escolher os arquivos"""
     if request.method == "POST":
         data = request.POST
-        print data
         computer = Computer.objects.get(id=data["computer_id"])
         procedure = Procedure.objects.get(id=data["procedure_id"])
         job = Job.objects.get(jobid=data["job_id"])
