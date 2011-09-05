@@ -6,15 +6,15 @@ import systeminfo
 import re
 import simplejson
 
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from nimbus.shared import utils
 from nimbus.shared.views import render_to_response
 from nimbus.bacula.models import Job
 from nimbus.libs import graphsdata
-from django.http import HttpResponse
 from nimbus.base.models import Notification
-
 from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
 
@@ -121,9 +121,12 @@ def license(request):
     return render_to_response(request, "license_general.html", locals())
 
 def about(request):
-    # TODO:
-    # dar um jeito de pegar a versão automáticamente
-    # dar um jeito de pegar o release automaticamente
+    f = open(settings.MEDIA_ROOT + "/version")
+    version_file = f.read()
+    f.close()
+    full_version, version_hash = version_file.split("-")
+    version = ".".join(full_version.split(".")[0:-1])
+    release = full_version.split(".")[-1]
     computers = len(Computer.objects.exclude(id=1))
     all_procedures = Procedure.objects.exclude(id=1)
     jobs = 0
@@ -135,8 +138,8 @@ def about(request):
             'procedures': procedures,
             'jobs': jobs,
             'last_backup': last_backup,
-            'version': "1.0",
-            'release': "234245"
+            'version': version,
+            'release': release
             }
     return render_to_response(request, "about.html", data)
 
