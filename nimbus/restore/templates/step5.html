@@ -29,7 +29,7 @@
 				<label>Backup:</label> {{job.end_time}} - {{job.backup_level}} - {{job.jobfiles}} arquivos ({{job.human_readable_size.size}} {{job.human_readable_size.unit}})
 			</p>
 			<p>
-				<label>Arquivos a restaurar:</label> {{files|length}} arquivos
+				<label>Arquivos a restaurar:</label> {% if files|length == 1%}1 arquivo ou diretório{% else %}{{files|length}} arquivos ou diretórios{%endif%}
 			</p>
 			<p>
                 <label for="job_id">Selecione o destino dos arquivos:</label>
