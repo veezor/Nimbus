@@ -15,10 +15,17 @@ NAME=nimbusclient
 DESC="Nimbus Client Daemon"
 
 # Identify the system.
-SYSTEM_OS=linux
-DAEMON=/usr/bin/nimbusclientservice
-STOPDAEMON="$DAEMON stop"
-STARTDAEMON="$DAEMON start"
+if [ $(uname) = "Darwin" ] ; then
+    SYSTEM_OS=mac
+    DAEMON=/etc/nimbus/com.nimbus.nimbusd.plist
+    STOPDAEMON="sudo launchctl unload -w $DAEMON"
+    STARTDAEMON="sudo launchctl load -w $DAEMON"
+else
+    SYSTEM_OS=linux
+    DAEMON=/usr/bin/nimbusclientservice
+    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/run/nimbusclient.pid"
+    STARTDAEMON="start-stop-daemon --start --exec $DAEMON -b -m --pidfile /var/run/nimbusclient.pid"
+fi
 
 
 if [ ! -f $DAEMON ];
