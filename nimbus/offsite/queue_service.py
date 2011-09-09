@@ -1,16 +1,17 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-import os
 import sys
 import time
 import socket
 import weakref
 import xmlrpclib
+import subprocess
 import SimpleXMLRPCServer
 import Queue as PyQueue
 from multiprocessing import Process
 from threading import Thread, RLock
 
-import pycurl
 
 from django.conf import settings
 from django.db.models import Max
@@ -277,7 +278,7 @@ class Worker(Process):
 
 
 
-def _start_queue_manager_service():
+def start_queue_manager_service():
     service = QueueServiceManager()
     facade = QueueServiceManagerFacade(service)
     server = SimpleXMLRPCServer.SimpleXMLRPCServer((settings.QUEUE_SERVICE_MANAGER_ADDRESS,
@@ -297,11 +298,12 @@ def get_queue_service_manager():
     try:
         return _get_queue_service_manager()
     except socket.error:
-        if os.fork():
-            time.sleep(settings.QUEUE_MANAGER_START_SLEEP_TIME)
-            return _get_queue_service_manager()
-        else:
-            _start_queue_manager_service()
+        service = subprocess.Popen(settings.QUEUE_SERVICE_MANAGER_COMMAND,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+        time.sleep(settings.QUEUE_MANAGER_START_SLEEP_TIME)
+        return _get_queue_service_manager()
+
 
 
 
