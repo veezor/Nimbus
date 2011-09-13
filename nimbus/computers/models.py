@@ -27,7 +27,7 @@
 #
 
 
-
+import xml
 from os import path
 import xmlrpclib
 import keymanager
@@ -52,6 +52,10 @@ class UnableToGetFile(Exception):
 
 class ComputerAlreadyActive(Exception):
     # TODO: TRATAR
+    pass
+
+
+class NimbusClientMessageError(Exception):
     pass
 
 
@@ -191,15 +195,19 @@ class Computer(BaseModel):
     def get_file_tree(self, path="/"):
         if path == "":
             path = "/"
-        url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
-        proxy = xmlrpclib.ServerProxy(url)
-        if self.operation_system == "windows" and path == "/":
-            files = proxy.get_available_drives()
-            files = [ fname[:-1] + '/' for fname in files ]
-        else:
-            files = proxy.list_dir(path)
-        files.sort()
-        return files
+
+        try:
+            url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
+            proxy = xmlrpclib.ServerProxy(url)
+            if self.operation_system == "windows" and path == "/":
+                files = proxy.get_available_drives()
+                files = [ fname[:-1] + '/' for fname in files ]
+            else:
+                files = proxy.list_dir(path)
+            files.sort()
+            return files
+        except xml.parsers.expat.ExpatError:
+            raise NimbusClientMessageError()
 
     def deactivate(self):
         self.active = False
