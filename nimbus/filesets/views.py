@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import widgets
 
 from nimbus.filesets.models import FileSet, FilePath
-from nimbus.computers.models import Computer
+from nimbus.computers.models import Computer, NimbusClientMessageError
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form_mapping, form_from_model
 from nimbus.libs.db import Session
@@ -103,6 +103,9 @@ def get_tree(request):
             except Computer.DoesNotExist, error:
                 response = simplejson.dumps({"type" : "error",
                                              "message" : "Computador não existe"})
+            except NimbusClientMessageError, error:
+                response = simplejson.dumps({"type" : "error",
+                                             "message" : "Erro no cliente Nimbus."})
             return HttpResponse(response, mimetype="text/plain")
         except Exception:
             traceback.print_exc()
