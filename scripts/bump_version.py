@@ -74,9 +74,12 @@ class Bumper(object):
 
     def next_minor(self):
         self.minor += 1
+        self.patch_level = 0
 
     def next_major(self):
         self.major += 1
+        self.minor = 0
+        self.patch_level = 0
 
     def __enter__(self):
         self.read_version()
