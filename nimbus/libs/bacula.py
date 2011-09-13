@@ -31,6 +31,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import time
 import socket
 import logging
@@ -43,6 +44,9 @@ from threading import Thread
 
 from django.conf import settings
 
+
+
+import mock
 import pybacula
 from pybacula import BaculaCommandLine, configcheck, BConsoleInitError
 
@@ -279,10 +283,17 @@ class ReloadManagerService(object):
 
 
     def run(self):
+        os.setsid()
         self.thread = Thread(name='ReloadManagerService Worker',
                              target=self._start_timed_worker)
+        self.thread.setDaemon(True)
         self.thread.start()
-        self._start_xmlrpc_service()
+        try:
+            self._start_xmlrpc_service()
+        except socket.error:
+            logger = logging.getLogger(__name__)
+            logger.exception('erro ao startar reload manager')
+            sys.exit(1)
 
 
     def check_service(self):
@@ -319,16 +330,30 @@ class ReloadManager(object):
         proxy.check_service()
         return proxy
 
+    def _start_reload_manager(self):
+        """ Ticket #1135: Instalacao do nimbus falha durante o primeiro boot.
+        O problema ocorre quando o reload manager eh invocado durante o create
+        database. Devido a posteriormente o bacula ser restartado, isso pode
+        ser evitado por enquanto. Este bug eh intermitente, ocorre 
+        esporadicamente, enquanto a solucao e motivo nao sao identificados
+        permanece esse workaround"""
+        if sys.argv[-1] == "--create-database":
+            return False
+        return True
+
+
 
     def _get_connection(self):
         try:
             return self._get_proxy()
         except socket.error:
-            service = subprocess.Popen(settings.RELOAD_MANAGER_COMMAND,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
-            time.sleep(settings.RELOAD_MANAGER_START_SLEEP_TIME)
-            return self._get_proxy()
+            if self._start_reload_manager():
+                service = subprocess.Popen(settings.RELOAD_MANAGER_COMMAND,
+                                       close_fds=True)
+                time.sleep(settings.RELOAD_MANAGER_START_SLEEP_TIME)
+                return self._get_proxy()
+            else:
+                return mock.Mock()
 
 
     def add_reload_request(self):
