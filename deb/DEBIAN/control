@@ -1,6 +1,6 @@
 Package: nimbus
 Priority: optional
-Version: 1.0.214
+Version: 1.1.0-5f716cd74a9959fca50468e9d44a7ddd6bc1610b
 Architecture: i386
 Maintainer: Veezor
 Depends: nimbus-dependencies (>= 0.9), postgresql-8.4, nginx, python-pkg-resources, python-setuptools
