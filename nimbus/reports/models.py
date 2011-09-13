@@ -41,6 +41,7 @@ from django.core.mail import send_mail as django_send_email
 from nimbus.shared.fields import check_domain
 from nimbus.libs.template import render_to_string
 from nimbus.bacula.models import Job
+from nimbus.computers.models import Computer
 from nimbus.base.models import SingletonBaseModel as BaseModel
 
 EMAIL_TEST_SUBJECT=u"Nimbus: Email de teste"
@@ -123,6 +124,13 @@ def get_stdin():
 
 
 
+def _is_self_backup(job):
+    computer = job.client.computer
+    nimbus_pc = Computer.objects.get(id=1)
+    return computer == nimbus_pc
+
+
+
 def send_email_report(job_id):
 
 
@@ -131,6 +139,12 @@ def send_email_report(job_id):
         return
 
     job = Job.objects.get(jobid=job_id)
+
+
+    if _is_self_backup(job):
+        # ignore reports of self backup
+        return
+
     procedure = job.procedure
     computer = procedure.computer
 
