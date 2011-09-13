@@ -114,9 +114,7 @@ class Bacula(object):
         with file(filename, "w") as f:
             for fname in files:
                 f.write( fname.encode("utf-8") + "\n" )
-        a = open(filename)
-        print a.read()
-        a.close()
+        
         return self.cmd.restore.\
                 client[client_name].\
                 file["<" + filename].\
