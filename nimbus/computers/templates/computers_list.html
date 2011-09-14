@@ -17,8 +17,11 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <div class="left"><a href="/computers/add" class="css3button positive">Adicionar computador</a></div>
-		
+		{% if inactive_computers %}
+        <div class="left">{% if inactive_computers|length == 1%}Existe um computador a ser ativado. <a href="/computers/add" class="css3button positive">Ativar novo computador</a>{% else %}Existem {{inactive_computers|length}} computadores a serem ativados. <a href="/computers/add" class="css3button positive">Ativar novos computadores</a>{% endif %}</div>
+		{% else %}
+		<div class="left">Não existem computadores a serem ativados</div>
+		{% endif %}
 		<div id="computers-filter">
 			<form action="/computers/list" method="get">
 			<select name="group"   id="computers-group">

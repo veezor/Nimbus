@@ -132,14 +132,15 @@ def list(request):
         computers = Computer.objects.filter(active=True,id__gt=1, groups__name=group)
     else:
         computers = Computer.objects.filter(active=True,id__gt=1)
+    inactive_computers = Computer.objects.filter(active=False,id__gt=1)
 
 
     groups = ComputerGroup.objects.order_by('name')
     extra_content = {
             'computers': computers,
             'title': u"Computadores Ativos",
-            'groups': groups
-    }
+            'groups': groups,
+            'inactive_computers': inactive_computers }
     return render_to_response(request, "computers_list.html", extra_content)
 
 @login_required
