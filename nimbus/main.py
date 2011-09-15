@@ -4,8 +4,7 @@
 import os
 import sys
 import getpass
-
-
+import threading # FIX KeyError
 
 
 sys.path.extend( ['/var/nimbus/deps/',
