@@ -3,6 +3,8 @@
 
 import xml
 from os import path
+import socket
+
 import xmlrpclib
 import keymanager
 
@@ -147,6 +149,7 @@ class Computer(BaseModel):
     def configure(self):
         nimbuscomputer = Computer.objects.get(id=1)
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
+        socket.setdefaulttimeout(40)
         proxy = xmlrpclib.ServerProxy(url)
         proxy.save_keys(self.crypto_info.pem,
                         nimbuscomputer.crypto_info.certificate)
