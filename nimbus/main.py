@@ -24,6 +24,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from nimbus.libs import offsite, graphsdata
+from nimbus.libs import migrations
+
 from nimbus.shared import utils
 from nimbus.libs.bacula import ( ReloadManager,
                                  ReloadManagerService,
@@ -156,6 +158,14 @@ class App(object):
         job_id =  int(sys.argv[2])
         send_email_report(job_id)
 
+
+    def update_10_to_11(self):
+        try:
+            migrations.update_10_to_11()
+        except migrations.ComputerUpdateError:
+            print "Erro: todos os clientes devem estar ativos na rede"
+            sys.exit(1)
+
     def run(self):
         commands = {
             "--server-forever" : self.run_server,
@@ -168,7 +178,8 @@ class App(object):
             "--change-password" : self.change_password,
             "--start-reload-manager-service" : self.reload_manager_service,
             "--email-report": self.send_email_report,
-            "--start-queue-service": self.start_queue_service
+            "--start-queue-service": self.start_queue_service,
+            "--update-1.0-to-1.1" : self.update_10_to_11
         }
 
         if len(sys.argv) > 1:

@@ -52,6 +52,23 @@ class CryptoInfo(models.Model):
     pem = models.CharField( max_length=4096, blank=False, null=False)
 
 
+    def _save_file(self, content, filename):
+
+        with file(filename, 'w') as f:
+            f.write(content)
+
+
+    def save_key(self, filename):
+        return self._save_file(self.key, filename)
+
+    def save_certificate(self, filename):
+        return self._save_file(self.certificate, filename)
+
+    def save_pem(self, filename):
+        return self._save_file(self.pem, filename)
+
+
+
 class ComputerNewClass(BaseModel):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False,
                             validators=[fields.check_model_name])
@@ -75,22 +92,6 @@ class Computer(BaseModel):
 
     class Meta:
         verbose_name = u"Computador"
-
-
-    def _get_crypt_file(self, filename):
-        km = KeyManager()
-        client_path = km.get_client_path(self.name)
-        path = os.path.join(client_path, file_name)
-        try:
-            file_content = open(file_path, 'r')
-            file_read = file_content.read()
-            file_content.close()
-            return file_read
-        except IOError, e:
-            raise UnableToGetFile("Original error was: %s" % e)      
-
-    def get_pem(self):
-        return self._get_crypt_file("client.pem")
 
     def get_config_file(self):
         config = Config.get_instance()
