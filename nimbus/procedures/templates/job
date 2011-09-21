@@ -9,6 +9,8 @@ Job {
     Client = "{{client}}"
     Type = "Backup"
     Pool = "{{pool}}"
+    Allow Duplicate Jobs = no
+    Cancel Queued Duplicates = yes
     {% if active %}
     Enabled = "yes"
     {% else %}
