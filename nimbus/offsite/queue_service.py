@@ -257,11 +257,11 @@ class Worker(Process):
     def __init__(self, request):
         super(Worker, self).__init__()
         self.request = request
-        self.s3 = Offsite.get_s3_interface()
 
 
     def run(self):
         from nimbus.libs.offsite import process_request
+        self.s3 = Offsite.get_s3_interface()
         try:
             request_id = self.request.id
             process_request(self.request, self._upload_file,
@@ -298,9 +298,7 @@ def get_queue_service_manager():
     try:
         return _get_queue_service_manager()
     except socket.error:
-        service = subprocess.Popen(settings.QUEUE_SERVICE_MANAGER_COMMAND,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
+        service = subprocess.Popen(settings.QUEUE_SERVICE_MANAGER_COMMAND)
         time.sleep(settings.QUEUE_MANAGER_START_SLEEP_TIME)
         return _get_queue_service_manager()
 
