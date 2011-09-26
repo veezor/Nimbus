@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import xml
 from os import path
+import socket
+
 import xmlrpclib
 import keymanager
 
@@ -28,6 +31,10 @@ class ComputerAlreadyActive(Exception):
     pass
 
 
+class NimbusClientMessageError(Exception):
+    pass
+
+
 class ComputerGroup(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
 
@@ -43,6 +50,23 @@ class CryptoInfo(models.Model):
     key = models.CharField( max_length=2048, blank=False, null=False)
     certificate = models.CharField( max_length=2048, blank=False, null=False)
     pem = models.CharField( max_length=4096, blank=False, null=False)
+
+
+    def _save_file(self, content, filename):
+
+        with file(filename, 'w') as f:
+            f.write(content)
+
+
+    def save_key(self, filename):
+        return self._save_file(self.key, filename)
+
+    def save_certificate(self, filename):
+        return self._save_file(self.certificate, filename)
+
+    def save_pem(self, filename):
+        return self._save_file(self.pem, filename)
+
 
 
 class ComputerNewClass(BaseModel):
@@ -68,22 +92,6 @@ class Computer(BaseModel):
 
     class Meta:
         verbose_name = u"Computador"
-
-
-    def _get_crypt_file(self, filename):
-        km = KeyManager()
-        client_path = km.get_client_path(self.name)
-        path = os.path.join(client_path, file_name)
-        try:
-            file_content = open(file_path, 'r')
-            file_read = file_content.read()
-            file_content.close()
-            return file_read
-        except IOError, e:
-            raise UnableToGetFile("Original error was: %s" % e)      
-
-    def get_pem(self):
-        return self._get_crypt_file("client.pem")
 
     def get_config_file(self):
         config = Config.get_instance()
@@ -142,6 +150,7 @@ class Computer(BaseModel):
     def configure(self):
         nimbuscomputer = Computer.objects.get(id=1)
         url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
+        socket.setdefaulttimeout(40)
         proxy = xmlrpclib.ServerProxy(url)
         proxy.save_keys(self.crypto_info.pem,
                         nimbuscomputer.crypto_info.certificate)
@@ -164,15 +173,19 @@ class Computer(BaseModel):
     def get_file_tree(self, path="/"):
         if path == "":
             path = "/"
-        url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
-        proxy = xmlrpclib.ServerProxy(url)
-        if self.operation_system == "windows" and path == "/":
-            files = proxy.get_available_drives()
-            files = [ fname[:-1] + '/' for fname in files ]
-        else:
-            files = proxy.list_dir(path)
-        files.sort()
-        return files
+
+        try:
+            url = "http://%s:%d" % (self.address, settings.NIMBUS_CLIENT_PORT)
+            proxy = xmlrpclib.ServerProxy(url)
+            if self.operation_system == "windows" and path == "/":
+                files = proxy.get_available_drives()
+                files = [ fname[:-1] + '/' for fname in files ]
+            else:
+                files = proxy.list_dir(path)
+            files.sort()
+            return files
+        except xml.parsers.expat.ExpatError:
+            raise NimbusClientMessageError()
 
     def deactivate(self):
         self.active = False

@@ -25,7 +25,7 @@ Messages {
 	append = "/var/bacula/working/log" = all, !skipped
     mailcommand = "/var/www/nimbus --email-report %i" 
     operatorcommand = "/var/www/nimbus --email-report %i" 
-    mail = nimbus@veezor.com = info
+    mail = nimbus@veezor.com = all, !skipped
     operator = nimbus@veezor.com = mount
 }
 

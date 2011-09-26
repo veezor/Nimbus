@@ -82,7 +82,7 @@ def offsite(request):
                      'page_name': u'offsite',
                      'previous': reverse('nimbus.wizard.views.network')}
     return edit_singleton_model(request, "generic.html",
-                                "nimbus.wizard.views.recovery",
+                                "nimbus.wizard.views.timezone",
                                 formclass = OffsiteForm,
                                 extra_context = extra_context)
 
@@ -110,7 +110,7 @@ def timezone(request):
     extra_context = {
         'wizard_title': u'4 de 5 - Configuração de Hora',
         'page_name': u'timezone',
-        'previous': reverse('nimbus.wizard.views.recovery')
+        'previous': reverse('nimbus.wizard.views.offsite')
     }
     return edit_singleton_model( request, "generic.html",
                                  "nimbus.wizard.views.password",
