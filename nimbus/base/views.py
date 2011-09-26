@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 
-import operator
-import systeminfo
-import re
 import simplejson
+import systeminfo
+
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -121,25 +120,32 @@ def license(request):
     return render_to_response(request, "license_general.html", locals())
 
 def about(request):
-    f = open(settings.MEDIA_ROOT + "/version")
-    version_file = f.read()
-    f.close()
-    full_version, version_hash = version_file.split("-")
-    version = ".".join(full_version.split(".")[0:-1])
-    release = full_version.split(".")[-1]
+    version_file = settings.VERSION_FILE
+
+    with file(version_file) as f:
+        version_content = f.read().strip()
+
+
+    version, githash = version_content.split('-')
+
     computers = len(Computer.objects.exclude(id=1))
     all_procedures = Procedure.objects.exclude(id=1)
     jobs = 0
     for procedure in all_procedures:
         jobs += len(procedure.all_my_good_jobs)
     procedures = len(all_procedures)
-    last_backup = Procedure.objects.get(id=1).last_success_date().endtime.strftime("%d/%m/%Y - %H:%M:%S")
+
+    try:
+        last_backup = Procedure.objects.get(id=1).last_success_date().endtime.strftime("%d/%m/%Y - %H:%M:%S")
+    except IndexError:
+        last_backup = "Não realizado"
+
     data = {'computers': computers,
             'procedures': procedures,
             'jobs': jobs,
             'last_backup': last_backup,
             'version': version,
-            'release': release
+            'release': githash
             }
     return render_to_response(request, "about.html", data)
 
