@@ -127,6 +127,9 @@ class Job(models.Model):
     class Meta:
         db_table = u'job'
 
+    def __unicode__(self):
+        return self.name
+
     @property
     def human_readable_size(self):
         size = float(self.jobbytes)
@@ -184,6 +187,13 @@ class Job(models.Model):
             return 'Full'
         elif self.level == 'I':
             return 'Incremental'
+
+    @property
+    def backup_type(self):
+        if self.type == "B":
+            return 'Backup'
+        elif self.type == 'R':
+            return 'Restauração'
 
     @property
     def end_time(self):
