@@ -151,7 +151,7 @@ def list_uploadrequest(request):
 
 @login_required
 def list_procedures(request):
-    procedures = Procedure.objects.filter(offsite_on=True)
+    procedures = Procedure.objects.filter(id__gt=1, offsite_on=True)
     extra_content = {'procedures': procedures,
                      'title': u"Procedimentos com offsite ativo"}
     return render_to_response(request, "procedures_list.html", extra_content)
