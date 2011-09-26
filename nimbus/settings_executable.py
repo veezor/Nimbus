@@ -162,6 +162,19 @@ if SERVE_STATIC_FILES:
 else:
     MEDIA_ROOT = join( NIMBUS_DEPLOY_PATH, 'media' )
 
+
+
+# nimbus version file
+
+VERSION_FILE = join(MEDIA_ROOT, "version")
+
+# end nimbus version file
+
+
+
+
+
+
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"

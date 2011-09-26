@@ -30,12 +30,9 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 
-import operator
-
 import systeminfo
 
-import re
-
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
 from nimbus.shared import utils
@@ -123,19 +120,32 @@ def about(request):
     # TODO:
     # dar um jeito de pegar a versão automáticamente
     # dar um jeito de pegar o release automaticamente
+    version_file = settings.VERSION_FILE
+
+    with file(version_file) as f:
+        version_content = f.read().strip()
+
+
+    version, githash = version_content.split('-') 
+
     computers = len(Computer.objects.exclude(id=1))
     all_procedures = Procedure.objects.exclude(id=1)
     jobs = 0
     for procedure in all_procedures:
         jobs += len(procedure.all_my_good_jobs)
     procedures = len(all_procedures)
-    last_backup = Procedure.objects.get(id=1).last_success_date().endtime.strftime("%d/%m/%Y - %H:%M:%S")
+
+    try:
+        last_backup = Procedure.objects.get(id=1).last_success_date().endtime.strftime("%d/%m/%Y - %H:%M:%S")
+    except IndexError:
+        last_backup = "Não realizado"
+
     data = {'computers': computers,
             'procedures': procedures,
             'jobs': jobs,
             'last_backup': last_backup,
-            'version': "1.0",
-            'release': "234245"
+            'version': version,
+            'release': githash
             }
     return render_to_response(request, "about.html", data)
 
