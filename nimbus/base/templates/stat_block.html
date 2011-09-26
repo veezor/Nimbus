@@ -5,11 +5,9 @@ Tipos possíveis: ok, warn, error
 <hr />
 <div class="content_block cols_{{item|length}}" id="accordion">
 	{% for job in last_jobs %}
-	<!-- <div class="inner_message {% cycle "odd" "even" %}" title="{{ job_line.tooltip }}"><img src="/media/icons/{{job_line.type}}.png" /> {% if job_line.date %}<small>{{job_line.date}}</small> -{% endif %} {{job_line.label}} {% if job_line.message %}<small>({{job_line.message}})</small>{% endif %}</div> -->
-<!-- 	<div id="job_{{job.jobid}}" class="job_line minus"> -->
     <h3>
 		<span class="status_{{job.general_status}}">Status {{job.human_general_status}}</span>
-        {{job.start_time}}: Procedimento {{job.procedure.name}} de '{{job.procedure.computer.name}}'
+        {{job.start_time}}: Procedimento de {{job.backup_type}} de '{{job.procedure.name}}' para '{{job.procedure.computer.name}}'
         <div class="clear"></div>
 	</h3>
 	<div id="job_{{job.jobid}}_details">
