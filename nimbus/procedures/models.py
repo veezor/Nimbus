@@ -83,23 +83,27 @@ class Procedure(BaseModel):
 
     @property
     def all_my_jobs(self):
-        jobs = Job.objects.filter(name=self.bacula_name)
+        jobs = Job.objects.filter(name__startswith=self.bacula_name)
         return jobs
 
     @property
     def all_my_good_jobs(self):
-        jobs = Job.objects.filter(name=self.bacula_name, jobstatus="T").order_by('-starttime')
+        jobs = Job.objects.filter(name__startswith=self.bacula_name, jobstatus="T").order_by('-starttime')
         return jobs
         
     @classmethod
     def all_jobs(cls):
         job_names = [ p.bacula_name for p in cls.objects.all() ]
+        for name in job_names[:]:
+            job_names.append(name+"restore")
         jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
     @classmethod
     def all_non_self_jobs(cls):
         job_names = [ p.bacula_name for p in cls.objects.exclude(id=1) ]
+        for name in job_names[:]:
+            job_names.append(name+"restore")
         jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
