@@ -26,7 +26,6 @@ from nimbus.base.models import Notification
 
 def check_my_status(request):
     ip = request.META.get('REMOTE_ADDR', None)
-    print ip
     computers = Computer.objects.filter(address=ip)
     if computers:
         computer = computers[0]

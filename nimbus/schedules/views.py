@@ -143,7 +143,6 @@ def do_delete(request, schedule_id):
 @login_required
 def reckless_discard(request):
     if request.method == 'POST':
-        print request.POST
         schedule_id = request.POST["schedule_id"]
         s = get_object_or_404(Schedule, pk=schedule_id)
         # not so reckless

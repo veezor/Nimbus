@@ -76,8 +76,6 @@ def edit(request, procedure_id):
               'schedule': p.schedule,
               'fileset': p.fileset,
               'retention_time': p.pool_retention_time}
-    print content
-    print content['schedule'].id
     if request.method == "POST":
         data = copy(request.POST)
         if data['procedure-schedule'] == u"":
