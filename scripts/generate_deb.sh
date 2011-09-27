@@ -48,8 +48,10 @@ cp webservices/manager/nimbus_manager.conf deb/etc/nimbus
 cp webservices/manager/nimbus_manager_log.conf deb/etc/nimbus
 cp libs/keymanager/conf/ssl.conf deb/etc/nimbus
 cp webservices/manager/init.d/nimbusmanager deb/etc/init.d
+cp version deb/var/www/media
 
 VERSION=`cat version`
+
 dpkg-deb -b deb nimbus-$VERSION.deb
 
 rm -rf deb/var/www
