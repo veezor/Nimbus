@@ -2,7 +2,7 @@
 
 from os.path import join, dirname
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 AJAX_DEBUG = DEBUG
 
