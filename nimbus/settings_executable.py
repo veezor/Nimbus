@@ -6,12 +6,6 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 AJAX_DEBUG = DEBUG
 
-ADMINS = (
-     ('Suporte Nimbus', 'nimbus.suporte@nimbus.veezor.com'),
-)
-
-MANAGERS = ADMINS
-
 
 DATABASES = {
     'default': {
