@@ -271,8 +271,6 @@ class Worker(Process):
             set_request_as_done(self.request_id)
         except IOError, error:
             sys.exit(2)
-        except Exception, error:
-            pass
 
 
     def _upload_file(self, filename, dest, callback=None, userdata=None):
