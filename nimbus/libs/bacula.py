@@ -86,17 +86,18 @@ class Bacula(object):
                         .select_related()\
                         .filter(path__path__startswith=fname)
                 files.extend( s.fullname for s in subfiles  )
+
+
         with file(filename, "w") as f:
             for fname in files:
                 f.write( fname.encode("utf-8") + "\n" )
-        a = open(filename)
-        print a.read()
-        a.close()
+        
         return self.cmd.restore.\
                 client[client_name].\
                 file["<" + filename].\
                 restoreclient[client_name].\
                 select.all.done.yes.where[where].jobid[jobid].run()
+
 
     def run_backup(self, job_name, client_name):
         """ Date Format:  YYYY-MM-DD HH:MM:SS
