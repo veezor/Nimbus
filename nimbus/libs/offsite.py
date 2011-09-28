@@ -7,6 +7,7 @@ import stat
 import time
 import logging
 import tempfile
+import xmlrpclib
 import subprocess
 from pwd import getpwnam
 from hashlib import md5
@@ -265,8 +266,10 @@ class RemoteManager(BaseManager):
         requests = self.get_upload_requests()
         queue_manager = get_queue_service_manager()
         for request in requests:
-            queue_manager.add_request(request.id)
-
+            try:
+                queue_manager.add_request(request.id)
+            except xmlrpclib.Fault:
+                pass
 
 
 
