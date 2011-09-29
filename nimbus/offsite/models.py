@@ -28,7 +28,7 @@ class Offsite(BaseModel):
     secret_key = models.CharField(max_length=255, blank=True, 
                                   null=True, editable=False)
     rate_limit = models.IntegerField(default=-1)
-    plan_size = models.IntegerField(default=0, editable=False)
+    plan_size = models.BigIntegerField(default=0, editable=False)
     active = models.BooleanField()
 
 
@@ -89,7 +89,6 @@ class Offsite(BaseModel):
         content = opener.open(url)
         data = content.read()
         content.close()
-
         return json.loads(data)
     
 
