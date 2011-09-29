@@ -2,7 +2,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/var/www
 NAME=nimbus
-DESC="Nimbus Gunicorn Daemon"
+DESC="Nimbus Daemon"
 
 # Identify the system.
 if [ $(uname) = "Darwin" ] ; then
@@ -13,8 +13,15 @@ if [ $(uname) = "Darwin" ] ; then
 else
     SYSTEM_OS=linux
     DAEMON=/var/www/nimbus
-    STOPDAEMON="start-stop-daemon --stop --quiet --exec $DAEMON -s KILL"
-    STARTDAEMON="start-stop-daemon --start --exec $DAEMON -b -c nimbus"
+    PID_NIMBUS=/var/run/nimbus.pid
+    PID_QUEUE_SERVICE=/var/run/nimbus_queue.pid
+
+    START_GUNICORN_DAEMON="start-stop-daemon --start --pidfile $PID_NIMBUS --startas $DAEMON -b -c nimbus"
+    START_QUEUE_DAEMON="start-stop-daemon --start --pidfile $PID_QUEUE_SERVICE --startas $DAEMON -b -c nimbus -- --start-queue-service"
+
+
+    STOP_GUNICORN_DAEMON="start-stop-daemon --stop --quiet --pidfile $PID_NIMBUS -s KILL"
+    STOP_QUEUE_DAEMON="start-stop-daemon --stop --quiet --pidfile $PID_QUEUE_SERVICE -s KILL"
 fi
 
 
@@ -29,12 +36,14 @@ set -e
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
-	$STARTDAEMON
+	$START_GUNICORN_DAEMON;
+    $START_QUEUE_DAEMON;
 	echo "$NAME."
 	;;
   stop)
 	echo -n "Stopping $DESC: "
-	$STOPDAEMON
+	$STOP_GUNICORN_DAEMON;
+    $STOP_QUEUE_DAEMON;
 	echo "$NAME."
 	;;
   #reload)
@@ -56,9 +65,11 @@ case "$1" in
 	#	just the same as "restart".
 	#
 	echo -n "Restarting $DESC: "
-	$STOPDAEMON > /dev/null || echo;
+	$STOP_GUNICORN_DAEMON > /dev/null || echo;
+	$STOP_QUEUE_DAEMON > /dev/null || echo;
 	sleep 1;
-	$STARTDAEMON;
+	$START_GUNICORN_DAEMON;
+	$START_QUEUE_DAEMON;
 	echo "$NAME.";
 	;;
   *)

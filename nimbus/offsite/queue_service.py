@@ -1,10 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
+import os
 import sys
 import time
 import socket
 import weakref
+import logging
 import xmlrpclib
 import subprocess
 import SimpleXMLRPCServer
@@ -167,7 +170,6 @@ class PriorityQueueManager(Thread):
 
 
     def run(self):
-
         self.running = True
         while self.running:
             request = self.queue.get()
@@ -201,7 +203,7 @@ class PriorityQueueManager(Thread):
 
 
     def _start_worker(self, request):
-        worker = Worker(request)
+        worker = Worker(request.id)
         self.current_worker = worker
         self.current_request = request
 
@@ -210,7 +212,7 @@ class PriorityQueueManager(Thread):
 
         if worker.exitcode == 2:
             # -15[kill] == cancel
-            self.add_request(worker.request)
+            self.add_request(request)
 
         self.current_worker = None
         self.current_request = None
@@ -254,19 +256,19 @@ class Worker(Process):
 
     MAX_RETRY = 3
 
-    def __init__(self, request):
+    def __init__(self, request_id):
         super(Worker, self).__init__()
-        self.request = request
+        self.request_id = request_id
 
 
     def run(self):
         from nimbus.libs.offsite import process_request
         self.s3 = Offsite.get_s3_interface()
         try:
-            request_id = self.request.id
+            self.request = RemoteUploadRequest.objects.get(id=self.request_id)
             process_request(self.request, self._upload_file,
                             get_worker_ratelimit(), self.MAX_RETRY)
-            set_request_as_done(request_id)
+            set_request_as_done(self.request_id)
         except IOError, error:
             sys.exit(2)
 
@@ -287,21 +289,10 @@ def start_queue_manager_service():
     server.serve_forever()
 
 
-def _get_queue_service_manager():
+def get_queue_service_manager():
     proxy = xmlrpclib.ServerProxy(settings.QUEUE_SERVICE_MANAGER_URL)
     proxy.check_service()
     return proxy
-
-
-
-def get_queue_service_manager():
-    try:
-        return _get_queue_service_manager()
-    except socket.error:
-        service = subprocess.Popen(settings.QUEUE_SERVICE_MANAGER_COMMAND)
-        time.sleep(settings.QUEUE_MANAGER_START_SLEEP_TIME)
-        return _get_queue_service_manager()
-
 
 
 

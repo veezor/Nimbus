@@ -6,12 +6,6 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 AJAX_DEBUG = DEBUG
 
-ADMINS = (
-     ('Suporte Nimbus', 'nimbus.suporte@nimbus.veezor.com'),
-)
-
-MANAGERS = ADMINS
-
 
 DATABASES = {
     'default': {
@@ -98,8 +92,6 @@ NIMBUS_CLIENT_PORT = 11110
 QUEUE_SERVICE_MANAGER_PORT = 11112
 QUEUE_SERVICE_MANAGER_ADDRESS = '127.0.0.1'
 QUEUE_SERVICE_MANAGER_URL = "http://localhost:11112"
-QUEUE_MANAGER_START_SLEEP_TIME = 3
-QUEUE_SERVICE_MANAGER_COMMAND = [NIMBUS_EXE,'--start-queue-service']
 
 
 NIMBUS_CENTRAL_USER_DATA_URL = "http://www.veezor.com/central/acesso_iam.php"
