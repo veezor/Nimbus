@@ -64,13 +64,17 @@ class Offsite(BaseModel):
             self.plan_size = nimbus_central_data['quota']
             self.access_key = nimbus_central_data['accesskey']['id']
             self.secret_key = nimbus_central_data['accesskey']['secret']
-
+            if nimbus_central_data.has_key('host'):
+                self.host = nimbus_central_data['host']
+            else:
+                self.host = "s3.amazonaws.com"
 
             try:
                 s3 = S3(username=self.username,
                         access_key=self.access_key,
                         secret_key=self.secret_key,
-                        rate_limit=self.rate_limit)
+                        rate_limit=self.rate_limit,
+                        host=self.host)
             except S3AuthError, error:
                 logger.exception("nimbus central keys error")
                 raise ValidationError("Erro de configuração. Contactar o suporte. Chaves não conferem")
