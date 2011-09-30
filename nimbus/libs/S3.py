@@ -145,7 +145,7 @@ class S3(object):
 
 
     def __init__(self, username, access_key, secret_key,
-                       rate_limit=None):
+                       rate_limit=None, host="s3.amazonaws.com"):
 
         self.username = username
         self.access_key = access_key
@@ -154,12 +154,22 @@ class S3(object):
         self.rate_limiter = RateLimiter(self.rate_limit)
         self.callbacks = CallbackAggregator()
         self.multipart_status_callbacks = CallbackAggregator()
+        self.host = host
 
         if self.rate_limit:
             self.callbacks.add_callback(self.rate_limiter)
 
-        self.connection = boto.connect_s3(access_key, secret_key)
-
+        if host =='s3.amazonaws.com':
+            self.connection = boto.connect_s3(self.access_key, self.secret_key)
+        else:
+            self.connection = boto.connect_s3(aws_access_key_id=self.access_key,
+                              aws_secret_access_key=self.secret_key,
+                              is_secure=False,
+                              host=self.host,
+                              port=8773,
+                              calling_format=boto_s3_connection_class.OrdinaryCallingFormat(),
+                              path="/services/Walrus")
+                      
         if not self.connection:
             raise S3AuthError("check access_key and secret_key")
 

@@ -63,6 +63,14 @@ def edit(request):
                                 formclass = OffsiteForm,
                                 extra_context = locals())
 
+# WORKAROUND enquanto a central não informa o host do servidor de storage
+def self_auth(request):
+    # print request
+    # print '{"status":1,"accesskey":{"id":"sdfsf23r2sadf","secret":"sdfsf23sdffss"},"quota":"10000000000"}'
+    # return HttpResponse('{"status":1,"accesskey":{"id":"WKy3rMzOWPouVOxK1p3Ar1C2uRBwa2FBXnCw","secret":"OqB5HIRx7yEKBonz6lQI8jbN1Qg3Mguf1g5mw"},"quota":"10000", "host": "192.168.51.6"}')
+    return HttpResponse('{"status":1,"accesskey":{"id":"AKIAJB5RPEBFQLFOWMXQ","secret":"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"},"quota":"10000"}')
+
+
 @login_required
 def select_storage(request):
     return render_to_response(request, 
