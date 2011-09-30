@@ -16,8 +16,8 @@ else
     PID_NIMBUS=/var/run/nimbus.pid
     PID_QUEUE_SERVICE=/var/run/nimbus_queue.pid
 
-    START_GUNICORN_DAEMON="start-stop-daemon --start --pidfile $PID_NIMBUS --startas $DAEMON -b -c nimbus"
-    START_QUEUE_DAEMON="start-stop-daemon --start --pidfile $PID_QUEUE_SERVICE --startas $DAEMON -b -c nimbus -- --start-queue-service"
+    START_GUNICORN_DAEMON="start-stop-daemon -m --start --pidfile $PID_NIMBUS --startas $DAEMON -b -c nimbus"
+    START_QUEUE_DAEMON="start-stop-daemon -m --start --pidfile $PID_QUEUE_SERVICE --startas $DAEMON -b -c nimbus -- --start-queue-service"
 
 
     STOP_GUNICORN_DAEMON="start-stop-daemon --stop --quiet --pidfile $PID_NIMBUS -s KILL"
