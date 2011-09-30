@@ -1,82 +1,209 @@
-#!/bin/bash
-### BEGIN INIT INFO
-# Provides:          nimbusclient
-# Required-Start:    $remote_fs $syslog
-# Required-Stop:     $remote_fs $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start daemon at boot time
-# Description:       Enable service provided by daemon.
-### END INIT INFO
+#! /bin/bash
+
+PSCMD="ps -e -o pid,command"
+PS="ps"
+
+AWK=/usr/bin/awk
+
+# All these are not *really* needed but it makes it
+#  easier to "steal" this code for the development 
+#  environment where they are different.
+#  
+DAEMON=/usr/bin/nimbusclientservice
+NIMBUSCFG=/etc/nimbus
+PIDDIR=/var/run
+SUBSYSDIR=/var/run/subsys
+
+NIMBUS_CLIENT_PORT=11110
+
+PIDOF=/bin/pidof	
+
+# A function to stop a program.
+killproc() {
+   RC=0
+   # Test syntax.
+   if [ $# = 0 ]; then
+      echo "Usage: killproc {program} {port} [signal]"
+      return 1
+   fi
+
+   notset=0
+   # check for third arg to be kill level
+   if [ "$3" != "" ] ; then
+      killlevel=$3
+   else
+      notset=1
+      killlevel="-9"
+   fi
+
+   # Get base program name
+   base=`basename $1`
+
+   # Find pid.
+   pid=`pidofproc $base $2`
+
+   # Kill it.
+   if [ "$pid" != "" ] ; then
+      if [ "$notset" = "1" ] ; then
+	 if ${PS} -p "$pid">/dev/null 2>&1; then
+	     # TERM first, then KILL if not dead
+	     kill -TERM $pid 2>/dev/null
+	     sleep 1
+	     if ${PS} -p "$pid" >/dev/null 2>&1 ; then
+		 sleep 1
+		 if ${PS} -p "$pid" >/dev/null 2>&1 ; then
+		     sleep 3
+		     if ${PS} -p "$pid" >/dev/null 2>&1 ; then
+			 kill -KILL $pid 2>/dev/null
+		     fi
+		 fi
+	     fi
+	  fi
+	  ${PS} -p "$pid" >/dev/null 2>&1
+	  RC=$?
+	  [ $RC -eq 0 ] && failure "$base shutdown" || success "$base shutdown"
+      #    RC=$((! $RC))
+      # use specified level only
+      else
+	 if ${PS} -p "$pid" >/dev/null 2>&1; then
+	    kill $killlevel $pid 2>/dev/null
+	    RC=$?
+	    [ $RC -eq 0 ] && success "$base $killlevel" || failure "$base $killlevel"
+	 fi
+      fi
+   else
+      failure "$base shutdown"
+   fi
+   # Remove pid file if any.
+   if [ "$notset" = "1" ]; then
+      rm -f ${PIDDIR}/$base.$2.pid
+   fi
+   return $RC
+}
+
+# A function to find the pid of a program.
+pidofproc() {
+   pid=""
+   # Test syntax.
+   if [ $# = 0 ] ; then
+      echo "Usage: pidofproc {program}"
+      return 1
+   fi
+
+   # Get base program name
+   base=`basename $1`
+
+   # First try PID file
+   if [ -f ${PIDDIR}/$base.$2.pid ] ; then
+      pid=`head -n 1 ${PIDDIR}/$base.$2.pid`
+      if [ "$pid" != "" ] ; then
+	 echo $pid
+	 return 0
+      fi
+   fi
+
+   # Next try "pidof"
+   if [ -x ${PIDOF} ] ; then
+      pid=`${PIDOF} $1`
+   fi
+   if [ "$pid" != "" ] ; then
+      echo $pid
+      return 0
+   fi
+
+   # Finally try to extract it from ps
+   pid=`${PSCMD} | grep $1 | ${AWK} '{ print $1 }' | tr '\n' ' '`
+   echo $pid
+   return 0
+}
+
+status() {
+   pid=""
+   # Test syntax.
+   if [ $# = 0 ] ; then
+       echo "Usage: status {program} {port}"
+       return 1
+   fi
+
+   # Get base program name
+   base=`basename $1`
+
+   # First try "pidof"
+   if [ -x ${PIDOF} ] ; then
+      pid=`${PIDOF} $1`
+   fi
+   if [ "$pid" != "" ] ; then
+      echo "$base (pid $pid) is running..."
+      return 0
+   else
+      pid=`${PSCMD} | ${AWK} 'BEGIN { prog=ARGV[1]; ARGC=1 } 
+	    { if ((prog == $2) || (("(" prog ")") == $2) ||
+		 (("[" prog "]") == $2) ||
+		 ((prog ":") == $2)) { print $1 ; exit 0 } }' $1`
+      if [ "$pid" != "" ] ; then
+	 echo "$base (pid $pid) is running..."
+	 return 0
+      fi
+   fi
+
+   # Next try the PID files
+   if [ -f ${PIDDIR}/$base.$2.pid ] ; then
+      pid=`head -n 1 ${PIDDIR}/$base.$2.pid`
+      if [ "$pid" != "" ] ; then
+	 echo "$base dead but pid file exists"
+	 return 1
+      fi
+   fi
+   # See if the subsys lock exists
+   if [ -f ${SUBSYSDIR}/$base ] ; then
+      echo "$base dead but subsys locked"
+      return 2
+   fi
+   echo "$base is stopped"
+   return 3
+}
+
+success() {
+   return 0
+}
+
+failure() {
+   rc=$?
+   return $rc
+}
 
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-NAME=nimbusclient
-DESC="Nimbus Client Daemon"
-
-# Identify the system.
-if [ $(uname) = "Darwin" ] ; then
-    SYSTEM_OS=mac
-    DAEMON=/etc/nimbus/com.nimbus.nimbusd.plist
-    STOPDAEMON="sudo launchctl unload -w $DAEMON"
-    STARTDAEMON="sudo launchctl load -w $DAEMON"
-else
-    SYSTEM_OS=linux
-    DAEMON=/usr/bin/nimbusclientservice
-    STOPDAEMON="start-stop-daemon --stop --quiet --pidfile /var/run/nimbusclient.pid"
-    STARTDAEMON="start-stop-daemon --start --exec $DAEMON -b -m --pidfile /var/run/nimbusclient.pid"
-fi
-
-
-if [ ! -f $DAEMON ];
-then 
-	echo 'ERR: The daemon file is no present.'; 
-	exit 0;
-fi;
-
-set -e
 
 case "$1" in
-  start)
-	echo -n "Starting $DESC: "
-	$STARTDAEMON
-	echo "$NAME."
-	;;
-  stop)
-	echo -n "Stopping $DESC: "
-	$STOPDAEMON
-	echo "$NAME."
-	;;
-  #reload)
-	#
-	#	If the daemon can reload its config files on the fly
-	#	for example by sending it SIGHUP, do it here.
-	#
-	#	If the daemon responds to changes in its config file
-	#	directly anyway, make this a do-nothing entry.
-	#
-	# echo "Reloading $DESC configuration files."
-	# start-stop-daemon --stop --signal 1 --quiet --pidfile \
-	#	/var/run/$NAME.pid --exec $DAEMON
-  #;;
-  restart|force-reload)
-	#
-	#	If the "reload" option is implemented, move the "force-reload"
-	#	option to the "reload" entry above. If not, "force-reload" is
-	#	just the same as "restart".
-	#
-	echo -n "Restarting $DESC: "
-	$STOPDAEMON > /dev/null || echo;
-	sleep 1;
-	$STARTDAEMON;
-	echo "$NAME.";
-	;;
-  *)
-	N=/etc/init.d/$NAME
-	# echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $N {start|stop|restart|force-reload}" >&2
-	exit 1
-	;;
-esac
+   start)
+      [ -x ${DAEMON} ] && { 
+	  echo "Starting the Nimbus Client Daemon"
 
+	  ${DAEMON} &>/dev/null &
+	  sleep 1
+      }
+      ;;
+
+   stop)
+      [ -x ${DAEMON} ] && {
+	 echo "Stopping the Nimbus Client Daemon"
+	 killproc ${DAEMON}  ${NIMBUS_CLIENT_PORT}
+      }
+      ;;
+
+   restart)
+      $0 stop
+      sleep 5
+      $0 start
+      ;;
+
+   status)
+      [ -x ${DAEMON} ] && status ${DAEMON} ${NIMBUS_CLIENT_PORT}
+      ;;
+
+   *)
+      echo "Usage: $0 {start|stop|restart|status}"
+      exit 1
+      ;;
+esac
 exit 0
