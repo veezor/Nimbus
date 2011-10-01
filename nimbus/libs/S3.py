@@ -3,6 +3,7 @@
 
 import os
 import boto
+from boto.s3 import connection as boto_s3_connection_class
 import logging
 import tempfile
 from functools import wraps
@@ -145,7 +146,7 @@ class S3(object):
 
 
     def __init__(self, username, access_key, secret_key,
-                       rate_limit=None, host="s3.amazonaws.com"):
+                       rate_limit=None, host=None):
 
         self.username = username
         self.access_key = access_key
@@ -159,7 +160,7 @@ class S3(object):
         if self.rate_limit:
             self.callbacks.add_callback(self.rate_limiter)
 
-        if host =='s3.amazonaws.com':
+        if self.host =='s3.amazonaws.com':
             self.connection = boto.connect_s3(self.access_key, self.secret_key)
         else:
             self.connection = boto.connect_s3(aws_access_key_id=self.access_key,
@@ -172,7 +173,6 @@ class S3(object):
                       
         if not self.connection:
             raise S3AuthError("check access_key and secret_key")
-
         self.bucket = self.connection.lookup(username)
 
 

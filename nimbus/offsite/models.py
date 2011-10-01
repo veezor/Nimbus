@@ -29,6 +29,7 @@ class Offsite(BaseModel):
                                   null=True, editable=False)
     rate_limit = models.IntegerField(default=-1)
     plan_size = models.BigIntegerField(default=0, editable=False)
+    host = models.CharField(max_length=255, blank=True, null=True, editable=False)
     active = models.BooleanField()
 
 
@@ -105,11 +106,11 @@ class Offsite(BaseModel):
             rate_limit = None
         else:
             rate_limit = config.rate_limit * 1024 #kb
-
         s3 = S3(username=config.username,
                  access_key=config.access_key,
                  secret_key=config.secret_key,
-                 rate_limit=rate_limit)
+                 rate_limit=rate_limit,
+                 host=config.host)
 
         return s3
 
