@@ -17,6 +17,6 @@ Job {
     Enabled = "no"
     {% endif %}
     {% if offsite %}
-    Run After Job = "/var/www/nimbus {{offsite_param}}"
+    Run After Job = "{{NIMBUS_EXE}} {{offsite_param}}"
     {% endif %}
 }

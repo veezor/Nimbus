@@ -174,6 +174,7 @@ def update_procedure_file(procedure):
                    offsite=procedure.offsite_on,
                    active=procedure.active,
                    offsite_param="--upload-requests %v",
+                   NIMBUS_EXE=settings.NIMBUS_EXE,
                    client=procedure.computer.bacula_name,
                    pool=procedure.pool_bacula_name() )
 
