@@ -28,7 +28,8 @@ class Offsite(BaseModel):
     secret_key = models.CharField(max_length=255, blank=True, 
                                   null=True, editable=False)
     rate_limit = models.IntegerField(default=-1)
-    plan_size = models.IntegerField(default=0, editable=False)
+    plan_size = models.BigIntegerField(default=0, editable=False)
+    host = models.CharField(max_length=255, blank=True, null=True, editable=False)
     active = models.BooleanField()
 
 
@@ -64,13 +65,17 @@ class Offsite(BaseModel):
             self.plan_size = nimbus_central_data['quota']
             self.access_key = nimbus_central_data['accesskey']['id']
             self.secret_key = nimbus_central_data['accesskey']['secret']
-
+            if nimbus_central_data.has_key('host'):
+                self.host = nimbus_central_data['host']
+            else:
+                self.host = "s3.amazonaws.com"
 
             try:
                 s3 = S3(username=self.username,
                         access_key=self.access_key,
                         secret_key=self.secret_key,
-                        rate_limit=self.rate_limit)
+                        rate_limit=self.rate_limit,
+                        host=self.host)
             except S3AuthError, error:
                 logger.exception("nimbus central keys error")
                 raise ValidationError("Erro de configuração. Contactar o suporte. Chaves não conferem")
@@ -89,7 +94,6 @@ class Offsite(BaseModel):
         content = opener.open(url)
         data = content.read()
         content.close()
-
         return json.loads(data)
     
 
@@ -102,11 +106,11 @@ class Offsite(BaseModel):
             rate_limit = None
         else:
             rate_limit = config.rate_limit * 1024 #kb
-
         s3 = S3(username=config.username,
                  access_key=config.access_key,
                  secret_key=config.secret_key,
-                 rate_limit=rate_limit)
+                 rate_limit=rate_limit,
+                 host=config.host)
 
         return s3
 

@@ -150,3 +150,4 @@ def reckless_discard(request):
             f.delete()
         # else:
             # leave it to garbage colletor
+    return HttpResponse("")
