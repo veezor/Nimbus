@@ -2,6 +2,9 @@ Pool {
     Name = "{{name}}"
     Label Format = "{{name}}-vol-"
     Maximum Volume Jobs = 1
+    {% if max_vol_bytes %}
+    Maximum Volume Bytes = {{ max_vol_bytes }}
+    {% endif %}
     Volume Retention = {{days}} days
     File Retention = {{days}} days
     Job Retention = {{days}} days

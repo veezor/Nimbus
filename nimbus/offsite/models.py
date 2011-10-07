@@ -21,6 +21,8 @@ from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 
 class Offsite(BaseModel):
+    AMZ_S3_HOST = "s3.amazonaws.com"
+
     username = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
     access_key = models.CharField(max_length=255, blank=True, 
