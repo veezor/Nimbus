@@ -26,8 +26,12 @@ $(document).ready(function(){
                     labels: labels
                 },
                 fill: true,
-                /* color: '#95BACB', */
-                color: '#67c7a1',
+                // APPLIANCE
+                // color: '#95BACB', 
+                // OPENSOURCE:
+                // color: '#67c7a1',
+                // PROFESSIONAL:
+                color: '#B3433C',
                 markerOptions: {
                     show: true,
                     lineWidth: 5,

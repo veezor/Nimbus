@@ -83,11 +83,18 @@ a:hover {
 #header {
 	height: 50px;
 	line-height: 50px;
-	background: #1b8568; /*url(../images/hdr.gif) 0 0 repeat-x;*/
+/*  OPENSOURCE:*/
+/*  background: #1b8568;*/
+/*  border: 1px solid #1b8568;*/
+/*  APPLIANCE*/
+/*  background: #4087BB;*/
+/*  border: 1px solid #4087BB;*/
+/*  PROFESSIONAL*/
+    background: #8D352F;
+    border: 1px solid #8D352F;
 	color: #FFF;
 	/*font-weight: bold;*/
 	margin-bottom: 20px;
-	border: 1px solid #1b8568;
 	-webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;
 	padding: 0 20px 0 0;
 	}
@@ -105,7 +112,12 @@ display: none;
 	width: 20px;
 	height: 50px;
 	float: right;
-	background: #1b8568; /*url(../images/hdrr.gif) top right no-repeat;*/
+    /*  OPENSOURCE:*/
+    /*  background: #1b8568;*/
+    /*  APPLIANCE*/
+    /*  background: #4087BB;*/
+    /*  PROFESSIONAL*/
+    background: #8D352F;
 	}
 	
 #header a {
@@ -130,7 +142,8 @@ display: none;
 	font-weight: normal;
 	text-transform: uppercase;
 	color: #fff;
-	background: url(../images/logo_opensource.png) left no-repeat;
+/*  background: url(../images/logo_opensource.png) left no-repeat;*/
+	background: url(../images/logo_professional.png) left no-repeat;
 	width: 93px;
     height: 50px;
 	text-indent: -99999em;
@@ -247,8 +260,13 @@ display: none;
 	line-height: 30px;
 	/*color: #999;*/
 	color: #FFF;
-	/*background: url(../images/mbg.png) 0 0 repeat;*/
-	background: #1b8568;
+    /*  OPENSOURCE:*/
+    /*  background: #1b8568;*/
+    /*  border: 1px solid #1b8568;*/
+    /*  APPLIANCE*/
+    /*  background: #4087BB;*/
+    /*  PROFESSIONAL*/
+    background: #8D352F;
 	}
 
 /* 2nd Menu Hover Persistence */
@@ -1478,7 +1496,10 @@ p.alert a{color: #8F7E11;}
 }
 .grafico_uma_barra .grafico_uma_barra_wrapper .grafico_uma_barra_inner {
     -moz-border-radius: 3px;
-    background-color: #00CC00 !important;
+/*    OPENSOURCE:*/
+/*    background-color: #67c7a1 !important;*/
+/*    PROFESSIONAL:*/
+    background-color: #B3433C !important;
     height: 20px;
 }
 
