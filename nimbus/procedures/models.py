@@ -30,8 +30,8 @@ from nimbus.shared import utils, enums, signals, fields
 
 class Procedure(BaseModel):
     pool_name = models.CharField(max_length=255)
-    pool_size = models.FloatField(blank=False, null=False, default=5242880,
-                                  editable=False)
+    pool_size = models.FloatField(blank=False, null=False, default=104857600,
+                                  editable=False) #100MB
     pool_retention_time = models.IntegerField(verbose_name=_("Retention Time (days)"),
                                               blank=False, null=False,
                                               default=30)
@@ -233,11 +233,19 @@ def offsiteconf_check(procedure):
 
 
 def update_pool_file(procedure):
-    """Pool update pool bacula file""" 
+    """Pool update pool bacula file"""
     name = procedure.pool_bacula_name()
     filename = path.join(settings.NIMBUS_POOLS_DIR, name)
-    render_to_file(filename, "pool", name=name, max_vol_bytes=procedure.pool_size,
+
+    offsite_conf = Offsite.get_instance()
+    if offsite_conf.active and offsite_conf.host != offsite_conf.AMZ_S3_HOST:
+        vol_bytes = int(procedure.pool_size) # TODO: change model field to integer
+    else:
+        vol_bytes = 0
+
+    render_to_file(filename, "pool", name=name, max_vol_bytes=vol_bytes,
                    days=procedure.pool_retention_time)
+
 
 def remove_pool_file(procedure):
     """pool remove file"""

@@ -6,5 +6,4 @@ su - nimbus -c 'PGPASSWORD=bacula /usr/bin/pg_dump bacula -U bacula -h 127.0.0.1
 
 
 su - nimbus -c '/var/www/nimbus --update-graphs-data';
-su - nimbus -c '/var/www/nimbus --delete-volumes';
 
