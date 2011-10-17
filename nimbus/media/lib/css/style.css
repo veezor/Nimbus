@@ -275,7 +275,10 @@ display: none;
 #header #nav li.iehover li a:hover,
 #header #nav li.iehover li.iehover a {
 	color: #fff;
-	background: #0a3026;
+    /*  OPENSOURCE*/
+    /*    background: #0a3026;*/
+    /*  PROFESSIONAL*/
+    background: #4b1612;
 	}
 
 /* 3rd Menu */
