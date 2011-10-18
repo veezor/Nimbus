@@ -16,7 +16,7 @@ from boto.s3.resumable_download_handler import ResumableDownloadHandler
 
 MIN_MULTIPART_SIZE = 5242880 # 5mb
 
-logger = logging.getLogger(__name__)
+
 
 
 class RateLimiter(object):
@@ -38,10 +38,7 @@ class RateLimiter(object):
         if elapsed_time:
 
             rate = transferred_size / elapsed_time
-            logger.info("%d kb of %d kb transferred %.2f kBytes/s" % (transferred_size, total_kb, rate))
 
-            if rate:
-                logger.info("ETA: %.2f minutes" % (float(total_kb - transferred_size) / rate/ 60))
 
             expected_time = transferred_size / self.rate_limit
 
@@ -137,6 +134,7 @@ def callback_decorator(function):
 
         if callback:
             self.callbacks.remove_callback(callback)
+        
         return value
 
     return wrapper
@@ -156,6 +154,7 @@ class S3(object):
         self.callbacks = CallbackAggregator()
         self.multipart_status_callbacks = CallbackAggregator()
         self.host = host
+        self.logger = logging.getLogger(__name__)
 
         if self.rate_limit:
             self.callbacks.add_callback(self.rate_limiter)
@@ -181,7 +180,7 @@ class S3(object):
 
 
     def _upload(self, filename, keyname):
-        logger.info('simple upload')
+        self.logger.info('simple upload')
         key = self.bucket.new_key(keyname)
         with file(filename) as f_obj:
             key.set_contents_from_file(f_obj,
@@ -192,8 +191,11 @@ class S3(object):
     def _upload_multipart(self, filename, keyname, part):
         from nimbus.offsite import queue_service
 
-        logger.info('multipart upload')
+        self.logger.info('initiate multipart upload ')
         multipart = self.bucket.initiate_multipart_upload(keyname)
+
+        self.logger.info('initiate multipart with part =  %d' % (part)  )
+
 
         with MultipartFileManager(filename, part) as manager:
             for (part_number, part_content) in enumerate(manager, part):
@@ -219,6 +221,7 @@ class S3(object):
 
     @callback_decorator
     def upload_file(self, filename, key=None, part=0):
+        self.logger.info('initiate upload with part =  %d' % (part)  )
 
         if not key:
             key = os.path.basename(filename)
