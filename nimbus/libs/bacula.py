@@ -222,7 +222,7 @@ class ReloadManagerService(object):
     def _interval(self):
 
         if not self.conf.last_bacula_reload:
-            return self._min_interval + 1
+            return self._min_interval + datetime.timedelta(seconds=1)
 
         now = datetime.datetime.now()
         return now - self.conf.last_bacula_reload
