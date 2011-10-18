@@ -196,12 +196,12 @@ class S3(object):
         multipart = self.bucket.initiate_multipart_upload(keyname)
 
         with MultipartFileManager(filename, part) as manager:
-            for (part_number, part_content) in enumerate(manager):
+            for (part_number, part_content) in enumerate(manager, part):
 
                 self.rate_limiter.rate_limit = queue_service.get_worker_ratelimit()
 
-                part = StringIO(part_content)
-                multipart.upload_part_from_file(part,
+                part_file = StringIO(part_content)
+                multipart.upload_part_from_file(part_file,
                                                 part_number + 1,
                                                 cb=self.callbacks,
                                                 num_cb=-1)
