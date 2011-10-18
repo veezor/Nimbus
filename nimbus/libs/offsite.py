@@ -234,8 +234,10 @@ def process_request(request, process_function, ratelimit, max_retry=3):
         try:
             request.attempts += 1
             request.last_update = time.time()
+
             if isinstance(request, UploadRequest): # no resume
-                request.transferred_bytes = 0
+                request.reset_transferred_bytes()
+
             initialbytes = request.transferred_bytes
             request.save()
             process_function(request.volume.path, request.volume.filename,

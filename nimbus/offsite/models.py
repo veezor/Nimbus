@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 
 
-from nimbus.libs.S3 import S3, S3AuthError
+from nimbus.libs.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
 from nimbus.shared import fields, signals
 from nimbus.base.models import UUIDSingletonModel as BaseModel
 
@@ -164,6 +164,11 @@ class Request(models.Model):
     transferred_bytes = models.IntegerField(default=0, editable=False)
     rate = models.IntegerField(default=0, editable=False)
 
+
+    def reset_transferred_bytes(self):
+        self.transferred_bytes = 0
+        self.save()
+
     def update(self, new_bytes_size, total_bytes):
         bytesdiff = new_bytes_size - self.transferred_bytes
         if bytesdiff >= self.UPDATE_DIFF_SIZE_100_KB:
@@ -231,7 +236,18 @@ class RemoteUploadRequest(UploadRequest):
     def increment_part(self, filename, part):
         self.part += 1
         self.save()
-    
+
+
+    def reset_transferred_bytes(self):
+        self.transferred_bytes = self.part * MIN_MULTIPART_SIZE
+        self.save()
+
+
+    def update(self, new_bytes_size, total_bytes):
+        new_bytes_size = (self.part * MIN_MULTIPART_SIZE) + new_bytes_size
+        super(RemoteUploadRequest, self).update(new_bytes_size, total_bytes)
+
+
     def __unicode__(self):
         return u"RemoteUploadRequest(path=%s)" % self.volume.path
 
