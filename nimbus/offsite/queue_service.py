@@ -112,15 +112,15 @@ class QueueServiceManager(object):
 
 
     def add_request(self, request_id):
+
+        if request_id in self.requests:
+            return
+
         self.logger.info('adicionando request id=%d' % request_id)
         request = self._get_request(request_id)
         queue_manager = self._get_queue_manager(request)
 
         with self.lock:
-
-            if request_id in self.requests:
-                raise ValueError('request already exists')
-
             self.requests[request_id] = queue_manager
 
         queue_manager.add_request(request)
