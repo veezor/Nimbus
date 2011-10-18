@@ -9,7 +9,7 @@ from django.views.generic import create_update
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.template import RequestContext
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, InvalidPage
 
 from pybacula import BConsoleInitError
 
@@ -136,9 +136,12 @@ def list_all(request):
 
 @login_required
 def list_offsite(request):
-    procedures = Procedure.objects.filter(offsite_on=True)
+    procedures = Procedure.objects.filter(id__gt=1,offsite_on=True)
+    last_jobs = Procedure.all_non_self_jobs_with_offsite()[:10]
     extra_content = {'procedures': procedures,
+                     'last_jobs' : last_jobs,
                      'title': u"Procedimentos com offsite ativo"}
+
     return render_to_response(request, "procedures_list.html", extra_content)
 
 @login_required

@@ -107,6 +107,17 @@ class Procedure(BaseModel):
         jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
+
+    @classmethod # refactor.  DRY
+    def all_non_self_jobs_with_offsite(cls):
+        job_names = [ p.bacula_name for p in cls.objects.filter(offsite_on=True).exclude(id=1) ]
+        for name in job_names[:]:
+            job_names.append(name+"restore")
+        jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
+        return jobs
+
+
+
     def restore_jobs(self):
         return Job.objects.filter(client__name=self.computer.bacula_name,
                                   fileset__fileset=self.fileset_bacula_name,
