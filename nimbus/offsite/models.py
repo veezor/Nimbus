@@ -121,7 +121,7 @@ class Offsite(BaseModel):
 class Volume(models.Model):
 
     path = fields.ModelPathField(max_length=2048, null=False)
-    size = models.IntegerField(null=False, editable=False, default=0)
+    size = models.BigIntegerField(null=False, editable=False, default=0)
 
     def __init__(self, *args, **kwargs):
         super(Volume, self).__init__( *args, **kwargs)
@@ -161,7 +161,7 @@ class Request(models.Model):
     attempts = models.PositiveSmallIntegerField(default=0, editable=False)
     last_attempt = models.DateTimeField(null=True, editable=False)
     last_update = models.IntegerField(default=0, editable=False) #unix time seconds
-    transferred_bytes = models.IntegerField(default=0, editable=False)
+    transferred_bytes = models.BigIntegerField(default=0, editable=False)
     rate = models.IntegerField(default=0, editable=False)
 
 
@@ -178,6 +178,7 @@ class Request(models.Model):
             self.last_update = time()
             self.transferred_bytes = new_bytes_size
             self.save()
+
 
 
     @property
@@ -228,6 +229,7 @@ class UploadRequest(Request):
 
     class Meta:
         abstract = True
+
 
 class RemoteUploadRequest(UploadRequest):
     part = models.IntegerField(default=0, editable=False)
@@ -286,7 +288,7 @@ class DeleteRequest(Request):
 
 
 class TransferredData(models.Model):
-    bytes = models.IntegerField(null=False)
+    bytes = models.BigIntegerField(null=False)
     date = models.DateTimeField(null=False, default=datetime.now)
 
     class Meta:
