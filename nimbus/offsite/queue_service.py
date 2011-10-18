@@ -26,14 +26,15 @@ from nimbus.offsite.models import (Offsite,
 class QueueServiceManager(object):
 
     def __init__(self):
-        self.max_priority_queue_manager = PriorityQueueManager(self)
-        self.middle_priority_queue_manager = PriorityQueueManager(self)
-        self.min_priority_queue_manager = PriorityQueueManager(self)
         self.logger = logging.getLogger(__name__)
+        self.max_priority_queue_manager = PriorityQueueManager("Max Priority Queue", self)
+        self.middle_priority_queue_manager = PriorityQueueManager("Middle Priority Queue", self)
+        self.min_priority_queue_manager = PriorityQueueManager("Min Priority Queue", self)
 
         self.lock = RLock()
         self.concurrent_workers = 0
         self.requests = {}
+        self.request_queue = {} #DEBUG
 
         self._load_database_requests()
 
@@ -42,6 +43,25 @@ class QueueServiceManager(object):
         self.min_priority_queue_manager.start()
 
 
+    
+    #DEBUG
+    def _add_request_to_queue(self, request, queue):
+        self.request_queue[ str(request) ] = queue.getName()
+
+
+    def get_requests_on_queue(self, queue_name):
+        result = []
+
+        for (request, q_name) in self.request_queue:
+            if q_name == queue_name:
+                result.append(request)
+
+        return result
+
+
+    def list_queues(self):
+        return ["Max Priority Queue", "Min Priority Queue", "Middle Priority Queue"]
+    #END DEBUG
 
 
     @property
@@ -123,6 +143,7 @@ class QueueServiceManager(object):
         with self.lock:
             self.requests[request_id] = queue_manager
 
+        self._add_request_to_queue(request, queue_manager)
         queue_manager.add_request(request)
         self.logger.info('request id=%d adicionado com sucesso' % request_id)
 
@@ -167,6 +188,12 @@ class QueueServiceManagerFacade(object):
         self.service_manager.set_request_as_done(request_id)
         return True
 
+    def list_queues(self):
+        return self.service_manager.list_queues()
+
+    def get_requests_on_queue(self, queue_name):
+        return self.service_manager.get_requests_on_queue(queue_name)
+
     def check_service(self):
         return True
 
@@ -175,8 +202,9 @@ class QueueServiceManagerFacade(object):
 
 class PriorityQueueManager(Thread):
 
-    def __init__(self, service_manager):
+    def __init__(self, name, service_manager):
         super(PriorityQueueManager, self).__init__()
+        self.setName(name)
         self.logger = logging.getLogger(__name__)
         self.service_manager = weakref.ref(service_manager)
         self.queue = Queue()
