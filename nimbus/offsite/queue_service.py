@@ -331,6 +331,9 @@ class Worker(Process):
         except IOError, error:
             self.logger.exception('request %d upload error' % str(self.request_id))
             sys.exit(2)
+        except Exception, error:
+            self.logger.exception('request %d upload uncatched error' % str(self.request_id))
+            sys.exit(2)
 
 
     def _upload_file(self, filename, dest, callback=None, userdata=None):
