@@ -86,6 +86,7 @@ class Trashmen(object):
         files = os.listdir(dir_path)
         procedures = Procedure.objects.all()
         procedure_names = [procedure.bacula_name for procedure in procedures]
+        procedure_names.append('restorejob')
         for f in files:
             if f not in procedure_names:
                 orphans.append("%s/%s" % (dir_path, f))
