@@ -19,9 +19,7 @@ else
     START_GUNICORN_DAEMON="start-stop-daemon -m --start --pidfile $PID_NIMBUS --startas $DAEMON -b -c nimbus"
     START_QUEUE_DAEMON="start-stop-daemon -m --start --pidfile $PID_QUEUE_SERVICE --startas $DAEMON -b -c nimbus -- --start-queue-service"
 
-
-    STOP_GUNICORN_DAEMON="start-stop-daemon --stop --quiet --pidfile $PID_NIMBUS -s KILL"
-    STOP_QUEUE_DAEMON="start-stop-daemon --stop --quiet --pidfile $PID_QUEUE_SERVICE -s KILL"
+    STOP_DAEMON="start-stop-daemon --stop --quiet --exec $DAEMON -s KILL"
 fi
 
 
@@ -42,8 +40,7 @@ case "$1" in
 	;;
   stop)
 	echo -n "Stopping $DESC: "
-	$STOP_GUNICORN_DAEMON;
-    $STOP_QUEUE_DAEMON;
+	$STOP_DAEMON;
 	echo "$NAME."
 	;;
   #reload)
@@ -65,8 +62,7 @@ case "$1" in
 	#	just the same as "restart".
 	#
 	echo -n "Restarting $DESC: "
-	$STOP_GUNICORN_DAEMON > /dev/null || echo;
-	$STOP_QUEUE_DAEMON > /dev/null || echo;
+	$STOP_DAEMON > /dev/null || echo;
 	sleep 1;
 	$START_GUNICORN_DAEMON;
 	$START_QUEUE_DAEMON;
