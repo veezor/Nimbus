@@ -29,6 +29,7 @@ class QueueServiceManager(object):
         self.max_priority_queue_manager = PriorityQueueManager(self)
         self.middle_priority_queue_manager = PriorityQueueManager(self)
         self.min_priority_queue_manager = PriorityQueueManager(self)
+        self.logger = logging.getLogger(__name__)
 
         self.lock = RLock()
         self.concurrent_workers = 0
@@ -45,26 +46,31 @@ class QueueServiceManager(object):
 
     @property
     def ratelimit(self):
+        self.logger.info('QueueServiceManager.ratelimit')
         offsite = Offsite.get_instance()
         return offsite.rate_limit
 
     def increase_concurrent_workers(self):
         with self.lock:
+            self.logger.info('QueueServiceManager.increase_concurrent_workers')
             self.concurrent_workers += 1
 
 
     def decrease_concurrent_workers(self):
         with self.lock:
+            self.logger.info('QueueServiceManager.decrease_concurrent_workers')
             self.concurrent_workers -= 1
 
 
     def get_concurrent_workers(self):
         with self.lock:
+            self.logger.info('QueueServiceManager.get_concurrent_workers')
             return self.concurrent_workers
 
 
     def get_worker_ratelimit(self):
         if self.get_concurrent_workers():
+            self.logger.info('QueueServiceManager.get_worker_ratelimit')
             return self.ratelimit / float(self.get_concurrent_workers())
         else:
             return 0
@@ -85,14 +91,18 @@ class QueueServiceManager(object):
         ratio = volume_size / float(self._get_max_volume_size())
 
         if ratio <= 0.2:
+            self.logger.info('QueueServiceManager._get_queue_manager = max. request = %s' % request)
             return self.max_priority_queue_manager
         elif ratio <= 0.6:
+            self.logger.info('QueueServiceManager._get_queue_manager = middle. request = %s' % request)
             return self.middle_priority_queue_manager
         else:
+            self.logger.info('QueueServiceManager._get_queue_manager = min. request = %s' % request)
             return self.min_priority_queue_manager
 
 
     def _load_database_requests(self):
+        self.logger.info('QueueServiceManager.load_database')
         for request in RemoteUploadRequest.objects.all():
             self.add_request(request.id)
 
@@ -102,6 +112,7 @@ class QueueServiceManager(object):
 
 
     def add_request(self, request_id):
+        self.logger.info('adicionando request id=%d' % request_id)
         request = self._get_request(request_id)
         queue_manager = self._get_queue_manager(request)
 
@@ -113,9 +124,11 @@ class QueueServiceManager(object):
             self.requests[request_id] = queue_manager
 
         queue_manager.add_request(request)
+        self.logger.info('request id=%d adicionado com sucesso' % request_id)
 
 
     def cancel_request(self, request_id):
+        self.logger.info('cancelando request')
         request = self._get_request(request_id)
 
         queue_manager = self.requests[request_id]
@@ -123,10 +136,12 @@ class QueueServiceManager(object):
 
         del self.requests[request_id]
         request.delete()
+        self.logger.info('request cancelado')
 
 
     def set_request_as_done(self, request_id):
         with self.lock:
+            self.logger.info('set_request_as_done')
             del self.requests[request_id]
 
 
@@ -162,6 +177,7 @@ class PriorityQueueManager(Thread):
 
     def __init__(self, service_manager):
         super(PriorityQueueManager, self).__init__()
+        self.logger = logging.getLogger(__name__)
         self.service_manager = weakref.ref(service_manager)
         self.queue = Queue()
         self.current_worker = None
@@ -172,7 +188,9 @@ class PriorityQueueManager(Thread):
     def run(self):
         self.running = True
         while self.running:
+            self.logger.info('PQM tick ' + self.getName() )
             request = self.queue.get()
+            self.logger.info('PQM get request = ' + str(request)  + ' ' + self.getName() )
             service_manager = self.service_manager()
             service_manager.increase_concurrent_workers()
             self._start_worker(request)
@@ -180,11 +198,13 @@ class PriorityQueueManager(Thread):
 
 
     def stop(self):
+        self.logger.info('PQM stop '  + self.getName() )
         self.running = False
         self._stop_current_worker()
 
 
     def _stop_current_worker(self, cancel_current_request=False):
+        self.logger.info('PQM set current worker')
         if self.current_worker:
             self.current_worker.terminate()
             if not cancel_current_request:
@@ -192,10 +212,13 @@ class PriorityQueueManager(Thread):
 
 
     def add_request(self, request):
+        self.logger.info('PQM adicionando request ' + self.getName())
         self.queue.put(request)
+        self.logger.info('PQM request adicionado' + self.getName())
 
 
     def cancel_request(self, request):
+        self.logger.info('PQM cancel request')
         if request == self.current_request:
             self._stop_current_worker(cancel_current_request=True)
         else:
@@ -203,15 +226,19 @@ class PriorityQueueManager(Thread):
 
 
     def _start_worker(self, request):
+        self.logger.info('PQM start worker ' + self.getName())
         worker = Worker(request.id)
         self.current_worker = worker
         self.current_request = request
 
         worker.start()
+        self.logger.info('PQM worker started ' + self.getName())
         worker.join()
+        self.logger.info('PQM worker end with ' + str(worker.exitcode) + " " + self.getName() )
 
         if worker.exitcode == 2:
             # -15[kill] == cancel
+            self.logger.info('PQM re-add request ' + self.getName())
             self.add_request(request)
 
         self.current_worker = None
@@ -262,14 +289,19 @@ class Worker(Process):
 
 
     def run(self):
+        self.logger = logging.getLogger(__name__)
         from nimbus.libs.offsite import process_request
         self.s3 = Offsite.get_s3_interface()
         try:
             self.request = RemoteUploadRequest.objects.get(id=self.request_id)
+            self.logger.info('starting process request' + str(self.request))
             process_request(self.request, self._upload_file,
                             get_worker_ratelimit(), self.MAX_RETRY)
+            self.logger.info('request %s uploaded with sucess' % str(self.request))
             set_request_as_done(self.request_id)
+            self.logger.info('request %s marked as sucessful' % str(self.request))
         except IOError, error:
+            self.logger.exception('request %d upload error' % str(self.request_id))
             sys.exit(2)
 
 
