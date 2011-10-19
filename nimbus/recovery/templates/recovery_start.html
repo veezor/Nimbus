@@ -1,0 +1,17 @@
+{% extends "base_wizard.html" %}
+
+{% block headtags %}{% endblock %}
+
+{% block content %}
+
+<h2>Deseja realizar a recuperação do servidor?</h2>
+
+<p> Atenção, é importante que o nome da instância atual seja igual a anteriormente instalada na máquina para que os arquivos pertencentes a esta máquina possam ser identificados.</p>
+
+<form action="/recovery/select_source" method="get">
+	<input type="submit" class="submit mid" value="Prosseguir" />
+</form>
+
+<p></p>
+
+{% endblock %}

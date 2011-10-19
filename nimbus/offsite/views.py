@@ -70,6 +70,62 @@ def self_auth(request):
 
 
 @login_required
+def select_storage(request):
+    return render_to_response(request, 
+                              "select_storage.html",
+                              {"devices" : offsite.list_disk_labels()})
+
+def copy_files_worker(storage):
+    archive_devices = offsite.find_archive_devices()
+    for arc_dev in archive_devices:
+        dest = join("/media" , storage)
+        manager = offsite.LocalManager(origin=arc_dev, destination=dest)
+        manager.upload_all_volumes()
+
+@login_required
+def copy_files_to_storage(request):
+    if request.method == "POST":
+        device = request.POST.get("device")
+        if not device:
+            raise Http404()
+        systemprocesses.min_priority_job("Nimbus volumes copy to disk", 
+                                         copy_files_worker, device)
+        return redirect('nimbus.offsite.views.list_uploadrequest')
+    else:
+        return redirect('nimbus.offsite.views.list_uploadrequest')
+
+@login_required
+def list_downloadrequest(request):
+    downloads_requests = DownloadRequest.objects.all()
+    if 'ajax' in request.POST:
+        l = []
+        for down in downloads_requests:
+            d = {}
+            d['pk'] = down.id
+            # d['model'] = down.model
+            d['fields'] = {}
+            d['fields']['filename'] = down.volume.filename
+            d['fields']['created_at'] = datetime.strftime(down.created_at,
+                                                          "%d/%m/%Y %H:%M")
+            d['fields']['attempts'] = down.attempts
+            if down.last_attempt:
+                d['fields']['last_attempt'] = down.last_attempt.strftime("%d/%m/%Y %H:%M")
+            else:
+                d['fields']['last_attempt'] = None
+            d['fields']['friendly_rate'] = down.friendly_rate
+            d['fields']['estimated_transfer_time'] = down.estimated_transfer_time
+            d['fields']['finished_percent'] = down.finished_percent
+            l.append(d)
+        # response = serializers.serialize("json", downloads_requests)
+        response = simplejson.dumps(l)
+        return HttpResponse(response, mimetype="text/plain")
+    return render_to_response(request, 
+                              "list_downuploadrequest.html", 
+                              {"object_list": downloads_requests,
+                               "list_type": "Downloads",
+                               "title": u"Downloads ativos"})
+
+@login_required
 def list_uploadrequest(request):
     uploads_requests = list(LocalUploadRequest.objects.all()) + list(RemoteUploadRequest.objects.all())
     if 'ajax' in request.POST:

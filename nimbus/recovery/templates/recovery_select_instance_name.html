@@ -1,0 +1,20 @@
+{% extends "base_wizard.html" %}
+
+{% block headtags %}{% endblock %}
+
+{% block content %}
+
+<p>Por favor, selecione o nome o qual deseja utilizar:</p>
+
+<form action="/recovery/select_instance_name/" method="post">
+  {% for name in instance_names %}
+	  <input type="radio" name="name" value="{{name}}" /> {{name}}
+	  <br />
+  {%endfor%}
+  <input type="hidden" name="localsource" value="{{ localsource }}"/>
+  <input type="hidden" name="device" value="{{ device }}"/>
+  <p class="input_submit">
+	<input type="submit" class="submit right" value="OK" />
+  </p>
+
+{% endblock %}

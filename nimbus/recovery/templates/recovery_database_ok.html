@@ -1,0 +1,19 @@
+{% extends "base_wizard.html" %}
+
+{% block headtags %}{% endblock %}
+
+{% block content %}
+
+<h1>A base de dados do nimbus foi recuperada com sucesso.</h1>
+
+<p>Por favor, clique em prosseguir para continuar com a recuperação.</p>
+
+<form action="/recovery/recover_volumes/" method="post">
+	<input type="hidden" name="localsource" value="{{localsource}}"/>
+	<input type="hidden" name="device" value="{{device}}"/>
+	<p class="input_submit">
+		<input type="submit" class="submit right mid" value="Prosseguir" />
+	</p>
+</form>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base_wizard.html" %}
+
+{% block headtags %}{% endblock %}
+
+{% block content %}
+
+<p>Dispositivo selecionado com sucesso. Por favor, clique em continuar.</p>
+
+<form action="/recovery/recover_databases/" method="post">
+	<input type="hidden" name="localsource" value="{{ localsource }}"/>
+	<input type="hidden" name="device" value="{{ device }}"/>
+	<p class="input_submit">
+		<input type="submit" class="submit right mid" value="Continuar" />
+	</p>
+</form>
+
+{% endblock %}
