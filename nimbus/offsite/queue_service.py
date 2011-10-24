@@ -35,6 +35,7 @@ class QueueServiceManager(object):
         self.concurrent_workers = 0
         self.requests = {}
         self.request_queue = {} #DEBUG
+        self.request_queue_id = {} #DEBUG
 
         self._load_database_requests()
 
@@ -47,12 +48,13 @@ class QueueServiceManager(object):
     #DEBUG
     def _add_request_to_queue(self, request, queue):
         self.request_queue[ str(request) ] = queue.getName()
+        self.request_queue_id[ request.id ] = str(request)
 
 
     def get_requests_on_queue(self, queue_name):
         result = []
 
-        for (request, q_name) in self.request_queue:
+        for (request, q_name) in self.request_queue.items():
             if q_name == queue_name:
                 result.append(request)
 
@@ -164,6 +166,8 @@ class QueueServiceManager(object):
         with self.lock:
             self.logger.info('set_request_as_done')
             del self.requests[request_id]
+            del self.request_queue[ self.request_queue_id[request_id] ]
+            del self.request_queue_id[request_id]
 
 
 
