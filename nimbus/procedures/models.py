@@ -21,7 +21,7 @@ from nimbus.schedules.models import Schedule
 from nimbus.bacula.models import Media, Job, File
 # from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
-from nimbus.libs.bacula import Bacula, ReloadManager
+from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
 from nimbus.offsite.models import is_active
 from nimbus.libs import offsite
@@ -201,8 +201,6 @@ def update_procedure_file(procedure):
                        client=procedure.computer.bacula_name,
                        pool=procedure.pool_bacula_name())
 
-    reload_manager = ReloadManager()
-    reload_manager.force_reload()
 
 def remove_procedure_file(procedure):
     """remove procedure file"""
@@ -227,8 +225,6 @@ def remove_procedure_volumes(procedure):
             if exists(volume_abs_path):
                 os.remove(volume_abs_path)
 
-        reload_manager = ReloadManager()
-        reload_manager.force_reload()
 
     except BConsoleInitError, error:
         logger = logging.getLogger(__name__)

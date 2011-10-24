@@ -11,14 +11,12 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 from nimbus.timezone.forms import TimezoneForm
-from nimbus.shared.views import edit_singleton_model, render_to_response
-from nimbus.shared.forms import form, form_mapping
-from django.contrib import messages
+from nimbus.shared.views import edit_singleton_model
 
 
 @login_required
 def timezone_conf(request):
-    return edit_singleton_model( request, "timezoneconf.html", 
+    return edit_singleton_model( request, "timezoneconf.html",
                                  "nimbus.timezone.views.timezone_conf",
                                  formclass = TimezoneForm )
 

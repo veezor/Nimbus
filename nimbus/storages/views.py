@@ -15,6 +15,7 @@ from nimbus.storages.models import Storage
 from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
 from nimbus.shared.views import render_to_response
+from nimbus.libs.bacula import call_reload_baculadir
 from nimbus.shared.forms import form
 from nimbus.bacula.models import Job
 
@@ -52,13 +53,15 @@ def add(request):
 @login_required
 def edit(request, object_id):
     extra_context = {'title': u"Editar armazenamento"}
-    return create_update.update_object( request,
-                                        object_id = object_id,
-                                        model = Storage,
-                                        form_class = form(Storage),
-                                        template_name = "storages_edit.html",
-                                        extra_context = extra_context,
-                                        post_save_redirect = "/storages/list")
+    r =  create_update.update_object( request,
+                                      object_id = object_id,
+                                      model = Storage,
+                                      form_class = form(Storage),
+                                      template_name = "storages_edit.html",
+                                      extra_context = extra_context,
+                                      post_save_redirect = "/storages/list")
+    call_reload_baculadir()
+    return r
 
 
 @login_required

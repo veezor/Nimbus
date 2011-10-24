@@ -16,6 +16,7 @@ from nimbus.network.models import (NetworkInterface,
 from nimbus.timezone.forms import TimezoneForm
 from nimbus.offsite.forms import OffsiteForm
 from nimbus.shared.views import edit_singleton_model, render_to_response
+from nimbus.libs.bacula import call_reload_baculadir
 from nimbus.shared.forms import form
 from nimbus.shared.utils import project_port
 from nimbus.wizard import models

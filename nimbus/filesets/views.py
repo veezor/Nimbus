@@ -3,6 +3,7 @@
 import traceback
 import socket
 import simplejson
+
 from copy import copy
 from django.http import HttpResponse
 from django.contrib import messages
@@ -14,6 +15,7 @@ from nimbus.filesets.models import FileSet, FilePath
 from nimbus.computers.models import Computer, NimbusClientMessageError
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form_mapping, form_from_model
+from nimbus.libs.bacula import call_reload_baculadir
 from nimbus.libs.db import Session
 from nimbus.shared import utils
 from nimbus.filesets import forms
@@ -80,6 +82,7 @@ def do_edit(request, fileset_id):
             filepaths_form = forms.FilesToDeleteForm(data, instance=new_fileset)
             if filepaths_form.is_valid():
                 filepaths_form.save()
+                call_reload_baculadir()
                 return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi atualizado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
             else:
                 new_fileset.delete()
@@ -136,6 +139,7 @@ def do_delete(request, fileset_id):
             procedure.save()
     name = f.name
     f.delete()
+    call_reload_baculadir()
     messages.success(request, u"Perfil de conjunto de arquivos '%s' removido com sucesso." % name)
     return redirect('/procedures/profile/list')
 

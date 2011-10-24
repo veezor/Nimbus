@@ -19,6 +19,7 @@ from nimbus.computers.models import Computer, ComputerGroup, ComputerAlreadyActi
 from nimbus.procedures.models import Procedure
 from nimbus.bacula.models import Job
 from nimbus.shared.views import render_to_response
+from nimbus.libs.bacula import call_reload_baculadir
 from nimbus.shared import enums
 from nimbus.shared.forms import form
 from nimbus.computers import forms as forms
@@ -99,13 +100,15 @@ def new(request):
 @login_required
 def edit(request, object_id):
     extra_context = {'title': u"Editar computador"}
-    return create_update.update_object(request, 
-                                       object_id = object_id,
-                                       model = Computer,
-                                       form_class = form(Computer),
-                                       template_name = "base_computers.html",
-                                       extra_context = extra_context,
-                                       post_save_redirect = "/computers/")
+    r = create_update.update_object(request, 
+                                    object_id = object_id,
+                                    model = Computer,
+                                    form_class = form(Computer),
+                                    template_name = "base_computers.html",
+                                    extra_context = extra_context,
+                                    post_save_redirect = "/computers/")
+    call_reload_baculadir()
+    return r
 
 
 @login_required
@@ -121,6 +124,7 @@ def delete(request, object_id):
 def do_delete(request, object_id):
     computer = Computer.objects.get(id=object_id)
     computer.delete()
+    call_reload_baculadir()
     messages.success(request, u"Computador removido com sucesso.")
     return redirect('nimbus.computers.views.list')
 
@@ -229,6 +233,7 @@ def activate(request, object_id):
     try:
         computer = Computer.objects.get(id=object_id)
         computer.activate()
+        call_reload_baculadir()
     except Computer.DoesNotExist, error:
         messages.error(request, u'Impossível ativar computador, computador inexistente')
         return redirect('nimbus.computers.views.add')
@@ -246,6 +251,7 @@ def deactivate(request, object_id):
     try:
         computer = Computer.objects.get(id=object_id)
         computer.deactivate()
+        call_reload_baculadir()
     except Computer.DoesNotExist, error:
         messages.error(request, u'Impossível desativar computador, computador inexistente')
         return redirect('nimbus.computers.views.list')

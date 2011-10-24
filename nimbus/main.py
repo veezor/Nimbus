@@ -27,9 +27,7 @@ from nimbus.libs import offsite, graphsdata
 from nimbus.libs import migrations
 
 from nimbus.shared import utils
-from nimbus.libs.bacula import ( ReloadManager,
-                                 ReloadManagerService,
-                                 force_unlock_bacula_and_start)
+from nimbus.libs.bacula import force_unlock_bacula_and_start, call_reload_baculadir
 from nimbus.config.models import Config
 from nimbus.offsite import queue_service
 from nimbus.storages.models import Storage
@@ -81,9 +79,7 @@ class App(object):
             computer.activate()
 
             register_administrative_nimbus_models()
-
-            reload_manager = ReloadManager()
-            reload_manager.force_reload()
+            call_reload_baculadir()
         else:
             force_unlock_bacula_and_start()
 
@@ -147,10 +143,6 @@ class App(object):
                 break
 
 
-    def reload_manager_service(self):
-        service = ReloadManagerService()
-        service.run()
-
     def start_queue_service(self):
         queue_service.start_queue_manager_service()
 
@@ -176,7 +168,6 @@ class App(object):
             "--shell" : self.shell,
             "--delete-volumes" : self.delete_volumes,
             "--change-password" : self.change_password,
-            "--start-reload-manager-service" : self.reload_manager_service,
             "--email-report": self.send_email_report,
             "--start-queue-service": self.start_queue_service,
             "--update-1.0-to-1.1" : self.update_10_to_11

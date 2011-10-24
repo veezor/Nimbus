@@ -17,6 +17,3 @@ def block_ie_browser(request):
     if re.search("MSIE", browser):
         messages.warning(request, "Navegador incompativel com o Nimbus. Sistema testado apenas para Google Chrome e Mozilla Firefox.")
     return {}
-
-
-
