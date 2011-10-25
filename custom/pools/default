@@ -1,8 +1,0 @@
-Pool {
-        Name = "empty pool"
-        Pool Type = "Backup"
-        Recycle Oldest Volume = yes
-        Label Format = "Default-Vol-"
-        Recycle = yes                       # Bacula can automatically recycle Volumes
-        AutoPrune = yes                     # Prune expired volumes
-}

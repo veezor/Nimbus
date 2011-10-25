@@ -1,6 +1,0 @@
-Client {
-	Name = "empty client"
-	Address = "127.0.0.1"
-	Password = "default"
-	Catalog = "MyCatalog"
-}
