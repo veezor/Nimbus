@@ -264,13 +264,19 @@ class Job(models.Model):
     def procedure(self):
         from nimbus.procedures.models import Procedure
         procedure_name = self.name.split('_')[0]
+        if self.type == "R":
+            #Esta job nao tem um procedure definido pois eh um restore
+            from nimbus.computers.models import Computer
+            client_name = self.client.name.split('_')[0]
+            fake_procedure = Procedure()
+            fake_procedure.computer = Computer.objects.get(uuid__uuid_hex=client_name)
+            return fake_procedure
 
         if not hasattr(self, '_procedure'):
             try:
                 self._procedure = Procedure.objects.select_related().get(uuid__uuid_hex=procedure_name)
             except Procedure.DoesNotExist, error:
                 self._procedure = None
-
         return self._procedure
 
 

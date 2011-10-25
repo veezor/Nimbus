@@ -8,6 +8,7 @@ from os.path import join, exists
 
 from django.utils.translation import ugettext as _
 from django.db import models, connections
+from django.db.models import Q
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save 
 
@@ -104,7 +105,8 @@ class Procedure(BaseModel):
         job_names = [ p.bacula_name for p in cls.objects.exclude(id=1) ]
         for name in job_names[:]:
             job_names.append(name+"restore")
-        jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
+        # jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
+        jobs = Job.objects.select_related().filter(Q(name__in=job_names) | Q(type="R") ).order_by('-starttime')
         return jobs
 
 

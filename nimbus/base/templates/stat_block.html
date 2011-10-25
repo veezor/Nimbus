@@ -7,12 +7,17 @@ Tipos possíveis: ok, warn, error
 	{% for job in last_jobs %}
     <h3>
 		<span class="status_{{job.general_status}}">Status {{job.human_general_status}}</span>
+		{% if job.type == 'R'%}
+        {{job.start_time}}: Procedimento de restauração para '{{job.procedure.computer.name}}'
+		{% else %}
         {{job.start_time}}: Procedimento de {{job.backup_type}} de '{{job.procedure.name}}' para '{{job.procedure.computer.name}}'
+		{% endif %}
         <div class="clear"></div>
 	</h3>
 	<div id="job_{{job.jobid}}_details">
 	   <table cellpadding="0" cellspacing="0">
 	   <tbody>
+			{% if job.type != 'R'%}
             <tr><td>Procedimento:</td>
             {% if job.procedure %}
             <td>{{job.procedure}}</td>
@@ -20,13 +25,14 @@ Tipos possíveis: ok, warn, error
             <td>Este procedimento não existe mais.</td>
             {% endif %}
             </tr>
+			{% endif %}
             <tr>
             {% if job.procedure.computer %}
             <td>Computador:</td><td>{{job.procedure.computer.name}} ({{job.procedure.computer.address}})</td>
             {% else %}
             <td>Computador:</td> <td>Computador não encontrado</td>
             {% endif %}</tr>
-            <tr><td>Tipo de backup:</td><td>{{job.backup_level}}</td></tr>
+            {% if job.type != 'R'%}<tr><td>Tipo de backup:</td><td>{{job.backup_level}}</td></tr>{% endif %}
             <tr><td>Agendado para:</td><td>{{job.schedule_time}}</td></tr>
             <tr><td>Inicio: </td><td>{{job.start_time}}</td></tr>
             {% if job.end_time %}
