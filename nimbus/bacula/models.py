@@ -305,8 +305,8 @@ class JobMedia(models.Model):
     startblock = models.IntegerField(null=True, blank=True)
     endblock = models.IntegerField(null=True, blank=True)
     volindex = models.IntegerField(null=True, blank=True)
-    copy = models.IntegerField(null=True, blank=True)
-    stripe = models.IntegerField(null=True, blank=True)
+    # copy = models.IntegerField(null=True, blank=True)
+    # stripe = models.IntegerField(null=True, blank=True)
 
     class Meta:
         db_table = u'jobmedia'
