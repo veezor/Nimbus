@@ -93,21 +93,12 @@ div.inactive {
     background: #FDD;
 }
 .fileset {
-/*    OPENSOURCE:*/
-/*    border: 2px solid #67c7a1;*/
-/*    PROFESSIONAL:*/
-    border: 2px solid #8D352F;
     padding: 0;
     background: #fff;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
 }
-
 .fileset .title{
-/*    OPENSOURCE:*/
-/*    background: #67c7a1;*/
-/*    PROFESSIONAL:*/
-    background: #8D352F;
     color: #000;
     padding: 5px;
 }
@@ -186,50 +177,4 @@ div.inactive {
     width: 700px; 
     text-align: right; 
     float: right;
-}
-
-/* procedures history */
-.job_line{
-    display: block; 
-    padding: 5px;
-    cursor: pointer;
-    border-bottom: 1px solid #ccc;
-    font-size: 11px;
-}
-.over{
-    background: #f0f0f0;
-}
-.hide{
-    background: #f3f3f3;
-}
-.hide table thead th, .hide table tbody td{
-    font-size: 11px;
-}
-.status_ok, .status_error, .status_warning, .status_waiting, .status_running{
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    padding: 2px 4px;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: black 0.1em 0.1em 0.2em;
-    display: block;
-    float: left;
-    /* width: 80px; */
-    margin-right: 8px;
-    padding-left: 32px;
-}
-.status_error{background: #C91A1A url(/media/icons/stop32.png) left center no-repeat;}
-.status_warning{background: #E0780F url(/media/icons/warning32.png) left center no-repeat;}
-.status_waiting{background: #9da500 url(/media/icons/sleep32.png) left center no-repeat;}
-.status_ok{background: #26BF24 url(/media/icons/check32.png) left center no-repeat;}
-.status_running{background: #1A8CA5 url(/media/icons/exchange32.png) left center no-repeat;}
-
-#accordion h3{
-    font-weight: normal;
-    font-size: 12px;
-    padding: 4px;
-    border: 1px solid #c3c3c3;
-    
 }
