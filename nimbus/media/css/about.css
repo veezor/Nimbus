@@ -1,8 +1,6 @@
 #about {
     border: solid 1px;
     text-align: center;
-/*    background: url('/media/images/nimbus_logo_opensource.png') no-repeat 20px 20px;*/
-    background: url('/media/images/nimbus_logo_professional.png') no-repeat 20px 20px;
 }
 #about_block {
     width: 400px;

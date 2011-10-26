@@ -26,12 +26,7 @@ $(document).ready(function(){
                     labels: labels
                 },
                 fill: true,
-                // APPLIANCE
-                // color: '#95BACB', 
-                // OPENSOURCE:
-                // color: '#67c7a1',
-                // PROFESSIONAL:
-                color: '#B3433C',
+                color: $(".grafico_uma_barra_inner").css('background-color'),
                 markerOptions: {
                     show: true,
                     lineWidth: 5,

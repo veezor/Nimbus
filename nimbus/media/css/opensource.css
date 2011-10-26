@@ -24,6 +24,12 @@
 .grafico_uma_barra .grafico_uma_barra_wrapper .grafico_uma_barra_inner {
     background-color: #67c7a1 !important;
 }
+#header #nav li:hover li a:hover,
+#header #nav li:hover li:hover a,
+#header #nav li.iehover li a:hover,
+#header #nav li.iehover li.iehover a {
+    background: #0a3026;
+}
 
 /*PARTE DO procedures.css*/
 .fileset {
@@ -31,4 +37,9 @@
 }
 .fileset .title{
     background: #67c7a1;
+}
+
+/*PARTE DO about.css*/
+#about {
+    background: url('/media/images/nimbus_logo_opensource.png') no-repeat 20px 20px;
 }
