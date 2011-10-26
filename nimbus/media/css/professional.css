@@ -1,0 +1,33 @@
+/*PARTE DO style.css*/
+#header {
+    background: #8D352F;
+    border: 1px solid #8D352F;
+}
+#header .hdrr {
+    background: #8D352F;
+}
+#header #nav li:hover li a,
+#header #nav li.iehover li a {
+    background: #8D352F;
+}
+#header #nav li:hover li a:hover,
+#header #nav li:hover li:hover a,
+#header #nav li.iehover li a:hover,
+#header #nav li.iehover li.iehover a {
+	color: #fff;
+    background: #0a3026;
+}
+#header h1 a {
+	background: url(../lib/images/logo_professional.png) left no-repeat;
+}
+.grafico_uma_barra .grafico_uma_barra_wrapper .grafico_uma_barra_inner {
+    background-color: #B3433C !important;
+}
+
+/*PARTE DO procedures.css*/
+.fileset {
+    border: 2px solid #8D352F;
+}
+.fileset .title{
+    background: #8D352F;
+}

@@ -1,0 +1,34 @@
+/*PARTE DO style.css*/
+#header {
+    background: #1b8568;
+    border: 1px solid #1b8568;
+}
+#header .hdrr {
+    background: #1b8568;
+}
+#header #nav li:hover li a,
+#header #nav li.iehover li a {
+    background: #1b8568;
+    border: 1px solid #1b8568;
+}
+#header #nav li:hover li a:hover,
+#header #nav li:hover li:hover a,
+#header #nav li.iehover li a:hover,
+#header #nav li.iehover li.iehover a {
+	color: #fff;
+    background: #0a3026;
+}
+#header h1 a {
+    background: url(../lib/images/logo_opensource.png) left no-repeat;
+}
+.grafico_uma_barra .grafico_uma_barra_wrapper .grafico_uma_barra_inner {
+    background-color: #67c7a1 !important;
+}
+
+/*PARTE DO procedures.css*/
+.fileset {
+    border: 2px solid #67c7a1;
+}
+.fileset .title{
+    background: #67c7a1;
+}

@@ -1,0 +1,19 @@
+/*PARTE DO style.css*/
+#header {
+    background: #4087BB;
+    border: 1px solid #4087BB;
+}
+#header .hdrr {
+    background: #4087BB;
+}
+#header #nav li:hover li a,
+#header #nav li.iehover li a {
+    background: #4087BB;
+}
+#header #nav li:hover li a:hover,
+#header #nav li:hover li:hover a,
+#header #nav li.iehover li a:hover,
+#header #nav li.iehover li.iehover a {
+	color: #fff;
+    background: #4b1612;
+}

@@ -81,23 +81,13 @@ a:hover {
 /* Header */
 
 #header {
-	height: 50px;
-	line-height: 50px;
-/*  OPENSOURCE:*/
-/*  background: #1b8568;*/
-/*  border: 1px solid #1b8568;*/
-/*  APPLIANCE*/
-/*  background: #4087BB;*/
-/*  border: 1px solid #4087BB;*/
-/*  PROFESSIONAL*/
-    background: #8D352F;
-    border: 1px solid #8D352F;
-	color: #FFF;
-	/*font-weight: bold;*/
-	margin-bottom: 20px;
-	-webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;
-	padding: 0 20px 0 0;
-	}
+  height: 50px;
+  line-height: 50px;
+  color: #FFF;
+  margin-bottom: 20px;
+  -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;
+  padding: 0 20px 0 0;
+  }
 	
 #header .hdrl {
     display: none;
@@ -108,17 +98,11 @@ a:hover {
 	}
 
 #header .hdrr {
-display: none;
-	width: 20px;
-	height: 50px;
-	float: right;
-    /*  OPENSOURCE:*/
-    /*  background: #1b8568;*/
-    /*  APPLIANCE*/
-    /*  background: #4087BB;*/
-    /*  PROFESSIONAL*/
-    background: #8D352F;
-	}
+    display: none;
+    width: 20px;
+    height: 50px;
+    float: right;
+  }
 	
 #header a {
 	/*color: #999;*/
@@ -142,8 +126,6 @@ display: none;
 	font-weight: normal;
 	text-transform: uppercase;
 	color: #fff;
-/*  background: url(../images/logo_opensource.png) left no-repeat;*/
-	background: url(../images/logo_professional.png) left no-repeat;
 	width: 93px;
     height: 50px;
 	text-indent: -99999em;
@@ -253,21 +235,12 @@ display: none;
 /* 2nd Menu */
 #header #nav li:hover li a,
 #header #nav li.iehover li a {
-	text-transform: none;
-	padding: 0 15px;
-	font-size: 11px;
-	/*font-weight: bold;*/
-	line-height: 30px;
-	/*color: #999;*/
-	color: #FFF;
-    /*  OPENSOURCE:*/
-    /*  background: #1b8568;*/
-    /*  border: 1px solid #1b8568;*/
-    /*  APPLIANCE*/
-    /*  background: #4087BB;*/
-    /*  PROFESSIONAL*/
-    background: #8D352F;
-	}
+  text-transform: none;
+  padding: 0 15px;
+  font-size: 11px;
+  line-height: 30px;
+  color: #FFF;
+  }
 
 /* 2nd Menu Hover Persistence */
 #header #nav li:hover li a:hover,
@@ -1499,10 +1472,6 @@ p.alert a{color: #8F7E11;}
 }
 .grafico_uma_barra .grafico_uma_barra_wrapper .grafico_uma_barra_inner {
     -moz-border-radius: 3px;
-/*    OPENSOURCE:*/
-/*    background-color: #67c7a1 !important;*/
-/*    PROFESSIONAL:*/
-    background-color: #B3433C !important;
     height: 20px;
 }
 
