@@ -4,7 +4,10 @@
 import re
 
 from django.contrib import messages
+from django.conf import settings
 
+def product(request):
+    return {'product': settings.NIMBUS_PRODUCT}
 
 def script_name(request):
     return { 'script_name' : request.META['PATH_INFO']}

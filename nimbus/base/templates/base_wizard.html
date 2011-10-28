@@ -63,9 +63,11 @@
 	<div id="hld">
 
 		<div class="wrapper">		<!-- wrapper begins -->
-
-		    <!-- <div class="logo_center"><img src="/media/images/nimbus_logo_opensource.png" /></div> -->
-		    <div class="logo_center"><img src="/media/images/nimbus_logo_professional.png" /></div>
+			{% if product == "professional" %}
+			<div class="logo_center"><img src="/media/images/nimbus_logo_professional.png" /></div>
+			{% else %}
+			<div class="logo_center"><img src="/media/images/nimbus_logo_opensource.png" /></div>
+			{% endif %}
 
 			<div class="block small center login {{wide}}">
 
