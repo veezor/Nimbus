@@ -27,7 +27,8 @@ class Wizard(object):
         if wizard.has_completed():
             return None
         else:
-            return redirect('nimbus.wizard.views.license')
+            r = redirect('nimbus.wizard.views.wizard', step="start")
+            return r
 
 
     def is_restricted_url(self, request):

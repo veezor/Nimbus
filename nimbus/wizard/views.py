@@ -158,3 +158,7 @@ def finish(request):
         return render_to_response(request, "redirect.html", dict(ip_address=network_interface.address,
                                                                  url="/"))
 
+
+
+def wizard(request, step):
+    return None
