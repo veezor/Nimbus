@@ -7,6 +7,15 @@ from django.contrib import admin
 if settings.DEBUG:
     admin.autodiscover()
 
+def modular_app_patterns():
+    apps = settings.MODULAR_APPS
+    pattern_list = []
+    for app in apps:
+        if app.startswith('nimbus.'):
+            app_name = app.split('.')[-1]
+            pattern_list.append((r'^%s/' % app_name, include('%s.urls' % app)))
+    return pattern_list
+
 urlpatterns = patterns('',
     (r'^$', include('nimbus.base.urls')),
     (r'^base/', include('nimbus.base.urls')),
@@ -20,7 +29,6 @@ urlpatterns = patterns('',
     (r'^restore/', include('nimbus.restore.urls')),
     (r'^recovery/', include('nimbus.recovery.urls')),
     # (r'^backup/', include('nimbus.backup.urls')),
-    (r'^offsite/', include('nimbus.offsite.urls')),
     (r'^procedures/', include('nimbus.procedures.urls')),
     (r'^system/', include('nimbus.system.urls')),
     (r'^filesets/', include('nimbus.filesets.urls')),
@@ -28,7 +36,10 @@ urlpatterns = patterns('',
     (r'^reports/', include('nimbus.reports.urls')),
     (r'^LICENSE/', 'nimbus.base.views.license'),
 )
-
+for app in modular_app_patterns():
+    urlpatterns += patterns('',
+    app,)
+    
 if settings.SERVE_STATIC_FILES:
     urlpatterns += patterns('',
     (r'^media/(?P<path>.*)$', 'django.views.static.serve', 

@@ -71,15 +71,9 @@
                             <li><a href="/storages/add">Adicionar Armazenamento</a></li>
                         </ul>
 					</li>
-				    <li class="active"><a href="#">Offsite</a>
-					    <ul>
-    					    <li><a href="/offsite/detail">Detalhes do offsite</a></li>
-    					    <li><a href="/offsite/edit">Editar configurações</a></li>
-                            <li><a href="/offsite/list_uploadrequest">Uploads ativos</a></li>
-                            <li><a href="/offsite/list_downloadrequest">Downloads ativos</a></li>
-                            <li><a href="/procedures/list_offsite">Procedimentos do offsite</a></li>
-                        </ul>
-                    </li>
+					{% for menu in menus_from_apps %}
+					{% include menu %}
+					{% endfor %}
 					<li><a href="#">Ferramentas</a>
 					    <ul>
                             <li><a href="/system/network_tool/ping/">Ping</a></li>
