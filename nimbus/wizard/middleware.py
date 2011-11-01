@@ -5,7 +5,6 @@ from django.shortcuts import redirect
 from django.core.exceptions import MiddlewareNotUsed
 
 from nimbus.libs import bacula
-from nimbus.wizard import views
 from nimbus.wizard import models
 
 class Wizard(object):
@@ -18,7 +17,6 @@ class Wizard(object):
 
     def process_request(self, request):
 
-        
         if not self.is_restricted_url(request):
             return None
 
