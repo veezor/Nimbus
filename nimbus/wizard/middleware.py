@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 from django.shortcuts import redirect
+from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 
 from nimbus.libs import bacula
@@ -14,6 +15,7 @@ class Wizard(object):
         if wizard.has_completed():
             bacula.unlock_bacula_and_start()
             raise MiddlewareNotUsed("wizard completed")
+        self.load_steps()
 
     def process_request(self, request):
 
@@ -28,6 +30,9 @@ class Wizard(object):
             r = redirect('nimbus.wizard.views.wizard', step="start")
             return r
 
+    def load_steps(self):
+        for app in settings.NIMBUS_WIZARD_APPS:
+            __import__(app + '.views')
 
     def is_restricted_url(self, request):
         path = request.META['PATH_INFO']

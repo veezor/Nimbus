@@ -20,6 +20,26 @@ from nimbus.shared import utils
 from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.offsite.forms import OffsiteForm
 from nimbus.libs.graphsdata import GraphDataManager
+from nimbus.wizard.models import add_step
+from nimbus.wizard.views import previous_step_url, next_step_url
+
+
+
+
+
+@add_step()
+def offsite(request):
+    extra_context = {'wizard_title': u'3 de 5 - Configuração do Offsite',
+                     'page_name': u'offsite',
+                     'previous': previous_step_url('offsite')}
+    return edit_singleton_model(request, "generic.html",
+                                next_step_url('offsite'),
+                                formclass = OffsiteForm,
+                                extra_context = extra_context)
+
+
+
+
 
 
 @login_required

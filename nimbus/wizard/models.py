@@ -61,8 +61,6 @@ class WizardManager(object):
         except IndexError:
             raise WizardStepError("step not found")
 
-
-
     def get_step(self, name):
         return self.steps[name]
     

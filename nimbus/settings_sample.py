@@ -119,6 +119,15 @@ RELOAD_MANAGER_LOGGING_CONF = join(NIMBUS_ETC_DIR, "reload_manager_logging.conf"
 
 
 
+NIMBUS_WIZARD_APPS = (
+    "nimbus.config",
+    "nimbus.network",
+    "nimbus.offsite",
+    "nimbus.session",
+    "nimbus.timezone"
+)
+
+
 
 # END NIMBUS
 
