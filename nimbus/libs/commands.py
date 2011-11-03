@@ -10,6 +10,16 @@ class CommandNameError(Exception):
     pass
 
 
+class CommandNotFound(Exception):
+    pass
+
+class CommandMissing(Exception):
+    pass
+
+
+class ParameterMissing(Exception):
+    pass
+
 def command(name):
 
     def inner(function):
@@ -86,5 +96,13 @@ class Commands(object):
     def run(self):
         args = list(sys.argv)
         nimbus = args.pop(0)
-        command = args.pop(0)
-        self.run_command(command, *args)
+        try:
+            command = args.pop(0)
+        except IndexError:
+            raise CommandMissing("type the command")
+        try:
+            self.run_command(command, *args)
+        except KeyError:
+            raise CommandNotFound("command not found")
+        except TypeError, e:
+            raise ParameterMissing(e.args[0])
