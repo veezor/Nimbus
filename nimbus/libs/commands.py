@@ -39,7 +39,8 @@ class Commands(object):
 
 
     def _get_app_command_module(self, appname):
-        module = __import__(appname + ".commands")
+        app = appname.split('.')[-1]
+        module = __import__(appname + ".commands", fromlist=app)
         return module
 
 
