@@ -3,9 +3,6 @@
 
 from django.db import models
 from nimbus.base.models import UUIDSingletonModel as BaseModel
-from nimbus.config.models import Config
-from nimbus.network.models import NetworkInterface
-from nimbus.timezone.models import Timezone
 from nimbus.libs import bacula
 
 
@@ -56,6 +53,10 @@ class WizardManager(object):
         try:
             steps = self.get_steps()
             index = steps.index(current)
+
+            if index + shift < 0:
+                raise IndexError
+
             name = steps[index+shift]
             return name,self.steps[name]
         except IndexError:
