@@ -29,6 +29,12 @@ from nimbus.libs import offsite
 from nimbus.shared import utils, enums, signals, fields
 
 
+class RunAfter(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    command = models.CharField(max_length=1023, blank=False, null=False,)
+
+
 class Procedure(BaseModel):
     pool_name = models.CharField(max_length=255)
     pool_size = models.FloatField(blank=False, null=False, default=104857600,
@@ -48,6 +54,7 @@ class Procedure(BaseModel):
                                 blank=False)
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
+    run_after = models.ManyToManyField(RunAfter, related_name='procedure', blank=True, null=True)
 
 
     class Meta:

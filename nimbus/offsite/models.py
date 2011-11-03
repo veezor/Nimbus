@@ -14,7 +14,6 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 
-
 from nimbus.libs.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
 from nimbus.shared import fields, signals
 from nimbus.base.models import UUIDSingletonModel as BaseModel
@@ -312,6 +311,18 @@ def nimbus_self_backup_update_offsite_status(offsite):
         procedure.offsite_on = offsite.active
         procedure.save(system_permission=True)
     except Procedure.DoesNotExist, error:
+        pass
+    #Criando objeto RunAfter
+    from nimbus.procedures.models import RunAfter
+    ra = RunAfter.objects.filter(name="Offsite").all()
+    if not ra:
+        run_after = RunAfter()
+        run_after.name = "Offsite"
+        run_after.description = "Mantem uma copia de seu backup da nuvem"
+        run_after.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
+        run_after.save()
+    else:
+        #RunAfter já existe. Ignore
         pass
 
 def is_active():
