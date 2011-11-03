@@ -67,8 +67,11 @@ class Commands(object):
     def _load_commands(self):
         apps = self._list_apps()
         for app in apps:
-            commands = self._get_commands_from_app(app)
-            self._update_commands(commands)
+            try:
+                commands = self._get_commands_from_app(app)
+                self._update_commands(commands)
+            except ImportError:
+                pass
 
 
     def list_commands(self):
