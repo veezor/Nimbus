@@ -18,7 +18,7 @@ from nimbus.libs.template import render_to_file
 from nimbus.config.models import Config
 from nimbus.network.models import get_nimbus_address
 from nimbus.computers.models import Computer
-
+from nimbus.graphics.models import BaseGraphicData
 
 
 
@@ -189,3 +189,15 @@ signals.connect_on( create_default_device, Storage, post_save)
 signals.connect_on( update_device_file, Device, post_save)
 signals.connect_on( restart_bacula_storage, Device, post_save)
 signals.connect_on( remove_device_file, Device, post_delete)
+
+
+
+class StorageGraphicData(BaseGraphicData):
+    size = models.BigIntegerField(null=False)
+
+    @classmethod
+    def from_resource(cls, value, timestamp):
+        return cls.objects.create(size=value, last_update=timestamp)
+
+    def to_resource(self):
+        return self.size,self.last_update
