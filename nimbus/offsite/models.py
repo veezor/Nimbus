@@ -318,7 +318,7 @@ def nimbus_self_backup_update_offsite_status(offsite):
     if not ra:
         run_after = RunAfter()
         run_after.name = "Offsite"
-        run_after.description = "Mantem uma copia de seu backup da nuvem"
+        run_after.description = "Mantém uma cópia de seu backup na nuvem"
         run_after.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
         run_after.save()
     else:
