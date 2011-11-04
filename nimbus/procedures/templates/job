@@ -16,7 +16,5 @@ Job {
     {% else %}
     Enabled = "no"
     {% endif %}
-    {% if offsite %}
-    Run After Job = "{{NIMBUS_EXE}} {{offsite_param}}"
-    {% endif %}
+	{% for task in run_afters %}Run After Job = {{task.command}}{% endfor %}
 }

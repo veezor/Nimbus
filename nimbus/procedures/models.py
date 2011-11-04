@@ -34,6 +34,9 @@ class RunAfter(models.Model):
     description = models.CharField(max_length=255)
     command = models.CharField(max_length=1023, blank=False, null=False,)
 
+    def __unicode__(self):
+        return "%s - %s" % (self.name, self.description) 
+
 
 class Procedure(BaseModel):
     pool_name = models.CharField(max_length=255)
@@ -54,7 +57,8 @@ class Procedure(BaseModel):
                                 blank=False)
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
-    run_after = models.ManyToManyField(RunAfter, related_name='procedure', blank=True, null=True)
+    run_after = models.ManyToManyField(RunAfter, verbose_name="Tarefas pós-backup",
+                            related_name='procedure', blank=True, null=True)
 
 
     class Meta:
@@ -191,12 +195,14 @@ def update_procedure_file(procedure):
                    storage=procedure.storage_bacula_name(),
                    fileset=procedure.fileset_bacula_name(),
                    priority="10",
-                   offsite=procedure.offsite_on,
+                   # offsite=procedure.offsite_on,
                    active=procedure.active,
-                   offsite_param="--upload-requests %v",
-                   NIMBUS_EXE=settings.NIMBUS_EXE,
+                   # offsite_param="--upload-requests %v",
+                   # NIMBUS_EXE=settings.NIMBUS_EXE,
                    client=procedure.computer.bacula_name,
-                   pool=procedure.pool_bacula_name() )
+                   pool=procedure.pool_bacula_name(),
+                   run_afters=procedure.run_after.all(),
+                   )
 
 
     update_pool_file(procedure)
