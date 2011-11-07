@@ -10,7 +10,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from nimbus.libs import offsite, systemprocesses
+from nimbus.libs import systemprocesses
+from nimbus.offsite import managers
 from nimbus.offsite.models import (LocalUploadRequest, 
                                    RemoteUploadRequest, 
                                    DownloadRequest)
@@ -93,13 +94,13 @@ def self_auth(request):
 def select_storage(request):
     return render_to_response(request, 
                               "select_storage.html",
-                              {"devices" : offsite.list_disk_labels()})
+                              {"devices" : managers.list_disk_labels()})
 
 def copy_files_worker(storage):
-    archive_devices = offsite.find_archive_devices()
+    archive_devices = managers.find_archive_devices()
     for arc_dev in archive_devices:
         dest = join("/media" , storage)
-        manager = offsite.LocalManager(origin=arc_dev, destination=dest)
+        manager = managers.LocalManager(origin=arc_dev, destination=dest)
         manager.upload_all_volumes()
 
 @login_required

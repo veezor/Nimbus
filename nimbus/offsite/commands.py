@@ -3,7 +3,7 @@
 
 
 from nimbus.libs.commands import command
-from nimbus.libs import offsite
+from nimbus.offsite import managers
 from nimbus.offsite import queue_service
 
 
@@ -12,8 +12,8 @@ def create_upload_requests(args):
     try:
         volumes = args.split('|')
         volumes = filter(None, volumes)
-        volumes = offsite.get_volumes_abspath( volumes )
-        manager = offsite.RemoteManager()
+        volumes = managers.get_volumes_abspath( volumes )
+        manager = managers.RemoteManager()
 
         for volume in volumes:
             manager.create_upload_request( volume )
@@ -27,13 +27,13 @@ def create_upload_requests(args):
 
 @command("--upload-now")
 def upload_volumes():
-    manager = offsite.RemoteManager()
+    manager = managers.RemoteManager()
     manager.process_pending_upload_requests()
 
 
 @command("--delete-volumes")
 def delete_volumes():
-    manager = offsite.RemoteManager()
+    manager = managers.RemoteManager()
     manager.process_pending_delete_requests()
 
 
