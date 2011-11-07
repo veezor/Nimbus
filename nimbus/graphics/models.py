@@ -12,7 +12,7 @@ from nimbus.base.models import SingletonBaseModel
 
 
 class BaseGraphicData(models.Model):
-    last_update = models.DateTimeField(null=False, default=datetime.now)
+    last_update = models.DateTimeField(null=False, default=datetime.now, auto_now=True)
 
 
     @classmethod
@@ -32,7 +32,7 @@ class BaseGraphicData(models.Model):
 
 class Config(SingletonBaseModel):
     max_items = models.IntegerField(null=False)
-    last_update = models.DateTimeField(null=False, default=datetime.now)
+    last_update = models.DateTimeField(null=False, default=datetime.now, auto_now=True)
 
 
 
