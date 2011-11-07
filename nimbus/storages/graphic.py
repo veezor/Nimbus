@@ -7,6 +7,7 @@ import systeminfo
 
 @resource
 def disk_usage(manager, interactive):
+    u"""Uso de disco"""
     diskinfo = systeminfo.DiskInfo("/")
     diskusage = diskinfo.get_used()
     return diskusage
