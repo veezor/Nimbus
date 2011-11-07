@@ -299,14 +299,11 @@ class GraphicsManager(object):
         return self.storage.list(name)
 
 
-    def collect_data(self):
+    def collect_data(self, interactive=False):
         for name, resource in self.resources.items():
-            try:
-                last_value, last_timestamp = self.storage.get(name)
-            except ResourceItemNotFound:
-                last_value, last_timestamp = None, None
-            value = resource(last_value, last_timestamp)
+            value = resource(self, interactive)
             now = datetime.now()
             self.storage.add(name, value, now)
+        self.config.save() # update last_update field from config
         self.storage.save()
 

@@ -6,7 +6,7 @@ import systeminfo
 
 
 @resource
-def disk_usage(last_value, last_timestamp):
+def disk_usage(manager, interactive):
     diskinfo = systeminfo.DiskInfo("/")
     diskusage = diskinfo.get_used()
     return diskusage
