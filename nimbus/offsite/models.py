@@ -16,7 +16,9 @@ from django.db.models.signals import post_save
 
 from nimbus.libs.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
 from nimbus.shared import fields, signals
+from nimbus.graphics.models import BaseGraphicData
 from nimbus.base.models import UUIDSingletonModel as BaseModel
+
 
 
 class Offsite(BaseModel):
@@ -331,3 +333,15 @@ def is_active():
 
 
 signals.connect_on( nimbus_self_backup_update_offsite_status, Offsite, post_save)
+
+
+
+class OffsiteGraphicData(BaseGraphicData):
+    usage = models.FloatField(null=False)
+
+    @classmethod
+    def from_resource(cls, value, timestamp):
+        return cls.objects.create(usage=value, last_update=timestamp)
+
+    def to_resource(self):
+        return self.usage,self.last_update
