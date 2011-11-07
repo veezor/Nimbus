@@ -6,13 +6,7 @@ import sys
 from django.core.management import call_command
 
 from nimbus.libs.commands import command
-from nimbus.libs import graphsdata
 from nimbus.libs import migrations
-
-@command("--update-graphs-data")
-def update_graphs_data():
-    graphs_data_manager = graphsdata.GraphDataManager()
-    graphs_data_manager.update()
 
 
 @command("--shell")

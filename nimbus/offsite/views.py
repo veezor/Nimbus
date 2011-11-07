@@ -18,9 +18,9 @@ from nimbus.offsite.models import (LocalUploadRequest,
 from nimbus.procedures.models import Procedure
 from nimbus.offsite.models import Offsite
 from nimbus.shared import utils
+from nimbus.graphics.models import GraphicsManager, ResourceItemNotFound
 from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.offsite.forms import OffsiteForm
-from nimbus.libs.graphsdata import GraphDataManager
 from nimbus.wizard.models import add_step
 from nimbus.wizard.views import previous_step_url, next_step_url
 
@@ -59,15 +59,13 @@ def detail(request):
     offsite = Offsite.get_instance()
     if offsite.active:
         try:
-            graph_data_manager = GraphDataManager()
-            data = graph_data_manager.list_offsite_measures()
-            if data:
-                usage = graph_data_manager.list_offsite_measures()[-1][-1]
-                ocupacao_offsite =  usage / float(offsite.plan_size)
-                # [(date, value),...]
-            else:
-                ocupacao_offsite = 0.0
-                messages.warning(request, "Dados não disponíveis. Aguarde sincronização com o offsite")
+            graphics_manager = GraphicsManager()
+            data = graphics_manager.list_resource('offsite')
+            usage = data[0][0]
+            ocupacao_offsite =  usage / float(offsite.plan_size)
+        except ResourceItemNotFound:
+            ocupacao_offsite = 0.0
+            messages.warning(request, "Dados não disponíveis. Aguarde sincronização com o offsite")
         except URLError, error:
             messages.error(request, "Erro na conexão com o backup nas nuvens. Verifique conexão.")
             ocupacao_offsite = 0.0
