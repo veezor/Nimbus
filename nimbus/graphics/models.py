@@ -273,6 +273,24 @@ class GraphicsManager(object):
                 pass
 
 
+    def get_max_items_resources(self):
+        return self.config.max_items
+
+
+    def get_last_collect_time(self):
+        return self.config.last_update
+
+
+    def export_data_to_dict(self):
+        data = {}
+        for resource_name in self.resources:
+            resource = self.resources[resource_name]
+            data[resource_name] = {}
+            data[resource_name]["doc"] = resource.__doc__
+            data[resource_name]["data"] = self.list_resource(resource_name)
+
+        return data
+
     def list_resources(self):
         return self.resources.keys()
 
