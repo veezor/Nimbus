@@ -9,6 +9,8 @@ from nimbus.offsite import queue_service
 
 @command("--upload-requests")
 def create_upload_requests(args):
+    u"""Parâmetro: Lista de volumes. Ex: volume1|volume2|volume3
+    Solicita o upload de volumes a fila do offsite"""
     try:
         volumes = args.split('|')
         volumes = filter(None, volumes)
@@ -27,18 +29,21 @@ def create_upload_requests(args):
 
 @command("--upload-now")
 def upload_volumes():
+    u"""Envia os volumes pendentes do offsite imediatamente"""
     manager = managers.RemoteManager()
     manager.process_pending_upload_requests()
 
 
 @command("--delete-volumes")
 def delete_volumes():
+    u"""Deleta os volumes pendentes do offsite imediatamente"""
     manager = managers.RemoteManager()
     manager.process_pending_delete_requests()
 
 
 @command("--start-queue-service")
 def start_queue_service():
+    u"""Inicia o serviço da fila de offsite"""
     queue_service.start_queue_manager_service()
 
 

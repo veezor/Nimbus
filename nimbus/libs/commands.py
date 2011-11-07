@@ -89,6 +89,17 @@ class Commands(object):
         return self.commands.keys()
 
 
+    def get_usage(self):
+        for name,command in self.commands.items():
+            print "\t",name
+            doc = command.__doc__
+            if not doc is None:
+                for line in doc.split('\n'):
+                    print "\t"*2,line.strip()
+            else:
+                print "\t\tDocumentation not found"
+
+
     def run_command(self, command_name, *args):
         command = self.commands[command_name]
         command(*args)

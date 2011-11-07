@@ -9,6 +9,7 @@ from nimbus.libs.commands import command
 
 @command('--change-password')
 def change_password():
+    u"""Troca a senha do super-usuário do nimbus"""
 
     while True:
         password = getpass.getpass("new password: ")

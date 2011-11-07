@@ -23,6 +23,7 @@ from nimbus.libs.bacula import ( ReloadManager,
 
 @command("--create-database")
 def create_database():
+    u"""Cria a base de dados do nimbus"""
     call_command('syncdb',verbosity=0,interactive=False)
     if len(User.objects.all()) == 0:
         u = User(username = "admin",
@@ -55,6 +56,7 @@ def create_database():
 
 @command("--start-reload-manager-service")
 def reload_manager_service(self):
+    u"""Inicia o serviço de reload das configurações do bacula"""
     service = ReloadManagerService()
     service.run()
 
