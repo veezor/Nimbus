@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import types
+import collections
 from datetime import datetime
 import cPickle as pickle
 
@@ -9,6 +10,9 @@ from django.db import models, transaction
 from django.conf import settings
 
 from nimbus.base.models import SingletonBaseModel
+
+
+Data = collections.namedtuple('Data', 'value timestamp')
 
 
 class BaseGraphicData(models.Model):
@@ -81,14 +85,14 @@ class FileStorage(Storage):
 
     def get(self, name, index=0):
         try:
-            return self.data[name][index]
+            return Data(*self.data[name][index])
         except (KeyError, IndexError):
             raise ResourceItemNotFound("not found")
 
 
     def list(self, name):
         try:
-            return self.data[name]
+            return [ Data(*d) for d in self.data[name] ]
         except KeyError:
             raise ResourceItemNotFound("not found")
 
@@ -149,7 +153,7 @@ class DBStorage(Storage):
         try:
             Model = self.models[name]
             model = Model.objects.order_by('-last_update')[index]
-            return model.to_resource()
+            return Data(*model.to_resource())
         except (KeyError, IndexError):
             raise ResourceItemNotFound("not found")
 
@@ -175,7 +179,7 @@ class DBStorage(Storage):
     def list(self, name):
         try:
             Model = self.models[name]
-            return [ m.to_resource() for m in Model.objects.order_by('-last_update') ]
+            return [ Data(*m.to_resource()) for m in Model.objects.order_by('-last_update') ]
         except KeyError:
             raise ResourceItemNotFound("not found")
 
@@ -187,13 +191,75 @@ class DBStorage(Storage):
 
 
 
-
-
 def resource(function):
 
     function.__graphic_resource__ = True
     return function
 
+
+def filter_value(function):
+
+    function.__graphic_filter__ = True
+    function.__graphic_filter_value__ = True
+    return function
+
+
+def filter(function):
+
+    function.__graphic_filter__ = True
+    return function
+
+
+
+class PipeLine(object):
+
+    def __init__(self):
+        self.filters = {}
+        self.filter_values = {}
+
+
+    def get_filter_values(self):
+        return self.filter_values.keys()
+
+
+    def get_filters(self):
+        return self.filter.keys()
+
+
+    def add(self, filter):
+        if hasattr(filter, "__graphic_filter_value__"):
+            self.add_filter_value(filter)
+        elif hasattr(filter, "__graphic_filter__"):
+            self.add_filter(filter)
+        else:
+            raise TypeError("Invalid Filter")
+
+
+    def add_filter(self, filter):
+        self.filters[filter.__name__] = filter
+
+    def add_filter_value(self, filter):
+        self.filter_values[filter.__name__] = filter
+
+    def apply_filter_value(self, resource_name, value):
+
+        for filter in self.filter_values.values():
+            value = filter(resource_name, value)
+
+        return value
+
+
+    def apply_filter(self, resource_name, alist):
+
+        for filter in self.filters.values():
+            alist = filter(resource_name, alist)
+
+        return alist
+
+
+    def apply(self, resource_name, alist):
+        values = [ self.apply_filter_value(resource_name, v) for v in alist ]
+        return self.apply_filter(resource_name, values)
 
 
 
@@ -213,6 +279,8 @@ class GraphicsManager(object):
         self.resources = {}
         self.config = Config.get_instance()
         self._load_resources()
+        self.pipeline = PipeLine()
+        self._load_filters()
         self.storage = self._get_storage()
 
 
@@ -245,9 +313,30 @@ class GraphicsManager(object):
         return resources
 
 
+    def _get_filters_from_module(self, module):
+        items_name = [ i for i in dir(module) if not i.startswith('_') ]
+        filters = []
+
+        for item_name in list(items_name):
+            item_obj = getattr(module, item_name)
+            if isinstance(item_obj, types.FunctionType)\
+               and hasattr(item_obj, "__graphic_filter__"):
+                filters.append(item_obj)
+
+        return filters
+
+
+
     def _get_resources_from_app(self, app):
         module = self._get_app_graphic_module(app)
         return self._get_resources_from_module(module)
+
+
+    def _get_filters_from_app(self, app):
+        module = self._get_app_graphic_module(app)
+        return self._get_filters_from_module(module)
+
+
 
 
     def _list_apps(self):
@@ -273,6 +362,19 @@ class GraphicsManager(object):
                 pass
 
 
+    def _load_filters(self):
+        apps = self._list_apps()
+        for app in apps:
+            try:
+                filters = self._get_filters_from_app(app)
+                for filter in filters:
+                    self.pipeline.add(filter)
+            except ImportError, e:
+                pass
+
+
+
+
     def get_max_items_resources(self):
         return self.config.max_items
 
@@ -296,7 +398,10 @@ class GraphicsManager(object):
 
 
     def list_resource(self, name):
-        return self.storage.list(name)
+        return self.pipeline.apply(name, self.storage.list(name))
+
+    def get_last_value(self, name):
+        return self.pipeline.apply_filter_value(name, self.storage.get(name))
 
 
     def collect_data(self, interactive=False):

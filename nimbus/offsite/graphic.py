@@ -22,3 +22,5 @@ def offsite(manager, interactive):
         return 0.0
 
 
+
+
