@@ -16,5 +16,10 @@ Job {
     {% else %}
     Enabled = "no"
     {% endif %}
-	{% for task in run_afters %}Run After Job = {{task.command}}{% endfor %}
+	{% if run_afters %}
+	RunScript {
+	RunsWhen = After
+	{% for task in run_afters %}Command = "{{task.command}}"{% endfor %}
+	}
+	{% endif %}
 }
