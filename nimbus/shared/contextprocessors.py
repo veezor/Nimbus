@@ -19,8 +19,7 @@ def menus_from_apps(request):
     for app in apps:
         if app.startswith('nimbus.'):
             app_name = app.split('.')[-1]
-            if path.exists(path.join(app_name, "templates", "menu.html")):
-                menu_list.append("../../%s/templates/menu.html" % app_name)
+            menu_list.append("%s_menu.html" % app_name)
     return {'menus_from_apps': menu_list}
 
 def block_ie_browser(request):
