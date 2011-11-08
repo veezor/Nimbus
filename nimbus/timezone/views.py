@@ -11,9 +11,27 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 from nimbus.timezone.forms import TimezoneForm
-from nimbus.shared.views import edit_singleton_model, render_to_response
-from nimbus.shared.forms import form, form_mapping
-from django.contrib import messages
+from nimbus.shared.views import edit_singleton_model
+from nimbus.wizard.models import add_step
+from nimbus.wizard.views import previous_step_url, next_step_url
+
+
+
+@add_step(position=3)
+def timezone(request):
+    extra_context = {
+        'wizard_title': u'4 de 5 - Configuração de Hora',
+        'page_name': u'timezone',
+        'previous': previous_step_url('timezone')
+    }
+    return edit_singleton_model( request, "generic.html",
+                                 next_step_url('timezone'),
+                                 formclass = TimezoneForm,
+                                 extra_context = extra_context )
+
+
+
+
 
 
 @login_required

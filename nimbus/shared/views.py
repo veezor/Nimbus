@@ -13,6 +13,10 @@ from nimbus.shared import forms
 def edit_singleton_model(request, templatename, redirect_to, 
                          formclass = None, model = None, extra_context = None):
 
+
+    if not '/' in redirect_to:
+        redirect_to = reverse(redirect_to)
+
     if not formclass and model:
         formclass = forms.form(model)
     try:
@@ -20,14 +24,14 @@ def edit_singleton_model(request, templatename, redirect_to,
                               form_class = formclass, 
                               model = model,
                               template_name = templatename, 
-                              post_save_redirect = reverse(redirect_to),
+                              post_save_redirect = redirect_to,
                               extra_context = extra_context )
     except Http404, error:
         return create_object( request, 
                               form_class = formclass, 
                               model = model,
                               template_name = templatename, 
-                              post_save_redirect = reverse(redirect_to),
+                              post_save_redirect = redirect_to,
                               extra_context = extra_context )
 
 def render_to_response(request, template, dictionary):

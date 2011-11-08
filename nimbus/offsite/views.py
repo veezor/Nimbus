@@ -10,16 +10,37 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from nimbus.libs import offsite, systemprocesses
+from nimbus.libs import systemprocesses
+from nimbus.offsite import managers
 from nimbus.offsite.models import (LocalUploadRequest, 
                                    RemoteUploadRequest, 
                                    DownloadRequest)
 from nimbus.procedures.models import Procedure
 from nimbus.offsite.models import Offsite
 from nimbus.shared import utils
+from nimbus.graphics.models import GraphicsManager, ResourceItemNotFound
 from nimbus.shared.views import edit_singleton_model, render_to_response
 from nimbus.offsite.forms import OffsiteForm
-from nimbus.libs.graphsdata import GraphDataManager
+from nimbus.wizard.models import add_step
+from nimbus.wizard.views import previous_step_url, next_step_url
+
+
+
+
+
+@add_step()
+def offsite(request):
+    extra_context = {'wizard_title': u'3 de 5 - Configuração do Offsite',
+                     'page_name': u'offsite',
+                     'previous': previous_step_url('offsite')}
+    return edit_singleton_model(request, "generic.html",
+                                next_step_url('offsite'),
+                                formclass = OffsiteForm,
+                                extra_context = extra_context)
+
+
+
+
 
 
 @login_required
@@ -38,15 +59,13 @@ def detail(request):
     offsite = Offsite.get_instance()
     if offsite.active:
         try:
-            graph_data_manager = GraphDataManager()
-            data = graph_data_manager.list_offsite_measures()
-            if data:
-                usage = graph_data_manager.list_offsite_measures()[-1][-1]
-                ocupacao_offsite =  usage / float(offsite.plan_size)
-                # [(date, value),...]
-            else:
-                ocupacao_offsite = 0.0
-                messages.warning(request, "Dados não disponíveis. Aguarde sincronização com o offsite")
+            graphics_manager = GraphicsManager()
+            data = graphics_manager.get_last_value('offsite')
+            usage = data.value
+            ocupacao_offsite =  usage / float(offsite.plan_size)
+        except ResourceItemNotFound:
+            ocupacao_offsite = 0.0
+            messages.warning(request, "Dados não disponíveis. Aguarde sincronização com o offsite")
         except URLError, error:
             messages.error(request, "Erro na conexão com o backup nas nuvens. Verifique conexão.")
             ocupacao_offsite = 0.0
@@ -73,13 +92,13 @@ def self_auth(request):
 def select_storage(request):
     return render_to_response(request, 
                               "select_storage.html",
-                              {"devices" : offsite.list_disk_labels()})
+                              {"devices" : managers.list_disk_labels()})
 
 def copy_files_worker(storage):
-    archive_devices = offsite.find_archive_devices()
+    archive_devices = managers.find_archive_devices()
     for arc_dev in archive_devices:
         dest = join("/media" , storage)
-        manager = offsite.LocalManager(origin=arc_dev, destination=dest)
+        manager = managers.LocalManager(origin=arc_dev, destination=dest)
         manager.upload_all_volumes()
 
 @login_required

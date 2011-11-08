@@ -318,7 +318,7 @@ class Worker(Process):
 
     def run(self):
         self.logger = logging.getLogger(__name__)
-        from nimbus.libs.offsite import process_request
+        from nimbus.offsite.managers import process_request
         self.s3 = Offsite.get_s3_interface()
         try:
             self.request = RemoteUploadRequest.objects.get(id=self.request_id)
