@@ -8,9 +8,11 @@ from os.path import join, exists
 
 from django.utils.translation import ugettext as _
 from django.db import models, connections
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 from django.db.models import Q
 from django.conf import settings
-from django.db.models.signals import post_save, post_delete, pre_save 
+from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
 
 from pybacula import BConsoleInitError
 
@@ -32,7 +34,10 @@ from nimbus.shared import utils, enums, signals, fields
 class RunAfter(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
-    command = models.CharField(max_length=1023, blank=False, null=False,)
+    command = models.CharField(max_length=1023, blank=False, null=False)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField(null=False, blank=False)
+    creator = generic.GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
         return "%s - %s" % (self.name, self.description) 
@@ -282,8 +287,14 @@ def remove_pool_file(procedure):
 #signals.connect_on(update_pool_file, Procedure, post_save)
 #signals.connect_on(remove_pool_file, Procedure, post_delete)
 
+def pre_delete_procedure(procedure):
+    #Execute on_remove de todos os run_afters
+    for r in procedure.run_after.all():
+        r.creator.on_remove(procedure)
+
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
+signals.connect_on(pre_delete_procedure, Procedure, pre_delete)
 signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
 signals.connect_on( remove_procedure_file, Procedure, post_delete)
 

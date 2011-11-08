@@ -38,6 +38,11 @@ class Offsite(BaseModel):
     class Meta:
         verbose_name = u"Configurações do offsite"
 
+    @classmethod
+    def on_remove(cls, procedure):
+        #REMOVE OS VOLUMES DO OFFSITE
+        print procedure
+        pass
 
     def clean(self):
         if self.active:
@@ -114,8 +119,6 @@ class Offsite(BaseModel):
                  host=config.host)
 
         return s3
-
-
     
 class Volume(models.Model):
 
@@ -318,6 +321,7 @@ def nimbus_self_backup_update_offsite_status(offsite):
     if not ra:
         run_after = RunAfter()
         run_after.name = "Offsite"
+        run_after.content_object = offsite
         run_after.description = "Mantém uma cópia de seu backup na nuvem"
         run_after.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
         run_after.save()
