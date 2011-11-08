@@ -30,13 +30,9 @@ def timezone(request):
                                  extra_context = extra_context )
 
 
-
-
-
-
 @login_required
 def timezone_conf(request):
-    return edit_singleton_model( request, "timezoneconf.html", 
+    return edit_singleton_model( request, "timezoneconf.html",
                                  "nimbus.timezone.views.timezone_conf",
                                  formclass = TimezoneForm )
 

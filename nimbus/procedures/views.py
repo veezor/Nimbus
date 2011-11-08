@@ -22,6 +22,7 @@ from nimbus.filesets.models import FileSet
 from nimbus.offsite.models import Offsite
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
+from nimbus.libs.bacula import call_reload_baculadir
 from nimbus.shared.enums import days as days_enum, weekdays as weekdays_enum, levels as levels_enum
 from nimbus.procedures.forms import ProcedureForm, ProcedureEditForm
 from nimbus.schedules.models import Schedule
@@ -56,6 +57,7 @@ def add(request, teste=None):
         procedure_form = ProcedureForm(data, prefix="procedure")
         if procedure_form.is_valid():
             procedure = procedure_form.save()
+            call_reload_baculadir()
             messages.success(request, "Procedimento de backup '%s' criado com sucesso" % procedure.name)
             return redirect('/procedures/list')
         else:
@@ -87,6 +89,7 @@ def edit(request, procedure_id):
         if procedure_form.is_valid():
             procedure_form.save()
             messages.success(request, "Procedimento '%s' alterado com sucesso" % p.name)
+            call_reload_baculadir()
             return redirect('/procedures/list')
         else:
             messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
@@ -112,6 +115,7 @@ def do_delete(request, object_id):
     if not procedure.fileset.is_model:
         procedure.fileset.delete()
     procedure.delete()
+    call_reload_baculadir()
     messages.success(request, u"Procedimento removido com sucesso.")
     return redirect('/procedures/list')
 
@@ -151,6 +155,7 @@ def activate_offsite(request, object_id):
         procedure = Procedure.objects.get(id=object_id)
         procedure.offsite_on = True
         procedure.save()
+        call_reload_baculadir()
     return redirect('/procedures/list')
 
 @login_required
@@ -159,6 +164,7 @@ def deactivate_offsite(request, object_id):
         procedure = Procedure.objects.get(id=object_id)
         procedure.offsite_on = False
         procedure.save()
+        call_reload_baculadir(())
     return redirect('/procedures/list')
 
 @login_required
@@ -167,6 +173,7 @@ def activate(request, object_id):
         procedure = Procedure.objects.get(id=object_id)
         procedure.active = True
         procedure.save()
+        call_reload_baculadir()
         messages.success(request, "Procedimento ativado com sucesso")
     return redirect('/procedures/list')
 
@@ -176,6 +183,7 @@ def deactivate(request, object_id):
         procedure = Procedure.objects.get(id=object_id)
         procedure.active = False
         procedure.save()
+        call_reload_baculadir()
         messages.success(request, "Procedimento desativado com sucesso")
     return redirect('/procedures/list')
 

@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.contrib import messages
 
+from nimbus.libs.bacula import call_reload_baculadir
 from nimbus.computers.models import Computer
 from nimbus.schedules import forms
 # from nimbus.shared.enums import levels, days_range, weekdays_range, end_days_range
@@ -100,6 +101,8 @@ def do_edit(request):
                     run.minute = data['minute']
                     run.day = int(data['day_num'])
                     run.save()
+                
+                call_reload_baculadir()
                 return HttpResponse('{"status": "ok"}')
             except:
                 return HttpResponse('{"status": "error"}')
@@ -136,6 +139,7 @@ def do_delete(request, schedule_id):
             procedure.save()
     name = s.name
     s.delete()
+    call_reload_baculadir()
     messages.success(request, u"Perfil de agendamento '%s' removido com sucesso." % name)
     return redirect('/procedures/profile/list')
 

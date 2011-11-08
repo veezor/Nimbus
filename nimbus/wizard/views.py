@@ -9,7 +9,6 @@ from django.shortcuts import redirect
 from django.http import Http404
 
 from nimbus.shared.views import render_to_response
-
 from nimbus.wizard import models
 
 

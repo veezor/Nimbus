@@ -18,7 +18,6 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'nimbus.settings'
 from gunicorn.app.base import Application
 from django.core.handlers.wsgi import WSGIHandler
 
-
 from nimbus.libs import commands
 from nimbus.shared.middlewares import LogSetup
 

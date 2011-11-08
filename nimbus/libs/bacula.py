@@ -175,6 +175,7 @@ def lock_and_stop_bacula():
             logger.exception("stop bacula-dir error")
 
 
+
 class BaculaLock(object):
 
     def __enter__(self):
@@ -186,153 +187,34 @@ class BaculaLock(object):
 
 
 
-class ReloadManagerService(object):
-
-    def __init__(self):
-        from nimbus.config.models import BaculaSettings
-        self.conf = BaculaSettings.get_instance()
-        logging.config.fileConfig(settings.RELOAD_MANAGER_LOGGING_CONF)
-
-
-    def add_reload_request(self):
-        self.conf.increment_reload_requests_counter()
-
-        if self.conf.reload_requests_counter > self.conf.reload_requests_threshold\
-           and self._interval > self._min_interval:
-            self._reload()
-
-        return True
-
-
-    def _reload(self):
-        self.conf.reset_reload_requests_counter()
-        self._call_reload_baculadir()
-
-
-    def force_reload(self):
-        self._reload()
-        return True
-
-
-    @property
-    def _min_interval(self):
-        return datetime.timedelta(seconds=self.conf.min_reload_requests_interval)
-
-    @property
-    def _interval(self):
-
-        if not self.conf.last_bacula_reload:
-            return self._min_interval + datetime.timedelta(seconds=1)
-
-        now = datetime.datetime.now()
-        return now - self.conf.last_bacula_reload
-
-
-    def _force_baculadir_restart(self):
-        if not bacula_is_locked():
-            try:
-                logger = logging.getLogger(__name__)
-                manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
-                stdout = manager.director_restart()
-                logger.info("bacula-dir restart ok")
-                logger.info(stdout)
-            except Exception, error:
-                logger.error("Reload bacula-dir error")
 
 
 
-    def _call_reload_baculadir(self):
+def _force_baculadir_restart():
+    if not bacula_is_locked():
         try:
             logger = logging.getLogger(__name__)
-            logger.info("Iniciando comunicacao com o bacula")
-            bacula = Bacula()
-            bacula.reload()
-            logger.info("Reload no bacula executado com sucesso")
-            del bacula
-        except BConsoleInitError, e:
-            logger.error("Comunicação com o bacula falhou, vou tentar o restart")
-            self._force_baculadir_restart()
-            logger.error("Comunicação com o bacula falhou")
+            manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
+            stdout = manager.director_restart()
+            logger.info("bacula-dir restart ok")
+            logger.info(stdout)
+        except Exception, error:
+            logger.error("Reload bacula-dir error")
 
 
 
-    def run(self):
-        os.setsid()
-        self.thread = Thread(name='ReloadManagerService Worker',
-                             target=self._start_timed_worker)
-        self.thread.setDaemon(True)
-        self.thread.start()
-        try:
-            self._start_xmlrpc_service()
-        except socket.error:
-            logger = logging.getLogger(__name__)
-            logger.exception('erro ao startar reload manager')
-            sys.exit(1)
-
-
-    def check_service(self):
-        return True
-
-
-    def _start_timed_worker(self):
-
-        while True:
-            time.sleep(self.conf.min_reload_requests_interval * 2)
-            if self.conf.has_bacula_reload_requests:
-                self._reload()
+def call_reload_baculadir():
+    try:
+        logger = logging.getLogger(__name__)
+        logger.info("Iniciando comunicacao com o bacula")
+        bacula = Bacula()
+        bacula.reload()
+        logger.info("Reload no bacula executado com sucesso")
+        del bacula
+    except BConsoleInitError, e:
+        logger.error("Comunicação com o bacula falhou, vou tentar o restart")
+        _force_baculadir_restart()
+        logger.error("Comunicação com o bacula falhou")
 
 
 
-    def _start_xmlrpc_service(self):
-        self.server = SimpleXMLRPCServer.SimpleXMLRPCServer((settings.RELOAD_MANAGER_ADDRESS,
-                                                        settings.RELOAD_MANAGER_PORT))
-        self.server.register_instance(self)
-        self.server.serve_forever()
-
-
-
-
-
-class ReloadManager(object):
-
-    def __init__(self):
-        self._connection = self._get_connection()
-
-
-    def _get_proxy(self):
-        proxy = xmlrpclib.ServerProxy(settings.RELOAD_MANAGER_URL)
-        proxy.check_service()
-        return proxy
-
-    def _start_reload_manager(self):
-        """ Ticket #1135: Instalacao do nimbus falha durante o primeiro boot.
-        O problema ocorre quando o reload manager eh invocado durante o create
-        database. Devido a posteriormente o bacula ser restartado, isso pode
-        ser evitado por enquanto. Este bug eh intermitente, ocorre 
-        esporadicamente, enquanto a solucao e motivo nao sao identificados
-        permanece esse workaround"""
-        if sys.argv[-1] == "--create-database":
-            return False
-        return True
-
-
-
-    def _get_connection(self):
-        try:
-            return self._get_proxy()
-        except socket.error:
-            if self._start_reload_manager():
-                service = subprocess.Popen(settings.RELOAD_MANAGER_COMMAND,
-                                       close_fds=True)
-                time.sleep(settings.RELOAD_MANAGER_START_SLEEP_TIME)
-                return self._get_proxy()
-            else:
-                return mock.Mock()
-
-
-    def add_reload_request(self):
-        self._connection.add_reload_request()
-
-
-    def force_reload(self):
-        self._connection.force_reload()
