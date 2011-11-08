@@ -26,7 +26,6 @@ from nimbus.bacula.models import Media, Job, File
 from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.offsite.models import Offsite
-from nimbus.offsite.models import is_active
 from nimbus.libs import offsite
 from nimbus.shared import utils, enums, signals, fields
 
@@ -52,7 +51,6 @@ class Procedure(BaseModel):
                                               default=30)
     computer = models.ForeignKey(Computer, verbose_name=_("Computador"),
                                  blank=False, null=False)
-    offsite_on = models.BooleanField(default=is_active, blank=False, null=False)
     active = models.BooleanField(default=True, blank=True, null=False)
     schedule = models.ForeignKey(Schedule, verbose_name=_("Schedule"),
                                  related_name='procedures')
@@ -158,9 +156,6 @@ class Procedure(BaseModel):
         bacula.run_backup(self.bacula_name, 
                           client_name=self.computer.bacula_name)
    
-    @classmethod
-    def disable_offsite(cls):
-        cls.objects.filter(offsite_on=True).update(offsite_on=False)
 
     @staticmethod
     def list_files(jobid, computer, path="/"):
@@ -200,9 +195,7 @@ def update_procedure_file(procedure):
                    storage=procedure.storage_bacula_name(),
                    fileset=procedure.fileset_bacula_name(),
                    priority="10",
-                   # offsite=procedure.offsite_on,
                    active=procedure.active,
-                   # offsite_param="--upload-requests %v",
                    # NIMBUS_EXE=settings.NIMBUS_EXE,
                    client=procedure.computer.bacula_name,
                    pool=procedure.pool_bacula_name(),
@@ -249,9 +242,7 @@ def remove_procedure_volumes(procedure):
     except BConsoleInitError, error:
         logger = logging.getLogger(__name__)
         logger.exception("Erro na comunicação com o bacula")
-    if procedure.offsite_on:
-        remote_manager = offsite.RemoteManager()
-        remote_manager.create_deletes_request( volumes )
+
 
 def offsiteconf_check(procedure):
     offsite = Offsite.get_instance()
