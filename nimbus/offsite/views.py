@@ -60,8 +60,8 @@ def detail(request):
     if offsite.active:
         try:
             graphics_manager = GraphicsManager()
-            data = graphics_manager.list_resource('offsite')
-            usage = data[0][0]
+            data = graphics_manager.get_last_value('offsite')
+            usage = data.value
             ocupacao_offsite =  usage / float(offsite.plan_size)
         except ResourceItemNotFound:
             ocupacao_offsite = 0.0
