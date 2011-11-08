@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db.models import Q
 from django.conf import settings
-from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
+from django.db.models.signals import post_save, post_delete, pre_save, pre_delete, m2m_changed
 
 from pybacula import BConsoleInitError
 
@@ -292,6 +292,10 @@ def pre_delete_procedure(procedure):
     for r in procedure.run_after.all():
         r.creator.on_remove(procedure)
 
+def change_run_after(sender, instance, action, reverse, model, pk_set, **kwargs):
+    update_procedure_file(instance)
+
+m2m_changed.connect(change_run_after, sender=Procedure.run_after.through)
 signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
 signals.connect_on(pre_delete_procedure, Procedure, pre_delete)
