@@ -134,7 +134,6 @@ def execute(request, object_id):
 def list_all(request):
     procedures = Procedure.objects.filter(id__gt=1)
     offsite = Offsite.get_instance()
-    offsite_on = offsite.active
     title = u"Procedimentos de backup"
     last_jobs = Procedure.all_non_self_jobs()[:10]
     return render_to_response(request, "procedures_list.html", locals())
