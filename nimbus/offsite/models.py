@@ -14,6 +14,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 
+#from nimbus.offsite import managers
 from nimbus.libs.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
 from nimbus.shared import fields, signals
 from nimbus.graphics.models import BaseGraphicData
@@ -42,9 +43,9 @@ class Offsite(BaseModel):
 
     @classmethod
     def on_remove(cls, procedure):
-        #REMOVE OS VOLUMES DO OFFSITE
-        print procedure
-        pass
+        from nimbus.offsite import managers
+        remote_manager = managers.RemoteManager()
+        remote_manager.create_deletes_request(volumes)
 
     def clean(self):
         if self.active:
