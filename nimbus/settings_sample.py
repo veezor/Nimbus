@@ -224,7 +224,10 @@ TEMPLATE_DIRS = (
 )
 MODULAR_APPS = [
     'nimbus.offsite',
+    'nimbus.securitycopy',
+    'nimbus.recovery'
 ]
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -235,6 +238,7 @@ INSTALLED_APPS = (
     'nimbus.base',
     'nimbus.users',
     'nimbus.config',
+    'nimbus.graphics',
     'nimbus.network',
     'nimbus.schedules',
     'nimbus.filesets',
