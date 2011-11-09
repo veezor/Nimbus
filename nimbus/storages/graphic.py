@@ -23,6 +23,12 @@ def convert_data_to_gb(resource_name, data):
         return data
 
 
+@filter_value
+def datetime_to_str(resource_name, data):
+    timestamp =  utils.datetime_to_str(data.timestamp)
+    return Data(data.value, timestamp)
+
+
 @filter
 def duplicate_unary_list(resource_name, data_list):
     if len(data_list) == 1:
