@@ -15,6 +15,18 @@ from nimbus.base.models import SingletonBaseModel
 Data = collections.namedtuple('Data', 'value timestamp')
 
 
+class DataList(list):
+
+    @property
+    def values(self):
+        return [ data.value for data in self ]
+
+    @property
+    def timestamps(self):
+        return [ data.timestamp for data in self ]
+
+
+
 class BaseGraphicData(models.Model):
     last_update = models.DateTimeField(null=False, default=datetime.now, auto_now=True)
 
@@ -92,7 +104,7 @@ class FileStorage(Storage):
 
     def list(self, name):
         try:
-            return [ Data(*d) for d in self.data[name] ]
+            return DataList( Data(*d) for d in self.data[name] )
         except KeyError:
             raise ResourceItemNotFound("not found")
 
@@ -179,7 +191,8 @@ class DBStorage(Storage):
     def list(self, name):
         try:
             Model = self.models[name]
-            return [ Data(*m.to_resource()) for m in Model.objects.order_by('-last_update') ]
+            models = Model.objects.order_by('last_update')
+            return DataList( Data(*m.to_resource()) for m in models )
         except KeyError:
             raise ResourceItemNotFound("not found")
 
@@ -252,13 +265,13 @@ class PipeLine(object):
     def apply_filter(self, resource_name, alist):
 
         for filter in self.filters.values():
-            alist = filter(resource_name, alist)
+            alist = DataList(filter(resource_name, alist))
 
         return alist
 
 
     def apply(self, resource_name, alist):
-        values = [ self.apply_filter_value(resource_name, v) for v in alist ]
+        values = DataList( self.apply_filter_value(resource_name, v) for v in alist )
         return self.apply_filter(resource_name, values)
 
 
