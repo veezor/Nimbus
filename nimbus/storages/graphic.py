@@ -25,4 +25,6 @@ def convert_data_to_gb(resource_name, data):
 
 @filter
 def duplicate_unary_list(resource_name, data_list):
-    return data_list * 2
+    if len(data_list) == 1:
+        return data_list * 2
+    return data_list
