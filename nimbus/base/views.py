@@ -12,8 +12,8 @@ from django.conf import settings
 from nimbus.shared import utils
 from nimbus.shared.views import render_to_response
 from nimbus.bacula.models import Job
-from nimbus.libs import graphsdata
 from nimbus.base.models import Notification
+from nimbus.graphics.models import GraphicsManager
 from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
 
@@ -61,16 +61,16 @@ def home(request):
         }
     }
 
-    graphsdata.update_disk_graph()
-    graph_data_manager = graphsdata.GraphDataManager()
-    diskdata = graph_data_manager.list_disk_measures()
+    graphics_manager = GraphicsManager()
+    graphics_manager.collect_data(interactive=True)
+    diskdata = graphics_manager.list_resource('disk_usage')
     
 
     table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
-              'header': [i[0] for i in diskdata], 'labels': [utils.filesizeformat(i[1], "GB") for i in diskdata]}
+              'header': diskdata.timestamps, 'labels': diskdata.values}
     #table3['header'] = ["Gigabytes"]
     #setando valor padrao
-    t3data = [utils.filesizeformat(i[1], "GB") for i in diskdata] if len(diskdata) else [0.0]
+    t3data = diskdata.values or [0.0]
     table3['lines'] = {"Disponível": t3data}
 
 
@@ -94,13 +94,13 @@ def home(request):
     #offsite_free = 45
 
 
-    offsite_data = graph_data_manager.list_offsite_measures()
+    offsite_data = graphics_manager.list_resource('offsite')
     table6 = False
     if len(offsite_data) > 0:
         table6 = {'title': u"Uso do Offsite", 'width': "", 'type': "area", 'height': "130", 'cid': "chart6",
-                  'header': [i[0] for i in offsite_data], 'labels': [utils.filesizeformat(i[1]) for i in offsite_data]}
+                  'header': offsite_data.timestamps, 'labels': offsite_data.values}
         # table6['header'] = ["GB"]
-        t6data = [i[1] for i in offsite_data] if len(offsite_data) else [0.0]
+        t6data = offsite_data.values or [0.0]
         table6['lines'] = {"Disponível": t6data }
 
     # Dados de content:
