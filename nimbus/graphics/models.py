@@ -67,9 +67,12 @@ class Storage(object):
         """add new measure from resource name with timestamp"""
         raise TypeError("must be implemented")
 
-
     def list(self, name):
         """list items from resource name with (value, timestamp)"""
+        raise TypeError("must be implemented")
+
+    def size(self, name):
+        """size from resource list data"""
         raise TypeError("must be implemented")
 
     def save(self):
@@ -95,9 +98,9 @@ class FileStorage(Storage):
             return {}
 
 
-    def get(self, name, index=0):
+    def get(self, name, index=-1):
         try:
-            return Data(*self.data[name][index])
+            return self.list(name)[index]
         except (KeyError, IndexError):
             raise ResourceItemNotFound("not found")
 
@@ -109,10 +112,14 @@ class FileStorage(Storage):
             raise ResourceItemNotFound("not found")
 
 
+    def size(self, name):
+        return len(self.list(name))
+
+
     def add(self, name, value, timestamp):
         if not name in self.data:
             self.data[name] = []
-        self.data[name].insert(0, (value, timestamp))
+        self.data[name].append(value, timestamp)
         if len(self.data[name]) > self.config.max_items:
             del self.data[name][-1]
 
@@ -120,6 +127,8 @@ class FileStorage(Storage):
     def save(self):
         with file(self.filename, "w") as f:
             pickle.dump(self.data, f)
+
+
 
 
 
@@ -161,11 +170,9 @@ class DBStorage(Storage):
         self.in_transaction = True
 
 
-    def get(self, name, index=0):
+    def get(self, name, index=-1):
         try:
-            Model = self.models[name]
-            model = Model.objects.order_by('-last_update')[index]
-            return Data(*model.to_resource())
+            return self.list(name)[index]
         except (KeyError, IndexError):
             raise ResourceItemNotFound("not found")
 
@@ -201,6 +208,10 @@ class DBStorage(Storage):
         transaction.commit()
         transaction.leave_transaction_management(using=None)
         self.in_transaction = False
+
+
+    def size(self, name):
+        return len(self.list(name))
 
 
 
