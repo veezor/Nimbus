@@ -15,6 +15,18 @@ from nimbus.base.models import SingletonBaseModel
 Data = collections.namedtuple('Data', 'value timestamp')
 
 
+class DataList(list):
+
+    @property
+    def values(self):
+        return [ data.value for data in self ]
+
+    @property
+    def timestamps(self):
+        return [ data.timestamp for data in self ]
+
+
+
 class BaseGraphicData(models.Model):
     last_update = models.DateTimeField(null=False, default=datetime.now, auto_now=True)
 
@@ -55,9 +67,12 @@ class Storage(object):
         """add new measure from resource name with timestamp"""
         raise TypeError("must be implemented")
 
-
     def list(self, name):
         """list items from resource name with (value, timestamp)"""
+        raise TypeError("must be implemented")
+
+    def size(self, name):
+        """size from resource list data"""
         raise TypeError("must be implemented")
 
     def save(self):
@@ -83,24 +98,28 @@ class FileStorage(Storage):
             return {}
 
 
-    def get(self, name, index=0):
+    def get(self, name, index=-1):
         try:
-            return Data(*self.data[name][index])
+            return self.list(name)[index]
         except (KeyError, IndexError):
             raise ResourceItemNotFound("not found")
 
 
     def list(self, name):
         try:
-            return [ Data(*d) for d in self.data[name] ]
+            return DataList( Data(*d) for d in self.data[name] )
         except KeyError:
             raise ResourceItemNotFound("not found")
+
+
+    def size(self, name):
+        return len(self.list(name))
 
 
     def add(self, name, value, timestamp):
         if not name in self.data:
             self.data[name] = []
-        self.data[name].insert(0, (value, timestamp))
+        self.data[name].append(value, timestamp)
         if len(self.data[name]) > self.config.max_items:
             del self.data[name][-1]
 
@@ -108,6 +127,8 @@ class FileStorage(Storage):
     def save(self):
         with file(self.filename, "w") as f:
             pickle.dump(self.data, f)
+
+
 
 
 
@@ -149,11 +170,9 @@ class DBStorage(Storage):
         self.in_transaction = True
 
 
-    def get(self, name, index=0):
+    def get(self, name, index=-1):
         try:
-            Model = self.models[name]
-            model = Model.objects.order_by('-last_update')[index]
-            return Data(*model.to_resource())
+            return self.list(name)[index]
         except (KeyError, IndexError):
             raise ResourceItemNotFound("not found")
 
@@ -179,7 +198,8 @@ class DBStorage(Storage):
     def list(self, name):
         try:
             Model = self.models[name]
-            return [ Data(*m.to_resource()) for m in Model.objects.order_by('-last_update') ]
+            models = Model.objects.order_by('last_update')
+            return DataList( Data(*m.to_resource()) for m in models )
         except KeyError:
             raise ResourceItemNotFound("not found")
 
@@ -188,6 +208,10 @@ class DBStorage(Storage):
         transaction.commit()
         transaction.leave_transaction_management(using=None)
         self.in_transaction = False
+
+
+    def size(self, name):
+        return len(self.list(name))
 
 
 
@@ -252,13 +276,13 @@ class PipeLine(object):
     def apply_filter(self, resource_name, alist):
 
         for filter in self.filters.values():
-            alist = filter(resource_name, alist)
+            alist = DataList(filter(resource_name, alist))
 
         return alist
 
 
     def apply(self, resource_name, alist):
-        values = [ self.apply_filter_value(resource_name, v) for v in alist ]
+        values = DataList( self.apply_filter_value(resource_name, v) for v in alist )
         return self.apply_filter(resource_name, values)
 
 

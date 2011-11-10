@@ -8,7 +8,6 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.http import Http404
 
-from nimbus.shared.views import render_to_response
 from nimbus.wizard import models
 
 
@@ -24,13 +23,11 @@ def only_wizard(view):
     return wrapper
 
 
-
 @only_wizard
 def wizard(request, step):
     current = step
     step = models.wizard_manager.get_step(step)
     return step(request)
-
 
 
 @only_wizard
@@ -54,24 +51,6 @@ def previous_step_url(current):
 
 def next_step_url(current):
     return reverse('nimbus.wizard.views.wizard_next', kwargs={"step":current})
-
-
-
-
-@only_wizard
-def recovery(request):
-    extra_context = {
-        'wizard_title': u'Recuperação do sistema',
-        'page_name': u'recovery',
-        'next': reverse('nimbus.wizard.views.timezone')
-    }
-    if request.method == "GET":
-        return render_to_response( request, "recovery.html", extra_context )
-    elif request.method == "POST":
-        return redirect('nimbus.recovery.views.select_source')
-    else:
-        raise Http404()
-
 
 
 @models.add_step(position=-1)

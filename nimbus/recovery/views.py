@@ -3,20 +3,15 @@
 import simplejson
 import logging
 
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.contrib.auth.decorators import login_required
-from django.views.generic import create_update
-from django.core.urlresolvers import reverse
-from django.core import serializers
+from django.http import HttpResponse, Http404
 from django.shortcuts import redirect
-from django.conf import settings
+from django.core.urlresolvers import reverse
 from devicemanager import StorageDeviceManager, MountError
 
-from nimbus.shared.views import render_to_response, edit_singleton_model
-from nimbus.libs import offsite, systemprocesses
+from nimbus.shared.views import render_to_response
+from nimbus.libs import systemprocesses
+from nimbus.offsite import managers as offsite
 from nimbus.offsite.models import DownloadRequest
-from nimbus.offsite.forms import OffsiteRecoveryForm
-from nimbus.offsite.models import Offsite
 from nimbus.wizard.models import Wizard
 from nimbus.wizard.views import only_wizard
 
@@ -25,6 +20,25 @@ from nimbus.wizard.views import only_wizard
 #        'title': u"Recuperação do sistema"
 #    }
 #    return render_to_response(request, "recovery_start.html", extra_content)
+
+
+
+@only_wizard
+def recovery(request):
+    extra_context = {
+        'wizard_title': u'Recuperação do sistema',
+        'page_name': u'recovery',
+        'next': reverse('nimbus.wizard.views.timezone')
+    }
+    if request.method == "GET":
+        return render_to_response( request, "recovery.html", extra_context )
+    elif request.method == "POST":
+        return redirect('nimbus.recovery.views.select_source')
+    else:
+        raise Http404()
+
+
+
 
 @only_wizard
 def select_source(request):

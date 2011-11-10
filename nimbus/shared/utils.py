@@ -94,6 +94,9 @@ def random_password(size=20):
     
     
 
+def datetime_to_str(datetime):
+    return datetime.strftime("%d/%m/%Y - %H:%M:%S")
+
 
 
 ###
