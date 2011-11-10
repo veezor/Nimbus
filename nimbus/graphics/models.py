@@ -232,6 +232,31 @@ class DBStorage(Storage):
 
 
 
+class IStorageAdapter(object):
+
+    def __init__(self, storage):
+        self.storage = storage
+
+    def __getattr__(self, attr):
+        return getattr(self.storage, attr)
+
+
+
+class AValueByDay(IStorageAdapter):
+
+
+    def _remove_current_day_entry(self, name, value, timestamp):
+        last = self.get(name)
+        diff = timestamp - last.timestamp
+        if not diff.days:
+            size = self.size(name)
+            self.remove(name, size - 1)
+
+
+    def add(self, name, value, timestamp):
+        self._remove_current_day_entry(name, value, timestamp)
+        self.storage.add(name, value, timestamp)
+
 
 
 def resource(function):
@@ -324,7 +349,7 @@ class GraphicsManager(object):
         self._load_resources()
         self.pipeline = PipeLine()
         self._load_filters()
-        self.storage = self._get_storage()
+        self.storage = AValueByDay(self._get_storage())
 
 
     def _get_storage(self):
