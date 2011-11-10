@@ -25,8 +25,6 @@ from nimbus.bacula.models import Media, Job, File
 # from nimbus.pools.models import Pool
 from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
-from nimbus.offsite.models import Offsite
-from nimbus.libs import offsite
 from nimbus.shared import utils, enums, signals, fields
 
 
@@ -44,7 +42,8 @@ class RunAfter(models.Model):
 
 class Procedure(BaseModel):
     pool_name = models.CharField(max_length=255)
-    pool_size = models.FloatField(blank=False, null=False, default=104857600,
+    pool_size = models.BigIntegerField(blank=False, null=False, 
+                                  default=settings.DEFAULT_PROCEDURE_POOL_SIZE,
                                   editable=False) #100MB
     pool_retention_time = models.IntegerField(verbose_name=_("Retention Time (days)"),
                                               blank=False, null=False,
@@ -245,6 +244,7 @@ def remove_procedure_volumes(procedure):
 
 
 def offsiteconf_check(procedure):
+    from nimbus.offsite.models import Offsite
     offsite = Offsite.get_instance()
     if not offsite.active:
         procedure.offsite_on = False
@@ -255,13 +255,7 @@ def update_pool_file(procedure):
     name = procedure.pool_bacula_name()
     filename = path.join(settings.NIMBUS_POOLS_DIR, name)
 
-    offsite_conf = Offsite.get_instance()
-    if offsite_conf.active and offsite_conf.host != offsite_conf.AMZ_S3_HOST:
-        vol_bytes = int(procedure.pool_size) # TODO: change model field to integer
-    else:
-        vol_bytes = 0
-
-    render_to_file(filename, "pool", name=name, max_vol_bytes=vol_bytes,
+    render_to_file(filename, "pool", name=name, max_vol_bytes=procedure.pool_size,
                    days=procedure.pool_retention_time)
 
 

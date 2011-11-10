@@ -115,6 +115,8 @@ NIMBUS_GRAPHICS_DB_STORE_MODELS = (
 
 
 
+DEFAULT_PROCEDURE_POOL_SIZE = 104857600
+
 # END NIMBUS
 
 # Local time zone for this installation. Choices can be found here:
