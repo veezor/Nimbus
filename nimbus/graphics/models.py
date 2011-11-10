@@ -58,7 +58,6 @@ class Storage(object):
         """Initialize storage"""
         raise TypeError("must be implemented")
 
-
     def get(self, name, index=0):
         """returns (value,timestamp) of resource name from index"""
         raise TypeError("must be implemented")
@@ -224,7 +223,8 @@ class DBStorage(Storage):
 
     def remove(self, name, index):
         try:
-            model = self.list(name)[index]
+            Model = self.models[name]
+            model = Model.objects.order_by('last_update')[index]
             model.delete()
         except IndexError:
             raise ResourceItemNotFound("not found")
