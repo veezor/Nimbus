@@ -79,6 +79,10 @@ class Storage(object):
         """persist storage data"""
         raise TypeError("must be implemented")
 
+    def remove(self, name, index):
+        """remove resource item by index"""
+        raise TypeError("must be implemented")
+
 
 
 
@@ -129,7 +133,11 @@ class FileStorage(Storage):
             pickle.dump(self.data, f)
 
 
-
+    def remove(self, name, index):
+        try:
+            del self.data[name][index]
+        except IndexError:
+            raise ResourceItemNotFound("not found")
 
 
 
@@ -212,6 +220,17 @@ class DBStorage(Storage):
 
     def size(self, name):
         return len(self.list(name))
+
+
+    def remove(self, name, index):
+        try:
+            model = self.list(name)[index]
+            model.delete()
+        except IndexError:
+            raise ResourceItemNotFound("not found")
+
+
+
 
 
 
