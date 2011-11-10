@@ -310,7 +310,7 @@ class DownloadTransferredData( TransferredData ):
     pass
 
 
-def nimbus_self_backup_update_offsite_status(offsite):
+def update_offsite(offsite):
     from nimbus.procedures.models import Procedure # loop
     try:
         procedure = Procedure.objects.get(id=1) # self backup
@@ -329,15 +329,15 @@ def nimbus_self_backup_update_offsite_status(offsite):
         run_after.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
         run_after.save()
     else:
-        #RunAfter já existe. Ignore
-        pass
+        if ra[0].active != offsite.active:
+            ra[0].active = offsite.active
 
 def is_active():
     offsite = Offsite.get_instance()
     return offsite.active
 
 
-signals.connect_on( nimbus_self_backup_update_offsite_status, Offsite, post_save)
+signals.connect_on(update_offsite, Offsite, post_save)
 
 
 
