@@ -24,7 +24,6 @@ from pybacula import BaculaCommandLine, configcheck, BConsoleInitError
 
 from nimbus.shared import utils
 from nimbus.bacula import models
-#from nimbus.config.models import BaculaSettings
 
 
 try:
