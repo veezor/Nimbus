@@ -246,11 +246,14 @@ class AValueByDay(IStorageAdapter):
 
 
     def _remove_current_day_entry(self, name, value, timestamp):
-        last = self.get(name)
-        diff = timestamp - last.timestamp
-        if not diff.days:
-            size = self.size(name)
-            self.remove(name, size - 1)
+        try:
+            last = self.get(name)
+            diff = timestamp - last.timestamp
+            if not diff.days:
+                size = self.size(name)
+                self.remove(name, size - 1)
+        except ResourceItemNotFound:
+            pass
 
 
     def add(self, name, value, timestamp):
