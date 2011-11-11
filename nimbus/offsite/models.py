@@ -322,16 +322,20 @@ def update_offsite(offsite):
     #Criando objeto RunAfter
     from nimbus.procedures.models import RunAfter
     ra = RunAfter.objects.filter(name="Offsite").all()
-    if not ra:
+    print offsite.active
+    print ra[0]
+    print ra[0].active
+    if (len(ra) == 0) and (offsite.active == True):
         run_after = RunAfter()
         run_after.name = "Offsite"
         run_after.creator = offsite
         run_after.description = "Mantém uma cópia de seu backup na nuvem"
         run_after.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
         run_after.save()
-    else:
+    elif len(ra) > 0:
         if ra[0].active != offsite.active:
             ra[0].active = offsite.active
+            ra[0].save()
 
 def is_active():
     offsite = Offsite.get_instance()

@@ -64,7 +64,11 @@
 							{% if procedure.run_after.all %}
 							<br/>Tarefas Pós-backup:
 							{% for task in procedure.run_after.all %}
+							{% if task.active %}
 							<li>{{task}}</li>
+							{% else %}
+							<li class="inactive_task">{{task}}</li>
+							{% endif %}
 							{% endfor %}
 							{% endif %}
                         </div>

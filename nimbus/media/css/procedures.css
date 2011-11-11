@@ -178,3 +178,6 @@ div.inactive {
     text-align: right; 
     float: right;
 }
+.inactive_task {
+    text-decoration: line-through;
+}

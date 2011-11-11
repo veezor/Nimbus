@@ -38,7 +38,10 @@ class RunAfter(models.Model):
     creator = generic.GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
-        return "%s - %s" % (self.name, self.description) 
+        if self.active:
+            return "%s - %s" % (self.name, self.description) 
+        else:
+            return "(desativado) %s - %s" % (self.name, self.description) 
 
 
 class Procedure(BaseModel):
@@ -199,7 +202,7 @@ def update_procedure_file(procedure):
                    # NIMBUS_EXE=settings.NIMBUS_EXE,
                    client=procedure.computer.bacula_name,
                    pool=procedure.pool_bacula_name(),
-                   run_afters=procedure.run_after.all(),
+                   run_afters=procedure.run_after.filter(active=True),
                    )
 
 
