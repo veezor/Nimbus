@@ -32,6 +32,7 @@ from nimbus.shared import utils, enums, signals, fields
 
 class RunAfter(models.Model):
     name = models.CharField(max_length=255)
+    active = models.BooleanField(default=True, blank=True, null=False)
     description = models.CharField(max_length=255)
     command = models.CharField(max_length=1023, blank=False, null=False)
     content_type = models.ForeignKey(ContentType)
@@ -244,12 +245,6 @@ def remove_procedure_volumes(procedure):
         logger.exception("Erro na comunicação com o bacula")
 
 
-def offsiteconf_check(procedure):
-    offsite = Offsite.get_instance()
-    if not offsite.active:
-        procedure.offsite_on = False
-
-
 def update_pool_file(procedure):
     """Pool update pool bacula file"""
     name = procedure.pool_bacula_name()
@@ -282,9 +277,17 @@ def pre_delete_procedure(procedure):
 def change_run_after(sender, instance, action, reverse, model, pk_set, **kwargs):
     update_procedure_file(instance)
 
+def update_run_after(run_after):
+    procedures = Procedure.objects.filter(active=True)
+    for procedure in procedures:
+        if procedure.run_after.all():
+            update_procedure_file(procedure)
+
+
 m2m_changed.connect(change_run_after, sender=Procedure.run_after.through)
-signals.connect_on( offsiteconf_check, Procedure, pre_save)
+# signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
+signals.connect_on( update_run_after, RunAfter, post_save)
 signals.connect_on(pre_delete_procedure, Procedure, pre_delete)
 signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
 signals.connect_on( remove_procedure_file, Procedure, post_delete)
