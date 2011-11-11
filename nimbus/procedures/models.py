@@ -244,6 +244,7 @@ def remove_procedure_volumes(procedure):
         logger.exception("Erro na comunicação com o bacula")
 
 
+
 def update_pool_file(procedure):
     """Pool update pool bacula file"""
     name = procedure.pool_bacula_name()

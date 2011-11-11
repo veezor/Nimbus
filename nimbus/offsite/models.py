@@ -338,10 +338,6 @@ def is_active():
     return offsite.active
 
 
-signals.connect_on(update_offsite, Offsite, post_save)
-
-
-
 class OffsiteGraphicData(BaseGraphicData):
     usage = models.FloatField(null=False)
 
@@ -363,6 +359,5 @@ def update_pool_size(procedure):
 
 
 
-
-signals.connect_on( nimbus_self_backup_update_offsite_status, Offsite, post_save)
+signals.connect_on(update_offsite, Offsite, post_save)
 signals.connect_on( update_pool_size, Procedure, pre_save)
