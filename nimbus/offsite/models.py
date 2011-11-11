@@ -12,13 +12,14 @@ from datetime import datetime
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 
 #from nimbus.offsite import managers
 from nimbus.libs.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
 from nimbus.shared import fields, signals
 from nimbus.graphics.models import BaseGraphicData
 from nimbus.base.models import UUIDSingletonModel as BaseModel
+from nimbus.procedures.models import Procedure
 
 
 
@@ -350,3 +351,18 @@ class OffsiteGraphicData(BaseGraphicData):
 
     def to_resource(self):
         return self.usage,self.last_update
+
+
+
+def update_pool_size(procedure):
+    offsite_conf = Offsite.get_instance()
+    if offsite_conf.active and offsite_conf.host != offsite_conf.AMZ_S3_HOST:
+        procedure.pool_size = settings.DEFAULT_PROCEDURE_POOL_SIZE # TODO: change model field to integer
+    else:
+        procedure.pool_size = 0
+
+
+
+
+signals.connect_on( nimbus_self_backup_update_offsite_status, Offsite, post_save)
+signals.connect_on( update_pool_size, Procedure, pre_save)

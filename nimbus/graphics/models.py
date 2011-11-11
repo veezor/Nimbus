@@ -58,7 +58,6 @@ class Storage(object):
         """Initialize storage"""
         raise TypeError("must be implemented")
 
-
     def get(self, name, index=0):
         """returns (value,timestamp) of resource name from index"""
         raise TypeError("must be implemented")
@@ -77,6 +76,10 @@ class Storage(object):
 
     def save(self):
         """persist storage data"""
+        raise TypeError("must be implemented")
+
+    def remove(self, name, index):
+        """remove resource item by index"""
         raise TypeError("must be implemented")
 
 
@@ -129,7 +132,11 @@ class FileStorage(Storage):
             pickle.dump(self.data, f)
 
 
-
+    def remove(self, name, index):
+        try:
+            del self.data[name][index]
+        except IndexError:
+            raise ResourceItemNotFound("not found")
 
 
 
@@ -212,6 +219,43 @@ class DBStorage(Storage):
 
     def size(self, name):
         return len(self.list(name))
+
+
+    def remove(self, name, index):
+        try:
+            Model = self.models[name]
+            model = Model.objects.order_by('last_update')[index]
+            model.delete()
+        except IndexError:
+            raise ResourceItemNotFound("not found")
+
+
+
+
+class IStorageAdapter(object):
+
+    def __init__(self, storage):
+        self.storage = storage
+
+    def __getattr__(self, attr):
+        return getattr(self.storage, attr)
+
+
+
+class AValueByDay(IStorageAdapter):
+
+
+    def _remove_current_day_entry(self, name, value, timestamp):
+        last = self.get(name)
+        diff = timestamp - last.timestamp
+        if not diff.days:
+            size = self.size(name)
+            self.remove(name, size - 1)
+
+
+    def add(self, name, value, timestamp):
+        self._remove_current_day_entry(name, value, timestamp)
+        self.storage.add(name, value, timestamp)
 
 
 
@@ -305,7 +349,7 @@ class GraphicsManager(object):
         self._load_resources()
         self.pipeline = PipeLine()
         self._load_filters()
-        self.storage = self._get_storage()
+        self.storage = AValueByDay(self._get_storage())
 
 
     def _get_storage(self):
