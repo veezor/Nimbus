@@ -33,31 +33,6 @@ class Config(BaseModel):
 
 
 
-class BaculaSettings(SingletonBaseModel):
-    reload_requests_threshold = models.IntegerField(default=settings.NIMBUS_RELOAD_REQUESTS_THRESHOLD,
-                                                    null=False)
-    min_reload_requests_interval = models.IntegerField(default=settings.NIMBUS_MIN_RELOAD_REQUESTS_INTERVAL,
-                                                       null=False)
-    last_bacula_reload = models.DateTimeField(null=True)
-    reload_requests_counter = models.IntegerField(default=0, null=True)
-
-
-    def increment_reload_requests_counter(self):
-        self.reload_requests_counter +=1
-        self.save()
-
-
-    def reset_reload_requests_counter(self):
-        self.reload_requests_counter = 0
-        self.last_bacula_reload = datetime.datetime.now()
-        self.save()
-
-
-    @property
-    def has_bacula_reload_requests(self):
-        return bool(self.reload_requests_counter)
-
-
 
 
 def update_director_file(config):
