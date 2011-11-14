@@ -89,6 +89,21 @@ class Procedure(BaseModel):
     def pool_bacula_name(self):
         return '%s_pool' % self.bacula_name
 
+    def has_run_after(self, run_after_name):
+        return self.run_after.get(name=run_after_name)
+
+    @classmethod
+    def jobs_with_run_after(cls, run_after_name):
+        procedures = cls.objects.filter(run_after__name=run_after_name).exclude(id=1)
+        job_names = [ p.bacula_name for p in procedures ]
+        jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
+        return jobs
+
+    @classmethod
+    def with_run_after(cls, run_after_name):
+        procedures = cls.objects.filter(run_after__name=run_after_name).exclude(id=1)
+        return procedures
+
     def last_success_date(self):
         return Job.objects.filter(name=self.bacula_name,jobstatus='T')\
                 .order_by('-endtime')[0]
