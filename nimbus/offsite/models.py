@@ -329,9 +329,6 @@ def update_offsite(offsite):
     #Criando objeto RunAfter
     from nimbus.procedures.models import RunAfter
     ra = RunAfter.objects.filter(name="Offsite").all()
-    print offsite.active
-    print ra[0]
-    print ra[0].active
     if (len(ra) == 0) and (offsite.active == True):
         run_after = RunAfter()
         run_after.name = "Offsite"

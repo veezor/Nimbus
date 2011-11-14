@@ -19,7 +19,6 @@ from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
 from nimbus.filesets.models import FileSet
-from nimbus.offsite.models import Offsite
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form, form_mapping
 from nimbus.libs.bacula import call_reload_baculadir
@@ -133,38 +132,9 @@ def execute(request, object_id):
 @login_required
 def list_all(request):
     procedures = Procedure.objects.filter(id__gt=1)
-    offsite = Offsite.get_instance()
     title = u"Procedimentos de backup"
     last_jobs = Procedure.all_non_self_jobs()[:10]
     return render_to_response(request, "procedures_list.html", locals())
-
-@login_required
-def list_offsite(request):
-    procedures = Procedure.objects.filter(id__gt=1,offsite_on=True)
-    last_jobs = Procedure.all_non_self_jobs_with_offsite()[:10]
-    extra_content = {'procedures': procedures,
-                     'last_jobs' : last_jobs,
-                     'title': u"Procedimentos com offsite ativo"}
-
-    return render_to_response(request, "procedures_list.html", extra_content)
-
-@login_required
-def activate_offsite(request, object_id):
-    if request.method == "POST":
-        procedure = Procedure.objects.get(id=object_id)
-        procedure.offsite_on = True
-        procedure.save()
-        call_reload_baculadir()
-    return redirect('/procedures/list')
-
-@login_required
-def deactivate_offsite(request, object_id):
-    if request.method == "POST":
-        procedure = Procedure.objects.get(id=object_id)
-        procedure.offsite_on = False
-        procedure.save()
-        call_reload_baculadir(())
-    return redirect('/procedures/list')
 
 @login_required
 def activate(request, object_id):

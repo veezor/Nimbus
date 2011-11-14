@@ -180,3 +180,17 @@ def list_procedures(request):
     extra_content = {'procedures': procedures,
                      'title': u"Procedimentos com offsite ativo"}
     return render_to_response(request, "procedures_list.html", extra_content)
+
+
+@login_required
+def list_offsite(request):
+    procedures = Procedure.with_run_after('Offsite')
+    last_jobs = Procedure.jobs_with_run_after('Offsite')
+    extra_content = {'procedures': procedures,
+                     'last_jobs' : last_jobs,
+                     'title': u"Procedimentos com offsite ativo"}
+
+    return render_to_response(request, "procedures_list.html", extra_content)
+
+
+
