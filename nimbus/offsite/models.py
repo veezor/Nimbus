@@ -16,6 +16,7 @@ from django.db.models.signals import post_save, pre_save
 
 #from nimbus.offsite import managers
 from nimbus.libs.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
+from nimbus.bacula.models import Media
 from nimbus.shared import fields, signals
 from nimbus.graphics.models import BaseGraphicData
 from nimbus.base.models import UUIDSingletonModel as BaseModel
@@ -46,7 +47,13 @@ class Offsite(BaseModel):
     def on_remove(cls, procedure):
         from nimbus.offsite import managers
         remote_manager = managers.RemoteManager()
+
+        pool_name = procedure.pool_bacula_name()
+        medias = Media.objects.filter(pool__name=pool_name).distinct()
+        volumes = [m.volumename for m in medias]
+
         remote_manager.create_deletes_request(volumes)
+
 
     def clean(self):
         if self.active:
