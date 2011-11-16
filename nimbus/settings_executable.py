@@ -33,6 +33,7 @@ NIMBUS_MANAGER_URL = "http://localhost:8888"
 ROOT_PATH = "/"
 
 
+NIMBUS_PRODUCT = "professional"
 
 NIMBUS_ETC_DIR = join(ROOT_PATH, "etc", "nimbus")
 NIMBUS_HOME_DIR = join(ROOT_PATH, "var", "nimbus")
@@ -180,6 +181,8 @@ LOGIN_URL = "/session/login"
 TEMPLATE_CONTEXT_PROCESSORS = (
     "nimbus.shared.contextprocessors.script_name",
     "nimbus.shared.contextprocessors.block_ie_browser",
+    "nimbus.shared.contextprocessors.product",
+    "nimbus.shared.contextprocessors.menus_from_apps",
     "django.core.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
