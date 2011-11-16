@@ -15,9 +15,8 @@ from nimbus.storages.models import Storage
 from nimbus.computers.models import Computer
 from nimbus.security.models import register_administrative_nimbus_models
 
-from nimbus.libs.bacula import ( ReloadManager,
-                                 ReloadManagerService,
-                                 force_unlock_bacula_and_start)
+from nimbus.libs.bacula import (force_unlock_bacula_and_start,
+                               call_reload_baculadir)
 
 
 
@@ -33,6 +32,7 @@ def create_database():
         u.save()
 
         call_command('loaddata', settings.INITIALDATA_FILE)
+        # FIX: LOADDATA nao eh invocado em um dpkg update
 
 
         config = Config.get_instance()
@@ -48,16 +48,9 @@ def create_database():
 
         register_administrative_nimbus_models()
 
-        reload_manager = ReloadManager()
-        reload_manager.force_reload()
+        call_reload_baculadir()
     else:
         force_unlock_bacula_and_start()
 
-
-@command("--start-reload-manager-service")
-def reload_manager_service(self):
-    u"""Inicia o serviço de reload das configurações do bacula"""
-    service = ReloadManagerService()
-    service.run()
 
 

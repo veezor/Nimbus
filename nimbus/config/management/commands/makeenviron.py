@@ -6,7 +6,7 @@ import shutil
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-class Command(BaseCommand):                                                                                                                                
+class Command(BaseCommand):
     args = "prefix"
     help = "Generate and test nimbus directories."
     requires_model_validation = False
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         members = dir(settings)
         directories = [member for member in members if member.endswith("_DIR")]
         directories = [getattr(settings, dr) for dr in directories]
-        directories.remove(settings.FILE_UPLOAD_TEMP_DIR) 
+        directories.remove(settings.FILE_UPLOAD_TEMP_DIR)
         for d in directories:
             try:
                 if prefix:
@@ -40,8 +40,6 @@ class Command(BaseCommand):
             etc_dir = prefix +  '/' + settings.NIMBUS_ETC_DIR
         else:
             etc_dir = settings.NIMBUS_ETC_DIR
- 
-        shutil.copy(settings.NIMBUS_UNDEPLOYED_LOG_CONF, 
-                    etc_dir)
-        shutil.copy(settings.NIMBUS_UNDEPLOYED_RELOAD_MANAGER_LOG_CONF, 
+
+        shutil.copy(settings.NIMBUS_UNDEPLOYED_LOG_CONF,
                     etc_dir)
