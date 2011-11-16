@@ -50,7 +50,7 @@ def add(request):
     lforms = [ forms.ComputerForm ]
     content = {'title':u'Ativar novo Computador',
                'forms':lforms,
-               'computers':Computer.objects.filter(active=False)
+               'computers':Computer.objects.filter(active=False,id__gt=1)
               }
     return render_to_response(request, "computers_add.html", content)
 
