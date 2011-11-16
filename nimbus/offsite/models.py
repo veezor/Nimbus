@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save, pre_save
 
 #from nimbus.offsite import managers
-from nimbus.libs.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
+from nimbus.offsite.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
 from nimbus.bacula.models import Media
 from nimbus.shared import fields, signals
 from nimbus.graphics.models import BaseGraphicData
