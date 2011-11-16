@@ -115,6 +115,6 @@ class Commands(object):
         try:
             self.run_command(command, *args)
         except KeyError:
-            raise CommandNotFound("command not found")
+            raise CommandNotFound("command '%s' not found" % command)
         except TypeError, e:
             raise ParameterMissing(e.args[0])

@@ -49,7 +49,7 @@ def main():
     except commands.CommandMissing:
         run_server()
     except commands.CommandNotFound:
-        print "Option not found\nUsage:"
+        print "Option '%s' not found\nUsage:" % sys.argv[1]
         commands.Commands().get_usage()
         sys.exit(1)
     except commands.ParameterMissing, e:
