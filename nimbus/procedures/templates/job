@@ -18,6 +18,7 @@ Job {
     {% endif %}
 	{% if run_afters %}
 	RunScript {
+    RunsOnClient = No
 	RunsWhen = After
 	{% for task in run_afters %}Command = "{{task.command}}"{% endfor %}
 	}
