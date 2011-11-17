@@ -2,14 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-import os
 import sys
-import time
-import socket
 import weakref
 import logging
 import xmlrpclib
-import subprocess
 import SimpleXMLRPCServer
 import Queue as PyQueue
 from multiprocessing import Process
@@ -21,6 +17,7 @@ from django.db.models import Max
 
 from nimbus.offsite.models import (Offsite,
                                    RemoteUploadRequest)
+from nimbus.offsite.managers import RemoteManager
 
 
 class QueueServiceManager(object):
@@ -166,6 +163,10 @@ class QueueServiceManager(object):
             del self.requests[request_id]
 
 
+    def run_delete_agent(self):
+        agent = DeleteAgent()
+        agent.start()
+
 
 
 class QueueServiceManagerFacade(object):
@@ -193,6 +194,10 @@ class QueueServiceManagerFacade(object):
 
     def get_requests_on_queue(self, queue_name):
         return self.service_manager.get_requests_on_queue(queue_name)
+
+    def run_delete_agent(self):
+        self.service_manager.run_delete_agent()
+        return True
 
     def check_service(self):
         return True
@@ -318,28 +323,23 @@ class Worker(Process):
 
     def run(self):
         self.logger = logging.getLogger(__name__)
-        from nimbus.offsite.managers import process_request
-        self.s3 = Offsite.get_s3_interface()
+
+        manager = RemoteManager()
+
         try:
             self.request = RemoteUploadRequest.objects.get(id=self.request_id)
             self.logger.info('starting process request' + str(self.request))
-            process_request(self.request, self._upload_file,
-                            get_worker_ratelimit(), self.MAX_RETRY)
+            manager.upload_volume(self.request)
             self.logger.info('request %s uploaded with sucess' % str(self.request))
             set_request_as_done(self.request_id)
             self.logger.info('request %s marked as sucessful' % str(self.request))
         except IOError, error:
-            self.logger.exception('request %d upload error' % str(self.request_id))
+            self.logger.exception('request %d upload error' % self.request_id)
             sys.exit(2)
         except Exception, error:
-            self.logger.exception('request %d upload uncatched error' % str(self.request_id))
+            self.logger.exception('request %d upload uncatched error' % self.request_id)
             sys.exit(2)
 
-
-    def _upload_file(self, filename, dest, callback=None, userdata=None):
-        self.s3.multipart_status_callbacks.add_callback( userdata.increment_part )
-        self.s3.upload_file(filename, dest, part=userdata.part, callback=callback)
-        self.s3.multipart_status_callbacks.remove_callback( userdata.increment_part )
 
 
 
@@ -372,3 +372,12 @@ def get_worker_ratelimit():
 def set_request_as_done(request_id):
     service_manager = get_queue_service_manager()
     service_manager.set_request_as_done(request_id)
+
+
+
+class DeleteAgent(Thread):
+
+    def run(self):
+        from nimbus.offsite.managers import RemoteManager
+        remote_manager = RemoteManager()
+        remote_manager.process_pending_delete_requests()
