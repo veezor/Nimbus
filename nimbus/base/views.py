@@ -38,7 +38,7 @@ def ack_notification(request):
 @login_required
 def home(request):
     job_bytes = Job.get_bytes_from_last_jobs()
-    table1 = {
+    grafico_backup_dados = {
         'title': u"Quantidade de dados realizados backup", 'width': "100%",
         'type': "bar",
         'cid': "chart1",
@@ -50,7 +50,7 @@ def home(request):
     }
 
     job_files = Job.get_files_from_last_jobs()
-    table2 = {
+    grafico_backup_arquivos = {
         'title': u"Quantidade de arquivos realizados backup", 'width': "100%",
         'type': "bar",
         'cid': "chart2",
@@ -66,18 +66,18 @@ def home(request):
     diskdata = graphics_manager.list_resource('disk_usage')
     
 
-    table3 = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
+    grafico_uso_disco = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
               'header': diskdata.timestamps, 'labels': diskdata.values}
     #table3['header'] = ["Gigabytes"]
     #setando valor padrao
     t3data = diskdata.values or [0.0]
-    table3['lines'] = {"Disponível": t3data}
+    grafico_uso_disco['lines'] = {"Disponível": t3data}
 
 
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
 
-    table4 = {'title': u"Uso da memória", 'width': "90%", 'type': "pie", 'cid': "chart4", 'header': ["Gigabytes"],
+    grafico_uso_memoria = {'title': u"Uso da memória", 'width': "90%", 'type': "pie", 'cid': "chart4", 'header': ["Gigabytes"],
               'lines': {
                   "Disponível": [memory_free],
                   "Ocupado": [memory]}}
@@ -86,22 +86,21 @@ def home(request):
     cpu_free = 100 - memory
 
 
-    table5 = {'title': u"Uso da CPU", 'width': "", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
+    grafico_uso_cpu = {'title': u"Uso da CPU", 'width': "", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
         "Disponível": [cpu_free],
         "Ocupado": [cpu]}}
 
     #offsite_usage = 55 #TODO
     #offsite_free = 45
 
-
     offsite_data = graphics_manager.list_resource('offsite')
-    table6 = False
+    grafico_uso_offsite = False
     if len(offsite_data) > 0:
-        table6 = {'title': u"Uso do Offsite", 'width': "", 'type': "area", 'height': "130", 'cid': "chart6",
+        grafico_uso_offsite = {'title': u"Uso do Offsite", 'width': "", 'type': "area", 'height': "130", 'cid': "chart6",
                   'header': offsite_data.timestamps, 'labels': offsite_data.values}
         # table6['header'] = ["GB"]
         t6data = offsite_data.values or [0.0]
-        table6['lines'] = {"Disponível": t6data }
+        grafico_uso_offsite['lines'] = {"Disponível": t6data }
 
     # Dados de content:
     # - type
