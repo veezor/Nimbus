@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-
+import xmlrpclib
 from nimbus.libs.commands import command
 from nimbus.offsite import managers
 from nimbus.offsite import queue_service
@@ -20,8 +20,17 @@ def create_upload_requests(args):
         for volume in volumes:
             manager.create_upload_request( volume )
 
+
         manager.generate_database_dump_upload_request()
-        manager.process_pending_upload_requests()
+
+        queue_manager = queue_service.get_queue_service_manager()
+        requests = manager.get_upload_requests()
+        for request in requests:
+            try:
+                queue_manager.add_request(request.id)
+            except xmlrpclib.Fault:
+                pass
+
     except IndexError, error:
         # not args.
         pass

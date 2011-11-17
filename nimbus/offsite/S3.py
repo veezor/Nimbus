@@ -16,6 +16,8 @@ from boto.s3.resumable_download_handler import ResumableDownloadHandler
 
 MIN_MULTIPART_SIZE = 5242880 # 5mb
 
+logging.getLogger('boto').setLevel(logging.CRITICAL)
+
 
 
 

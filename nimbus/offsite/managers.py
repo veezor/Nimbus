@@ -7,7 +7,6 @@ import stat
 import time
 import logging
 import tempfile
-import xmlrpclib
 import subprocess
 from pwd import getpwnam
 from hashlib import md5
@@ -17,12 +16,11 @@ from os.path import join, exists, isfile, isabs
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
-from devicemanager import StorageDeviceManager, list_disk_labels
 
 from nimbus.base.models import UUIDBaseModel
+from nimbus.procedures.models import Procedure
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
-#from nimbus.pools.models import Pool
 from nimbus.offsite.models import (Volume,
                                    UploadRequest,
                                    RemoteUploadRequest,
@@ -32,7 +30,6 @@ from nimbus.offsite.models import (Volume,
                                    DownloadTransferredData,
                                    DeleteRequest)
 
-from nimbus.offsite.queue_service import get_queue_service_manager
 
 
 
@@ -93,12 +90,12 @@ def filename_is_volumename(filename):
     parts = filename.split("_")
     if len(parts) == 1:
         return False
-    pool_name = parts[0]
+    procedure_name = parts[0]
     try:
-        pool = Pool.objects.get(uuid__uuid_hex=pool_name)
-        name = pool.uuid.uuid_hex + "_pool-vol-"
+        procedure = Procedure.objects.get(uuid__uuid_hex=procedure_name)
+        name = procedure.uuid.uuid_hex + "procedure_pool-vol-"
         return filename.startswith(name)
-    except Pool.DoesNotExist, error:
+    except Procedure.DoesNotExist, error:
         return False
 
 
@@ -143,11 +140,11 @@ class BaseManager(object):
 
     UploadRequestClass = RemoteUploadRequest
     DownloadRequestClass = DownloadRequest
-    
+
     def get_volume(self, volume_path):
         volume, created = Volume.objects.get_or_create(path=volume_path)
         return volume
-    
+
     def get_volumes(self, volumes_path=None):
         if volumes_path:
             for path in volumes_path:
@@ -208,6 +205,13 @@ class BaseManager(object):
         for volume in volumes:
             self.create_delete_request(volume)
 
+
+    def download_volume(self, volume):
+        raise AttributeError("method not implemented")
+
+    def upload_volume(self, volume):
+        raise AttributeError("method not implemented")
+
     def delete_volume(self, volume):
         raise AttributeError("method not implemented")
 
@@ -226,7 +230,7 @@ class BaseManager(object):
 
 
 
-def process_request(request, process_function, ratelimit, max_retry=3):
+def process_request(request, process_function, max_retry=3):
     logger = logging.getLogger(__name__)
     request.last_attempt = datetime.now()
     retry = 0
@@ -266,17 +270,25 @@ class RemoteManager(BaseManager):
 
     def process_pending_upload_requests(self):
         requests = self.get_upload_requests()
-        queue_manager = get_queue_service_manager()
-        for request in requests:
-            try:
-                queue_manager.add_request(request.id)
-            except xmlrpclib.Fault:
-                pass
-
+        self.process_requests(requests, self._upload_file)
 
 
     def get_remote_volumes_list(self):
         return [ f[0] for f in self.s3.list_files() if filename_is_volumename(f[0]) ]
+
+
+    def _upload_file(self, filename, dest, callback=None, userdata=None):
+        self.s3.multipart_status_callbacks.add_callback( userdata.increment_part )
+        self.s3.upload_file(filename, dest, part=userdata.part, callback=callback)
+        self.s3.multipart_status_callbacks.remove_callback( userdata.increment_part )
+
+
+    def upload_volume(self, request):
+        process_request(request, self._upload_file, self.MAX_RETRY)
+
+
+    def download_volume(self, request):
+        process_request(request, self._download_file, self.MAX_RETRY)
 
 
     def _download_file(self, filename, dest, callback=None, userdata=None):
@@ -296,14 +308,13 @@ class RemoteManager(BaseManager):
     def process_pending_download_requests(self):
         requests = self.get_download_requests()
         self.process_requests( requests, self._download_file,
-                               self.s3.rate_limit)
+                               self.MAX_RETRY)
 
 
     def process_requests(self, requests, process_function, ratelimit=None):
 
         for request in requests:
-            process_request(request, process_function, ratelimit, self.MAX_RETRY)
-
+            process_request(request, process_function, self.MAX_RETRY)
 
 
     def delete_volume(self, volume):
@@ -337,22 +348,36 @@ class LocalManager(BaseManager):
 
     def process_pending_download_requests(self):
         requests = self.get_download_requests()
-        self.process_requests(requests) 
+        self.process_requests(requests)
 
     def process_requests(self, requests):
-        logger = logging.getLogger(__name__)
         for req in requests:
-            req.last_attempt = datetime.now()
-            req.attempts += 1
-            req.save()
-            try:
-                self._copy( req.volume.path, join(self.destination, 
-                                                  req.volume.filename), 
-                                                  req.update)
-                req.finish()
-                logger.info("%s processado com sucesso" % req)
-            except Exception, e:
-                logger.exception("Erro ao processar %s" % req)
+            self._process_request(req)
+
+
+    def _process_request(self, request):
+        logger = logging.getLogger(__name__)
+        request.last_attempt = datetime.now()
+        request.attempts += 1
+        request.save()
+        try:
+            self._copy( request.volume.path, join(self.destination,
+                                              request.volume.filename),
+                                              request.update)
+            request.finish()
+            logger.info("%s processado com sucesso" % request)
+        except Exception, e:
+            logger.exception("Erro ao processar %s" % request)
+
+
+    def upload_volume(self, request):
+        self._process_request(request)
+
+
+    def download_volume(self, request):
+        self._process_request(request)
+
+
 
     def _copy(self, origin, destination, callback):
         ori = File(origin, "rb", callback)

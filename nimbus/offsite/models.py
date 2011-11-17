@@ -46,6 +46,8 @@ class Offsite(BaseModel):
     @classmethod
     def on_remove(cls, procedure):
         from nimbus.offsite import managers
+        from nimbus.offsite import queue_service
+
         remote_manager = managers.RemoteManager()
 
         pool_name = procedure.pool_bacula_name()
@@ -53,6 +55,8 @@ class Offsite(BaseModel):
         volumes = [m.volumename for m in medias]
 
         remote_manager.create_deletes_request(volumes)
+        queue_service_manager = queue_service.get_queue_service_manager()
+        queue_service_manager.run_delete_agent()
 
 
     def clean(self):
