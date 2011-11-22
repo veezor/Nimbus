@@ -108,13 +108,6 @@ NIMBUS_WIZARD_APPS = (
     "nimbus.timezone"
 )
 
-NIMBUS_GRAPHIC_STORE = 'nimbus.graphics.models.DBStorage'
-NIMBUS_GRAPHICS_DB_STORE_MODELS = (
-    ('disk_usage', 'nimbus.storages.models.StorageGraphicData'),
-    ('offsite', 'nimbus.offsite.models.OffsiteGraphicData'),
-)
-
-
 
 DEFAULT_PROCEDURE_POOL_SIZE = 104857600
 
