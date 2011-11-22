@@ -350,12 +350,6 @@ def is_active():
     offsite = Offsite.get_instance()
     return offsite.active
 
-class OffsiteGraphicData(TheRealBaseModel):
-    total = models.BigIntegerField(default=0, editable=False)
-    used = models.BigIntegerField(default=0, editable=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-
 class OffsiteGraphicsData(TheRealBaseModel):
 
     total = models.BigIntegerField(default=0, editable=False)
