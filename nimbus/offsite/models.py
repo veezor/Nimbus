@@ -18,8 +18,9 @@ from django.db.models.signals import post_save, pre_save
 from nimbus.offsite.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
 from nimbus.bacula.models import Media
 from nimbus.shared import fields, signals
-from nimbus.graphics.models import BaseGraphicData
+# from nimbus.graphics.models import BaseGraphicData
 from nimbus.base.models import UUIDSingletonModel as BaseModel
+from nimbus.base.models import BaseModel as TheRealBaseModel
 from nimbus.procedures.models import Procedure
 
 
@@ -345,18 +346,22 @@ def is_active():
     offsite = Offsite.get_instance()
     return offsite.active
 
-
-class OffsiteGraphicData(BaseGraphicData):
-    usage = models.FloatField(null=False)
-
-    @classmethod
-    def from_resource(cls, value, timestamp):
-        return cls.objects.create(usage=value, last_update=timestamp)
-
-    def to_resource(self):
-        return self.usage,self.last_update
+class OffsiteGraphicData(TheRealBaseModel):
+    total = models.BigIntegerField(default=0, editable=False)
+    used = models.BigIntegerField(default=0, editable=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 
+class OffsiteGraphicsData(TheRealBaseModel):
+
+    total = models.BigIntegerField(default=0, editable=False)
+    used = models.BigIntegerField(default=0, editable=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "%s - %s de %s (%.2f%%)" % (self.timestamp.strftime("%H:%M:%S %d/%m/%Y"),
+                                           self.used, self.total,
+                                           (self.used*100/self.total))
 
 def update_pool_size(procedure):
     offsite_conf = Offsite.get_instance()

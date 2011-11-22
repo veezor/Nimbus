@@ -11,7 +11,7 @@
 <script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.highlighter.min.js"></script>
 <script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
 <script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.cursor.min.js"></script>
-<script type="text/javascript" src="/media/js/home.js"></script>
+<script type="text/javascript" src="/media/js/graphs.js"></script>
 <!-- this is here due stat_block.html -->
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/historico.css" />
@@ -63,22 +63,9 @@
 
     		<div class="block_content">
                 <div class="right" id="disc-use">
-                {% if grafico_uso_disco %}
-    			    {% with grafico_uso_disco as table %}
-    			        {% include "table_chart.html" %}
-    			    {% endwith %}
-                {% else %}
-                    <h2>Ocupação em disco</h2>
-                    <p><em>Sem uso do disco</em></p>
-                {% endif %}
-                {% if grafico_uso_offsite %}
-    			    {% with grafico_uso_offsite as table %}
-    			        {% include "table_chart.html" %}
-    			    {% endwith %}
-                {% else %}
-                    <h2>Ocupação do Offsite</h2>
-                    <p><em>Sem uso do disco</em></p>
-                {% endif %}
+				{% for block in blocks %}
+				{% include block.template %}
+				{% endfor %}
                 </div>
 
        		    <div class="clear"></div>

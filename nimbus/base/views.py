@@ -13,7 +13,7 @@ from nimbus.shared import utils
 from nimbus.shared.views import render_to_response
 from nimbus.bacula.models import Job
 from nimbus.base.models import Notification
-from nimbus.graphics.models import GraphicsManager
+from nimbus.graphics.models import Graphics
 from nimbus.procedures.models import Procedure
 from nimbus.computers.models import Computer
 
@@ -61,18 +61,8 @@ def home(request):
         }
     }
 
-    graphics_manager = GraphicsManager()
-    graphics_manager.collect_data(interactive=True)
-    diskdata = graphics_manager.list_resource('disk_usage')
-    
-
-    grafico_uso_disco = {'title': u"Ocupação do disco (GB)", 'width': "", 'type': "area", 'cid': "chart3", 'height': "200",
-              'header': diskdata.timestamps, 'labels': diskdata.values}
-    #table3['header'] = ["Gigabytes"]
-    #setando valor padrao
-    t3data = diskdata.values or [0.0]
-    grafico_uso_disco['lines'] = {"Disponível": t3data}
-
+    graphics = Graphics()
+    blocks = graphics.render_blocks()
 
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
@@ -89,18 +79,6 @@ def home(request):
     grafico_uso_cpu = {'title': u"Uso da CPU", 'width': "", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
         "Disponível": [cpu_free],
         "Ocupado": [cpu]}}
-
-    #offsite_usage = 55 #TODO
-    #offsite_free = 45
-
-    offsite_data = graphics_manager.list_resource('offsite')
-    grafico_uso_offsite = False
-    if len(offsite_data) > 0:
-        grafico_uso_offsite = {'title': u"Uso do Offsite", 'width': "", 'type': "area", 'height': "130", 'cid': "chart6",
-                  'header': offsite_data.timestamps, 'labels': offsite_data.values}
-        # table6['header'] = ["GB"]
-        t6data = offsite_data.values or [0.0]
-        grafico_uso_offsite['lines'] = {"Disponível": t6data }
 
     # Dados de content:
     # - type

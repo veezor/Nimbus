@@ -9,4 +9,5 @@ from nimbus.storages import models
 
 admin.site.register(models.Storage)
 admin.site.register(models.Device)
+admin.site.register(models.StorageGraphicsData)
 

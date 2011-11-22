@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    function create_chart(obj_id, data, ticks, chart_type, labels) {
+    function create_chart(obj_id, data, ticks, chart_type, labels, max_value) {
         var fill = false;
         var render = $.jqplot.PieRenderer;
         var highlighter_show = true;
@@ -53,7 +53,7 @@ $(document).ready(function(){
                         formatString: '%.2f',
                     },
                     min: 0,
-                    //max: 2000
+                    max: max_value,
                      
                 }
             },
@@ -72,8 +72,12 @@ $(document).ready(function(){
         var labels = $(this).children().filter('chartlabels').text().split(',');
         var header = $(this).children().filter('chartheader').text().split(',');
         var chart_type = $(this).attr('charttype');
+        var max_value = $(this).children().filter('max_value').text();
+        if (max_value == '') {
+            max_value = null;
+        }
         $(this).text('');
 
-        create_chart(chart_id, data, header, chart_type, labels);
+        create_chart(chart_id, data, header, chart_type, labels, max_value);
     });
 });

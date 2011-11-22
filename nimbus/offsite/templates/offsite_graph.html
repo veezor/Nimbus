@@ -1,0 +1,11 @@
+<div style="width: {% if table.width %}{{table.width}}{% else %}100%{% endif %};">
+    <h2>{{block.title}}</h2>
+    <div id="{{block.cid_name}}" charttype="{{block.type}}" class="jqplotchart" style="height:{% if block.height %}{{block.height}}px{% else %}150px{% endif %};">
+        {% for key, line in block.lines.items %}
+        <chartdata>{{line|join:","}}</chartdata>
+        {% endfor %}
+        <chartlabels>{{block.labels|join:","}}</chartlabels>
+        <chartheader>{{block.header|join:","}}</chartheader>
+		<max_value>{{block.total}}</max_value>
+    </div>
+</div>

@@ -18,8 +18,6 @@ from nimbus.libs.template import render_to_file
 from nimbus.config.models import Config
 from nimbus.network.models import get_nimbus_address
 from nimbus.computers.models import Computer
-from nimbus.graphics.models import BaseGraphicData
-
 
 
 
@@ -191,13 +189,13 @@ signals.connect_on( restart_bacula_storage, Device, post_save)
 signals.connect_on( remove_device_file, Device, post_delete)
 
 
+class StorageGraphicsData(BaseModel):
 
-class StorageGraphicData(BaseGraphicData):
-    size = models.BigIntegerField(null=False)
+    total = models.BigIntegerField(default=0, editable=False)
+    used = models.BigIntegerField(default=0, editable=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
-    @classmethod
-    def from_resource(cls, value, timestamp):
-        return cls.objects.create(size=value, last_update=timestamp)
-
-    def to_resource(self):
-        return self.size,self.last_update
+    def __unicode__(self):
+        return "%s - %s de %s (%.2f%%)" % (self.timestamp.strftime("%H:%M:%S %d/%m/%Y"),
+                                           self.used, self.total,
+                                           (self.used*100/self.total))

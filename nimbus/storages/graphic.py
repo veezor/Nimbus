@@ -1,36 +1,43 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from nimbus.graphics.models import resource, filter, filter_value, Data
+from datetime import datetime, timedelta
+
+from nimbus.storages.models import StorageGraphicsData
 from nimbus.shared import utils
 import systeminfo
 
 
-@resource
-def disk_usage(manager, interactive):
-    u"""Uso de disco"""
-    diskinfo = systeminfo.DiskInfo("/")
-    diskusage = diskinfo.get_used()
-    return diskusage
+class Graphics(object):
 
+    def update_db(self):
+        """Metodo obrigatorio para todas as classes Graphics"""
+        diskinfo = systeminfo.DiskInfo("/")
+        total, used, free = diskinfo.get_data()
+        new_data = StorageGraphicsData()
+        new_data.total = total
+        new_data.used = used
+        new_data.save()
+        print "Updated Storage: %s of %s" % (used, total)
 
-@filter_value
-def convert_data_to_gb(resource_name, data):
-    if resource_name == "disk_usage":
-        value = utils.filesizeformat(data.value, "GB")
-        return Data(value, data.timestamp)
-    else:
+    def last_days(self, days=7):
+        since = datetime.now() - timedelta(days)
+        data = StorageGraphicsData.objects.filter(timestamp__gte=since).order_by("-timestamp")
         return data
 
-
-@filter_value
-def datetime_to_str(resource_name, data):
-    timestamp =  utils.datetime_to_str(data.timestamp)
-    return Data(data.value, timestamp)
-
-
-@filter
-def duplicate_unary_list(resource_name, data_list):
-    if len(data_list) == 1:
-        return data_list * 2
-    return data_list
+    def data_to_template(self):
+        """Metodo obrigatorio para todas as classes Graphics"""
+        data = self.last_days(1)
+        timestamps = [item.timestamp.strftime("%H:%M:%S %d/%m/%Y") for item in data]
+        values = ['%.1f' % (item.used / 1073741824.0) for item in data]
+        total = '%.1f' % (data[len(data) -1].total / 1073741824.0)
+        return [{'title': u"Ocupação do disco (GB)",
+                'template': 'storage_graph.html',
+                'width': "",
+                'type': "area",
+                'cid_name': "chart_disk_usage",
+                'height': "200",
+                'lines': {'used': values},
+                'total': total,
+                'header': timestamps, 'labels': values}]
+        

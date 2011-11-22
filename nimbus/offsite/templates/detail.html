@@ -1,4 +1,14 @@
 {% extends "base.html" %}
+{% block headtags %}
+	<script type="text/javascript" src="/media/lib/js/jquery.jqplot.js"></script>
+	<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.barRenderer.js"></script>
+	<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pieRenderer.js"></script>
+	<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.categoryAxisRenderer.js"></script>
+	<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.highlighter.min.js"></script>
+	<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.pointLabels.js"></script>
+	<script type="text/javascript" src="/media/lib/js/jqplotplugins/jqplot.cursor.min.js"></script>
+	<script type="text/javascript" src="/media/js/graphs.js"></script>
+{% endblock %}
 {% block content %}
 
 <div class="block">
@@ -16,9 +26,9 @@
 
             <div class="block-executados">
                 <h3>Ocupação do offsite</h3>
-                {% with ocupacao_offsite as value %}
-    		        {% include "bar_chart.html" %}
-    		    {% endwith %}
+				{% with graph_block as block %}
+   		        	{% include block.template %}
+        		{% endwith %}
                 <div class="clear"></div>
     		    <p></p>
             </div>
