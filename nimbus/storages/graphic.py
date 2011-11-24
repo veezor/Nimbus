@@ -30,7 +30,10 @@ class Graphics(object):
         data = self.last_days(1)
         timestamps = [item.timestamp.strftime("%H:%M:%S %d/%m/%Y") for item in data]
         values = ['%.1f' % (item.used / 1073741824.0) for item in data]
-        total = '%.1f' % (data[len(data) -1].total / 1073741824.0)
+        if len(data) == 0:
+            total = '0.0'
+        else:
+            total = '%.1f' % (data[len(data) -1].total / 1073741824.0)
         return [{'title': u"Ocupação do disco (GB)",
                 'template': 'storage_graph.html',
                 'width': "",

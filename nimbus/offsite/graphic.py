@@ -42,7 +42,10 @@ class Graphics(object):
         data = self.last_days(1)
         timestamps = [item.timestamp.strftime("%H:%M:%S %d/%m/%Y") for item in data]
         values = ['%.1f' % (item.used) for item in data]
-        total = '%.1f' % (data[len(data) -1].total)
+        if len(data) == 0:
+            total = '0.0'
+        else:
+            total = '%.1f' % (data[len(data) -1].total)
         return [{'title': u"Ocupação do espaço Offsite (GB)",
                 'template': 'offsite_graph.html',
                 'width': "",
