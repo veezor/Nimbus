@@ -61,17 +61,6 @@ def detail(request):
     if offsite.active:
         graphic = Graphics()
         graph_block = graphic.data_to_template()[0]
-        # print block
-        #     graphics_manager = GraphicsManager()
-        #     data = graphics_manager.get_last_value('offsite')
-        #     usage = data.value
-        #     ocupacao_offsite =  usage / float(offsite.plan_size)
-        # except ResourceItemNotFound:
-        #     ocupacao_offsite = 0.0
-        #     messages.warning(request, "Dados não disponíveis. Aguarde sincronização com o offsite")
-        # except URLError, error:
-        #     messages.error(request, "Erro na conexão com o backup nas nuvens. Verifique conexão.")
-        #     ocupacao_offsite = 0.0
     else:
         ocupacao_offsite = 0.0
         messages.error(request, "Offsite desativado")

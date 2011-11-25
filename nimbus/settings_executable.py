@@ -241,7 +241,6 @@ INSTALLED_APPS = (
     'nimbus.storages',
     'nimbus.procedures',
     'nimbus.timezone',
-    'nimbus.offsite',
     'nimbus.wizard',
     'nimbus.computers',
     'nimbus.restore',
