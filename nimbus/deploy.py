@@ -9,6 +9,7 @@ import re
 import shutil
 import os
 import imp
+import codecs
 
 
 
@@ -17,6 +18,8 @@ product_apps = {'professional': ['nimbus.offsite'],
 base_dirs = ['nimbus/libs', 'nimbus/media', 'nimbus/remotestorages',
              'nimbus/confs', 'nimbus/binary', 'nimbus/graphics',
              'nimbus/shared', 'nimbus/build', 'nimbus/statistics']
+
+garbage = ['.pyc', 'DS_Store', 'header_py.txt', 'header_js.txt', 'deploy.py']
 
 def change_setting(settings, regex, new_value):
     match = re.search(regex, settings, re.DOTALL)
@@ -53,7 +56,6 @@ def dirs_to_remove(destination):
     # from settings import INSTALLED_APPS
     s = imp.load_source('INSTALLED_APPS', "%s/nimbus/settings.py" % destination)
     INSTALLED_APPS = s.INSTALLED_APPS
-    print INSTALLED_APPS
     dirs = base_dirs[:]
     for app in INSTALLED_APPS:
         if app.startswith('nimbus.'):
@@ -66,7 +68,6 @@ def dirs_to_remove(destination):
     for d in all_dirs:
         if "nimbus/%s" % d not in dirs:
             result.append("nimbus/%s" % d)
-    print result
     return result
 
 def copy_files(destination='../../deploy_tmp'):
@@ -80,10 +81,67 @@ def remove_unused(destination):
     for d in dirs_to_remove(destination):
         shutil.rmtree("%s/%s" % (destination, d))
 
+def find_files(where, exten):
+    result = []
+    for root, dirs, files in os.walk(where):
+        for filename in files:
+            fullfilename = os.path.join(root, filename)
+            if fullfilename.endswith(exten):
+                result.append(fullfilename)
+    return result
 
+def delete_garbage(where):
+    for exten in garbage:
+        files = find_files(where, exten)
+        for f in files:
+            os.remove(f)
+            
+def put_py_header(where):
 
-product = set_product()
+    with codecs.open('header_py.txt', encoding='UTF-8') as h:
+        header = h.read()
+    
+    files = find_files(where, ".py")
+    for filename in files:
+        with codecs.open(filename, encoding='UTF-8') as f:
+            content = f.read()
+            content = content.replace("#!/usr/bin/env python", "")
+            content = content.replace("# -*- coding: UTF-8 -*-", "")
+            content = header + "\n" + content
+
+        with codecs.open(filename, "w", encoding='UTF-8') as f:
+            f.write(content)
+
+def js_except_files(filelist):
+    result = []
+    for filepath in filelist:
+        filename = filepath.split('/')[-1]
+        if filename.lower().startswith('jquery') or filename.lower().startswith('jqplot'):
+            pass
+        else:
+            result.append(filepath)
+    return result
+
+def put_js_header(where):
+    with codecs.open('header_js.txt', encoding='UTF-8') as h:
+        header = h.read()
+    
+    allfiles = find_files(where, ".js")
+    files = js_except_files(allfiles)
+    for filename in files:
+        with codecs.open(filename, encoding='UTF-8') as f:
+            content = f.read()
+            content = header + "\n" + content
+    
+        with codecs.open(filename, "w", encoding='UTF-8') as f:
+            f.write(content)
+    
+
 dst = '../../deploy_tmp'
+product = set_product()
 copy_files(dst)
 create_settings_py(product, "%s/nimbus/%s" % (dst, 'settings.py'))
 remove_unused(dst)
+delete_garbage(dst)
+put_py_header(dst)
+put_js_header(dst)
