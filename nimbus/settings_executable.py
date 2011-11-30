@@ -248,7 +248,7 @@ INSTALLED_APPS = (
     'nimbus.system',
     'nimbus.security',
     'nimbus.reports'
-)
+) + tuple(MODULAR_APPS)
 
 if DEBUG:
     INSTALLED_APPS += ("django.contrib.admin",)

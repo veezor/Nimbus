@@ -30,7 +30,7 @@ class Graphics(object):
             new_data.total = plan_total
             new_data.used = now_used
             new_data.save()
-            print "Updated Offsite: %s of %s" % (now_used, plan_total)
+            # print "Updated Offsite: %s of %s" % (now_used, plan_total)
 
     def last_days(self, days):
         since = datetime.now() - timedelta(days)

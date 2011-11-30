@@ -138,10 +138,21 @@ def put_js_header(where):
     
 
 dst = '../../deploy_tmp'
+print "Definindo produto:"
 product = set_product()
+print "Produto: %s" % product.upper()
+print "Copiando arquivos"
 copy_files(dst)
+print "Arquivos copiados"
+print "Criando arquivo de configuração"
 create_settings_py(product, "%s/nimbus/%s" % (dst, 'settings.py'))
+print "settings.py criado"
+print "Removendo APPS desnecessárias"
 remove_unused(dst)
+print "Removendo lixo"
 delete_garbage(dst)
-put_py_header(dst)
-put_js_header(dst)
+if product == 'opensource':
+    print "Adicionando licenças aos arquivos Python"
+    put_py_header(dst)
+    print "Adicionando licenças aos arquivos JavaScript"
+    put_js_header(dst)

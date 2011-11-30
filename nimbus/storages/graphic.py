@@ -18,7 +18,7 @@ class Graphics(object):
         new_data.total = total
         new_data.used = used
         new_data.save()
-        print "Updated Storage: %s of %s" % (used, total)
+        # print "Updated Storage: %s of %s" % (used, total)
 
     def last_days(self, days=7):
         since = datetime.now() - timedelta(days)

@@ -24,7 +24,7 @@ find deb -iname "*~" -exec rm {} \;
 
 
 cd nimbus
-cp settings_executable.py settings.py;
+# cp settings_executable.py settings.py;
 python manage.py makeenviron ../deb;
 python setup.py build_exe ;
 chmod +x binary/nimbus;
