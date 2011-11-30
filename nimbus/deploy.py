@@ -19,7 +19,14 @@ base_dirs = ['nimbus/libs', 'nimbus/media', 'nimbus/remotestorages',
              'nimbus/confs', 'nimbus/binary', 'nimbus/graphics',
              'nimbus/shared', 'nimbus/build', 'nimbus/statistics']
 
-garbage = ['.pyc', 'DS_Store', 'header_py.txt', 'header_js.txt', 'deploy.py']
+garbage = ['.pyc', 'DS_Store', 'header_py_professional.txt',
+           'header_py_opensource.txt', 'header_js_professional.txt',
+           'header_js_opensource.txt', 'deploy.py']
+
+headers = {'professional': {'python': 'header_py_professional.txt',
+                            'javascript': 'header_js_professional.txt'},
+           'opensource': {'python': 'header_py_opensource.txt',
+                          'javascript': 'header_js_opensource.txt'}}
 
 def change_setting(settings, regex, new_value):
     match = re.search(regex, settings, re.DOTALL)
@@ -41,9 +48,14 @@ def create_settings_py(product, output_file='settings.py'):
     settings = s.read()
     s.close()
 
-    settings = change_setting(settings,
-                   "(MODULAR\_APPS\s*\=\s*\[.*?\])",
-                   "MODULAR_APPS = ['%s']" % "', '".join(product_apps[product]))
+    if product_apps[product]:
+        settings = change_setting(settings,
+                       "(MODULAR\_APPS\s*\=\s*\[.*?\])",
+                       "MODULAR_APPS = ['%s']" % "', '".join(product_apps[product]))
+    else:
+        settings = change_setting(settings,
+                       "(MODULAR\_APPS\s*\=\s*\[.*?\])",
+                       "MODULAR_APPS = []")
 
     settings = change_setting(settings,
                   '(NIMBUS\_PRODUCT\s*\=\s*\"[a-z]+\")',
@@ -98,7 +110,7 @@ def delete_garbage(where):
             
 def put_py_header(where):
 
-    with codecs.open('header_py.txt', encoding='UTF-8') as h:
+    with codecs.open(headers[product]['python'], encoding='UTF-8') as h:
         header = h.read()
     
     files = find_files(where, ".py")
@@ -123,7 +135,7 @@ def js_except_files(filelist):
     return result
 
 def put_js_header(where):
-    with codecs.open('header_js.txt', encoding='UTF-8') as h:
+    with codecs.open(headers[product]['javascript'], encoding='UTF-8') as h:
         header = h.read()
     
     allfiles = find_files(where, ".js")
@@ -156,3 +168,4 @@ if product == 'opensource':
     put_py_header(dst)
     print "Adicionando licenças aos arquivos JavaScript"
     put_js_header(dst)
+    print "Cabeçalhos adicionados aos arquivos"

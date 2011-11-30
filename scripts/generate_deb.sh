@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PRODUCT=$1
+
 function makedir(){
   mkdir -p $1 2>> /dev/null;
 }
@@ -51,9 +53,14 @@ cp version deb/var/www/media
 
 VERSION=`cat version`
 
-dpkg-deb -b deb nimbus-$VERSION.deb
+dpkg-deb -b deb nimbus-$PRODUCT-$VERSION.deb
 
 rm -rf deb/var/www
 rm -rf deb/etc
 rm -rf deb/var/nimbus/custom
 rm -rf deb/var/nimbusmanager/
+
+echo
+echo
+echo "Pacote disponivel em:"
+echo `pwd`"/nimbus-$PRODUCT-$VERSION.deb"

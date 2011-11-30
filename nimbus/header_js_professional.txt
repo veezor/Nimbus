@@ -1,0 +1,5 @@
+// NIMBUS PROFESSIONAL BACKUP <www.nimbusbackup.com>. Copyright © 2009-2011 
+// Veezor Network Intelligence (Linconet Soluções em Informática Ltda.), 
+// <www.veezor.com>. All Rights Reserved, with the proper exceptions listed on EULA.
+// Todos os direitos reservados, com as devidas exceções listadas no documento
+// EULA que acompanha o produto.
