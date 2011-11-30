@@ -317,13 +317,6 @@
             "uuid": 1,
             "area": "America/Sao_Paulo"
         }
-    },
-    {
-    "pk": 1, 
-    "model": "graphics.config", 
-    "fields": {
-      "max_items": 7
-    }
-  }
+    }  
 
 ]
