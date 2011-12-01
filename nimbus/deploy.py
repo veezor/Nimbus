@@ -147,7 +147,21 @@ def put_js_header(where):
     
         with codecs.open(filename, "w", encoding='UTF-8') as f:
             f.write(content)
-    
+
+def put_license(where, product):
+    with codecs.open("%s/nimbus/license_%s.txt" % (where, product), encoding='UTF-8') as l:
+        license = l.read()
+
+    with codecs.open("%s/nimbus/base/templates/base_license.html" % where, encoding='UTF-8') as l:
+        base_license = l.read()
+        base_license = base_license.replace("<LICENSE_GOES_HERE>", license)
+
+    with codecs.open("%s/nimbus/base/templates/base_license.html" % where, "w", encoding='UTF-8') as l:
+        l.write(base_license)
+
+    with codecs.open("%s/nimbus/license.txt" % where, "w", encoding='UTF-8') as l:
+        l.write(license)
+
 
 dst = '../../deploy_tmp'
 print "Definindo produto:"
@@ -163,9 +177,11 @@ print "Removendo APPS desnecessárias"
 remove_unused(dst)
 print "Removendo lixo"
 delete_garbage(dst)
-if product == 'opensource':
-    print "Adicionando licenças aos arquivos Python"
-    put_py_header(dst)
-    print "Adicionando licenças aos arquivos JavaScript"
-    put_js_header(dst)
-    print "Cabeçalhos adicionados aos arquivos"
+print "Adicionando licenças aos arquivos Python"
+put_py_header(dst)
+print "Adicionando licenças aos arquivos JavaScript"
+put_js_header(dst)
+print "Cabeçalhos adicionados aos arquivos"
+print "Adicionando licença ao Wizard e raiz"
+put_license(dst, product)
+print "Licença adicionada"
