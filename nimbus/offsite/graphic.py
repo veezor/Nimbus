@@ -37,21 +37,41 @@ class Graphics(object):
         data = OffsiteGraphicsData.objects.filter(timestamp__gte=since).order_by("-timestamp")
         return data
         
+
+    def unify_days(self, data):
+        result = []
+        days = [item.timestamp.date() for item in data]
+        days = list(set(days))
+        for day in days:
+            day_data = StorageGraphicsData.objects.filter(timestamp__year=day.year,
+                        timestamp__month=day.month, timestamp__day=day.day, )\
+                        .aggregate(Max('used'), Min('used'), Max('total'))
+            result.append([day.strftime("%d/%m/%Y"),
+                           day_data['used__max'],
+                           day_data['used__min'],
+                           day_data['total__max']])
+        return result
+
+        
     def data_to_template(self):
         """Metodo obrigatorio para todas as classes Graphics"""
-        data = self.last_days(1)
-        timestamps = [item.timestamp.strftime("%H:%M:%S %d/%m/%Y") for item in data]
-        values = ['%.1f' % (item.used) for item in data]
-        if len(data) == 0:
-            total = '0.0'
-        else:
-            total = '%.1f' % (data[len(data) -1].total)
+        days = self.last_days(1)
+        data = self.unify_days(days)
+        timestamps = []
+        max_values = []
+        min_values = []
+        total = 0.0
+        for day, umax, umin, t in data:
+            timestamps.append(day)
+            max_values.append(umax)
+            min_values.append(umin)
+            total = t / 1073741824.0
         return [{'title': u"Ocupação do espaço Offsite (GB)",
                 'template': 'offsite_graph.html',
                 'width': "",
                 'type': "area",
                 'cid_name': "chart_offsite_usage",
                 'height': "200",
-                'lines': {'used': values},
+                'lines': {'used': max_values, 'min_used': min_values},
                 'total': total,
-                'header': timestamps, 'labels': values}]    
+                'header': timestamps, 'labels': max_values}]

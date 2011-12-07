@@ -20,6 +20,16 @@ from nimbus.network.models import get_nimbus_address
 from nimbus.computers.models import Computer
 
 
+class StorageGraphicsData(BaseModel):
+
+    total = models.BigIntegerField(default=0, editable=False)
+    used = models.BigIntegerField(default=0, editable=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "%s - %s de %s (%.2f%%)" % (self.timestamp.strftime("%H:%M:%S %d/%m/%Y"),
+                                           self.used, self.total,
+                                           (self.used*100/self.total))
 
 
 class Storage(BaseModel):
@@ -189,13 +199,3 @@ signals.connect_on( restart_bacula_storage, Device, post_save)
 signals.connect_on( remove_device_file, Device, post_delete)
 
 
-class StorageGraphicsData(BaseModel):
-
-    total = models.BigIntegerField(default=0, editable=False)
-    used = models.BigIntegerField(default=0, editable=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return "%s - %s de %s (%.2f%%)" % (self.timestamp.strftime("%H:%M:%S %d/%m/%Y"),
-                                           self.used, self.total,
-                                           (self.used*100/self.total))

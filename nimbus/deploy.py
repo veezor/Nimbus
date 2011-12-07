@@ -21,7 +21,8 @@ base_dirs = ['nimbus/libs', 'nimbus/media', 'nimbus/remotestorages',
 
 garbage = ['.pyc', 'DS_Store', 'header_py_professional.txt',
            'header_py_opensource.txt', 'header_js_professional.txt',
-           'header_js_opensource.txt', 'deploy.py']
+           'header_js_opensource.txt', 'deploy.py', 'license_opensource.txt',
+           'license_professional.txt']
 
 headers = {'professional': {'python': 'header_py_professional.txt',
                             'javascript': 'header_js_professional.txt'},
@@ -149,7 +150,7 @@ def put_js_header(where):
             f.write(content)
 
 def put_license(where, product):
-    with codecs.open("%s/nimbus/license_%s.txt" % (where, product), encoding='UTF-8') as l:
+    with codecs.open("license_%s.txt" % (product), encoding='UTF-8') as l:
         license = l.read()
 
     with codecs.open("%s/nimbus/base/templates/base_license.html" % where, encoding='UTF-8') as l:
