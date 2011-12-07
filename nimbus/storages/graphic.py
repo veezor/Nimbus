@@ -63,7 +63,7 @@ class Graphics(object):
                 'type': "area",
                 'cid_name': "chart_disk_usage",
                 'height': "200",
-                'lines': {'used': max_values, 'min_used': min_values},
+                'lines': {'used': max_values},# 'min_used': min_values},
                 'total': total,
                 'header': timestamps, 'labels': max_values}]
         
