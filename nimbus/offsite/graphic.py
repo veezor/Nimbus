@@ -55,23 +55,26 @@ class Graphics(object):
         
     def data_to_template(self):
         """Metodo obrigatorio para todas as classes Graphics"""
-        days = self.last_days(1)
-        data = self.unify_days(days)
-        timestamps = []
-        max_values = []
-        min_values = []
-        total = 0.0
-        for day, umax, umin, t in data:
-            timestamps.append(day)
-            max_values.append(umax)
-            min_values.append(umin)
-            total = t / 1073741824.0
-        return [{'title': u"Ocupação do espaço Offsite (GB)",
-                'template': 'offsite_graph.html',
-                'width': "",
-                'type': "area",
-                'cid_name': "chart_offsite_usage",
-                'height': "200",
-                'lines': {'used': max_values, 'min_used': min_values},
-                'total': total,
-                'header': timestamps, 'labels': max_values}]
+        if self.offsite_if_active():
+            days = self.last_days(1)
+            data = self.unify_days(days)
+            timestamps = []
+            max_values = []
+            min_values = []
+            total = 0.0
+            for day, umax, umin, t in data:
+                timestamps.append(day)
+                max_values.append(umax)
+                min_values.append(umin)
+                total = t / 1073741824.0
+            return [{'title': u"Ocupação do espaço Offsite (GB)",
+                    'template': 'offsite_graph.html',
+                    'width': "",
+                    'type': "area",
+                    'cid_name': "chart_offsite_usage",
+                    'height': "200",
+                    'lines': {'used': max_values, 'min_used': min_values},
+                    'total': total,
+                    'header': timestamps, 'labels': max_values}]
+        else:
+            return []

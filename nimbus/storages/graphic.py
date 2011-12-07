@@ -21,7 +21,7 @@ class Graphics(object):
         new_data.save()
         # print "Updated Storage: %s of %s" % (used, total)
 
-    def last_days(self, days=7):
+    def last_days(self, days=14):
         since = datetime.now() - timedelta(days)
         data = StorageGraphicsData.objects.filter(timestamp__gte=since).order_by("-timestamp")
         return data
@@ -52,7 +52,11 @@ class Graphics(object):
             timestamps.append(day)
             max_values.append(umax / 1073741824.0)
             min_values.append(umin / 1073741824.0)
-            total = t / 1073741824.0
+        diskinfo = systeminfo.DiskInfo("/")
+        t, u, f = diskinfo.get_data()
+        total = t / 1073741824.0
+        timestamps.append("Agora")
+        max_values.append(u / 1073741824.0)
         return [{'title': u"Ocupação do disco (GB)",
                 'template': 'storage_graph.html',
                 'width': "",
