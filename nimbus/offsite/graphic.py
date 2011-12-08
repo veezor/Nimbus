@@ -41,6 +41,7 @@ class Graphics(object):
         result = []
         days = [item.timestamp.date() for item in data]
         days = list(set(days))
+        days.reverse()
         for day in days:
             day_data = OffsiteGraphicsData.objects.filter(timestamp__year=day.year,
                         timestamp__month=day.month, timestamp__day=day.day, )\
