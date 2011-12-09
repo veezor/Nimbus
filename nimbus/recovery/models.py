@@ -42,13 +42,6 @@ def rewrite_nimbus_conf_files():
 
 def recovery_nimbus(offsite_manager):
     logger = logging.getLogger(__name__)
-    logger.info("Parando os servicos")
-    system_manager = xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
-    system_manager.director_stop()
-    system_manager.nimbus_stop()
-    system_manager.ngninx_stop()
-
-
     recovery_manager = RecoveryManager(offsite_manager)
     logger.info("iniciando download da base de dados")
     recovery_manager.download_databases()
@@ -63,12 +56,6 @@ def recovery_nimbus(offsite_manager):
     recovery_manager.download_volumes()
     logger.info("download dos volumes efetuado com sucesso")
     recovery_manager.finish()
-
-
-    system_manager.nimbus_start()
-    system_manager.ngninx_start()
-    system_manager.director_start()
-
 
 
 def recovery_nimbus_from_offsite():
