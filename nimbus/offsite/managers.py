@@ -2,22 +2,16 @@
 # -*- coding: UTF-8 -*-
 
 import os
-import bz2
 import stat
 import time
 import logging
-import tempfile
-import subprocess
 from pwd import getpwnam
 from hashlib import md5
 from datetime import datetime
 from os.path import join, exists, isfile, isabs
 
-from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 
 
-from nimbus.base.models import UUIDBaseModel
 from nimbus.procedures.models import Procedure
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
@@ -404,102 +398,3 @@ class LocalManager(BaseManager):
         self.device_manager.umount()
 
 
-class RecoveryManager(object):
-
-    def __init__(self, manager):
-        self.manager = manager
-
-    def upload_databases(self):
-        self.manager.create_upload_request(NIMBUS_DUMP)
-        self.manager.create_upload_request(BACULA_DUMP)
-        self.manager.process_pending_upload_requests()
-
-    def download_databases(self):
-        nimbus_db = os.path.split(NIMBUS_DUMP)[-1]
-        bacula_db = os.path.split(BACULA_DUMP)[-1]
-        self.manager.create_download_request(nimbus_db)
-        self.manager.create_download_request(bacula_db)
-        self.manager.process_pending_download_requests()
-
-
-    def recovery_database(self, bziped_dumpfile, name, user, password):
-
-        bziped = bz2.BZ2File(bziped_dumpfile)
-        dump_filename = tempfile.mktemp()
-
-
-        with file(dump_filename, 'w') as dump:
-
-
-            while True:
-                content = bziped.read(256 * 1024) #256kb
-
-                if not content:
-                    break
-
-                dump.write(content)
-
-
-        bziped.close()
-
-
-        env = os.environ.copy()
-        env['PGPASSWORD'] = password
-        cmd = subprocess.Popen(["/usr/bin/psql",
-                                "-U",user,
-                                "-d",name,
-                                "-f",dump_filename,
-                                "--no-password"],
-                                stdin=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                stdout=subprocess.PIPE,
-                                env=env)
-        cmd.communicate()
-
-        if cmd.returncode != 0:
-            raise subprocess.CalledProcessError()
-
-
-
-
-    def recovery_nimbus_dabatase(self):
-        nimbus_file = os.path.split(NIMBUS_DUMP)[-1]
-        nimbus_file = os.path.join("/bacula", nimbus_file)
-        db_data = settings.DATABASES['default']
-        self.recovery_database( nimbus_file,
-                                db_data['NAME'],
-                                db_data['USER'],
-                                db_data['PASSWORD'])
-
-    def recovery_bacula_dabatase(self):
-        bacula_file = os.path.split(BACULA_DUMP)[-1]
-        bacula_file = os.path.join("/bacula", bacula_file)
-        db_data = settings.DATABASES['bacula']
-        self.recovery_database(bacula_file,
-                               db_data['NAME'],
-                               db_data['USER'],
-                               db_data['PASSWORD'])
-
-    def recovery_databases(self):
-        self.recovery_bacula_dabatase()
-        self.recovery_nimbus_dabatase()
-
-    def generate_conf_files(self):
-        app_labels = [name.split('.')[-1]\
-                      for name in settings.INSTALLED_APPS\
-                      if name.startswith('nimbus')]
-        app_labels.remove('bacula')
-        app_labels.remove('base')
-        nimbus_models = [c.model_class() for c in ContentType.objects.filter(app_label__in=app_labels)]
-        for model in nimbus_models:
-            for instance in model.objects.all():
-                if isinstance(instance, UUIDBaseModel): 
-                    instance.save(system_permission=True)
-                else:
-                    instance.save()
-
-    def download_volumes(self):
-        self.manager.download_all_volumes()
-
-    def finish(self):
-        self.manager.finish()

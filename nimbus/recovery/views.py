@@ -80,18 +80,6 @@ def check_database_recover(request):
 
 
 
-def recover_databases_worker(manager):
-    logger = logging.getLogger(__name__)
-    logger.info("iniciando download da base de dados")
-    manager.download_databases()
-    logger.info("download da base de dados efetuado com sucesso")
-    logger.info("iniciando recuperacao da base de dados")
-    manager.recovery_databases()
-    logger.info("recuperacao da base de dados efetuado com sucesso")
-    logger.info("iniciando geracao de arquivos de configuracao")
-    manager.generate_conf_files()
-    logger.info("geracao dos arquivos de configuracao realizada com sucesso")
-
 
 
 @only_wizard
@@ -123,14 +111,6 @@ def recover_databases(request):
     extra_content.update({"device" : device, "localsource"  : localsource})
     return render_to_response(request, "recovery_recover_databases.html",
                               extra_content)
-
-def recover_volumes_worker(manager):
-    logger = logging.getLogger(__name__)
-    manager = offsite.RecoveryManager(manager)
-    logger.info("iniciando download dos volumes")
-    manager.download_volumes()
-    logger.info("download dos volumes efetuado com sucesso")
-    manager.finish()
 
 
 

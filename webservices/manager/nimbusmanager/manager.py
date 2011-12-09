@@ -49,7 +49,8 @@ class Manager(object):
     DAEMON_OPERATIONS = ("start", "stop", "restart", "status")
 
     ALLOWED_DAEMON = (  "director", "client", 
-                        "storage", "network"  )
+                        "storage", "network",
+                        "nimbus", "nginx")
 
     DAEMON_MAP = { "director" : "bacula-ctl-dir",
                    "storage" : "bacula-ctl-sd", 

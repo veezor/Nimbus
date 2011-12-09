@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import os
 import shutil
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+
+from nimbus.config import commands
 
 class Command(BaseCommand):
     args = "prefix"
@@ -20,21 +21,7 @@ class Command(BaseCommand):
         else:
             raise CommandError("makeenviron requires just one argument")
 
-        members = dir(settings)
-        directories = [member for member in members if member.endswith("_DIR")]
-        directories = [getattr(settings, dr) for dr in directories]
-        directories.remove(settings.FILE_UPLOAD_TEMP_DIR)
-        for d in directories:
-            try:
-                if prefix:
-                    d = prefix + "/" + d
-                print d
-                os.makedirs(d)
-            except OSError, error:
-                if (error.strerror == "FileExists" and \
-                        not os.access(d, os.W_OK)) or\
-                        error.strerror == "Permission denied":
-                    raise CommandError("%s is not writable" % d)
+        commands.create_conf_dirs(prefix)
 
         if prefix:
             etc_dir = prefix +  '/' + settings.NIMBUS_ETC_DIR
