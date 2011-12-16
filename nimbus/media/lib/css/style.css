@@ -482,7 +482,7 @@ a:hover {
 	}
 	
 .block table {
-	text-align: left;
+/*  text-align: left;*/
 	margin-bottom: 15px;
 	}
 	
@@ -491,7 +491,7 @@ a:hover {
 	#border-bottom: 1px solid #ddd;
 	padding: 3px;
 	line-height: normal;
-	text-align: left;
+/*  text-align: left;*/
 	}
 	
 .block table tr td.delete {
