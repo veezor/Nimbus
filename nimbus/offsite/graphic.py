@@ -6,6 +6,7 @@ from urllib2 import URLError
 from datetime import datetime, timedelta
 
 from nimbus.offsite.models import Offsite, OffsiteGraphicsData
+from nimbus.offsite.S3 import S3AuthError
 
 
 class Graphics(object):
@@ -22,8 +23,8 @@ class Graphics(object):
             plan_total = offsite.plan_size
             try:
                 s3 = Offsite.get_s3_interface()
-                now_used = s3.get_size()
-            except URLError, error:
+                now_used = s3.get_usage()
+            except (URLError, S3AuthError), error:
                 now_used = 0.0
             new_data = OffsiteGraphicsData()
             new_data.total = plan_total

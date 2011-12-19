@@ -120,6 +120,18 @@ class Procedure(BaseModel):
         return jobs
 
     @property
+    def backup_jobs(self):
+        return self.all_my_jobs.filter(type='B',jobstatus='T')
+
+
+    @property
+    def volume_names(self):
+        pool_name = self.pool_bacula_name()
+        medias = Media.objects.filter(pool__name=pool_name).distinct()
+        return [m.volumename for m in medias]
+
+
+    @property
     def all_my_good_jobs(self):
         jobs = Job.objects.filter(name__startswith=self.bacula_name, jobstatus="T").order_by('-starttime')
         return jobs

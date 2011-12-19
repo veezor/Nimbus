@@ -103,7 +103,6 @@ NIMBUS_CENTRAL_USER_DATA_URL = "http://www.veezor.com/central/acesso_iam.php"
 NIMBUS_WIZARD_APPS = (
     "nimbus.config",
     "nimbus.network",
-    "nimbus.offsite",
     "nimbus.session",
     "nimbus.timezone"
 )
@@ -244,7 +243,6 @@ INSTALLED_APPS = (
     'nimbus.wizard',
     'nimbus.computers',
     'nimbus.restore',
-    'nimbus.recovery',
     'nimbus.system',
     'nimbus.security',
     'nimbus.reports'
