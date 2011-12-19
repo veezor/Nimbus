@@ -324,13 +324,6 @@ class DownloadTransferredData( TransferredData ):
 
 
 def update_offsite(offsite):
-    from nimbus.procedures.models import Procedure # loop
-    try:
-        procedure = Procedure.objects.get(id=1) # self backup
-        procedure.offsite_on = offsite.active
-        procedure.save(system_permission=True)
-    except Procedure.DoesNotExist, error:
-        pass
     #Criando objeto RunAfter
     from nimbus.procedures.models import RunAfter
     ra = RunAfter.objects.filter(name="Offsite").all()
@@ -341,6 +334,14 @@ def update_offsite(offsite):
         run_after.description = "Mantém uma cópia de seu backup na nuvem"
         run_after.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
         run_after.save()
+        from nimbus.procedures.models import Procedure # loop
+        try:
+            procedure = Procedure.objects.get(id=1) # self backup
+            procedure.run_after.add(run_after)
+            procedure.save(system_permission=True)
+        except Procedure.DoesNotExist, error:
+            pass
+
     elif len(ra) > 0:
         if ra[0].active != offsite.active:
             ra[0].active = offsite.active

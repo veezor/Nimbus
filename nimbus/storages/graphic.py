@@ -30,6 +30,7 @@ class Graphics(object):
         result = []
         days = [item.timestamp.date() for item in data]
         days = list(set(days))
+        days.reverse()
         for day in days:
             day_data = StorageGraphicsData.objects.filter(timestamp__year=day.year,
                         timestamp__month=day.month, timestamp__day=day.day, )\
@@ -63,7 +64,7 @@ class Graphics(object):
                 'type': "area",
                 'cid_name': "chart_disk_usage",
                 'height': "200",
-                'lines': {'used': max_values, 'min_used': min_values},
+                'lines': {'used': max_values},# 'min_used': min_values},
                 'total': total,
                 'header': timestamps, 'labels': max_values}]
         
