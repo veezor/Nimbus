@@ -87,7 +87,7 @@ def filename_is_volumename(filename):
     procedure_name = parts[0]
     try:
         procedure = Procedure.objects.get(uuid__uuid_hex=procedure_name)
-        name = procedure.uuid.uuid_hex + "procedure_pool-vol-"
+        name = procedure.uuid.uuid_hex + "_procedure_pool-vol-"
         return filename.startswith(name)
     except Procedure.DoesNotExist, error:
         return False
@@ -268,7 +268,7 @@ class RemoteManager(BaseManager):
 
 
     def get_remote_volumes_list(self):
-        return [ f[0] for f in self.s3.list_files() if filename_is_volumename(f[0]) ]
+        return [ f.name for f in self.s3.list_files() if filename_is_volumename(f.name) ]
 
 
     def _upload_file(self, filename, dest, callback=None, userdata=None):

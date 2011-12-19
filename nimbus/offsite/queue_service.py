@@ -49,7 +49,7 @@ class QueueServiceManager(object):
     def get_requests_on_queue(self, queue_name):
         result = []
 
-        for (request, q_name) in self.request_queue:
+        for (request, q_name) in self.request_queue.items():
             if q_name == queue_name:
                 result.append(request)
 

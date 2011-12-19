@@ -171,10 +171,13 @@ class S3(object):
                               port=8773,
                               calling_format=boto_s3_connection_class.OrdinaryCallingFormat(),
                               path="/services/Walrus")
-                      
+
         if not self.connection:
             raise S3AuthError("check access_key and secret_key")
+
         self.bucket = self.connection.lookup(username)
+        if not self.bucket:
+            raise S3AuthError("check access_key and secret_key")
 
 
     def list_files(self):

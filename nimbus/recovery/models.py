@@ -6,7 +6,6 @@ import bz2
 import shutil
 import logging
 import tempfile
-import xmlrpclib
 import subprocess
 
 
