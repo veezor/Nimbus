@@ -9,22 +9,21 @@ $(document).ready(function(){
         }
     }).change();
 
-    $("#id_upload_rate").hide();
+    $("#id_rate_limit").hide();
     $("#offsite_form #id_active_upload_rate").change(function(){
-        var ps = $("#id_upload_rate");
+        var ps = $("#id_rate_limit");
         if( $("#id_active_upload_rate").attr('checked')){
             ps.slideDown("fast");
-            ps.val(200);
         } else {
             ps.slideUp("fast");
             ps.val(-1);
         }
     });
 
-    var initial_upload = $("#id_upload_rate").val();
+    var initial_upload = $("#id_rate_limit").val();
     if(initial_upload == -1) {
-        $("#id_upload_rate").hide();
-        $("label[for=id_upload_rate]").hide();
+        $("#id_rate_limit").hide();
+        $("label[for=id_rate_limit]").hide();
         $("#id_active_upload_rate").attr('checked', false).change();
     } else {
         $("#id_active_upload_rate").attr('checked', true).change();
@@ -32,15 +31,15 @@ $(document).ready(function(){
 
     $("#id_active_upload_rate").change(function(){
         if ($("#id_active_upload_rate").is(':checked')){
-            $("#id_upload_rate").show();
-            $("label[for=id_upload_rate]").show();
+            $("#id_rate_limit").show();
+            $("label[for=id_rate_limit]").show();
             if (initial_upload == -1)
                 initial_upload = 200;
-            $("#id_upload_rate").val(initial_upload);
+            $("#id_rate_limit").val(initial_upload);
         } else {
-            $("#id_upload_rate").hide();
-            $("label[for=id_upload_rate]").hide();
-            $("#id_upload_rate").val("-1");
+            $("#id_rate_limit").hide();
+            $("label[for=id_rate_limit]").hide();
+            $("#id_rate_limit").val("-1");
         }
     });
 
