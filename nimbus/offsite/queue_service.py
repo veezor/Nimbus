@@ -43,7 +43,7 @@ class QueueServiceManager(object):
     
     #DEBUG
     def _add_request_to_queue(self, request, queue):
-        self.request_queue[ str(request) ] = queue.getName()
+        self.request_queue[ request.id ] = queue.getName()
 
 
     def get_requests_on_queue(self, queue_name):
@@ -51,7 +51,7 @@ class QueueServiceManager(object):
 
         for (request, q_name) in self.request_queue.items():
             if q_name == queue_name:
-                result.append(request)
+                result.append(self._get_request(request))
 
         return result
 
@@ -161,6 +161,7 @@ class QueueServiceManager(object):
         with self.lock:
             self.logger.info('set_request_as_done')
             del self.requests[request_id]
+            del self.request_queue[request_id]
 
 
     def run_delete_agent(self):
@@ -336,6 +337,8 @@ class Worker(Process):
         except IOError, error:
             self.logger.exception('request %d upload error' % self.request_id)
             sys.exit(2)
+        except RemoteUploadRequest.DoesNotExist, error:
+            self.logger.exception('request %d upload error. Request does not exist' % self.request_id)
         except Exception, error:
             self.logger.exception('request %d upload uncatched error' % self.request_id)
             sys.exit(2)
