@@ -107,7 +107,7 @@ class Offsite(BaseModel):
     def _get_nimbus_central_data(self):
 
         password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        url = settings.NIMBUS_CENTRAL_USER_DATA_URL 
+        url = settings.NIMBUS_CENTRAL_USER_DATA_URL
         password_mgr.add_password(None, url, self.username, self.password)
 
         handler = urllib2.HTTPBasicAuthHandler(password_mgr)
@@ -127,7 +127,7 @@ class Offsite(BaseModel):
         if config.rate_limit == -1:
             rate_limit = None
         else:
-            rate_limit = config.rate_limit * 1024 #kb
+            rate_limit = config.rate_limit
         s3 = S3(username=config.username,
                  access_key=config.access_key,
                  secret_key=config.secret_key,
