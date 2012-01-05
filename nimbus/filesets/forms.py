@@ -17,7 +17,8 @@ class FilePathForm(forms.ModelForm):
     path = forms.CharField(label=u"Arquivo", widget=widgets.TextInput(attrs={'class': 'text small'}))
     class Meta:
         model = FilePath
-    
+
+WildcardsFormSet = forms.models.inlineformset_factory(FileSet, Wildcard, can_delete=False, extra=0)
 FilesFormSet = forms.models.inlineformset_factory(FileSet, FilePath, can_delete=False, extra=0)
 
 class FilesToDeleteForm(FilesFormSet):

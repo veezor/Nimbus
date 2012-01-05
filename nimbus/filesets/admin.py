@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib import admin
 from django import forms
 
-from nimbus.filesets.models import FileSet, FilePath
+from nimbus.filesets.models import FileSet, FilePath, Wildcard
 
 class FilePathAdminForm(forms.ModelForm):
     path = forms.FilePathField(path="/",widget=forms.TextInput)
@@ -21,3 +21,4 @@ class FilePathAdmin(admin.ModelAdmin):
 
 admin.site.register(FileSet)
 admin.site.register(FilePath)
+admin.site.register(Wildcard)
