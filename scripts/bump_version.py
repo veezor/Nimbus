@@ -96,7 +96,8 @@ def usage():
     print 'options:'
     print '\t--major: increment major version'
     print '\t--minor: increment minor version'
-    print '\t--patch_level: increment patch_level version'
+    print '\t--patch-level: increment patch_level version'
+    print '\t--update-git-hash: updates git hash'
     print '='* 20
     print 'if BUMP_VERSION_FILE is defined, then version_file=BUMP_VERSION_FILE'
     print 'if BUMP_DEBIAN_CONTROL_FILE is defined, then debian_control_file=BUMP_DEBIAN_CONTROL_FILE'
@@ -128,6 +129,9 @@ def main():
         elif param == '--patch-level':
             with Bumper(version_file, debian_control_file) as b:
                 b.next_patch_level()
+        elif param == '--update-git-hash':
+            with Bumper(version_file, debian_control_file) as b:
+                pass
         else:
             usage()
 

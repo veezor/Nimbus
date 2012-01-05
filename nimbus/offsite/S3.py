@@ -4,6 +4,7 @@
 import os
 import boto
 from boto.s3 import connection as boto_s3_connection_class
+from boto.s3.key import Key
 import logging
 import tempfile
 from functools import wraps
@@ -171,14 +172,17 @@ class S3(object):
                               port=8773,
                               calling_format=boto_s3_connection_class.OrdinaryCallingFormat(),
                               path="/services/Walrus")
-                      
+
         if not self.connection:
             raise S3AuthError("check access_key and secret_key")
+
         self.bucket = self.connection.lookup(username)
+        if not self.bucket:
+            raise S3AuthError("check access_key and secret_key")
 
 
     def list_files(self):
-        return self.bucket.list()
+        return [ item for item in self.bucket.list() if isinstance(item, Key)]
 
 
     def _upload(self, filename, keyname):

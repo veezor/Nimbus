@@ -69,9 +69,6 @@ class CryptoInfo(models.Model):
 
 
 
-class ComputerNewClass(BaseModel):
-    name = models.CharField(max_length=255, unique=True, blank=False, null=False,
-                            validators=[fields.check_model_name])
 
 class Computer(BaseModel):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False,

@@ -12,7 +12,7 @@ class OffsiteForm(forms.ModelForm):
                             widget=forms.PasswordInput(attrs={'class': 'text'}))
     active_upload_rate = forms.BooleanField(label="Ativar Taxa de Upload",
                                             required=False, initial=False)
-    upload_rate = forms.CharField(label="Taxa de Upload (kb/s)", required=False,
+    rate_limit = forms.CharField(label="Taxa de Upload (kb/s)", required=False,
                                 initial=-1,
                                 widget=forms.TextInput(attrs={'class': 'text'}))
     formfield_callback = make_custom_fields
@@ -20,7 +20,7 @@ class OffsiteForm(forms.ModelForm):
     class Meta:
         model = Offsite
         fields = ('active', 'username', 'password', 'active_upload_rate',
-                  'upload_rate')
+                  'rate_limit')
 
 
 class OffsiteRecoveryForm(forms.ModelForm):

@@ -3,6 +3,7 @@
 
 import xmlrpclib
 from nimbus.libs.commands import command
+from nimbus.offsite import models
 from nimbus.offsite import managers
 from nimbus.offsite import queue_service
 
@@ -56,3 +57,13 @@ def start_queue_service():
     queue_service.start_queue_manager_service()
 
 
+@command("--offsite-simple-config")
+def offsite_simple_config(username, password):
+    u"""Configuração simples do offsite.
+    Use --offsite-simple-config username password"""
+    offsite = models.Offsite.get_instance()
+    offsite.username = username
+    offsite.password = password
+    offsite.active = True
+    offsite.clean()
+    offsite.save()

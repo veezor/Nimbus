@@ -2,22 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-import time
-import socket
 import logging
 import datetime
 import tempfile
 import xmlrpclib
-import subprocess
-import SimpleXMLRPCServer
-from threading import Thread
 
 from django.conf import settings
 
 
 
-import mock
 import pybacula
 from pybacula import BaculaCommandLine, configcheck, BConsoleInitError
 
