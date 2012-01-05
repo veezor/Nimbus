@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
-import time
 import string
+import xmlrpclib
 from random import choice
-from itertools import izip
 
 from django.conf import settings
 
@@ -153,3 +151,5 @@ def project_port(request):
 
 
 
+def get_nimbus_manager():
+    return xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
