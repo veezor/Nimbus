@@ -13,7 +13,7 @@ import codecs
 
 
 
-product_apps = {'professional': ['nimbus.offsite'],
+product_apps = {'professional': ['nimbus.offsite', 'nimbus.recovery'],
                 'opensource': []}
 base_dirs = ['nimbus/libs', 'nimbus/media', 'nimbus/remotestorages',
              'nimbus/confs', 'nimbus/binary', 'nimbus/graphics',

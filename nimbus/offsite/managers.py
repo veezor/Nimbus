@@ -10,7 +10,7 @@ from hashlib import md5
 from datetime import datetime
 from os.path import join, exists, isfile, isabs
 
-
+from django.conf import settings
 
 from nimbus.procedures.models import Procedure
 from nimbus.storages.models import Device
@@ -287,11 +287,10 @@ class RemoteManager(BaseManager):
 
     def _download_file(self, filename, dest, callback=None, userdata=None):
 
-        device = Device.objects.all()[0]
         if isabs(filename):
             destfilename = filename
         else:
-            destfilename = join(device.archive, filename)
+            destfilename = join(settings.NIMBUS_DEFAULT_ARCHIVE, filename)
 
         self.s3.download_file( filename, destfilename, callback=callback)
 

@@ -219,6 +219,7 @@ TEMPLATE_DIRS = (
 
 MODULAR_APPS = [
     'nimbus.offsite',
+    'nimbus.recovery',
 ]
 
 
