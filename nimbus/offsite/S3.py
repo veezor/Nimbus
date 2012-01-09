@@ -26,29 +26,52 @@ class RateLimiter(object):
     """Rate limit a url fetch"""
 
 
-    def __init__(self, rate_limit):
+    def __init__(self, rate_limit, update_rate_limit_time=10):
         """rate limit in kBytes / second"""
+        self.reset(rate_limit)
+        self.update_rate_limit_time = update_rate_limit_time
+        self._last_update_rate_limit = None
+        self._transferred_size = 0
+
+
+    def reset(self, rate_limit):
         self.rate_limit = rate_limit
         self.start = time()
+        self._transferred_size = 0
 
 
     def __call__(self, transferred_size, total_size):
 
-        total_kb = float(total_size) / 1024
         transferred_size = float(transferred_size) / 1024 #kb
+        t_size = transferred_size - self._transferred_size
         elapsed_time = time() - self.start
 
-        if elapsed_time:
+        if elapsed_time and self.rate_limit > 0:
 
-            rate = transferred_size / elapsed_time
-
-
-            expected_time = transferred_size / self.rate_limit
-
+            rate = t_size / elapsed_time
+            expected_time = t_size / self.rate_limit
             sleep_time = expected_time - elapsed_time
 
             if sleep_time > 0:
                 sleep(sleep_time)
+
+
+        self._update_rate_limit(transferred_size)
+
+
+
+    def _update_rate_limit(self, transferred_size):
+        from nimbus.offsite import queue_service
+        if self._last_update_rate_limit is None:
+            self._last_update_rate_limit = time()
+        else:
+            now = time()
+            diff = now - self._last_update_rate_limit
+            if diff > self.update_rate_limit_time:
+                self.rate_limit = queue_service.get_worker_ratelimit()
+                self.start = time()
+                self._transferred_size = transferred_size
+                self._last_update_rate_limit = now
 
 
 
@@ -90,7 +113,6 @@ class MultipartFileManager(object):
         return data
 
 
-    
 
 class S3AuthError(Exception):
     pass
@@ -206,7 +228,9 @@ class S3(object):
         with MultipartFileManager(filename, part) as manager:
             for (part_number, part_content) in enumerate(manager, part):
 
-                self.rate_limiter.rate_limit = queue_service.get_worker_ratelimit()
+                self.rate_limiter.reset( queue_service.get_worker_ratelimit() )
+                # FIX THIS: quantidade transferida e total sempre
+                #eh reportada como o da parte
 
                 part_file = StringIO(part_content)
                 multipart.upload_part_from_file(part_file,
