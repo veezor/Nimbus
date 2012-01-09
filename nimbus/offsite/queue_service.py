@@ -51,7 +51,11 @@ class QueueServiceManager(object):
 
         for (request, q_name) in self.request_queue.items():
             if q_name == queue_name:
-                result.append(self._get_request(request))
+                try:
+                    req = self._get_request(request)
+                    result.append( req.volume.path )
+                except RemoteUploadRequest.DoesNotExist:
+                    pass
 
         return result
 
@@ -200,6 +204,10 @@ class QueueServiceManagerFacade(object):
         self.service_manager.run_delete_agent()
         return True
 
+    def increase_concurrent_workers(self):
+        self.service_manager.increase_concurrent_workers()
+        return True
+
     def check_service(self):
         return True
 
@@ -339,6 +347,10 @@ class Worker(Process):
             sys.exit(2)
         except RemoteUploadRequest.DoesNotExist, error:
             self.logger.exception('request %d upload error. Request does not exist' % self.request_id)
+            try:
+                set_request_as_done(self.request_id)
+            except xmlrpclib.Fault:
+                pass
         except Exception, error:
             self.logger.exception('request %d upload uncatched error' % self.request_id)
             sys.exit(2)
