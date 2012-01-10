@@ -43,10 +43,6 @@ def add(request, computer_id=None):
 def do_add(request):
     if request.method == 'POST':
         data = request.POST
-        from pprint import pprint
-        print"\n\n\n\n\n"
-        pprint(dict(data))
-        print"\n\n\n\n\n"
         fileset_form = forms.FileSetForm(data, prefix="fileset")
         if fileset_form.is_valid():
             new_fileset = fileset_form.save()
@@ -93,6 +89,12 @@ def do_edit(request, fileset_id):
             filepaths_form = forms.FilesToDeleteForm(data, instance=new_fileset)
             if filepaths_form.is_valid():
                 filepaths_form.save()
+                wildcards_form = forms.WildcardsFormSet(data, instance=new_fileset)
+                if wildcards_form.is_valid():
+                    for wildcard in new_fileset.wildcards.all():
+                        wildcard.delete()
+                    new_fileset.save()
+                    wildcards_form.save()
                 call_reload_baculadir()
                 return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi atualizado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
             else:

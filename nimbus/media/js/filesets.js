@@ -142,15 +142,6 @@ $(document).ready(function(){
         "imagens": ["*.jpg", "*.bmp", "*.png"]
     };
 });
-// for (var i = 0; i < checked_paths.length; i++) {
-//     var n = i + inicial;
-// var new_path_field = '\n' + 
-// '<input type="hidden" name="wildcards-'+ n +'-expression" value="' + checked_paths[i] + '">\n' +
-// '<input type="hidden" name="wildcards-' + n + '-fileset">\n' +
-// '<input type="hidden" name="wildcards-' + n + '-kind" value="' + checked_paths[i] + '">\n' +
-// '<input type="hidden" name="wildcards-' + n + '-id">\n';
-//  $('#main_form').append(new_path_field);
-// };
 
 function submit_filter() {
     if (($(".included").length + $(".excluded").length) >= 1) {

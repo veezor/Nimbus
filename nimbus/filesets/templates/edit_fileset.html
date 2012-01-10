@@ -2,6 +2,7 @@
 <script type="text/javascript" src="/media/js/filesets.js"></script>
 <script type="text/javascript" src="/media/js/veezortree.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/veezortree.css"/>
+<link rel="stylesheet" type="text/css" href="/media/css/filefilter.css"/>
 {% endblock %}
 
 {% block page %}
@@ -25,9 +26,53 @@
 			    <br class"clear" />
                 {% endfor %}
 		    </div>
-            <hr />
+			<hr>
 			<h2>Adicionar novos aquivos:</h2>
 			<ul id="arvore1" class="veezortree" restore="false" destination="false" computer="{{computer.id}}" is_windows="{% if computer.operation_system == "windows" %}true{% else %}false{% endif %}"></ul>
+			<button class="css3button negative" id="show_filters_button">Mostrar filtros</button>
+			<div id="filter_hidden_block">
+				<hr>
+				<label>Filtros:</label>
+				<table>
+					<tr>
+						<td>
+							Apenas estes<br/>arquivos:<br />
+							<div class="filter_block">
+								<ul id="include_list">
+									{% for wildcard in fileset.includes%}
+									<li onclick="$(this).remove();"><span class="added_filter included">{{wildcard.expression}}</span></li>
+									{% endfor %}
+								</ul>
+							</div>
+						</td>
+						<td>
+							<div id="filter_list">
+								Filtros:
+								<table id="filter_table">
+									<tr><td class="include_button audio"><img src="/media/icons/seta_esquerda.png"></td><td>Audio (mp3, wav, ogg)</td><td class="exclude_button audio"><img src="/media/icons/seta_direita.png"></td></tr>
+									<tr><td class="include_button video"><img src="/media/icons/seta_esquerda.png"></td><td>Video (avi, mpg, mp4)</td><td class="exclude_button video"><img src="/media/icons/seta_direita.png"></td></tr>
+									<tr><td class="include_button documentos"><img src="/media/icons/seta_esquerda.png"></td><td>Documentos (doc, docx, pdf)</td><td class="exclude_button documentos"><img src="/media/icons/seta_direita.png"></td></tr>
+									<tr><td class="include_button imagens"><img src="/media/icons/seta_esquerda.png"></td><td>Imagens (jpg, bmp, png)</td><td class="exclude_button imagens"><img src="/media/icons/seta_direita.png"></td></tr>
+									<tr id="custom_filter_tr"><td class="include_button custom"><img src="/media/icons/seta_esquerda.png"></td><td><input type="text" id="custom_filter"></input></td><td class="exclude_button custom"><img src="/media/icons/seta_direita.png"></td></tr>
+									<tr><td></td><td><button class="css3button negative" id="adv_filter_button">Filtro avançado</button></td><td></td></tr>
+								</table>
+							</div>
+						</td>
+						<td>
+							Ignorar estes<br/>arquivos:<br />
+							<div class="filter_block">
+								<ul id="exclude_list">
+									{% for wildcard in fileset.excludes%}
+									<li onclick="$(this).remove();"><span class="added_filter excluded">{{wildcard.expression}}</span></li>
+									{% endfor %}
+								</ul>
+							</div>
+						</td>
+					</tr>
+				</table>
+				<input type="hidden" name="wildcards-TOTAL_FORMS" value="0" id="id_wildcards-TOTAL_FORMS">
+				<input type="hidden" name="wildcards-INITIAL_FORMS" value="0">
+				<input type="hidden" name="wildcards-MAX_NUM_FORMS">
 			<p>
 			<label>{{fileset_form.name.label}}: </label>{{ fileset_form.name }}
 			</p>
