@@ -11,3 +11,4 @@ nimbus/settings.py
 .DS_Store
 *.sql
 .gitignore
+nimbus/binary

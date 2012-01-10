@@ -1,8 +1,9 @@
 {% block headtags %}
+<script type="text/javascript" src="/media/lib/js/jquery.tooltip.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.tooltip.css"/>
 <script type="text/javascript" src="/media/js/filesets.js"></script>
 <script type="text/javascript" src="/media/js/veezortree.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/veezortree.css"/>
-<!-- <script type="text/javascript" src="/media/js/filefilter.js"></script> -->
 <link rel="stylesheet" type="text/css" href="/media/css/filefilter.css"/>
 {% endblock %}
 
@@ -37,12 +38,6 @@
 							<div id="filter_list">
 								Filtros:
 								<table id="filter_table">
-									<tr><td class="include_button audio"><img src="/media/icons/seta_esquerda.png"></td><td>Audio (mp3, wav, ogg)</td><td class="exclude_button audio"><img src="/media/icons/seta_direita.png"></td></tr>
-									<tr><td class="include_button video"><img src="/media/icons/seta_esquerda.png"></td><td>Video (avi, mpg, mp4)</td><td class="exclude_button video"><img src="/media/icons/seta_direita.png"></td></tr>
-									<tr><td class="include_button documentos"><img src="/media/icons/seta_esquerda.png"></td><td>Documentos (doc, docx, pdf)</td><td class="exclude_button documentos"><img src="/media/icons/seta_direita.png"></td></tr>
-									<tr><td class="include_button imagens"><img src="/media/icons/seta_esquerda.png"></td><td>Imagens (jpg, bmp, png)</td><td class="exclude_button imagens"><img src="/media/icons/seta_direita.png"></td></tr>
-									<tr id="custom_filter_tr"><td class="include_button custom"><img src="/media/icons/seta_esquerda.png"></td><td><input type="text" id="custom_filter"></input></td><td class="exclude_button custom"><img src="/media/icons/seta_direita.png"></td></tr>
-									<tr><td></td><td><button class="css3button negative" id="adv_filter_button">Filtro avançado</button></td><td></td></tr>
 								</table>
 							</div>
 						</td>

@@ -141,6 +141,14 @@ $(document).ready(function(){
         "documentos": ["*.doc", "*.docx", "*.pdf"],
         "imagens": ["*.jpg", "*.bmp", "*.png"]
     };
+    for (var kind in filter_extentions) {
+        $("#filter_table").append('<tr><td class="include_button ' + kind + '"><img src="/media/icons/seta_esquerda.png"></td><td><span title="'+ kind.charAt(0).toUpperCase() + kind.slice(1) +': '+ filter_extentions[kind] +'" class="with_tooltip">'+ kind.charAt(0).toUpperCase() + kind.slice(1) +'</span></td><td class="exclude_button '+ kind +'"><img src="/media/icons/seta_direita.png"></td></tr>'); 
+    };
+    $("#filter_table").append(''+
+    '<tr id="custom_filter_tr"><td class="include_button custom"><img src="/media/icons/seta_esquerda.png"></td><td><input type="text" id="custom_filter"></input></td><td class="exclude_button custom"><img src="/media/icons/seta_direita.png"></td></tr>' + 
+	'<tr><td></td><td><button class="css3button negative" id="adv_filter_button">Filtro avançado</button></td><td></td></tr>');
+    $(".with_tooltip").tooltip();
+
 });
 
 function submit_filter() {
