@@ -259,6 +259,9 @@ class S3(object):
         self.bucket.delete_key(filename)
 
 
+    def get_file_entry(self, filename):
+        return self.bucket.lookup(filename)
+
     def get_size(self):
         entries = self.list_files()
         return sum( key.size for key in entries )
