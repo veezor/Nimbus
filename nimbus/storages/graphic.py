@@ -13,7 +13,7 @@ class Graphics(object):
 
     def update_db(self):
         """Metodo obrigatorio para todas as classes Graphics"""
-        diskinfo = systeminfo.DiskInfo("/")
+        diskinfo = systeminfo.DiskInfo("/bacula")
         total, used, free = diskinfo.get_data()
         new_data = StorageGraphicsData()
         new_data.total = total
@@ -53,7 +53,7 @@ class Graphics(object):
             timestamps.append(day)
             max_values.append(umax / 1073741824.0)
             min_values.append(umin / 1073741824.0)
-        diskinfo = systeminfo.DiskInfo("/")
+        diskinfo = systeminfo.DiskInfo("/bacula")
         t, u, f = diskinfo.get_data()
         total = t / 1073741824.0
         timestamps.append("Agora")

@@ -81,6 +81,9 @@ def update_fileset_file(fileset):
                    includes=includes, excludes=excludes,
                    verbose_name=verbose_name)
 
+def update_filters(wildcard):
+    fileset = wildcard.fileset
+    update_fileset_file(fileset)
 
 def remove_fileset_file(fileset):
     """remove FileSet file"""
@@ -95,5 +98,6 @@ def update_filepath(filepath):
 
 signals.connect_on(update_fileset_file, FileSet, post_save)
 signals.connect_on(update_filepath, FilePath, post_save)
+signals.connect_on(update_filters, Wildcard, post_save)
 signals.connect_on(remove_fileset_file, FileSet, post_delete)
 signals.connect_on(update_filepath, FilePath, post_delete)

@@ -135,6 +135,8 @@ function discard_unused_fileset(fileset_id) {
 
 // CODIGO REFERENTE AOS FILTROS
 $(document).ready(function(){
+    // ADICIONE NOVAS CHAVES AO DICIONARIO ABAIXO PARA ADICIONAR OPCOES A
+    // INTERFACE. FUTURAMENTE ESSE DICIONARIO VAI PARA O BANCO
     filter_extentions = {
         "audio": ["*.mp3", "*.wav", "*.ogg"],
         "video": ["*.avi", "*.mpg", "*.mp4"],

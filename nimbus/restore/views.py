@@ -167,6 +167,7 @@ def restore_files(request):
         target = request.POST["destination"]
         files = request.POST.getlist("paths")
         bacula = Bacula()
+        print request.POST
         bacula.run_restore(computer.bacula_name, jobid, target, files)
         messages.success(request, "Recuperação iniciada com sucesso")    
         return redirect('/procedures/list/')
