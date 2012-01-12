@@ -212,8 +212,10 @@ class S3(object):
 
 
     def _upload(self, filename, keyname):
+        from nimbus.offsite import queue_service
         self.logger.info('simple upload')
         key = self.bucket.new_key(keyname)
+        self.rate_limiter.reset( queue_service.get_worker_ratelimit() )
         with file(filename) as f_obj:
             key.set_contents_from_file(f_obj,
                                        cb=self.callbacks,
@@ -278,6 +280,9 @@ class S3(object):
         key = self.bucket.get_key(filename)
         handler = ResumableDownloadHandler(tempfile.mktemp())
         handler._save_tracker_info(key) # Ugly but necessary
+        self.rate_limiter.reset( self.rate_limit )
+        self.rate_limiter.update_rate_limit_time = -1 # FIX THIS
+
         with file(destination, "a") as f:
             handler.get_file(key, f, {}, cb=self.callbacks, num_cb=-1)
 
