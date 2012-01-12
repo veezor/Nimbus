@@ -89,6 +89,10 @@ def update_networks_file(interface):
                                        interface.network, 
                                        interface.gateway)
             logger.info('gerando configuracao de dns')
+
+            if interface.dns2 is None:
+                interface.dns2 = interface.dns1
+
             server.generate_dns(interface.dns1, 
                                  interface.dns2)
             logger.info('restarting network right now')
