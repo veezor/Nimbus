@@ -71,16 +71,18 @@ class RateLimiter(object):
 
     def _update_rate_limit(self, transferred_size):
         from nimbus.offsite import queue_service
-        if self._last_update_rate_limit is None:
-            self._last_update_rate_limit = time()
-        else:
-            now = time()
-            diff = now - self._last_update_rate_limit
-            if diff > self.update_rate_limit_time:
-                self.rate_limit = queue_service.get_worker_ratelimit()
-                self.start = time()
-                self._transferred_size = transferred_size
-                self._last_update_rate_limit = now
+
+        if self.update_rate_limit_time > 0:
+            if self._last_update_rate_limit is None:
+                self._last_update_rate_limit = time()
+            else:
+                now = time()
+                diff = now - self._last_update_rate_limit
+                if diff > self.update_rate_limit_time:
+                    self.rate_limit = queue_service.get_worker_ratelimit()
+                    self.start = time()
+                    self._transferred_size = transferred_size
+                    self._last_update_rate_limit = now
 
 
 
