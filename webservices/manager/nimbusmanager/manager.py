@@ -72,12 +72,14 @@ class Manager(object):
 
     ALLOWED_DAEMON = (  "director", "client",
                         "storage", "network",
-                        "nimbus", "nginx")
+                        "nimbus", "nginx",
+                        "cron")
 
     DAEMON_MAP = { "director" : "bacula-ctl-dir",
                    "storage" : "bacula-ctl-sd",
                    "client" : "bacula-ctl-fd",
-                   "network" : "networking" }
+                   "network" : "networking",
+                   "cron" : "cron"}
 
 
     def __init__(self, debug=False):
