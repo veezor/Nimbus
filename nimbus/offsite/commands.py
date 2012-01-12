@@ -58,12 +58,13 @@ def start_queue_service():
 
 
 @command("--offsite-simple-config")
-def offsite_simple_config(username, password):
+def offsite_simple_config(username, password, rate_limit=-1):
     u"""Configuração simples do offsite.
     Use --offsite-simple-config username password"""
     offsite = models.Offsite.get_instance()
     offsite.username = username
     offsite.password = password
+    offsite.rate_limit = rate_limit
     offsite.active = True
     offsite.clean()
     offsite.save()
