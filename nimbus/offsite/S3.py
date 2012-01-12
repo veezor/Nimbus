@@ -39,6 +39,7 @@ class RateLimiter(object):
         self.update_rate_limit_time = update_rate_limit_time
         self._last_update_rate_limit = None
         self._transferred_size = 0
+        self.rate = None
 
 
     def reset(self, rate_limit):
@@ -56,6 +57,7 @@ class RateLimiter(object):
         if elapsed_time and self.rate_limit > 0:
 
             rate = t_size / elapsed_time
+            self.rate = rate
             expected_time = t_size / self.rate_limit
             sleep_time = expected_time - elapsed_time
 
