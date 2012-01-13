@@ -15,6 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 
 
 from nimbus.offsite import managers as offsite
+from nimbus.offsite import models as offsite_models
 from nimbus.procedures.models import Procedure
 from nimbus.security.exceptions import AdministrativeModelError
 from nimbus.config import commands
@@ -72,7 +73,6 @@ def recovery_nimbus_from_offsite():
 
 
 
-
 class RecoveryManager(object):
 
     def __init__(self, offsite_manager):
@@ -122,6 +122,7 @@ class RecoveryManager(object):
 
 
     def download_volumes(self):
+        offsite_models.DownloadRequest.objects.all().delete() # clean up
         reporter = RecoveryProgressReporter(self.offsite_manager)
         self.offsite_manager.s3.callbacks.add_callback(reporter.callback)
 
@@ -187,13 +188,13 @@ class RecoveryProgressReporter(object):
 
         bytes_remain = total_size - downloaded_size
         percent = (float(downloaded_size)/total_size)*100
-        return total_size, downloaded_size, bytes_remain, percent
+        return total_size, downloaded_size, bytes_remain, int(percent)
 
 
     def _get_eta(self, rate, bytesr):
         kb = bytesr/1024.0
         if not rate is None and rate > 0:
-            time = kb/rate
+            time = int(kb/rate)
             return str(datetime.timedelta(seconds=time))
         else:
             return "stalled"
@@ -254,7 +255,11 @@ class RecoveryProgressReporter(object):
 
         rate = self.remote_manager.s3.rate_limiter.rate
         eta = self._get_eta(rate, bytes_remain)
-        print "Total \t {0} de {1} - {2}% - Tempo estimado: {3}. Taxa de download atual: {4}".format(f(downloaded_size),
+        if rate is None:
+            rate = 0
+        rate = f(rate*1024)
+
+        print "Total \t {0} de {1} - {2}% - Tempo estimado: {3}. Taxa de download atual: {4}/s".format(f(downloaded_size),
                                                                     f(total_size),
                                                                     percent,
                                                                     eta,
