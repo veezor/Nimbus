@@ -28,23 +28,37 @@ class RateLimiter(object):
 
     def __init__(self, rate_limit, update_rate_limit_time=10):
         """rate limit in kBytes / second"""
-        self.reset(rate_limit)
+        self.reset(rate_limit, update_rate_limit_time)
         self.update_rate_limit_time = update_rate_limit_time
         self._last_update_rate_limit = None
-        self._transferred_size = 0
         self.rate = None
+        self.logger = logging.getLogger("rate-limiter")
 
 
-    def reset(self, rate_limit):
+    def reset(self, rate_limit, update_rate_limit_time=10):
         self.rate_limit = rate_limit
         self.start = time()
         self._transferred_size = 0
+        self._first_write = True # detect resume operation
 
 
     def __call__(self, transferred_size, total_size):
 
+
         transferred_size = float(transferred_size) / 1024 #kb
+
+        if self._first_write and transferred_size != 0:
+            # is resume
+            self._transferred_size = transferred_size
+            self._first_write = False
+
+
         t_size = transferred_size - self._transferred_size
+
+        if t_size == 0: #first call to callback
+            return
+
+
         elapsed_time = time() - self.start
 
         if elapsed_time and self.rate_limit > 0:
@@ -55,6 +69,8 @@ class RateLimiter(object):
             sleep_time = expected_time - elapsed_time
 
             if sleep_time > 0:
+                if sleep_time > 5:
+                    self.logger.error("sleep time very large. " + str(sleep_time))
                 sleep(sleep_time)
 
 
@@ -280,8 +296,7 @@ class S3(object):
         key = self.bucket.get_key(filename)
         handler = ResumableDownloadHandler(tempfile.mktemp())
         handler._save_tracker_info(key) # Ugly but necessary
-        self.rate_limiter.reset( self.rate_limit )
-        self.rate_limiter.update_rate_limit_time = -1 # FIX THIS
+        self.rate_limiter.reset( self.rate_limit, -1 )
 
         with file(destination, "a") as f:
             handler.get_file(key, f, {}, cb=self.callbacks, num_cb=-1)
