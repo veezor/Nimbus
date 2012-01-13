@@ -81,19 +81,19 @@ def update_networks_file(interface):
         try:
             server = ServerProxy(settings.NIMBUS_MANAGER_URL)
             logger.info('gerando configuracao de interfaces de rede')
-            server.generate_interfaces("eth0", 
-                                       interface.address, 
-                                       interface.netmask, 
+            server.generate_interfaces("eth0",
+                                       interface.address,
+                                       interface.netmask,
                                        "static",
-                                       interface.broadcast, 
-                                       interface.network, 
+                                       interface.broadcast,
+                                       interface.network,
                                        interface.gateway)
             logger.info('gerando configuracao de dns')
 
             if interface.dns2 is None:
                 interface.dns2 = interface.dns1
 
-            server.generate_dns(interface.dns1, 
+            server.generate_dns(interface.dns1,
                                  interface.dns2)
             logger.info('restarting network right now')
             server.network_restart()
