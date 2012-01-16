@@ -1,3 +1,4 @@
+# {{verbose_name}}
 Job {
     Write Bootstrap = "/bacula/{{name}}.bsr"
     Name = "{{name}}"
@@ -16,11 +17,17 @@ Job {
     {% else %}
     Enabled = "no"
     {% endif %}
-	{% if run_afters %}
+	{% if job_tasks %}
+	{% for task in job_tasks %}
 	RunScript {
-    RunsOnClient = No
-	RunsWhen = After
-	{% for task in run_afters %}Command = "{{task.command}}"{% endfor %}
+    {% if task.runsonclient %}
+	RunsOnClient = yes
+	{% else %}
+	RunsOnClient = no
+	{% endif %}
+	RunsWhen = {{task.runswhen}}
+	Command = "{{task.command}}"
 	}
+	{% endfor %}
 	{% endif %}
 }

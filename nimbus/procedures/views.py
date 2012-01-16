@@ -14,7 +14,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, Invali
 from pybacula import BConsoleInitError
 
 from nimbus.bacula.models import Job
-from nimbus.procedures.models import Procedure, RunAfter
+from nimbus.procedures.models import Procedure, JobTask
 from nimbus.computers.models import Computer
 from nimbus.storages.models import Storage
 from nimbus.schedules.models import Schedule
@@ -41,10 +41,10 @@ def add(request, teste=None):
 
     title = u"Adicionar backup"
     form = ProcedureForm(initial=initial, prefix="procedure")
-    runafters = RunAfter.objects.all()
+    tasks = JobTask.objects.all()
     content = {'title': title,
                 'form':form,
-                'runafters': runafters}
+                'tasks': tasks}
     if request.method == "POST":
         data = copy(request.POST)
         if data["procedure-fileset"]:

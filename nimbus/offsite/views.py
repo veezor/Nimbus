@@ -176,8 +176,8 @@ def list_procedures(request):
 
 @login_required
 def list_offsite(request):
-    procedures = Procedure.with_run_after('Offsite')
-    last_jobs = Procedure.jobs_with_run_after('Offsite')
+    procedures = Procedure.with_job_tasks('Offsite')
+    last_jobs = Procedure.jobs_with_job_tasks('Offsite')
     extra_content = {'procedures': procedures,
                      'last_jobs' : last_jobs,
                      'title': u"Procedimentos com offsite ativo"}
