@@ -61,9 +61,9 @@
 							{% endif %}
 							<br/>
                             Tempo de retenção dos arquivos: <strong>{{procedure.pool_retention_time}}</strong>
-							{% if procedure.run_after.all %}
+							{% if procedure.job_tasks.all %}
 							<br/>Tarefas Pós-backup:
-							{% for task in procedure.run_after.all %}
+							{% for task in procedure.job_tasks.all %}
 							{% if task.active %}
 							<li>{{task}}</li>
 							{% else %}

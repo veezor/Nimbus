@@ -28,10 +28,12 @@ from nimbus.libs.bacula import Bacula
 from nimbus.shared import utils, enums, signals, fields
 
 
-class RunAfter(models.Model):
+class JobTask(models.Model):
     name = models.CharField(max_length=255)
     active = models.BooleanField(default=True, blank=True, null=False)
     description = models.CharField(max_length=255)
+    runsonclient = models.BooleanField(default=False, blank=True, null=False)
+    runswhen = models.CharField(max_length=25, blank=False, null=False)
     command = models.CharField(max_length=1023, blank=False, null=False)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField(null=False, blank=False)
@@ -63,7 +65,7 @@ class Procedure(BaseModel):
                                 blank=False)
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
-    run_after = models.ManyToManyField(RunAfter, verbose_name="Tarefas pós-backup",
+    job_tasks = models.ManyToManyField(JobTask, verbose_name="Tarefas auxiliares",
                             related_name='procedure', blank=True, null=True)
 
 
@@ -89,19 +91,19 @@ class Procedure(BaseModel):
     def pool_bacula_name(self):
         return '%s_pool' % self.bacula_name
 
-    def has_run_after(self, run_after_name):
-        return self.run_after.get(name=run_after_name)
+    def has_job_tasks(self, job_tasks_name):
+        return self.job_tasks.get(name=job_tasks_name)
 
     @classmethod
-    def jobs_with_run_after(cls, run_after_name):
-        procedures = cls.objects.filter(run_after__name=run_after_name).exclude(id=1)
+    def jobs_with_job_tasks(cls, job_tasks_name):
+        procedures = cls.objects.filter(job_tasks__name=job_tasks_name).exclude(id=1)
         job_names = [ p.bacula_name for p in procedures ]
         jobs = Job.objects.select_related().filter(name__in=job_names).order_by('-starttime')
         return jobs
 
     @classmethod
-    def with_run_after(cls, run_after_name):
-        procedures = cls.objects.filter(run_after__name=run_after_name).exclude(id=1)
+    def with_job_tasks(cls, job_tasks_name):
+        procedures = cls.objects.filter(job_tasks__name=job_tasks_name).exclude(id=1)
         return procedures
 
     def last_success_date(self):
@@ -206,10 +208,12 @@ class Procedure(BaseModel):
 def update_procedure_file(procedure):
     """Procedure update file"""
     name = procedure.bacula_name
+    verbose_name = procedure.name
     filename = join(settings.NIMBUS_JOBS_DIR, name)
     render_to_file(filename,
                    "job",
                    name=name,
+                   verbose_name=verbose_name,
                    schedule=procedure.schedule_bacula_name(),
                    storage=procedure.storage_bacula_name(),
                    fileset=procedure.fileset_bacula_name(),
@@ -218,7 +222,7 @@ def update_procedure_file(procedure):
                    # NIMBUS_EXE=settings.NIMBUS_EXE,
                    client=procedure.computer.bacula_name,
                    pool=procedure.pool_bacula_name(),
-                   run_afters=procedure.run_after.filter(active=True),
+                   job_tasks=procedure.job_tasks.filter(active=True),
                    )
 
 
@@ -283,24 +287,24 @@ def remove_pool_file(procedure):
 #signals.connect_on(remove_pool_file, Procedure, post_delete)
 
 def pre_delete_procedure(procedure):
-    #Execute on_remove de todos os run_afters
-    for r in procedure.run_after.all():
+    #Execute on_remove de todos os job_tasks
+    for r in procedure.job_tasks.all():
         r.creator.on_remove(procedure)
 
-def change_run_after(sender, instance, action, reverse, model, pk_set, **kwargs):
+def change_job_tasks(sender, instance, action, reverse, model, pk_set, **kwargs):
     update_procedure_file(instance)
 
-def update_run_after(run_after):
+def update_job_tasks(job_tasks):
     procedures = Procedure.objects.filter(active=True)
     for procedure in procedures:
-        if procedure.run_after.all():
+        if procedure.job_tasks.all():
             update_procedure_file(procedure)
 
 
-m2m_changed.connect(change_run_after, sender=Procedure.run_after.through)
+m2m_changed.connect(change_job_tasks, sender=Procedure.job_tasks.through)
 # signals.connect_on( offsiteconf_check, Procedure, pre_save)
 signals.connect_on( update_procedure_file, Procedure, post_save)
-signals.connect_on( update_run_after, RunAfter, post_save)
+signals.connect_on( update_job_tasks, JobTask, post_save)
 signals.connect_on(pre_delete_procedure, Procedure, pre_delete)
 signals.connect_on( remove_procedure_volumes, Procedure, post_delete)
 signals.connect_on( remove_procedure_file, Procedure, post_delete)

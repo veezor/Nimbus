@@ -9,5 +9,5 @@ from nimbus.procedures import models
 
 # admin.site.register(models.Profile)
 admin.site.register(models.Procedure)
-admin.site.register(models.RunAfter)
+admin.site.register(models.JobTask)
 

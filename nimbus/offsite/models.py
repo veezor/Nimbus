@@ -324,28 +324,29 @@ class DownloadTransferredData( TransferredData ):
 
 
 def update_offsite(offsite):
-    #Criando objeto RunAfter
-    from nimbus.procedures.models import RunAfter
-    ra = RunAfter.objects.filter(name="Offsite").all()
-    if (len(ra) == 0) and (offsite.active == True):
-        run_after = RunAfter()
-        run_after.name = "Offsite"
-        run_after.creator = offsite
-        run_after.description = "Mantém uma cópia de seu backup na nuvem"
-        run_after.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
-        run_after.save()
+    #Criando objeto JobTask
+    from nimbus.procedures.models import JobTask
+    task_objects = JobTask.objects.filter(name="Offsite").all()
+    if (len(task_objects) == 0) and (offsite.active == True):
+        task = JobTask()
+        task.name = "Offsite"
+        task.creator = offsite
+        task.description = "Mantém uma cópia de seu backup na nuvem"
+        task.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
+        task.runswhen = "After"
+        task.save()
         from nimbus.procedures.models import Procedure # loop
         try:
             procedure = Procedure.objects.get(id=1) # self backup
-            procedure.run_after.add(run_after)
+            procedure.job_tasks.add(task)
             procedure.save(system_permission=True)
         except Procedure.DoesNotExist, error:
             pass
 
-    elif len(ra) > 0:
-        if ra[0].active != offsite.active:
-            ra[0].active = offsite.active
-            ra[0].save()
+    elif len(task_objects) > 0:
+        if task_objects[0].active != offsite.active:
+            task_objects[0].active = offsite.active
+            task_objects[0].save()
 
 def is_active():
     offsite = Offsite.get_instance()

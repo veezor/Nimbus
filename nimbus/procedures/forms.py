@@ -57,9 +57,9 @@ class ProcedureForm(forms.ModelForm):
                   'storage',
                   'pool_retention_time',
                   'name',
-                  'run_after')
+                  'job_tasks')
         exclude = ('active', 'pool_size', 'pool_name')
-        widgets = {'run_after': forms.CheckboxSelectMultiple()}
+        widgets = {'job_tasks': forms.CheckboxSelectMultiple()}
 
 
 class ProcedureEditForm(forms.ModelForm):
