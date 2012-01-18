@@ -11,7 +11,9 @@ from datetime import datetime
 from os.path import join, exists, isfile, isabs
 
 
+from django.conf import settings
 
+from nimbus.shared import utils
 from nimbus.procedures.models import Procedure
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
@@ -45,7 +47,7 @@ def md5_for_large_file(filename, block_size=2**20):
             break
         filemd5.update(data)
     fileobj.close()
-    return filemd5.digest()
+    return filemd5.hexdigest()
 
 
 def find_archive_devices():
@@ -398,3 +400,23 @@ class LocalManager(BaseManager):
         self.device_manager.umount()
 
 
+
+def check_integrity():
+    s3 = Offsite.get_s3_interface()
+    offsite_keys = s3.list_files()
+
+    for key in offsite_keys:
+        filename = key.name
+        filename_on_disk = os.path.join(settings.NIMBUS_DEFAULT_ARCHIVE,
+                                        filename)
+        if os.path.exists(filename_on_disk):
+            print "Checking",filename,"...",
+            local_md5 = md5_for_large_file(filename_on_disk)
+            if key.etag == local_md5:
+                print "Ok"
+            else:
+                print "Error"
+                f = utils.filesizeformat
+                size = os.path.getsize(filename_on_disk)
+                print "Local file size: {0}. Remote file size: {1}".format(f(size), f(f.size))
+                print "Local file md5: {0}. Remote file md5: {1}".format(local_md5, key.etag)

@@ -56,3 +56,9 @@ def start_queue_service():
     queue_service.start_queue_manager_service()
 
 
+@command("--check-offsite-integrity")
+def check_offsite_integrity():
+    u"""Verifica o md5 dos volumes presentes no offsite e compara com os arquivos locais"""
+    managers.check_integrity()
+
+
