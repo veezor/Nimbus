@@ -27,6 +27,12 @@ from nimbus.libs.template import render_to_file
 from nimbus.libs.bacula import Bacula
 from nimbus.shared import utils, enums, signals, fields
 
+class GenericContentType(models.Model):
+
+    @classmethod
+    def on_remove(cls, procedure):
+        pass
+
 
 class JobTask(models.Model):
     name = models.CharField(max_length=255)
@@ -289,7 +295,8 @@ def remove_pool_file(procedure):
 def pre_delete_procedure(procedure):
     #Execute on_remove de todos os job_tasks
     for r in procedure.job_tasks.all():
-        r.creator.on_remove(procedure)
+        if r.creator:
+            r.creator.on_remove(procedure)
 
 def change_job_tasks(sender, instance, action, reverse, model, pk_set, **kwargs):
     update_procedure_file(instance)
