@@ -106,7 +106,6 @@ class MultipartFileManager(object):
         if len(data) != self.MB_SIZE:
             self.finish = True
             self.next_part_number = -1
-            raise StopIteration()
         else:
             self.next_part_number += 1
 
