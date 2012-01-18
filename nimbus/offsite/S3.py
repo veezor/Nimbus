@@ -20,6 +20,8 @@ MIN_MULTIPART_SIZE = 5242880 # 5mb
 logging.getLogger('boto').setLevel(logging.CRITICAL)
 
 
+class IncompleteUpload(Exception):
+    pass
 
 
 class RateLimiter(object):
@@ -239,7 +241,14 @@ class S3(object):
 
                 self.multipart_status_callbacks(filename, part_number)
 
-        multipart.complete_upload()
+
+        size = os.path.getsize(filename)
+        sent_size = (part_number * MIN_MULTIPART_SIZE) + len(part_content)
+
+        if size == sent_size:
+            multipart.complete_upload()
+        else:
+            raise IncompleteUpload("Not sent full file size")
 
 
     def cancel_multipart_upload(self, filename):
