@@ -397,12 +397,28 @@ def check_integrity():
                                         filename)
         if os.path.exists(filename_on_disk):
             print "Checking",filename,"...",
-            local_md5 = md5_for_large_file(filename_on_disk)
-            if key.etag == local_md5:
+            s3_md5 = key.metadata.get('nimbus-md5', None)
+            local_md5 = outils.md5_for_large_file(filename_on_disk)
+
+            is_ok = True
+            if s3_md5:
+                if s3_md5 != local_md5:
+                    is_ok = False
+            else:
+                if not '-' in key.etag:
+                    s3_md5 = key.etag.strip('"\'')
+                    if local_md5 != s3_md5:
+                        is_ok = False
+                else:
+                    size = os.path.getsize(filename_on_disk)
+                    if size != key.size:
+                        is_ok = False
+
+            if is_ok:
                 print "Ok"
             else:
                 print "Error"
                 f = utils.filesizeformat
                 size = os.path.getsize(filename_on_disk)
                 print "Local file size: {0}. Remote file size: {1}".format(f(size), f(f.size))
-                print "Local file md5: {0}. Remote file md5: {1}".format(local_md5, key.etag)
+                print "Local file md5: {0}. Remote file md5: {1}".format(local_md5, s3_md5)
