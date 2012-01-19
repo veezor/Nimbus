@@ -6,7 +6,7 @@ import stat
 import time
 import logging
 from pwd import getpwnam
-from hashlib import md5
+
 from datetime import datetime
 from os.path import join, exists, isfile, isabs
 
@@ -14,6 +14,7 @@ from os.path import join, exists, isfile, isabs
 from django.conf import settings
 
 from nimbus.shared import utils
+from nimbus.offsite import utils as outils
 from nimbus.procedures.models import Procedure
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
@@ -33,21 +34,6 @@ from nimbus.offsite.models import (Volume,
 NIMBUS_DUMP = "/var/nimbus/nimbus-sql.bz2"
 BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
 
-
-
-class Md5CheckError(Exception):
-    pass
-
-def md5_for_large_file(filename, block_size=2**20):
-    fileobj = file(filename, 'rb')
-    filemd5 = md5()
-    while True:
-        data = fileobj.read(block_size)
-        if not data:
-            break
-        filemd5.update(data)
-    fileobj.close()
-    return filemd5.hexdigest()
 
 
 def find_archive_devices():
@@ -393,8 +379,8 @@ class LocalManager(BaseManager):
         except (OSError, IOError), error:
             pass #FIX
 
-        if md5_for_large_file(destination) != md5_for_large_file(origin):
-            raise Md5CheckError("md5 mismatch")
+        if outils.md5_for_large_file(destination) != outils.md5_for_large_file(origin):
+            raise outils.Md5CheckError("md5 mismatch")
 
     def finish(self):
         self.device_manager.umount()
