@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
-import time
 import string
 from random import choice
-from itertools import izip
+
 
 from django.conf import settings
 
@@ -22,7 +20,8 @@ class Referer(object):
     def local_address(self):
         if self.raw.startswith('http://'):
             return '/' + '/'.join(self.raw.replace('http://','').split('/')[1:])
-    
+
+
 
 def filesizeformat(bytes, unit=""):
     
