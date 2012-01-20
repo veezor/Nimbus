@@ -49,24 +49,12 @@ def _compress_file(src, dst):
 
 
 
-def _generate_nimbus_dump():
-    tmp_filename = tempfile.mktemp()
-    popen = subprocess.Popen(["/usr/bin/pg_dump",
-                              "nimbus",
-                              "-f",
-                              tmp_filename],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-    popen.communicate()
-    _compress_file(tmp_filename, NIMBUS_DUMP)
-
-
-def _generate_bacula_dump():
+def _generate_db_dump(db_name, dest):
     env = os.environ.copy()
-    db_data = settings.DATABASES['bacula']
+    db_data = settings.DATABASES[db_name]
     tmp_filename = tempfile.mktemp()
     env['PGPASSWORD'] = db_data['PASSWORD']
-    cmd = subprocess.Popen(["/usr/bin/pg_dump",
+    cmd = subprocess.Popen(["/usr/lib/postgresql/8.4/bin/pg_dump",
                             db_data['NAME'],
                             "-U",db_data['USER'],
                             "-f",tmp_filename,
@@ -74,9 +62,19 @@ def _generate_bacula_dump():
                             stderr=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             env=env)
-    cmd.communicate()
-    _compress_file(tmp_filename, BACULA_DUMP)
+    stdout, stderr = cmd.communicate()
+    if cmd.returncode != 0:
+        logger = logging.getLogger('dump data base')
+        logger.error(stdout)
+        logger.error(stderr)
+    _compress_file(tmp_filename, dest)
 
+
+def _generate_nimbus_dump():
+    return _generate_db_dump('default',NIMBUS_DUMP)
+
+def _generate_bacula_dump():
+    return _generate_db_dump('bacula',BACULA_DUMP)
 
 
 
