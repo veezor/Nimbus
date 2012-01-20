@@ -2,9 +2,12 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import bz2
 import stat
 import time
 import logging
+import tempfile
+import subprocess
 from pwd import getpwnam
 
 from datetime import datetime
@@ -33,6 +36,47 @@ from nimbus.offsite.models import (Volume,
 
 NIMBUS_DUMP = "/var/nimbus/nimbus-sql.bz2"
 BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
+
+
+def _compress_file(src, dst):
+    with file(src) as src_file:
+        try:
+            bzipped = bz2.BZ2File(dst, compresslevel=9, mode="wb")
+            for line in src_file:
+                bzipped.write(line)
+        finally:
+            bzipped.close()
+
+
+
+def _generate_nimbus_dump():
+    tmp_filename = tempfile.mktemp()
+    popen = subprocess.Popen(["/usr/bin/pg_dump",
+                              "nimbus",
+                              "-f",
+                              tmp_filename],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+    popen.communicate()
+    _compress_file(tmp_filename, NIMBUS_DUMP)
+
+
+def _generate_bacula_dump():
+    env = os.environ.copy()
+    db_data = settings.DATABASES['bacula']
+    tmp_filename = tempfile.mktemp()
+    env['PGPASSWORD'] = db_data['PASSWORD']
+    cmd = subprocess.Popen(["/usr/bin/pg_dump",
+                            db_data['NAME'],
+                            "-U",db_data['USER'],
+                            "-f",tmp_filename,
+                            "-h",db_data['HOST']],
+                            stderr=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            env=env)
+    cmd.communicate()
+    _compress_file(tmp_filename, BACULA_DUMP)
+
 
 
 
@@ -163,6 +207,8 @@ class BaseManager(object):
         self.process_pending_upload_requests()
 
     def generate_database_dump_upload_request(self):
+        _generate_nimbus_dump()
+        _generate_bacula_dump()
         if exists(NIMBUS_DUMP):
             self.create_upload_request(NIMBUS_DUMP)
         if exists(BACULA_DUMP):
