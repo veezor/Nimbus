@@ -8,9 +8,12 @@ from nimbus.offsite import queue_service
 
 
 @command("--upload-requests")
-def create_upload_requests(args):
+def create_upload_requests(args=None):
     u"""Parâmetro: Lista de volumes. Ex: volume1|volume2|volume3
     Solicita o upload de volumes a fila do offsite"""
+    if args is None:
+        return 
+
     try:
         volumes = args.split('|')
         volumes = filter(None, volumes)
