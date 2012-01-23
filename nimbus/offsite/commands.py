@@ -9,9 +9,12 @@ from nimbus.offsite import queue_service
 
 
 @command("--upload-requests")
-def create_upload_requests(args):
+def create_upload_requests(args=None):
     u"""Parâmetro: Lista de volumes. Ex: volume1|volume2|volume3
     Solicita o upload de volumes a fila do offsite"""
+    if args is None:
+        return 
+
     try:
         volumes = args.split('|')
         volumes = filter(None, volumes)
@@ -68,3 +71,10 @@ def offsite_simple_config(username, password, rate_limit=-1):
     offsite.active = True
     offsite.clean()
     offsite.save()
+
+@command("--check-offsite-integrity")
+def check_offsite_integrity():
+    u"""Verifica o md5 dos volumes presentes no offsite e compara com os arquivos locais"""
+    managers.check_integrity()
+
+

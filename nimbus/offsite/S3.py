@@ -15,12 +15,19 @@ from boto.s3.resumable_download_handler import ResumableDownloadHandler
 #from nimbus.offsite import queue_service
 #from nimbus.offsite.models import Offsite
 
+from nimbus.offsite import utils
+
 MIN_MULTIPART_SIZE = 5242880 # 5mb
 
 logging.getLogger('boto').setLevel(logging.CRITICAL)
 
 
+class IncompleteUpload(Exception):
+    pass
 
+
+class FileSizeError(Exception):
+    pass
 
 class RateLimiter(object):
     """Rate limit a url fetch"""
@@ -78,7 +85,6 @@ class RateLimiter(object):
 
     def _update_rate_limit(self, transferred_size):
         from nimbus.offsite import queue_service
-
         if self.update_rate_limit_time > 0:
             if self._last_update_rate_limit is None:
                 self._last_update_rate_limit = time()
@@ -90,7 +96,6 @@ class RateLimiter(object):
                     self.start = time()
                     self._transferred_size = transferred_size
                     self._last_update_rate_limit = now
-
 
 
 class MultipartFileManager(object):
@@ -124,7 +129,6 @@ class MultipartFileManager(object):
         if len(data) != self.MB_SIZE:
             self.finish = True
             self.next_part_number = -1
-            raise StopIteration()
         else:
             self.next_part_number += 1
 
@@ -230,9 +234,12 @@ class S3(object):
         self.logger.info('simple upload')
         key = self.bucket.new_key(keyname)
         self.rate_limiter.reset( queue_service.get_worker_ratelimit() )
+        md5 = utils.md5_for_large_file(filename)
+        headers={'x-amz-meta-nimbus-md5' : md5}
         with file(filename) as f_obj:
             key.set_contents_from_file(f_obj,
                                        cb=self.callbacks,
+                                       headers=headers,
                                        num_cb=-1)
 
 
@@ -240,9 +247,14 @@ class S3(object):
         from nimbus.offsite import queue_service
 
         self.logger.info('initiate multipart upload ')
-        multipart = self.bucket.initiate_multipart_upload(keyname)
+
+
+        md5 = utils.md5_for_large_file(filename)
+        headers={'x-amz-meta-nimbus-md5' : md5}
+        multipart = self.bucket.initiate_multipart_upload(keyname, headers=headers)
 
         self.logger.info('initiate multipart with part =  %d' % (part)  )
+
 
 
         with MultipartFileManager(filename, part) as manager:
@@ -260,7 +272,14 @@ class S3(object):
 
                 self.multipart_status_callbacks(filename, part_number)
 
-        multipart.complete_upload()
+
+        size = os.path.getsize(filename)
+        sent_size = (part_number * MIN_MULTIPART_SIZE) + len(part_content)
+
+        if size == sent_size:
+            multipart.complete_upload()
+        else:
+            raise IncompleteUpload("Not sent full file size")
 
 
     def cancel_multipart_upload(self, filename):
@@ -298,6 +317,27 @@ class S3(object):
 
         with file(destination, "a") as f:
             handler.get_file(key, f, {}, cb=self.callbacks, num_cb=-1)
+
+        #validate
+
+        md5 = utils.md5_for_large_file(destination)
+        s3_md5 = key.metadata.get('nimbus-md5', None)
+
+        if s3_md5:
+            if s3_md5 != md5:
+                raise utils.Md5CheckError("md5 mismatch")
+        else:
+            if not '-' in key.etag:
+                s3_md5 = key.etag.strip('"\'')
+                if md5 != s3_md5:
+                    raise utils.Md5CheckError("md5 mismatch")
+            else:
+                size = os.path.getsize(destination)
+                if size != key.size:
+                    raise FileSizeError("error")
+
+
+
 
 
 

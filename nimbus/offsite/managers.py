@@ -2,16 +2,22 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import bz2
 import stat
 import time
 import logging
+import tempfile
+import subprocess
 from pwd import getpwnam
-from hashlib import md5
+
 from datetime import datetime
 from os.path import join, exists, isfile, isabs
 
+
 from django.conf import settings
 
+from nimbus.shared import utils
+from nimbus.offsite import utils as outils
 from nimbus.procedures.models import Procedure
 from nimbus.storages.models import Device
 from nimbus.offsite.models import Offsite
@@ -32,20 +38,44 @@ NIMBUS_DUMP = "/var/nimbus/nimbus-sql.bz2"
 BACULA_DUMP = "/var/nimbus/bacula-sql.bz2"
 
 
+def _compress_file(src, dst):
+    with file(src) as src_file:
+        try:
+            bzipped = bz2.BZ2File(dst, compresslevel=9, mode="wb")
+            for line in src_file:
+                bzipped.write(line)
+        finally:
+            bzipped.close()
 
-class Md5CheckError(Exception):
-    pass
 
-def md5_for_large_file(filename, block_size=2**20):
-    fileobj = file(filename, 'rb')
-    filemd5 = md5()
-    while True:
-        data = fileobj.read(block_size)
-        if not data:
-            break
-        filemd5.update(data)
-    fileobj.close()
-    return filemd5.digest()
+
+def _generate_db_dump(db_name, dest):
+    env = os.environ.copy()
+    db_data = settings.DATABASES[db_name]
+    tmp_filename = tempfile.mktemp()
+    env['PGPASSWORD'] = db_data['PASSWORD']
+    cmd = subprocess.Popen(["/usr/lib/postgresql/8.4/bin/pg_dump",
+                            db_data['NAME'],
+                            "-U",db_data['USER'],
+                            "-f",tmp_filename,
+                            "-h",db_data['HOST']],
+                            stderr=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            env=env)
+    stdout, stderr = cmd.communicate()
+    if cmd.returncode != 0:
+        logger = logging.getLogger('dump data base')
+        logger.error(stdout)
+        logger.error(stderr)
+    _compress_file(tmp_filename, dest)
+
+
+def _generate_nimbus_dump():
+    return _generate_db_dump('default',NIMBUS_DUMP)
+
+def _generate_bacula_dump():
+    return _generate_db_dump('bacula',BACULA_DUMP)
+
 
 
 def find_archive_devices():
@@ -175,6 +205,8 @@ class BaseManager(object):
         self.process_pending_upload_requests()
 
     def generate_database_dump_upload_request(self):
+        _generate_nimbus_dump()
+        _generate_bacula_dump()
         if exists(NIMBUS_DUMP):
             self.create_upload_request(NIMBUS_DUMP)
         if exists(BACULA_DUMP):
@@ -392,10 +424,46 @@ class LocalManager(BaseManager):
         except (OSError, IOError), error:
             pass #FIX
 
-        if md5_for_large_file(destination) != md5_for_large_file(origin):
-            raise Md5CheckError("md5 mismatch")
+        if outils.md5_for_large_file(destination) != outils.md5_for_large_file(origin):
+            raise outils.Md5CheckError("md5 mismatch")
 
     def finish(self):
         self.device_manager.umount()
 
 
+
+def check_integrity():
+    s3 = Offsite.get_s3_interface()
+    offsite_keys = s3.list_files()
+
+    for key in offsite_keys:
+        filename = key.name
+        filename_on_disk = os.path.join(settings.NIMBUS_DEFAULT_ARCHIVE,
+                                        filename)
+        if os.path.exists(filename_on_disk):
+            print "Checking",filename,"...",
+            s3_md5 = key.metadata.get('nimbus-md5', None)
+            local_md5 = outils.md5_for_large_file(filename_on_disk)
+
+            is_ok = True
+            if s3_md5:
+                if s3_md5 != local_md5:
+                    is_ok = False
+            else:
+                if not '-' in key.etag:
+                    s3_md5 = key.etag.strip('"\'')
+                    if local_md5 != s3_md5:
+                        is_ok = False
+                else:
+                    size = os.path.getsize(filename_on_disk)
+                    if size != key.size:
+                        is_ok = False
+
+            if is_ok:
+                print "Ok"
+            else:
+                print "Error"
+                f = utils.filesizeformat
+                size = os.path.getsize(filename_on_disk)
+                print "Local file size: {0}. Remote file size: {1}".format(f(size), f(f.size))
+                print "Local file md5: {0}. Remote file md5: {1}".format(local_md5, s3_md5)

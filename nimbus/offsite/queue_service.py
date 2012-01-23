@@ -274,13 +274,14 @@ class PriorityQueueManager(Thread):
         self.current_request = request
 
         worker.start()
-        self.logger.info('PQM worker started ' + self.getName())
+        self.logger.info('PQM worker started ' + self.getName() + " pid=" + str(worker.pid))
         worker.join()
-        self.logger.info('PQM worker end with ' + str(worker.exitcode) + " " + self.getName() )
+        self.logger.info('PQM worker end with ' + str(worker.exitcode) + " " + self.getName()  + " pid=" + str(worker.pid))
 
-        if worker.exitcode == 2:
+        if worker.exitcode != 0:
             # -15[kill] == cancel
             self.logger.info('PQM re-add request ' + self.getName())
+            self.logger.info('PQM re-add request ' + str(request))
             self.add_request(request)
 
         self.current_worker = None
@@ -337,22 +338,22 @@ class Worker(Process):
 
         try:
             self.request = RemoteUploadRequest.objects.get(id=self.request_id)
-            self.logger.info('starting process request' + str(self.request))
+            self.logger.info(str(self.pid) + ' starting process request' + str(self.request))
             manager.upload_volume(self.request)
-            self.logger.info('request %s uploaded with sucess' % str(self.request))
+            self.logger.info(str(self.pid) + ' request %s uploaded with sucess' % str(self.request))
             set_request_as_done(self.request_id)
-            self.logger.info('request %s marked as sucessful' % str(self.request))
+            self.logger.info(str(self.pid) + ' request %s marked as sucessful' % str(self.request))
         except IOError, error:
-            self.logger.exception('request %d upload error' % self.request_id)
+            self.logger.exception(str(self.pid) + ' request %s upload error' % self.request_id)
             sys.exit(2)
         except RemoteUploadRequest.DoesNotExist, error:
-            self.logger.exception('request %d upload error. Request does not exist' % self.request_id)
+            self.logger.exception(str(self.pid) + ' request %s upload error. Request does not exist' % self.request_id)
             try:
                 set_request_as_done(self.request_id)
             except xmlrpclib.Fault:
                 pass
         except Exception, error:
-            self.logger.exception('request %d upload uncatched error' % self.request_id)
+            self.logger.exception(str(self.pid) + ' request %s upload uncatched error' % self.request_id)
             sys.exit(2)
 
 

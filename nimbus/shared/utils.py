@@ -6,6 +6,7 @@ import string
 import xmlrpclib
 from random import choice
 
+
 from django.conf import settings
 
 
@@ -20,7 +21,8 @@ class Referer(object):
     def local_address(self):
         if self.raw.startswith('http://'):
             return '/' + '/'.join(self.raw.replace('http://','').split('/')[1:])
-    
+
+
 
 def filesizeformat(bytes, unit=""):
     
