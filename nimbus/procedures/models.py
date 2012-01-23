@@ -216,6 +216,13 @@ class Procedure(BaseModel):
         bacula.cancel_procedure(self)
 
 
+    @classmethod
+    def cancel_jobid(cls, job_id):
+        bacula = Bacula()
+        bacula.cancel_jobid(job_id)
+
+
+
 def update_procedure_file(procedure):
     """Procedure update file"""
     name = procedure.bacula_name

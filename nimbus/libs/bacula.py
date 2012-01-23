@@ -110,6 +110,10 @@ class Bacula(object):
             self.cmd.cancel.jobid[job_id].run()
 
 
+    def cancel_job(self, job_id):
+        self.cmd.cancel.jobid[job_id].run()
+
+
     def purge_volumes(self, volumes, pool_name):
         purge = self.cmd.purge
         for volume in volumes:
