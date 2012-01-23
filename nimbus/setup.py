@@ -50,7 +50,7 @@ setup(
                         "build_exe" : "binary",
                         "silent" : True,
                         "optimize" :  "1",
-                        "create_shared_zip" :  True,
+                        "create_shared_zip" :  False,
                         "include_in_shared_zip" : False,
                         "append_script_to_exe" :  True,
                         "packages": packages,
