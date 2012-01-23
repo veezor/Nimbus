@@ -211,6 +211,11 @@ class Procedure(BaseModel):
         return files
 
 
+    def cancel(self):
+        bacula = Bacula()
+        bacula.cancel_procedure(self)
+
+
 def update_procedure_file(procedure):
     """Procedure update file"""
     name = procedure.bacula_name
