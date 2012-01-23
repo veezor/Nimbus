@@ -56,7 +56,8 @@ setup(
                         "packages": packages,
                         "excludes" : ["email","PIL","django", "xml", "pytz", "gunicorn", "distutils", "json"],
                         "zip_includes" : templates_dir,
-                        "include_files" : [ ("media", "media" )],
+                        "include_files" : [ ("media", "media" ),
+                                            ("adminmedia", "adminmedia")],
                       }
         }
 )

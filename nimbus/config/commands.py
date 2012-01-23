@@ -32,6 +32,7 @@ def create_database():
     if len(User.objects.all()) == 0:
         u = User(username = "admin",
                  is_superuser=True,
+                 is_staff=True,
                  email = "suporte@veezor.com")
         u.set_password("admin")
         u.save()
