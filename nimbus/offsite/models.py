@@ -254,8 +254,9 @@ class RemoteUploadRequest(UploadRequest):
 
 
     def increment_part(self, filename, part):
-        self.part += 1
-        self.save()
+        if ((part+1) * MIN_MULTIPART_SIZE) < self.volume.size:
+            self.part = part + 1
+            self.save()
 
 
     def reset_transferred_bytes(self):
