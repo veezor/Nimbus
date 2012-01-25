@@ -77,30 +77,29 @@ class NetworkInterface(BaseModel):
 def update_networks_file(interface):
     logger = logging.getLogger(__name__)
 
-    if interface.address != get_raw_network_interface_address():
-        try:
-            server = ServerProxy(settings.NIMBUS_MANAGER_URL)
-            logger.info('gerando configuracao de interfaces de rede')
-            server.generate_interfaces("eth0",
-                                       interface.address,
-                                       interface.netmask,
-                                       "static",
-                                       interface.broadcast,
-                                       interface.network,
-                                       interface.gateway)
-            logger.info('gerando configuracao de dns')
+    try:
+        server = ServerProxy(settings.NIMBUS_MANAGER_URL)
+        logger.info('gerando configuracao de interfaces de rede')
+        server.generate_interfaces("eth0",
+                                   interface.address,
+                                   interface.netmask,
+                                   "static",
+                                   interface.broadcast,
+                                   interface.network,
+                                   interface.gateway)
+        logger.info('gerando configuracao de dns')
 
-            if interface.dns2 is None:
-                interface.dns2 = interface.dns1
+        if interface.dns2 is None:
+            interface.dns2 = interface.dns1
 
-            server.generate_dns(interface.dns1,
-                                 interface.dns2)
-            logger.info('restarting network right now')
-            server.network_restart()
-            logger.info('restarting network exited')
-        except Exception, error:
-            logger = logging.getLogger(__name__)
-            logger.exception("Conexao com nimbus-manager falhou")
+        server.generate_dns(interface.dns1,
+                             interface.dns2)
+        logger.info('restarting network right now')
+        server.network_restart()
+        logger.info('restarting network exited')
+    except Exception, error:
+        logger = logging.getLogger(__name__)
+        logger.exception("Conexao com nimbus-manager falhou")
 
     logger.info('retornando do signal que troca o ip')
 
