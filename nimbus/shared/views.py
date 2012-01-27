@@ -15,7 +15,7 @@ from django.template import RequestContext
 
 
 def edit_singleton_model(request, templatename, redirect_to,
-                         formclass = None, model = None, extra_context = None):
+                         formclass = None, model = None, extra_context = None, reload_bacula=True):
 
 
     if not '/' in redirect_to:
@@ -37,7 +37,9 @@ def edit_singleton_model(request, templatename, redirect_to,
                            template_name = templatename,
                            post_save_redirect = redirect_to,
                            extra_context = extra_context )
-    call_reload_baculadir()
+
+    if request.method == "POST" and reload_bacula:
+        call_reload_baculadir()
     return r
 
 def render_to_response(request, template, dictionary):
