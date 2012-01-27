@@ -155,6 +155,7 @@ class CallbackAggregator(object):
 
     def __init__(self, *callbacks):
         self.callbacks = list(callbacks)
+        self.logger = logging.getLogger(__name__)
 
     def add_callback(self, callback):
         self.callbacks.append(callback)
@@ -164,7 +165,11 @@ class CallbackAggregator(object):
 
     def __call__(self, *args, **kwargs):
         for callbacks in self.callbacks:
-            callbacks(*args, **kwargs)
+            try:
+                callbacks(*args, **kwargs)
+            except Exception, e:
+                self.logger.exception("Exception in callback")
+
 
 
 
