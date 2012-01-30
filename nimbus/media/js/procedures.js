@@ -3,16 +3,16 @@ $(document).ready(function(){
         var s = confirm("Tem certeza que deseja cancelar a execução deste procedimento?");
         if (s == true) {
             var job_id = $(this)[0].id;
-            window.location="/procedures/" + job_id + "/cancel_job";
-            // $.ajax({
-            //     type: "POST",
-            //     async: false,
-            //     url: "/procedures/" + job_id + "/cancel_job",
-            //     data: null,
-            //     success: function() {
-            //         window.location="/procedures/list";
-            //     }
-            // });
+            // window.location="/procedures/" + job_id + "/cancel_job";
+            $.ajax({
+                type: "POST",
+                async: true,
+                url: "/procedures/" + job_id + "/cancel_job/",
+                data: {'job_id': job_id},
+                success: function() {
+                    window.location="/procedures/list";
+                }
+            });
         }
     });
     // Accordeon for procedure history

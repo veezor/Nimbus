@@ -14,7 +14,7 @@ Tipos possíveis: ok, warn, error
 		{% endif %}
 		{% if job.human_general_status == "executando" or job.human_general_status == "esperando" %}
 		<!-- <span class="cancel_job">Cancelar</span> -->
-		<button type="submit" class="cancel_job css3button negative" value="Desativar" id="{{job.jobid}}">Cancelar execução {{job.jobid}}</button>
+		<button type="submit" class="cancel_job css3button negative" value="Desativar" id="{{job.jobid}}">Cancelar execução</button>
 		{% endif %}
         <div class="clear"></div>
 	</h3>

@@ -192,9 +192,9 @@ def history(request, object_id=False):
 
 @login_required
 def cancel_job(request, job_id):
-    # if request.method == "POST":
-    Procedure.cancel_jobid(job_id)
-    messages.success(request, "Procedimento cancelado com sucesso")
+    if request.method == "POST":
+        Procedure.cancel_jobid(job_id)
+        messages.success(request, "Procedimento cancelado com sucesso")
     return redirect('/procedures/list')
 
 

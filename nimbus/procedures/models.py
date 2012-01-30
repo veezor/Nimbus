@@ -219,7 +219,7 @@ class Procedure(BaseModel):
     @classmethod
     def cancel_jobid(cls, job_id):
         bacula = Bacula()
-        bacula.cancel_jobid(job_id)
+        bacula.cancel_job(job_id)
 
 
 
