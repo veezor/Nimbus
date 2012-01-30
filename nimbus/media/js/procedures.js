@@ -1,4 +1,20 @@
 $(document).ready(function(){
+    $(".cancel_job").click(function(){
+        var s = confirm("Tem certeza que deseja cancelar a execução deste procedimento?");
+        if (s == true) {
+            var job_id = $(this)[0].id;
+            window.location="/procedures/" + job_id + "/cancel";
+            // $.ajax({
+            //     type: "POST",
+            //  async: false,
+            //     url: "/procedures/" + job_id + "/cancel",
+            //     data: null,
+            //     success: function() {
+            //      window.location="/procedures/list";
+            //     }
+            // });
+        }
+    });
     // Accordeon for procedure history
 	$("#accordion").accordion({ collapsible: true, active: false });
     $('.job_line').mouseover(function(){

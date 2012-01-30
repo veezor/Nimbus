@@ -44,17 +44,8 @@
     
 }
 .cancel_job {
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
     padding: 2px 4px;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: black 0.1em 0.1em 0.2em;
     display: block;
     float: right;
-    /* width: 80px; */
     margin-right: 8px;
-    background: #C91A1A
 }
