@@ -36,7 +36,6 @@ class RateLimiter(object):
     def __init__(self, rate_limit, update_rate_limit_time=10):
         """rate limit in kBytes / second"""
         self.reset(rate_limit, update_rate_limit_time)
-        self.update_rate_limit_time = update_rate_limit_time
         self._last_update_rate_limit = None
         self.rate = None
         self.logger = logging.getLogger("rate-limiter")
@@ -47,6 +46,7 @@ class RateLimiter(object):
         self.start = time()
         self._transferred_size = 0
         self._first_write = True # detect resume operation
+        self.update_rate_limit_time = update_rate_limit_time
 
 
     def __call__(self, transferred_size, total_size):
@@ -67,9 +67,11 @@ class RateLimiter(object):
 
         elapsed_time = time() - self.start
 
+
+        rate = t_size / elapsed_time
+        self.rate = rate
+
         if elapsed_time and self.rate_limit > 0:
-            rate = t_size / elapsed_time
-            self.rate = rate
             expected_time = t_size / self.rate_limit
             sleep_time = expected_time - elapsed_time
 
@@ -153,6 +155,7 @@ class CallbackAggregator(object):
 
     def __init__(self, *callbacks):
         self.callbacks = list(callbacks)
+        self.logger = logging.getLogger(__name__)
 
     def add_callback(self, callback):
         self.callbacks.append(callback)
@@ -162,7 +165,11 @@ class CallbackAggregator(object):
 
     def __call__(self, *args, **kwargs):
         for callbacks in self.callbacks:
-            callbacks(*args, **kwargs)
+            try:
+                callbacks(*args, **kwargs)
+            except Exception, e:
+                self.logger.exception("Exception in callback")
+
 
 
 

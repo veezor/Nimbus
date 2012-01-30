@@ -125,7 +125,7 @@ class RecoveryManager(object):
     def download_volumes(self):
         offsite_models.DownloadRequest.objects.all().delete() # clean up
         reporter = RecoveryProgressReporter(self.offsite_manager)
-        self.offsite_manager.s3.callbacks.add_callback(reporter.callback)
+
 
         for procedure, volumes in reporter:
             self.offsite_manager.download_volumes(volumes)
@@ -169,6 +169,13 @@ class RecoveryProgressReporter(object):
 
         s3_volumes = self.remote_manager.get_remote_volumes()
         self.s3_volumes_cache = {}
+
+        s3 = remote_manager.s3
+        if s3.rate_limit is None:
+            s3.callbacks.add_callback(s3.rate_limiter)
+        s3.callbacks.add_callback(self.callback)
+
+
         for key in s3_volumes:
             self.s3_volumes_cache[key.name] = key
 
