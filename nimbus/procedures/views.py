@@ -191,10 +191,9 @@ def history(request, object_id=False):
 
 
 @login_required
-def cancel(request, procedure_id):
+def cancel_job(request, job_id):
     if request.method == "POST":
-        procedure = Procedure.objects.get(id=procedure_id)
-        procedure.cancel()
+        Procedure.cancel_jobid(job_id)
         messages.success(request, "Procedimento cancelado com sucesso")
     return redirect('/procedures/list')
 
