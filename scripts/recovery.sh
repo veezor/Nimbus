@@ -35,7 +35,7 @@ config_network () {
         fi
     done
     ## CONFIGURA A REDE AQUI
-cat << EOF > /etc/network/interfaces2
+cat << EOF > /etc/network/interfaces
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 
@@ -95,5 +95,14 @@ dialog --title 'Disaster Recovery' --yesno 'Iremos agora restaurar todos os dado
 if [ $? = 1 ]; then
 	exit 0
 fi
-/var/www/nimbus --recovery-nimbus &> output &
-dialog --title 'Restaurando sistema' --tailbox output 1000 1000
+
+while true; do
+    su - nimbus -c '/var/www/nimbus --recovery-nimbus'
+    if [ $? = 0 ]; then
+        dialog --title 'Configuracao do backup Offsite' --msgbox "A configuração foi finalizada.\n\nO servidor será reiniciado agora." 0 0
+        reboot
+        exit 0
+    else
+        dialog --title 'Configuracao do backup Offsite' --msgbox "Houveram problemas na restauração. Será feita uma nova tentativa de recuperação agora" 0 0    
+    fi
+done
