@@ -2,7 +2,7 @@
 
 from urllib2 import URLError
 from os.path import join
-from datetime import datetime
+from datetime import datetime, timedelta
 import simplejson
 
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -165,6 +165,49 @@ def list_uploadrequest(request):
                               {"object_list": uploads_requests,
                                "list_type": "Uploads",
                                "title": u"Uploads ativos"})
+
+@login_required
+def upload_queue(request):
+    uploads = [{"name": "Upload X",
+                "id": 0,
+                "total": 1000,
+                "done": 430,
+                "speed": 72.0},
+               {"name": "Upload Y",
+                "id": 1,
+                "total": 300,
+                "done": 1,
+                "speed": 92.0},
+               {"name": "Upload Z",
+                "id": 2,
+                "total": 1500,
+                "done": 50,
+                "speed": 0.0},
+                {"name": "Upload U",
+                 "id": 3,
+                 "total": 1500,
+                 "done": 0,
+                 "speed": 0.0}]
+    upload_total = 0.0 # MB
+    upload_done = 0.0 # MB
+    current_speed = 0.0 # kB/s
+    for u in uploads:
+        upload_total += u["total"]
+        upload_done += u["done"]
+        current_speed += u["speed"]
+    eta = (upload_total - upload_done) / (current_speed / 1024.0) # seconds
+    eta_str = str(timedelta(seconds=int(eta)))
+    end_time = datetime.now() + timedelta(seconds=int(eta))
+    end_time_str = end_time.strftime("%H:%M:%S de %d/%m/%Y")
+    return render_to_response(request, 
+                              "upload_queue.html", 
+                              {"title": u"Uploads ativos",
+                               "uploads": uploads,
+                               "upload_total": upload_total,
+                               "upload_done": upload_done,
+                               "current_speed": current_speed,
+                               "eta_str": eta_str,
+                               "end_time_str": end_time_str})
 
 @login_required
 def list_procedures(request):

@@ -13,6 +13,7 @@ urlpatterns = patterns('nimbus.offsite.views',
     (r'^self_auth', 'self_auth'), # WORKAROUND enquanto a central não informa o host do servidor de storage
     (r'^list_procedures', 'list_procedures'),
     (r'^list_offsite/$', 'list_offsite'),
+    (r'^upload_queue/$', 'upload_queue'),
 )
 
 

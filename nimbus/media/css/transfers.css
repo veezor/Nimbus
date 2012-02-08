@@ -1,0 +1,82 @@
+#overview_box {
+    width: 100%;
+    text-align: center;
+}
+
+#fullbar {
+    margin-top: 25px;
+    position: relative;
+    width: 910px;
+    height: 50px;
+    border: 1px solid;
+    background: #484D50;
+}
+#upload_info_box {
+    position: relative;
+/*    margin-top: 10px;*/
+    width: 888px;
+    height: 175px;
+    border: 2px solid;
+    border-top: none;
+    padding: 10px;
+}
+#marker_box {
+    position: relative;
+    width: 912px;
+    height: 10px;
+    border-bottom: 2px solid;
+}
+#marker {
+    position: absolute;
+    left: 100px;
+    padding-top: 1px;
+    z-index: 9999;
+    width: 12px;
+    height: 11px;
+    background: url(/media/icons/box_tip.png);
+}
+.part {
+    position: relative;
+    float: left;
+    height: 100%;
+    color: white;
+    cursor: pointer;
+/*    padding-left: 10px;*/
+/*    padding-top: 5px;*/
+}
+.part span{
+    padding: 10px;
+}
+.impar {
+    background: #8D352F;
+}
+.par {
+    background: #4B1612;
+}
+.icon {
+    position: absolute;
+    right: 0px;
+    top: -10px;
+    width: 25px;
+    height: 25px;
+}
+.upload_icon_impar { background: url(/media/icons/uploading_impar.png);}
+.upload_icon_par { background: url(/media/icons/uploading_par.png);}
+.stalled_icon_impar { background: url(/media/icons/stalled_impar.png);}
+.stalled_icon_par { background: url(/media/icons/stalled_par.png);}
+
+.upload_info {
+    display: none;
+}
+.progress_bar {
+    margin-left: -10px;
+    position: absolute;
+    bottom: 0px;
+    height: 20px;
+    width: 100%;
+    background: gray;
+}
+.done_bar {
+    height: 100%;
+    background: green;
+}
