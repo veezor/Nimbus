@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import netifaces
-from netifaces import AF_INET, AF_LINK, AF_INET6
+from netifaces import AF_INET, AF_LINK
 import subprocess
 import socket
 
@@ -29,7 +29,7 @@ class Interface(object):
             inet =  data[AF_INET][0]
             link = data[AF_LINK][0]
             self.addr = inet['addr']
-            self.broadcast = inet['broadcast']
+            self.broadcast = inet.get('broadcast')
             self.netmask = inet['netmask']
             self.mac = link['addr']
         except KeyError:
