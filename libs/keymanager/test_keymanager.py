@@ -1,99 +1,83 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import mock
+import tempfile
 import unittest
-
-import os
-import pdb
-import sys
-import shutil
-
-
-
 import keymanager
+
 
 class KeyManagerTest(unittest.TestCase):
 
     def setUp(self):
-        unittest.TestCase.setUp(self)
-        self.password = "1234"
-        self.drive = "/tmp/strongbox.crypto"
-        self.mountpoint = "/tmp/strongbox"
-        self.backupfile = "/tmp/strongbox.crypto.backup"
-        self.new_password = "4567"
-        self.keymanager = keymanager.KeyManager( password = self.password,
-                                                 drive = self.drive,
-                                                 mountpoint = self.mountpoint )
-        
+        self.patch_file = mock.patch('__builtin__.file')
+        self.file_mock = self.patch_file.start()
+        self.file_mock.return_value = self.file_mock
+        self.file_mock.__enter__.return_value = self.file_mock
+        self.patch_popen = mock.patch('subprocess.Popen')
+        self.popen_mock = self.patch_popen.start()
 
 
-    def test_01_create(self):
-
-        km = keymanager.KeyManager( password = self.password,
-                                                 drive = self.drive,
-                                                 mountpoint = self.mountpoint )
-        self.assertEqual( self.password, km.password )
-        self.assertEqual( self.drive, km.drive )
-        self.assertEqual( self.mountpoint, km.mountpoint )
-        self.assertFalse( km.mounted )
+    def tearDown(self):
+        self.patch_file.stop()
+        self.patch_popen.stop()
 
 
-    def test_02_set_password(self):
-        password = "4567"
-        self.keymanager.set_password(password)
-        self.assertEqual( self.keymanager.password, password )
-        self.keymanager.set_password(self.password)
+    def test_generate_pem(self):
+        key = "a"
+        certificate = "b"
+        self.assertEquals(keymanager.generate_pem(key, certificate), key+certificate)
 
-    def test_04_mount_drive(self):
-        r = self.keymanager.mount_drive()
-        self.assertTrue( r )
-        self.assertTrue( self.keymanager.mounted )
 
-    def test_03_create_drive(self):
-        try:
-            shutil.rmtree(self.keymanager.drive)
-        except OSError, error:
-            print error
-            pass
-        r = self.keymanager.create_drive()
-        self.assertTrue( r )
+    def test_generate_key(self):
+        filename = tempfile.mktemp()
+        expected_key = "key content"
 
-    def test_05_umount_drive(self):
-        r = self.keymanager.umount_drive()
-        self.assertTrue( r )
-        self.assertFalse( self.keymanager.mounted )
+        self.file_mock.read.return_value = expected_key
 
-    def test_07_force_umount_drive(self):
-        r = self.keymanager.force_umount_drive()
-        self.assertTrue( r )
-        self.assertFalse( self.keymanager.mounted )
+        key = keymanager.generate_key(filename)
+        self.assertEquals(key, expected_key)
 
-    def test_06_generate_and_save_keys(self):
-        r = self.keymanager.generate_and_save_keys_for_client('test')
-        self.assertTrue( r )
 
-    def test_08_has_drive(self):
-        try:
-            r = self.keymanager.has_drive()
-            self.assertTrue( r )
-        except IOError, e:
-            pass
 
-    def test_09_make_backup(self):
-        r = self.keymanager.make_drive_backup(self.backupfile)
-        self.assertTrue(r)
+    def test_generate_certificate(self):
+        filename = tempfile.mktemp()
+        key_filename = tempfile.mktemp()
+        expected_certificate = "certificate"
 
-    def test_10_restore_backup(self):
-        r = self.keymanager.restore_drive_backup(self.backupfile)
-        self.assertTrue(r)
+        self.file_mock.read.return_value = expected_certificate
 
-    def test_11_change_drive_password(self):
-        r = self.keymanager.change_drive_password( self.new_password )
-        self.password = self.new_password
-        self.test_04_mount_drive()
-        self.test_07_force_umount_drive()
-        self.assertTrue(r)
+        certificate = keymanager.generate_certificate(key_filename, filename, {})
+        self.assertEquals( certificate, expected_certificate )
 
+
+
+
+    def test_generate_all_keys(self):
+        prefix = tempfile.mktemp()
+
+        self.file_mock.read.return_value = "value"
+
+        key, cert, pem = keymanager.generate_all_keys({}, prefix)
+
+        self.assertEquals( cert, "value" )
+        self.assertEquals( key, "value" )
+        self.assertEquals( pem, "value"*2 )
+
+
+
+    def test_generate_all_keys_prefix(self):
+        prefix = tempfile.mktemp()
+
+        self.file_mock.read.return_value = "value"
+
+        key, cert, pem = keymanager.generate_all_keys({}, prefix)
+
+        first_call = self.file_mock.call_args_list[0]
+        second_call = self.file_mock.call_args_list[1]
+
+        self.assertTrue( prefix in first_call[0][0] )
+        self.assertTrue( prefix in second_call[0][0] )
 
 
 
