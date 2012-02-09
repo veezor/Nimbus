@@ -81,13 +81,18 @@ def resolve_addr(addr):
 
 
 def traceroute(host):
-    cmd = subprocess.Popen( [ "/usr/bin/traceroute", 
-                             str(host) ], stdout = subprocess.PIPE)
-    cmd.wait()
-    return cmd.returncode, cmd.stdout.read()
+    code, stdout = ping(host, packets=1)
+    if code == 0:
+        cmd = subprocess.Popen( [ "/usr/bin/traceroute",
+                                 str(host) ], stdout = subprocess.PIPE)
+        cmd.wait()
+        return cmd.returncode, cmd.stdout.read()
+    else:
+        return 1, "not traceable"
+
 
 def ping(host, packets=10):
-    cmd = subprocess.Popen( [ "/bin/ping", 
+    cmd = subprocess.Popen( [ "/bin/ping",
                              "-c",str(packets),
                              str(host) ], stdout = subprocess.PIPE)
     cmd.wait()
