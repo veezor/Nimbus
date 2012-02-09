@@ -49,7 +49,7 @@ class Interface(object):
 def get_interface(name):
     try:
         iface = Interface(name)
-    except KeyError:
+    except (KeyError, ValueError):
         raise InterfaceNotFound()
     return iface
 
