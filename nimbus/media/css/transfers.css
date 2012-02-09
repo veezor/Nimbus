@@ -15,7 +15,7 @@
     position: relative;
 /*    margin-top: 10px;*/
     width: 888px;
-    height: 175px;
+    height: 205px;
     border: 2px solid;
     border-top: none;
     padding: 10px;
@@ -48,22 +48,21 @@
     padding: 10px;
 }
 .impar {
-    background: #8D352F;
+    background: #8D352F url(/media/images/upload_gradient_impar.png);
 }
 .par {
-    background: #4B1612;
+    background: #4B1612 url(/media/images/upload_gradient_par.png);
 }
 .icon {
+    z-index: 999;
     position: absolute;
-    right: 0px;
+    right: -10px;
     top: -10px;
-    width: 25px;
-    height: 25px;
+    width: 32px;
+    height: 32px;
 }
-.upload_icon_impar { background: url(/media/icons/uploading_impar.png);}
-.upload_icon_par { background: url(/media/icons/uploading_par.png);}
-.stalled_icon_impar { background: url(/media/icons/stalled_impar.png);}
-.stalled_icon_par { background: url(/media/icons/stalled_par.png);}
+.upload_icon { background: url(/media/icons/uploading.png);}
+.stalled_icon { background: url(/media/icons/upload_stall.png);}
 
 .upload_info {
     display: none;
@@ -78,5 +77,8 @@
 }
 .done_bar {
     height: 100%;
-    background: green;
+    background: #65A700;
+}
+.selected {
+    background: url(/media/images/upload_gradient_par_selected.png);
 }

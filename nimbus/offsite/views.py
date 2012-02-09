@@ -166,48 +166,117 @@ def list_uploadrequest(request):
                                "list_type": "Uploads",
                                "title": u"Uploads ativos"})
 
-@login_required
-def upload_queue(request):
+def upload_queue_status():
     uploads = [{"name": "Upload X",
                 "id": 0,
-                "total": 1000,
-                "done": 430,
-                "speed": 72.0},
+                "total": 150,
+                "done": 43,
+                "speed": 130.0,
+                "added": "03:15:09 de 08/02/2012",
+                "current_file": "procedure_01923019872301873"},
                {"name": "Upload Y",
                 "id": 1,
-                "total": 300,
-                "done": 1,
-                "speed": 92.0},
+                "total": 150,
+                "done": 12,
+                "speed": 0.0,
+                "added": "04:15:09 de 08/02/2012",
+                "current_file": "procedure_8273698264397627983"},
                {"name": "Upload Z",
                 "id": 2,
-                "total": 1500,
-                "done": 50,
-                "speed": 0.0},
+                "total": 300,
+                "done": 10,
+                "speed": 0.0,
+                "added": "05:15:09 de 08/02/2012",
+                "current_file": "procedure_287369827347263784234"},
                 {"name": "Upload U",
                  "id": 3,
-                 "total": 1500,
+                 "total": 150,
                  "done": 0,
-                 "speed": 0.0}]
+                 "speed": 0.0,
+                 "added": "06:15:09 de 08/02/2012",
+                 "current_file": "procedure_2837649782970823"},
+                 {"name": "Upload X",
+                 "id": 4,
+                 "total": 500,
+                 "done": 0,
+                 "speed": 130.0,
+                 "added": "03:15:09 de 08/02/2012",
+                 "current_file": "procedure_01923019872301873"},
+                {"name": "Upload Y",
+                 "id": 5,
+                 "total": 250,
+                 "done": 0,
+                 "speed": 0.0,
+                 "added": "04:15:09 de 08/02/2012",
+                 "current_file": "procedure_8273698264397627983"},
+                {"name": "Upload Z",
+                 "id": 6,
+                 "total": 330,
+                 "done": 0,
+                 "speed": 0.0,
+                 "added": "05:15:09 de 08/02/2012",
+                 "current_file": "procedure_287369827347263784234"},
+                 {"name": "Upload U",
+                  "id": 7,
+                  "total": 150,
+                  "done": 0,
+                  "speed": 0.0,
+                  "added": "06:15:09 de 08/02/2012",
+                  "current_file": "procedure_2837649782970823"}]
     upload_total = 0.0 # MB
     upload_done = 0.0 # MB
     current_speed = 0.0 # kB/s
     for u in uploads:
+        current_speed += u["speed"]
         upload_total += u["total"]
         upload_done += u["done"]
-        current_speed += u["speed"]
-    eta = (upload_total - upload_done) / (current_speed / 1024.0) # seconds
-    eta_str = str(timedelta(seconds=int(eta)))
-    end_time = datetime.now() + timedelta(seconds=int(eta))
-    end_time_str = end_time.strftime("%H:%M:%S de %d/%m/%Y")
+    next_start = 0
+    for u in uploads:
+        u['portion'] = 100.0 * (u['total'] - u['done']) / (upload_total - upload_done)
+        if next_start == 0:
+            u["estimate_start"] = u["added"]
+        else:
+            delta_from_now = datetime.now() + timedelta(seconds=int(next_start))
+            u["estimate_start"] = delta_from_now.strftime("%H:%M:%S de %d/%m/%Y")
+        u["done_percent"] = (u["done"] / u["total"]) * 100.0
+        if u["speed"]:
+            u["eta"] = int((u["total"] - u["done"]) / (u["speed"] / 1024))
+        elif current_speed:
+            u["eta"] = int((u["total"] - u["done"]) / (current_speed / 1024))
+        else:
+            u["eta"] = 0
+        next_start += u["eta"]
+        if u["eta"]:
+            u["eta_str"] = str(timedelta(seconds=int(u["eta"])))
+            u["end_time"] = datetime.now() + timedelta(seconds=int(next_start))
+            u["end_time_str"] = u["end_time"].strftime("%H:%M:%S de %d/%m/%Y")
+        else:
+            u["eta_str"] = "Parado"
+            u["end_time"] = 0
+            u["end_time_str"] = "Parado"
+    if current_speed:
+        eta = (upload_total - upload_done) / (current_speed / 1024.0) # seconds
+        eta_str = str(timedelta(seconds=int(eta)))
+        end_time = datetime.now() + timedelta(seconds=int(eta))
+        end_time_str = end_time.strftime("%H:%M:%S de %d/%m/%Y")
+    else:
+        eta = 0
+        eta_str = "Parado"
+        end_time = 0
+        end_time_str = "Parado"
+    return {"uploads": uploads,
+            "upload_total": upload_total,
+            "upload_done": upload_done,
+            "current_speed": current_speed,
+            "eta_str": eta_str,
+            "end_time_str": end_time_str}
+
+@login_required
+def upload_queue(request):
+    data = upload_queue_status()
+    data["title"] = u"Uploads ativos"
     return render_to_response(request, 
-                              "upload_queue.html", 
-                              {"title": u"Uploads ativos",
-                               "uploads": uploads,
-                               "upload_total": upload_total,
-                               "upload_done": upload_done,
-                               "current_speed": current_speed,
-                               "eta_str": eta_str,
-                               "end_time_str": end_time_str})
+                              "upload_queue.html", data)
 
 @login_required
 def list_procedures(request):
