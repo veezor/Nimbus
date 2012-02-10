@@ -72,7 +72,6 @@ class BackendsTest(unittest.TestCase):
         self.assertNotEquals(current_backend, backend)
 
 
-
     def test_install_backend_method(self):
 
         current_backend = m_backends.get_active_backend()
@@ -106,6 +105,52 @@ class BackendsTest(unittest.TestCase):
         self.assertEquals(current_backend, backend)
 
 
+
+
+class SubprocessBackendTestCase(unittest.TestCase):
+
+    def test_config_file_not_found(self):
+        backend = m_backends.SubprocessConsole()
+        self.assertRaises(m_backends.BConsoleInitError, backend.execute_command, "cmd")
+
+
+    def test_bconsole_executable(self):
+        with mock.patch('backends.BCONSOLE_EXECUTABLE', "notisarealexecutable") as bconsole_mock: # ;)
+            backend = m_backends.SubprocessConsole()
+            self.assertRaises(m_backends.BConsoleInitError, backend.execute_command, "cmd")
+
+
+
+
+
+class SubprocessTestCase(unittest.TestCase): # mock subprocess
+
+    def setUp(self):
+        self.patch = mock.patch('backends.Popen')
+        self.mock = self.patch.start()
+        self.mock.return_value.communicate.return_value = ("stdout", "stderr")
+        self.backend = m_backends.SubprocessConsole()
+
+    def tearDown(self):
+        self.mock.stop()
+
+    def test_execute_error(self):
+        self.mock.return_value.returncode = 2 # != 0
+        self.assertRaises(m_backends.BConsoleInitError,self.backend.execute_command, "cmd")
+
+    def test_output(self):
+        self.mock.return_value.returncode = 0
+        result = self.backend.execute_command("hello")
+        self.assertEquals(result, "stdout")
+
+    def test_input(self):
+        cmd = "helo"
+        self.mock.return_value.returncode = 0
+        self.backend.execute_command(cmd)
+
+        args = self.mock.return_value.communicate.call_args[0]
+        called_cmd = args[0]
+        self.assertEquals( cmd, called_cmd )
 
 
 
