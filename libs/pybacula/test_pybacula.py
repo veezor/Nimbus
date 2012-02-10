@@ -2,8 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 import mock
+import bacula
 import tempfile
 import unittest
+import operator
 import backends as m_backends
 import configcheck
 
@@ -154,6 +156,52 @@ class SubprocessTestCase(unittest.TestCase): # mock subprocess
 
 
 
+class CommandLineTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.patch = mock.patch('bacula.get_active_backend')
+        self.mock = self.patch.start()
+        self.backend = self.mock.return_value.return_value # look bacula.py:27
+
+    def test_connection_error(self):
+        self.backend.connect.side_effect = Exception("boom!")
+        self.assertRaises(m_backends.BConsoleInitError, bacula.BaculaCommandLine)
+        self.assertFalse( bacula.BaculaCommandLine.connected )
+
+    def test_backend_initerror(self):
+        self.mock.return_value.side_effect = m_backends.BConsoleInitError("bomm!")
+        self.assertRaises(m_backends.BConsoleInitError, bacula.BaculaCommandLine)
+
+    def test_connection(self):
+        cmd_line = bacula.BaculaCommandLine()
+        self.assertTrue( bacula.BaculaCommandLine.connected )
+        bacula.BaculaCommandLine.connected = False
+
+    def test_invalid_command(self):
+        cmd_line = bacula.BaculaCommandLine()
+        funct = operator.attrgetter('invalidcommand')
+        self.assertRaises(bacula.CommandNotFound, funct, cmd_line)
+
+    def test_dotted_command(self):
+        cmd_line = bacula.BaculaCommandLine()
+        cmd = cmd_line._bvfs_update
+        self.assertEqual('.bvfs_update', cmd.get_content())
+
+    def test_valid_command(self):
+        cmd_line = bacula.BaculaCommandLine()
+        try:
+            cmd_line.reload
+        except bacula.CommandNotFound:
+            raise self.failureException, "valid command not found"
+
+    def test_raw(self):
+        cmd_line = bacula.BaculaCommandLine()
+        value = cmd_line.raw('abcdef')
+        args, kwargs = cmd_line.backend.execute_command.call_args
+        self.assertEqual( 'abcdef', args[0] )
+
+    def tearDown(self):
+        self.patch.stop()
 
 
 
