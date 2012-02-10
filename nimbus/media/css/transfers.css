@@ -19,6 +19,7 @@
     border: 2px solid;
     border-top: none;
     padding: 10px;
+/*    background: #666;*/
 }
 #marker_box {
     position: relative;
@@ -28,7 +29,7 @@
 }
 #marker {
     position: absolute;
-    left: 100px;
+    left: 0px;
     padding-top: 1px;
     z-index: 9999;
     width: 12px;
@@ -48,10 +49,12 @@
     padding: 10px;
 }
 .impar {
-    background: #8D352F url(/media/images/upload_gradient_impar.png);
+/*    background: #8D352F url(/media/images/upload_gradient.png);*/
+    background: #8D352F;
 }
 .par {
-    background: #4B1612 url(/media/images/upload_gradient_par.png);
+/*    background: #4B1612 url(/media/images/upload_gradient.png);*/
+    background: #4B1612;
 }
 .icon {
     z-index: 999;
@@ -77,8 +80,8 @@
 }
 .done_bar {
     height: 100%;
-    background: #65A700;
+    background: #65A700 url(/media/images/upload_gradient_selected.png);
 }
 .selected {
-    background: url(/media/images/upload_gradient_par_selected.png);
+    background: #65A700 url(/media/images/upload_gradient_selected.png);
 }

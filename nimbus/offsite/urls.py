@@ -14,6 +14,7 @@ urlpatterns = patterns('nimbus.offsite.views',
     (r'^list_procedures', 'list_procedures'),
     (r'^list_offsite/$', 'list_offsite'),
     (r'^upload_queue/$', 'upload_queue'),
+    (r'^upload_queue_data/$', 'upload_queue_data'),
 )
 
 
