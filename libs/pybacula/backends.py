@@ -74,23 +74,24 @@ class SubprocessConsole(IConsole):
 
     def execute_command(self, command):
         executable = os.path.join(self.bconsole_path, self.executable)
-        self.connection = Popen( [executable, "-c", self.configfile], 
-                                 bufsize=0, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-
 
         try:
+            self.connection = Popen( [executable, "-c", self.configfile],
+                                     bufsize=0, stdin=PIPE, stdout=PIPE, stderr=PIPE)
             output, error = self.connection.communicate(command)
             self.connection.wait()
+            returncode = self.connection.returncode
         except OSError, error:
             output = ""
             error = ""
+            returncode = 127 #unix return for command not found
 
         logging.info("Bacula command is %s", command)
         logging.info("Stdout is %s", output)
         logging.info("Stderr is %s", error)
-        if self.connection.returncode != 0:
+        if returncode != 0:
             logging.error("Error on bconsole connection")
-            logging.error("Returncode is %s" % self.connection.returncode)
+            logging.error("Returncode is %s" % returncode)
             logging.error(output)
             logging.error(error)
             raise BConsoleInitError("Communication failed")
