@@ -17,6 +17,7 @@ from nimbus.offsite.models import (LocalUploadRequest,
                                    DownloadRequest)
 from nimbus.procedures.models import Procedure
 from nimbus.offsite.models import Offsite
+from nimbus.offsite.queue_service import get_queue_progress_data
 from nimbus.offsite.graphic import Graphics
 from nimbus.shared import utils
 # from nimbus.graphics.models import GraphicsManager, ResourceItemNotFound
@@ -289,7 +290,7 @@ def upload_queue_status():
 
 @login_required
 def upload_queue(request):
-    data = upload_queue_status()
+    data = get_queue_progress_data()
     data["title"] = u"Uploads ativos"
     return render_to_response(request, 
                               "upload_queue.html", data)
