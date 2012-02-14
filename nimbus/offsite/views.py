@@ -233,7 +233,8 @@ def upload_queue_status():
             {"name": "Procedimento %d" % i,
              "id": i,
              "total": float(t),
-             "done": float(randint(0, t)),
+             # "done": float(randint(0, t)),
+             "done": 0.0,
              "speed": float(randint(0, 2)),
              "added": "06:15:09 de 08/02/2012",
              "current_file": "procedure_%d" % randint(10000000000,100000000000)}

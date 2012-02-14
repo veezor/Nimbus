@@ -71,7 +71,6 @@ function get_data() {
                 u = j['uploads'][i];
                 var item_exists = false;
                 for (var item = 0; item < blocks_list.length; item++) {
-                    // console.log(" b " + blocks_list[item]);
                     if ("queue_item_" + u['id'] == blocks_list[item]) {
                         item_exists = true;
                     }
@@ -149,10 +148,6 @@ function get_data() {
 
 $(document).ready(function(){
     set_part_focus($(".part"));
-    // $(".part").click(function() {
-    //     console.log("clicked")
-    //     set_part_focus($(this));
-    // })
 
     $('#submit_button').click(function(){
         get_data();        

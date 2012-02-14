@@ -17,10 +17,6 @@
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
 		<h2>{{ title }}</h2>
-		<div class="right">
-            A lista será atualizada em <span class="tempo_restante">10</span> segundos. <small>(<a href="#" rel="{{script_name}}" class="atualizar_agora">atualizar agora</a>)</small>
-			
-		</div>
 	</div>
 
     <div class="block_content">
@@ -34,7 +30,7 @@
 		</table>
 		<div id="fullbar">
 			{% for upload in uploads %}
-			<div id="queue_item_{{upload.id}}" onClick="set_part_focus($(this));" class="part {% cycle 'par' 'impar' %}" style="width: {{upload.portion}}%"><div class="icon info_queue_item_{{upload.id}} {% if upload.done > 0 %} {% if upload.speed > 0%}upload_icon{% else %}stalled_icon{% endif %}">{% endif %}</div></div>
+			<div id="queue_item_{{upload.id}}" onClick="set_part_focus($(this));" class="part {% cycle 'par' 'impar' %}" style="width: {{upload.portion}}%"><div class="icon info_queue_item_{{upload.id}} {% if upload.done > 0 %} {% if upload.speed > 0%}upload_icon{% else %}stalled_icon{% endif %}{% endif %}"></div></div>
 			{% endfor %}
 		</div>
 		<div id="marker_box">
@@ -46,7 +42,7 @@
 				<table>
 					<tbody>
 						<tr><td>Procedimento:</td><td><span class="upload_name info_queue_item_{{upload.id}}">{{upload.name}}</span></td></tr>
-						<tr><td>Concluído:</td><td><span class="upload_done info_queue_item_{{upload.id}}">{{upload.done}}</span> de <span class="upload_total info_queue_item_{{upload.id}}">{{upload.total}}</span> MB (<span class="done_percent info_queue_item_{{upload.id}}">{% widthratio upload.done upload.total 100 %}</span>%)</td></tr>
+						<tr><td>Concluído:</td><td><span class="upload_done info_queue_item_{{upload.id}}">{{upload.done}}</span> de <span class="upload_total info_queue_item_{{upload.id}}">{{upload.total}}</span> MB (<span class="done_percent info_queue_item_{{upload.id}}">{{upload.portion}}</span>%)</td></tr>
 						<tr><td>Volume atual:</td><td><span class="current_file info_queue_item_{{upload.id}}">{{upload.current_file}}</span></td></tr>
 						<tr><td>Taxa de transferência:</td><td><span class="current_speed info_queue_item_{{upload.id}}">{{upload.speed|floatformat:1}}</span> kB/s</td></tr>
 						<tr><td>Tempo restante estimado:</td><td><span class="eta_str info_queue_item_{{upload.id}}">{{upload.eta_str}}</span></td></tr>
@@ -62,7 +58,7 @@
 			{% endfor %}
 		</div>
     </div>
-	<button type="button" class="css3button positive big" id="submit_button" value="Salvar">Salvar</button>
+	<button type="button" class="css3button positive big" id="submit_button" value="Atualizar">Salvar</button>
     <div class="bendl"></div>
 	<div class="bendr"></div>
 
