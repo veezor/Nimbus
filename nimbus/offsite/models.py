@@ -16,7 +16,7 @@ from django.db.models.signals import post_save, pre_save
 
 #from nimbus.offsite import managers
 from nimbus.offsite.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
-from nimbus.bacula.models import Media
+from nimbus.bacula.models import Media, JobMedia
 from nimbus.shared import fields, signals
 # from nimbus.graphics.models import BaseGraphicData
 from nimbus.base.models import UUIDSingletonModel as BaseModel
@@ -181,6 +181,12 @@ class Request(models.Model):
     last_update = models.IntegerField(default=0, editable=False) #unix time seconds
     transferred_bytes = models.BigIntegerField(default=0, editable=False)
     rate = models.IntegerField(default=0, editable=False)
+
+
+    @property
+    def procedure(self):
+        job_media = JobMedia.objects.get(media__volumename=self.volume.filename)
+        return job_media.job.procedure
 
 
     def reset_transferred_bytes(self):
