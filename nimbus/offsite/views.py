@@ -226,7 +226,7 @@ def upload_queue_status():
     ## CODIGO ALEATORIO DE TESTE
     from random import randint
     uploads = []
-    for i in range(5):
+    for i in [4,6,8,9,10]:
         t =  randint(100,1000)
         uploads.append(
             {"name": "Procedimento %d" % i,

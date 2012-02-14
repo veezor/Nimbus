@@ -34,9 +34,7 @@
 		</table>
 		<div id="fullbar">
 			{% for upload in uploads %}
-			<!-- <div id="queue_item_{{upload.id}}" class="part {% cycle 'par' 'impar' %}" style="width: {% widthratio upload.total upload_total 100 %}%">{% if upload.done > 0 %}<div class="icon {% if upload.speed > 0%}upload_icon{% else %}stalled_icon{% endif %}"></div>{% endif %}</div> -->
 			<div id="queue_item_{{upload.id}}" class="part {% cycle 'par' 'impar' %}" style="width: {{upload.portion}}%">{% if upload.done > 0 %}<div class="icon {% if upload.speed > 0%}upload_icon{% else %}stalled_icon{% endif %}"></div>{% endif %}</div>
-
 			{% endfor %}
 		</div>
 		<div id="marker_box">
