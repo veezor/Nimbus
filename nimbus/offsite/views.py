@@ -227,14 +227,14 @@ def upload_queue_status():
     ## CODIGO ALEATORIO DE TESTE
     from random import randint
     uploads = []
-    for i in [4,6,8,9,10]:
+    for i in [2,4,6,8,12]:
         t =  randint(100,1000)
         uploads.append(
             {"name": "Procedimento %d" % i,
              "id": i,
              "total": float(t),
              "done": float(randint(0, t)),
-             "speed": float(randint(0, 200)),
+             "speed": float(randint(0, 2)),
              "added": "06:15:09 de 08/02/2012",
              "current_file": "procedure_%d" % randint(10000000000,100000000000)}
         )
@@ -290,7 +290,8 @@ def upload_queue_status():
 
 @login_required
 def upload_queue(request):
-    data = get_queue_progress_data()
+    data = upload_queue_status()
+    # data = get_queue_progress_data()
     data["title"] = u"Uploads ativos"
     return render_to_response(request, 
                               "upload_queue.html", data)

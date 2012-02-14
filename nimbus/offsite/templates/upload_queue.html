@@ -34,7 +34,7 @@
 		</table>
 		<div id="fullbar">
 			{% for upload in uploads %}
-			<div id="queue_item_{{upload.id}}" class="part {% cycle 'par' 'impar' %}" style="width: {{upload.portion}}%">{% if upload.done > 0 %}<div class="icon {% if upload.speed > 0%}upload_icon{% else %}stalled_icon{% endif %}"></div>{% endif %}</div>
+			<div id="queue_item_{{upload.id}}" onClick="set_part_focus($(this));" class="part {% cycle 'par' 'impar' %}" style="width: {{upload.portion}}%"><div class="icon info_queue_item_{{upload.id}} {% if upload.done > 0 %} {% if upload.speed > 0%}upload_icon{% else %}stalled_icon{% endif %}">{% endif %}</div></div>
 			{% endfor %}
 		</div>
 		<div id="marker_box">
@@ -50,13 +50,13 @@
 						<tr><td>Volume atual:</td><td><span class="current_file info_queue_item_{{upload.id}}">{{upload.current_file}}</span></td></tr>
 						<tr><td>Taxa de transferência:</td><td><span class="current_speed info_queue_item_{{upload.id}}">{{upload.speed|floatformat:1}}</span> kB/s</td></tr>
 						<tr><td>Tempo restante estimado:</td><td><span class="eta_str info_queue_item_{{upload.id}}">{{upload.eta_str}}</span></td></tr>
-						<tr><td>Adicionado a fila em:</td><td><span class="addes info_queue_item_{{upload.id}}">{{upload.added}}</span></td></tr>
+						<tr><td>Adicionado a fila em:</td><td><span class="added info_queue_item_{{upload.id}}">{{upload.added}}</span></td></tr>
 						<tr><td>Inicio estimado para:</td><td><span class="estimate_start info_queue_item_{{upload.id}}">{{upload.estimate_start}}</span></td></tr>
 						<tr><td>Conclusão estimada em:</td><td><span class="end_time_str info_queue_item_{{upload.id}}">{{upload.end_time_str}}</span></td></tr>
 					</tbody>
 				</table>
 				<div class="progress_bar">
-					<div class="done_bar" style="width: {% widthratio upload.done upload.total 100 %}%"></div>
+					<div class="done_bar info_queue_item_{{upload.id}}" style="width: {% widthratio upload.done upload.total 100 %}%"></div>
 				</div>
 			</div>
 			{% endfor %}

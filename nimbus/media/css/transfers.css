@@ -66,6 +66,7 @@
 }
 .upload_icon { background: url(/media/icons/uploading.png);}
 .stalled_icon { background: url(/media/icons/upload_stall.png);}
+.no_icon { background: none;}
 
 .upload_info {
     display: none;
