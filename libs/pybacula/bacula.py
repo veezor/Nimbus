@@ -26,7 +26,7 @@ class BaculaCommandLine(object):
         if not self.connected:
             BaculaCommandLine.backend = get_active_backend()() # get and instantiates
             self.backend.set_configfile(config)
-            try: 
+            try:
                 self.backend.connect()
                 BaculaCommandLine.connected = True
             except Exception, e:
@@ -40,7 +40,7 @@ class BaculaCommandLine(object):
             name = "." + name[1:]
 
         if name in valid_commands:
-            return Command(name)    
+            return Command(name)
         else:
             raise CommandNotFound("command not found")
 
@@ -52,6 +52,7 @@ class BaculaCommandLine(object):
 class Command(object):
 
     def __init__(self, name):
+        self.__name = name # avoid clash
         self.content = [name]
 
     def raw(self, string):
@@ -73,7 +74,7 @@ class Command(object):
         txt = self.get_content()
         txt = txt.encode("utf-8")
         result = BaculaCommandLine.backend.execute_command( txt )
-        self.content = []
+        self.content = [self.__name]
         return result
 
     def __call__(self,*args):

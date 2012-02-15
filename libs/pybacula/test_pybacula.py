@@ -205,6 +205,49 @@ class CommandLineTestCase(unittest.TestCase):
 
 
 
+
+class CommandTest(unittest.TestCase):
+
+
+    def setUp(self):
+        self.cmd = bacula.Command("test")
+        self.patch = mock.patch("bacula.BaculaCommandLine")
+        self.mock = self.patch.start()
+        self.mock.connected = True
+        self.mock.backend.execute_command.return_value = "ok"
+
+    def test_new(self):
+        self.assertEqual(self.cmd.get_content(), "test")
+
+    def test_raw(self):
+        self.cmd.raw("test")
+        self.assertEqual(self.cmd.get_content(), "test test")
+
+    def test_dsl_attr(self):
+        self.cmd.attrtest1.attrtest2.attrtest3
+        self.assertEqual(self.cmd.get_content(), "test attrtest1 attrtest2 attrtest3")
+
+    def test_dsl_getitem(self):
+        self.cmd.attribute['value']
+        self.assertEqual(self.cmd.get_content(), 'test attribute="value"')
+
+    def test_run(self):
+        result = self.cmd.run()
+        self.assertEqual(result, "ok")
+        r = self.mock.backend.execute_command.assert_called_with("test")
+        self.assertTrue( r is None )
+        self.assertEqual( self.cmd.get_content(), "test" )
+
+
+    def test_call(self):
+        result = self.cmd.run()
+        self.assertEqual(result, "ok")
+        r = self.mock.backend.execute_command.assert_called_with("test")
+        self.assertTrue( r is None )
+        self.assertEqual( self.cmd.get_content(), "test" )
+
+
+
 if __name__ == "__main__":
     unittest.main()
 
