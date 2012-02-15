@@ -185,7 +185,10 @@ class Request(models.Model):
 
     @property
     def procedure(self):
-        job_media = JobMedia.objects.get(media__volumename=self.volume.filename)
+        try:
+            job_media = JobMedia.objects.get(media__volumename=self.volume.filename)
+        except JobMedia.DoesNotExist:
+            return Procedure.objects.get(id=1)
         return job_media.job.procedure
 
 
