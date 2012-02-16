@@ -185,11 +185,16 @@ class Request(models.Model):
 
     @property
     def procedure(self):
+        return self.job.procedure
+
+
+    @property
+    def job(self):
         try:
             job_media = JobMedia.objects.get(media__volumename=self.volume.filename)
         except JobMedia.DoesNotExist:
             return Procedure.objects.get(id=1)
-        return job_media.job.procedure
+        return job_media.job
 
 
     def reset_transferred_bytes(self):

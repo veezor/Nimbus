@@ -438,61 +438,67 @@ class QueueProgressReporter(object):
         return result
 
 
-    def _get_recent_request_from_procedure(self, requests):
+    def _get_recent_request_from_job(self, requests):
         key_func = lambda req: req.last_update
         request = sorted(requests, key=key_func, reverse=True)[0]
         return request
 
 
-    def _get_recent_volume_from_procedure(self, requests ):
-        request = self._get_recent_request_from_procedure(requests)
+    def _get_recent_volume_from_job(self, requests ):
+        request = self._get_recent_request_from_job(requests)
         return request.volume.filename
 
-    def _get_start_time_from_procedure(self, requests ):
+    def _get_start_time_from_job(self, requests ):
         key_func = lambda req: req.created_at
         request = sorted(requests, key=key_func)[0]
         return request.created_at
 
 
-    def _get_rate_from_procedure(self, requests):
-        request = self._get_recent_request_from_procedure(requests)
+    def _get_rate_from_job(self, requests):
+        request = self._get_recent_request_from_job(requests)
         return request.rate
 
-    def _get_total_size_from_procedure(self, requests):
+    def _get_total_size_from_job(self, requests):
         return sum( req.volume.size for req in requests )
 
-    def _get_transferred_bytes_from_procedure(self, requests):
+    def _get_transferred_bytes_from_job(self, requests):
         return sum( req.transferred_bytes for req in requests )
 
-    def _group_by_procedure(self, requests):
-        procedures = {}
+    def _group_by_job(self, requests):
+        jobs = {}
         for req in requests:
-            procedure = req.procedure
-            if not procedure in procedures:
-                procedures[procedure] = []
+            job = req.job
+            if not job in jobs:
+                jobs[job] = []
 
-            procedures[procedure].append(req)
+            jobs[job].append(req)
 
-        return procedures
+        return jobs
 
-    def _get_active_procedures(self):
+    def _get_active_jobs(self):
         requests = self.queue_manager.get_active_requests()
-        return [ req.procedure for req in requests ]
+        return [ req.job for req in requests ]
 
 
     def export_data(self):
         result = []
         requests = self._get_requests_on_queues()
-        requests_by_procedure = self._group_by_procedure(requests)
-        for procedure, p_requests in requests_by_procedure.items():
+        requests_by_job = self._group_by_job(requests)
+        active_jobs = self._get_active_jobs()
+        for job, p_requests in requests_by_job.items():
             data = {}
-            data['name'] = procedure.name
-            data['id'] = procedure.id
-            data['total'] = self._get_total_size_from_procedure(p_requests)
-            data['done'] = self._get_transferred_bytes_from_procedure(p_requests)
-            data['speed'] = self._get_rate_from_procedure(p_requests)
-            data['current_file'] = self._get_recent_volume_from_procedure(p_requests)
-            data['added'] = self._get_start_time_from_procedure(p_requests)
+            data['name'] = job.procedure.name
+            data['id'] = job.id
+            data['total'] = self._get_total_size_from_job(p_requests)
+            data['done'] = self._get_transferred_bytes_from_job(p_requests)
+
+            if job in active_jobs:
+                data['speed'] = self._get_rate_from_job(p_requests)
+            else:
+                data['speed'] = 0
+
+            data['current_file'] = self._get_recent_volume_from_job(p_requests)
+            data['added'] = self._get_start_time_from_job(p_requests)
             result.append(data)
         return result
 
