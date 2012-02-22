@@ -9,19 +9,6 @@ function set_part_focus(who) {
         $("#" + queue_id.id).addClass("selected")
     });    
 }
-function re_zebra() {
-    $(".part.par").removeClass("par");
-    $(".part.impar").removeClass("impar");
-    var current_class = "par";
-    for (var item = 0; item < $(".part").length; item++) {
-        $("#" + $(".part")[item].id).addClass(current_class);
-        if (current_class == "impar") {
-            current_class = "par";
-        } else {
-            current_class = "impar";
-        }
-    }
-}
 function get_data() {
     $.ajax({
         type: "POST",
@@ -30,11 +17,11 @@ function get_data() {
         // async: false,
         dataType: "json",
         success: function(j) {
-            $("#upload_done").text(j['upload_done']);
-            $("#upload_total").text(j['upload_total']);
+            $("#upload_done").text(j['upload_done'].toFixed(1));
+            $("#upload_total").text(j['upload_total'].toFixed(1));
             var percent_done = (100 * j['upload_done'] / j['upload_total'])
             $("#percent_done").text(percent_done.toFixed(1));
-            $("#current_speed").text(j['current_speed']);
+            $("#current_speed").text(j['current_speed'].toFixed(1));
             $("#eta_str").text(j['eta_str']);
             $("#end_time_str").text(j['end_time_str']);
             // VERIFICA SE UM BLOCO NAO EXISTE MAIS E O APAGA SE NESCESSÁRIO
@@ -58,7 +45,6 @@ function get_data() {
                         $("#" + blocks_list[item]).remove()   ;                     
                     }
                     $("#info_" + blocks_list[item]).remove();
-                    re_zebra();
                 }
             }
             // FIM DE VERIFICA SE UM BLOCO NAO EXISTE MAIS E O APAGA SE NESCESSÁRIO
@@ -76,7 +62,7 @@ function get_data() {
                     }
                 }
                 if (item_exists == false) {
-                    var new_block = '<div id="queue_item_'+u['id']+'" onClick="set_part_focus($(this));" class="part"><div class="icon info_queue_item_'+u['id']+'"></div></div>';
+                    var new_block = '<div id="queue_item_'+u['id']+'" onClick="set_part_focus($(this));" class="part"><div class="name_block"><span>'+u['name']+'</span></div><div class="done_part_block"><div class="done_part queue_item_'+u['id']+'" style="width: '+u['done_percent']+'%;"></div></div><div class="icon info_queue_item_'+u['id']+'"></div></div>';
                     var new_info_block  = '' +
                         '<div class="upload_info" id="info_queue_item_'+u['id']+'" style="display: none;">' +
             				'<table>' +
@@ -102,7 +88,6 @@ function get_data() {
                         $(new_block).insertAfter("#queue_item_" + j['uploads'][i-1]['id']);                        
                         $(new_info_block).insertAfter("#info_queue_item_" + j['uploads'][i-1]['id']);                        
                     }
-                    re_zebra();
                 }
             }
             // FIM DE VERIFICA SE EXISTE UM NOVO BLOCO E O CRIA
@@ -110,7 +95,8 @@ function get_data() {
                 u = j['uploads'][i];
                 // REDIMENSIONA OS BLOCOS E MOVE A SETA
                 $(".info_queue_item_"+u['id']+".done_bar").animate({"width": u['done_percent'] + "%"}, "slow");
-                $("#queue_item_" + u['id']).animate({"width": u['portion'] + "%"}, "slow", function(){
+                $(".queue_item_"+u['id']+".done_part").animate({"width": u['done_percent'] + "%"}, "slow");
+                $("#queue_item_" + u['id']).animate({"width": u['block_width'] + "px"}, "slow", function(){
                     if ($(this).hasClass("selected") == true) {
                         var new_arrow_position = $(this)[0].offsetLeft + ($(this)[0].offsetWidth / 2) - 6;
                         $("#marker").animate({"left": new_arrow_position+"px"}, "slow");

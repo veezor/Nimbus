@@ -234,16 +234,16 @@ def upload_queue_status():
              "id": i,
              "total": float(t),
              # "done": float(randint(0, t)),
-             "done": 0.0,
+             "done": randint(0,t),
              "speed": float(randint(0, 2)),
              "added": "06:15:09 de 08/02/2012",
              "current_file": "procedure_%d" % randint(10000000000,100000000000)}
         )
     ## CODIGO ALEATORIO DE TESTE
-    
-    upload_total = 0.0 # MB
-    upload_done = 0.0 # MB
-    current_speed = 0.0 # kB/s
+    uploads = get_queue_progress_data()
+    upload_total = 0.0 # bytes
+    upload_done = 0.0 # bytes
+    current_speed = 0.0 # B/s
     for u in uploads:
         current_speed += u["speed"]
         upload_total += u["total"]
@@ -251,16 +251,20 @@ def upload_queue_status():
     next_start = 0
     for u in uploads:
         u['portion'] = 100.0 * (u['total'] - u['done']) / (upload_total - upload_done)
+        u['block_width'] = (910 - (len(uploads) * 6)) * (u['portion'] / 100.0)
+        print u['block_width']
+        if u['block_width'] < 1:
+            u['block_width'] = 1
         if next_start == 0:
             u["estimate_start"] = u["added"]
         else:
             delta_from_now = datetime.now() + timedelta(seconds=int(next_start))
             u["estimate_start"] = delta_from_now.strftime("%H:%M:%S de %d/%m/%Y")
-        u["done_percent"] = (u["done"] / u["total"]) * 100.0
+        u["done_percent"] = (float(u["done"]) / u["total"]) * 100.0
         if u["speed"]:
-            u["eta"] = int((u["total"] - u["done"]) / (u["speed"] / 1024))
+            u["eta"] = int((u["total"] - u["done"]) / (u["speed"]))
         elif current_speed:
-            u["eta"] = int((u["total"] - u["done"]) / (current_speed / 1024))
+            u["eta"] = int((u["total"] - u["done"]) / (current_speed))
         else:
             u["eta"] = 0
         next_start += u["eta"]
@@ -272,8 +276,11 @@ def upload_queue_status():
             u["eta_str"] = "Parado"
             u["end_time"] = 0
             u["end_time_str"] = "Parado"
+        u['speed'] = u['speed'] / 1024.0 # kB/s
+        u['total'] = u['total'] / 1048576.0 # MB
+        u['done'] = u['done'] / 1048576.0 # MB
     if current_speed:
-        eta = (upload_total - upload_done) / (current_speed / 1024.0) # seconds
+        eta = (upload_total - upload_done) / current_speed # seconds
         eta_str = str(timedelta(seconds=int(eta)))
         end_time = datetime.now() + timedelta(seconds=int(eta))
         end_time_str = end_time.strftime("%H:%M:%S de %d/%m/%Y")
@@ -283,9 +290,9 @@ def upload_queue_status():
         end_time = 0
         end_time_str = "Parado"
     return {"uploads": uploads,
-            "upload_total": upload_total,
-            "upload_done": upload_done,
-            "current_speed": current_speed,
+            "upload_total": upload_total / 1048576.0, # MB
+            "upload_done": upload_done / 1048576.0, # MB
+            "current_speed": current_speed / 1024.0, # kB/s
             "eta_str": eta_str,
             "end_time_str": end_time_str}
 

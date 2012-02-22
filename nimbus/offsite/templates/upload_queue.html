@@ -22,7 +22,7 @@
     <div class="block_content">
 		<table id="overview_box">
 			<tr>
-				<td>Transferidos <span id="upload_done">{{upload_done|floatformat}}</span> de <span id="upload_total">{{upload_total|floatformat}}</span> MB (<span id="percent_done">{% widthratio upload_done upload_total 100 %}</span>%)</td>
+				<td>Transferidos <span id="upload_done">{{upload_done|floatformat:1}}</span> de <span id="upload_total">{{upload_total|floatformat}}</span> MB (<span id="percent_done">{% widthratio upload_done upload_total 100 %}</span>%)</td>
 				<td>Velocidade atual: <span id="current_speed">{{current_speed|floatformat:1}}</span> kB/s</td>
 				<td>Tempo estimado: <span id="eta_str">{{eta_str}}</span></td>
 				<td>Término estimado: <span id="end_time_str">{{end_time_str}}</span></td>
@@ -30,7 +30,7 @@
 		</table>
 		<div id="fullbar">
 			{% for upload in uploads %}
-			<div id="queue_item_{{upload.id}}" onClick="set_part_focus($(this));" class="part {% cycle 'par' 'impar' %}" style="width: {{upload.portion}}%"><div class="icon info_queue_item_{{upload.id}} {% if upload.done > 0 %} {% if upload.speed > 0%}upload_icon{% else %}stalled_icon{% endif %}{% endif %}"></div></div>
+			<div id="queue_item_{{upload.id}}" onClick="set_part_focus($(this));" class="part" style="width: {{upload.block_width}}px"><div class="name_block"><span>{{upload.name}}</span></div><div class="done_part_block"><div class="done_part queue_item_{{upload.id}}" style="width: {{upload.done_percent}}%;"></div></div><div class="icon info_queue_item_{{upload.id}} {% if upload.done > 0 %} {% if upload.speed > 0%}upload_icon{% else %}stalled_icon{% endif %}{% endif %}"></div></div>
 			{% endfor %}
 		</div>
 		<div id="marker_box">
@@ -42,7 +42,7 @@
 				<table>
 					<tbody>
 						<tr><td>Procedimento:</td><td><span class="upload_name info_queue_item_{{upload.id}}">{{upload.name}}</span></td></tr>
-						<tr><td>Concluído:</td><td><span class="upload_done info_queue_item_{{upload.id}}">{{upload.done}}</span> de <span class="upload_total info_queue_item_{{upload.id}}">{{upload.total}}</span> MB (<span class="done_percent info_queue_item_{{upload.id}}">{{upload.portion}}</span>%)</td></tr>
+						<tr><td>Concluído:</td><td><span class="upload_done info_queue_item_{{upload.id}}">{{upload.done|floatformat:1}}</span> de <span class="upload_total info_queue_item_{{upload.id}}">{{upload.total|floatformat:1}}</span> MB (<span class="done_percent info_queue_item_{{upload.id}}">{{upload.done_percent|floatformat:1}}</span>%)</td></tr>
 						<tr><td>Volume atual:</td><td><span class="current_file info_queue_item_{{upload.id}}">{{upload.current_file}}</span></td></tr>
 						<tr><td>Taxa de transferência:</td><td><span class="current_speed info_queue_item_{{upload.id}}">{{upload.speed|floatformat:1}}</span> kB/s</td></tr>
 						<tr><td>Tempo restante estimado:</td><td><span class="eta_str info_queue_item_{{upload.id}}">{{upload.eta_str}}</span></td></tr>
