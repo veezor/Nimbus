@@ -1,3 +1,5 @@
+// TEMPO DE REFRESH EM MILISEGUNDOS
+REFRESH_TIME = 5000;
 
 function set_part_focus(who) {
     $(".part").removeClass("selected")
@@ -17,6 +19,13 @@ function get_data() {
         // async: false,
         dataType: "json",
         success: function(j) {
+            if (j['uploads'].length == 0) {
+                $("#empty_content").show();
+                $("#full_content").hide();
+            } else {
+                $("#empty_content").hide();
+                $("#full_content").show();                
+            }
             $("#upload_done").text(j['upload_done'].toFixed(1));
             $("#upload_total").text(j['upload_total'].toFixed(1));
             var percent_done = (100 * j['upload_done'] / j['upload_total'])
@@ -81,7 +90,10 @@ function get_data() {
             					'<div class="done_bar info_queue_item_'+u['id']+'"></div>' +
             				'</div>' +
             			'</div>'
-                    if (i == 0) {
+            		if (j['uploads'].length == 1) {
+            		    $("#fullbar").append(new_block);
+            		    $("#upload_info_box").append(new_info_block);
+            		} else if (i == 0) {
                         $(new_block).insertBefore("#" + $(".part")[0].id)
                         $(new_info_block).insertBefore("#info_" + $(".part")[0].id)
                     } else {
@@ -129,14 +141,16 @@ function get_data() {
             }
         }
     })
-    // var t=setTimeout("get_data()",3000)
+    var t=setTimeout("get_data()",REFRESH_TIME)
 }
 
 $(document).ready(function(){
-    set_part_focus($(".part"));
+    if ($(".part").length > 0) {
+        set_part_focus($(".part"));        
+    }
 
     $('#submit_button').click(function(){
         get_data();        
     })
-    // var t=setTimeout("get_data()",3000)
+    var t=setTimeout("get_data()",REFRESH_TIME)
 });

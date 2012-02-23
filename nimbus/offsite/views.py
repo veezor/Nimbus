@@ -227,7 +227,7 @@ def upload_queue_status():
     ## CODIGO ALEATORIO DE TESTE
     from random import randint
     uploads = []
-    for i in [2,4,6,8,12]:
+    for i in []:
         t =  randint(100,1000)
         uploads.append(
             {"name": "Procedimento %d" % i,
@@ -252,7 +252,6 @@ def upload_queue_status():
     for u in uploads:
         u['portion'] = 100.0 * (u['total'] - u['done']) / (upload_total - upload_done)
         u['block_width'] = (910 - (len(uploads) * 6)) * (u['portion'] / 100.0)
-        print u['block_width']
         if u['block_width'] < 1:
             u['block_width'] = 1
         if next_start == 0:
