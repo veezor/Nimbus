@@ -191,9 +191,9 @@ class Request(models.Model):
     @property
     def job(self):
         try:
-            job_media = JobMedia.objects.get(media__volumename=self.volume.filename)
-        except JobMedia.DoesNotExist:
-            return Procedure.objects.get(id=1)
+            job_media = JobMedia.objects.filter(media__volumename=self.volume.filename)[0]
+        except IndexError:
+            return Procedure.objects.get(id=1).all_my_jobs[0]
         return job_media.job
 
 

@@ -451,7 +451,7 @@ class QueueProgressReporter(object):
     def _get_start_time_from_job(self, requests ):
         key_func = lambda req: req.created_at
         request = sorted(requests, key=key_func)[0]
-        return request.created_at
+        return request.created_at.strftime("%H:%M:%S de %d/%m/%Y")
 
 
     def _get_rate_from_job(self, requests):
@@ -488,7 +488,7 @@ class QueueProgressReporter(object):
         for job, p_requests in requests_by_job.items():
             data = {}
             data['name'] = job.procedure.name
-            data['id'] = job.id
+            data['id'] = job.jobid
             data['total'] = self._get_total_size_from_job(p_requests)
             data['done'] = self._get_transferred_bytes_from_job(p_requests)
 
@@ -500,8 +500,7 @@ class QueueProgressReporter(object):
             data['current_file'] = self._get_recent_volume_from_job(p_requests)
             data['added'] = self._get_start_time_from_job(p_requests)
             result.append(data)
-        return result
-
-
+        key_func = lambda item: item['added']
+        return sorted(result, key=key_func)
 
 
