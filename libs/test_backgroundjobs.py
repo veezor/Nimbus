@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import mock
+
+import time
 import unittest
-import datetime
 import backgroundjobs
 
 
@@ -80,6 +80,71 @@ class TestJob(unittest.TestCase):
 
 
 
+class WorkerThreadTest(unittest.TestCase):
+
+
+    def make_job(self, priority=backgroundjobs.MIN_PRIORITY):
+        description = "test 1"
+        callback = lambda : "Hello World"
+        job1 = backgroundjobs.Job(description,
+                                  priority,
+                                  callback)
+        return job1
+
+
+
+    def setUp(self):
+        self.wt = backgroundjobs.WorkerThread()
+        self.job = self.make_job()
+
+
+    def test_add(self):
+        self.wt.add_job(self.job)
+        self.assertTrue( self.job in self.wt.get_jobs() )
+        self.assertEqual( self.wt.get_num_heavyweight_jobs(), 1 )
+        self.assertEqual( self.wt.get_num_jobs(), 1 )
+
+
+    def test_get_num_jobs(self):
+        self.assertEqual( self.wt.get_num_jobs(), 0 )
+        self.wt.add_job(self.job)
+        self.assertEqual( self.wt.get_num_jobs(), 1 )
+
+
+    def test_heavyweight(self):
+        job2 = self.make_job(backgroundjobs.MAX_PRIORITY)
+        self.assertEqual( self.wt.get_num_heavyweight_jobs(), 0 )
+        self.wt.add_job(self.job)
+        self.assertEqual( self.wt.get_num_heavyweight_jobs(), 1 )
+        self.wt.add_job(job2)
+        self.assertEqual( self.wt.get_num_heavyweight_jobs(), 1 )
+
+
+
+    def test_get_jobs(self):
+        self.assertEqual([], self.wt.get_jobs())
+        self.wt.add_job(self.job)
+        self.assertEqual([self.job], self.wt.get_jobs())
+
+
+    def test_remove_jobs(self):
+        self.wt.add_job(self.job)
+        self.assertEqual( self.wt.get_num_jobs(), 1 )
+        self.assertEqual( self.wt.get_num_heavyweight_jobs(), 1 )
+        self.wt.remove_job(self.job)
+        self.assertEqual( self.wt.get_num_jobs(), 0 )
+        self.assertEqual( self.wt.get_num_heavyweight_jobs(), 0 )
+
+
+    def test_run(self):
+        self.wt.add_job(self.job)
+        self.assertEqual(self.job.pending, True)
+        self.wt.start()
+        time.sleep(2.0)
+        self.assertFalse(self.wt.has_stopped)
+        self.wt.stop()
+        self.assertEqual(self.job.pending, False)
+        self.assertTrue(self.wt.has_stopped)
 
 if __name__ == "__main__":
     unittest.main()
