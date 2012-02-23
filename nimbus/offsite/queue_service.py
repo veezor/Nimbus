@@ -364,6 +364,10 @@ class Worker(Process):
             self.logger.info(str(self.pid) + ' request %s uploaded with sucess' % str(self.request))
             set_request_as_done(self.request_id)
             self.logger.info(str(self.pid) + ' request %s marked as sucessful' % str(self.request))
+        except OSError, error:
+            self.logger.exception(str(self.pid) + ' file not found. Probably procedure delete (%s)' % self.request_id)
+            set_request_as_done(self.request_id)
+            self.request.delete()
         except IOError, error:
             self.logger.exception(str(self.pid) + ' request %s upload error' % self.request_id)
             sys.exit(2)
