@@ -79,23 +79,25 @@ class TestJob(unittest.TestCase):
 
 
 
+def make_job(priority=backgroundjobs.MIN_PRIORITY,
+             callback = lambda : "Hello World"):
+    description = "test 1"
+    job1 = backgroundjobs.Job(description,
+                              priority,
+                              callback)
+    return job1
+
+
+
 
 class WorkerThreadTest(unittest.TestCase):
 
-
-    def make_job(self, priority=backgroundjobs.MIN_PRIORITY):
-        description = "test 1"
-        callback = lambda : "Hello World"
-        job1 = backgroundjobs.Job(description,
-                                  priority,
-                                  callback)
-        return job1
 
 
 
     def setUp(self):
         self.wt = backgroundjobs.WorkerThread()
-        self.job = self.make_job()
+        self.job = make_job()
 
 
     def test_add(self):
@@ -112,7 +114,7 @@ class WorkerThreadTest(unittest.TestCase):
 
 
     def test_heavyweight(self):
-        job2 = self.make_job(backgroundjobs.MAX_PRIORITY)
+        job2 = make_job(backgroundjobs.MAX_PRIORITY)
         self.assertEqual( self.wt.get_num_heavyweight_jobs(), 0 )
         self.wt.add_job(self.job)
         self.assertEqual( self.wt.get_num_heavyweight_jobs(), 1 )
@@ -145,6 +147,67 @@ class WorkerThreadTest(unittest.TestCase):
         self.wt.stop()
         self.assertEqual(self.job.pending, False)
         self.assertTrue(self.wt.has_stopped)
+
+
+
+class ThreadPoolTest(unittest.TestCase):
+
+    def setUp(self):
+        self.job = make_job()
+        self.thread_pool = backgroundjobs.ThreadPool()
+
+
+    def test_has_job_pending(self):
+        self.assertFalse( self.thread_pool.has_job_pending(self.job.id) )
+        self.thread_pool.add_job(self.job)
+        self.assertTrue( self.thread_pool.has_job_pending(self.job.id) )
+        self.thread_pool.stop()
+
+    def test_list_jobs_pending(self):
+        self.assertEqual( self.thread_pool.list_jobs_pending(), [] )
+        self.thread_pool.add_job(self.job)
+        self.assertEqual( self.thread_pool.list_jobs_pending(), [self.job] )
+        self.thread_pool.stop()
+
+
+    def test_stop(self):
+        self.thread_pool.add_job(self.job)
+        self.thread_pool.stop() # if stop fails tests blocks forever
+
+
+    def test_run(self):
+        self.assertEqual(self.job.pending, True)
+        self.thread_pool.add_job(self.job)
+        time.sleep(2.0)
+        self.thread_pool.stop()
+        self.assertEqual(self.job.pending, False)
+
+
+    def test_run_many_jobs(self):
+        def callback():
+            time.sleep(1.0)
+        jobs = [ make_job(callback=callback) for x in xrange(6) ] # 6 > 5. default value of max_workers
+        for job in jobs:
+            self.thread_pool.add_job(job)
+        time.sleep(6.0)
+        self.thread_pool.stop()
+        self.assertEqual(len(self.thread_pool.workers), 5)
+        for job in jobs:
+            self.assertEqual(job.pending, False)
+
+    def test_run_many_jobs_MAX(self):
+        jobs = [ make_job(backgroundjobs.MAX_PRIORITY) for x in xrange(6) ] 
+        # 6 > 5. default value of max_workers
+        for job in jobs:
+            self.thread_pool.add_job(job)
+        time.sleep(2.0)
+        self.thread_pool.stop()
+        for job in jobs:
+            self.assertEqual(job.pending, False)
+        self.assertEqual(len(self.thread_pool.workers), 1)
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
