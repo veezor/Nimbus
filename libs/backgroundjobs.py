@@ -187,8 +187,8 @@ class ThreadPool(object):
         if all(workers_state_busy):
 
             if active_workers == self.num_workers:
-                best_worker = sorted(self.workers, 
-                                     key=lambda w: (w.get_num_heavyweight_jobs(), 
+                best_worker = sorted(self.workers,
+                                     key=lambda w: (w.get_num_heavyweight_jobs(),
                                                     w.get_num_jobs()))[0]
                 best_worker.add_job(job)
             else:
@@ -197,7 +197,7 @@ class ThreadPool(object):
 
         else:
             workers = [ w for w in self.workers if w.get_num_heavyweight_jobs() == 0 ]
-            best_worker = sorted(workers, 
+            best_worker = sorted(workers,
                                  key=lambda w: w.get_num_jobs())[0]
             best_worker.add_job(job)
 
@@ -207,10 +207,16 @@ class ThreadPool(object):
         jobs = self.list_jobs_pending()
         return jobid in [ job.id for job in jobs  ]
 
+
     @synchronized
     def list_jobs_pending(self):
         result = []
         for worker in self.workers:
             result.extend( worker.get_jobs() )
         return result
+
+    @synchronized
+    def stop(self):
+        for worker in self.workers:
+            worker.stop()
 
