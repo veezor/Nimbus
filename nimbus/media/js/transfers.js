@@ -48,8 +48,10 @@ function get_data() {
                 if (item_exists == false) {
                     if ($("#" + blocks_list[item]).hasClass("selected") == true) {
                         $("#" + blocks_list[item]).remove();
-                        $("#" + $(".part")[0].id).addClass("selected");
-                        $("#info_" + $(".selected")[0].id).show();
+                        if ($(".part").length > 0) {
+                            $("#" + $(".part")[0].id).addClass("selected");
+                            $("#info_" + $(".selected")[0].id).show();
+                        }
                     } else {
                         $("#" + blocks_list[item]).remove()   ;                     
                     }
@@ -90,7 +92,7 @@ function get_data() {
             					'<div class="done_bar info_queue_item_'+u['id']+'"></div>' +
             				'</div>' +
             			'</div>'
-            		if (j['uploads'].length == 1) {
+            		if (j['uploads'].length == 1 || $(".part").length == 0) {
             		    $("#fullbar").append(new_block);
             		    $("#upload_info_box").append(new_info_block);
             		} else if (i == 0) {
@@ -108,12 +110,16 @@ function get_data() {
                 // REDIMENSIONA OS BLOCOS E MOVE A SETA
                 $(".info_queue_item_"+u['id']+".done_bar").animate({"width": u['done_percent'] + "%"}, "slow");
                 $(".queue_item_"+u['id']+".done_part").animate({"width": u['done_percent'] + "%"}, "slow");
-                $("#queue_item_" + u['id']).animate({"width": u['block_width'] + "px"}, "slow", function(){
-                    if ($(this).hasClass("selected") == true) {
-                        var new_arrow_position = $(this)[0].offsetLeft + ($(this)[0].offsetWidth / 2) - 6;
-                        $("#marker").animate({"left": new_arrow_position+"px"}, "slow");
-                    }
-                })
+                if ($("#queue_item_" + u['id']).width() != u['block_width']) {
+                    $(".icon").fadeOut("slow")
+                    $("#queue_item_" + u['id']).animate({"width": u['block_width'] + "px"}, "slow", function(){
+                        if ($(this).hasClass("selected") == true) {
+                            var new_arrow_position = $(this)[0].offsetLeft + ($(this)[0].offsetWidth / 2) - 6;
+                            $("#marker").animate({"left": new_arrow_position+"px"}, "slow");
+                            $(".icon").fadeIn("slow")
+                        }
+                    })
+                }
                 // FIM DE REDIMENSIONA OS BLOCOS E MOVE A SETA
                 // MUDA O ICONE INDICATIVO DE UPLOAD
                 var status_icon = "no_icon"

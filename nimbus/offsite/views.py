@@ -168,78 +168,6 @@ def list_uploadrequest(request):
                                "title": u"Uploads ativos"})
 
 def upload_queue_status():
-    # uploads = [{"name": "Upload X",
-    #             "id": 0,
-    #             "total": 150,
-    #             "done": 43,
-    #             "speed": 130.0,
-    #             "added": "03:15:09 de 08/02/2012",
-    #             "current_file": "procedure_01923019872301873"},
-    #            {"name": "Upload Y",
-    #             "id": 1,
-    #             "total": 150,
-    #             "done": 12,
-    #             "speed": 0.0,
-    #             "added": "04:15:09 de 08/02/2012",
-    #             "current_file": "procedure_8273698264397627983"},
-    #            {"name": "Upload Z",
-    #             "id": 2,
-    #             "total": 300,
-    #             "done": 10,
-    #             "speed": 0.0,
-    #             "added": "05:15:09 de 08/02/2012",
-    #             "current_file": "procedure_287369827347263784234"},
-    #             {"name": "Upload U",
-    #              "id": 3,
-    #              "total": 150,
-    #              "done": 0,
-    #              "speed": 0.0,
-    #              "added": "06:15:09 de 08/02/2012",
-    #              "current_file": "procedure_2837649782970823"},
-    #              {"name": "Upload X",
-    #              "id": 4,
-    #              "total": 500,
-    #              "done": 0,
-    #              "speed": 130.0,
-    #              "added": "03:15:09 de 08/02/2012",
-    #              "current_file": "procedure_01923019872301873"},
-    #             {"name": "Upload Y",
-    #              "id": 5,
-    #              "total": 250,
-    #              "done": 0,
-    #              "speed": 0.0,
-    #              "added": "04:15:09 de 08/02/2012",
-    #              "current_file": "procedure_8273698264397627983"},
-    #             {"name": "Upload Z",
-    #              "id": 6,
-    #              "total": 330,
-    #              "done": 0,
-    #              "speed": 0.0,
-    #              "added": "05:15:09 de 08/02/2012",
-    #              "current_file": "procedure_287369827347263784234"},
-    #              {"name": "Upload U",
-    #               "id": 7,
-    #               "total": 150,
-    #               "done": 0,
-    #               "speed": 0.0,
-    #               "added": "06:15:09 de 08/02/2012",
-    #               "current_file": "procedure_2837649782970823"}]
-    ## CODIGO ALEATORIO DE TESTE
-    from random import randint
-    uploads = []
-    for i in []:
-        t =  randint(100,1000)
-        uploads.append(
-            {"name": "Procedimento %d" % i,
-             "id": i,
-             "total": float(t),
-             # "done": float(randint(0, t)),
-             "done": randint(0,t),
-             "speed": float(randint(0, 2)),
-             "added": "06:15:09 de 08/02/2012",
-             "current_file": "procedure_%d" % randint(10000000000,100000000000)}
-        )
-    ## CODIGO ALEATORIO DE TESTE
     uploads = get_queue_progress_data()
     upload_total = 0.0 # bytes
     upload_done = 0.0 # bytes
@@ -251,7 +179,7 @@ def upload_queue_status():
     next_start = 0
     for u in uploads:
         u['portion'] = 100.0 * (u['total'] - u['done']) / (upload_total - upload_done)
-        u['block_width'] = (910 - (len(uploads) * 6)) * (u['portion'] / 100.0)
+        u['block_width'] = int((910 - (len(uploads) * 6)) * (u['portion'] / 100.0))
         if u['block_width'] < 1:
             u['block_width'] = 1
         if next_start == 0:
