@@ -1,3 +1,4 @@
+WEEK_DAYS = new Array("Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado");
 $(document).ready(function(){
 
     function create_chart(obj_id, data, ticks, chart_type, labels, max_value) {

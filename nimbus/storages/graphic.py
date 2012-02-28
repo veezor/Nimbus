@@ -39,32 +39,19 @@ class Graphics(object):
                            day_data['used__max'],
                            day_data['used__min'],
                            day_data['total__max']])
+        print result
         return result
 
     def data_to_template(self):
         """Metodo obrigatorio para todas as classes Graphics"""
-        days = self.last_days(1)
-        data = self.unify_days(days)
-        timestamps = []
-        max_values = []
-        min_values = []
-        total = 0.0
-        for day, umax, umin, t in data:
-            timestamps.append(day)
-            max_values.append(umax / 1073741824.0)
-            min_values.append(umin / 1073741824.0)
         diskinfo = systeminfo.DiskInfo("/bacula")
         t, u, f = diskinfo.get_data()
+        used = u / 1073741824.0
         total = t / 1073741824.0
-        timestamps.append("Agora")
-        max_values.append(u / 1073741824.0)
-        return [{'title': u"Ocupação do disco (GB)",
+        r = [{'title': u"Ocupação do disco: %.1f de %.1fGB (%.1f%%)" %(used, total, 100*used/total),
                 'template': 'storage_graph.html',
-                'width': "",
-                'type': "area",
                 'cid_name': "chart_disk_usage",
                 'height': "200",
-                'lines': {'used': max_values},# 'min_used': min_values},
                 'total': total,
-                'header': timestamps, 'labels': max_values}]
-        
+                'upper_limit': int(total*1.3)}]
+        return r
