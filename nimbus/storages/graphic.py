@@ -26,21 +26,20 @@ class Graphics(object):
         data = StorageGraphicsData.objects.filter(timestamp__gte=since).order_by("-timestamp")
         return data
 
-    def unify_days(self, data):
-        result = []
-        days = [item.timestamp.date() for item in data]
-        days = list(set(days))
-        days.reverse()
-        for day in days:
-            day_data = StorageGraphicsData.objects.filter(timestamp__year=day.year,
-                        timestamp__month=day.month, timestamp__day=day.day, )\
-                        .aggregate(Max('used'), Min('used'), Max('total'))
-            result.append([day.strftime("%d/%m/%Y"),
-                           day_data['used__max'],
-                           day_data['used__min'],
-                           day_data['total__max']])
-        print result
-        return result
+    # def unify_days(self, data):
+    #     result = []
+    #     days = [item.timestamp.date() for item in data]
+    #     days = list(set(days))
+    #     days.reverse()
+    #     for day in days:
+    #         day_data = StorageGraphicsData.objects.filter(timestamp__year=day.year,
+    #                     timestamp__month=day.month, timestamp__day=day.day, )\
+    #                     .aggregate(Max('used'), Min('used'), Max('total'))
+    #         result.append([day.strftime("%d/%m/%Y"),
+    #                        day_data['used__max'],
+    #                        day_data['used__min'],
+    #                        day_data['total__max']])
+    #     return result
 
     def data_to_template(self):
         """Metodo obrigatorio para todas as classes Graphics"""

@@ -157,8 +157,7 @@ def deactivate(request, object_id):
 @login_required
 def csv_data(request):
     g = Graphics()
-    d = g.last_days(days=30)
-    o = g.unify_days(d)
+    d = g.last_days(days=90)
     r = ["Date,Utilizado"]
     for i in d:
         r.append("%s,%s" % (i.timestamp.strftime("%Y/%m/%d %H:%M:%S"), float(i.used)/1073741824.0))
