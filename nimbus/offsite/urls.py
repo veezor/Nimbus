@@ -5,6 +5,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('nimbus.offsite.views',
     (r'^detail', 'detail'),
+    (r'^csv_data', 'csv_data'),
     (r'^edit', 'edit'),
     (r'^list_downloadrequest', 'list_downloadrequest'),
     (r'^list_uploadrequest', 'list_uploadrequest'),

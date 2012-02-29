@@ -261,4 +261,12 @@ def list_offsite(request):
     return render_to_response(request, "procedures_list.html", extra_content)
 
 
+@login_required
+def csv_data(request):
+    g = Graphics()
+    d = g.last_days(days=90)
+    r = ["Date,Utilizado"]
+    for i in d:
+        r.append("%s,%s" % (i.timestamp.strftime("%Y/%m/%d %H:%M:%S"), float(i.used)/1073741824.0))
+    return HttpResponse("\n".join(r))
 

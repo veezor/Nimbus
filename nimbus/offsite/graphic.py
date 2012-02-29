@@ -23,61 +23,49 @@ class Graphics(object):
             plan_total = offsite.plan_size
             try:
                 s3 = Offsite.get_s3_interface()
-                now_used = s3.get_usage()
+                now_used = s3.get_size()
             except (URLError, S3AuthError), error:
                 now_used = 0.0
             new_data = OffsiteGraphicsData()
             new_data.total = plan_total
             new_data.used = now_used
             new_data.save()
-            # print "Updated Offsite: %s of %s" % (now_used, plan_total)
 
-    def last_days(self, days=14):
+
+    def last_days(self, days=90):
         since = datetime.now() - timedelta(days)
         data = OffsiteGraphicsData.objects.filter(timestamp__gte=since).order_by("-timestamp")
         return data
         
 
-    def unify_days(self, data):
-        result = []
-        days = [item.timestamp.date() for item in data]
-        days = list(set(days))
-        days.reverse()
-        for day in days:
-            day_data = OffsiteGraphicsData.objects.filter(timestamp__year=day.year,
-                        timestamp__month=day.month, timestamp__day=day.day, )\
-                        .aggregate(Max('used'), Min('used'), Max('total'))
-            result.append([day.strftime("%d/%m/%Y"),
-                           day_data['used__max'],
-                           day_data['used__min'],
-                           day_data['total__max']])
-        return result
+    # def unify_days(self, data):
+    #     result = []
+    #     days = [item.timestamp.date() for item in data]
+    #     days = list(set(days))
+    #     days.reverse()
+    #     for day in days:
+    #         day_data = OffsiteGraphicsData.objects.filter(timestamp__year=day.year,
+    #                     timestamp__month=day.month, timestamp__day=day.day, )\
+    #                     .aggregate(Max('used'), Min('used'), Max('total'))
+    #         result.append([day.strftime("%d/%m/%Y"),
+    #                        day_data['used__max'],
+    #                        day_data['used__min'],
+    #                        day_data['total__max']])
+    #     return result
 
         
     def data_to_template(self):
         """Metodo obrigatorio para todas as classes Graphics"""
         if self.offsite_if_active():
-            days = self.last_days(1)
-            data = self.unify_days(days)
-            timestamps = []
-            max_values = []
-            min_values = []
-            total = 0.0
-            if len(data) < 2:
-                data += data
-            for day, umax, umin, t in data:
-                timestamps.append(day)
-                max_values.append(umax/1073741824.0)
-                min_values.append(umin/1073741824.0)
-                total = t/1073741824.0
-            return [{'title': u"Ocupação do espaço Offsite (GB)",
+            most_recent = OffsiteGraphicsData.objects.order_by("-timestamp")[0]
+            total = most_recent.total / 1073741824.0
+            used = most_recent.used / 1073741824.0
+            return [{'title': u"Ocupação do espaço Offsite: %.1f de %.1f GB (%.1f%%)" % (used, total, 100*used/total),
                     'template': 'offsite_graph.html',
                     'width': "",
-                    'type': "area",
                     'cid_name': "chart_offsite_usage",
                     'height': "200",
-                    'lines': {'used': max_values},# 'min_used': min_values},
-                    'total': total,
-                    'header': timestamps, 'labels': max_values}]
+                    'total': most_recent.total,
+                    'upper_limit': int(total * 1.3)}]
         else:
             return []
