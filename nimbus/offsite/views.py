@@ -178,7 +178,7 @@ def upload_queue_status():
         upload_done += u["done"]
     next_start = 0
     for u in uploads:
-        u['portion'] = 100.0 * (u['total'] - u['done']) / (upload_total - upload_done)
+        u['portion'] = 100.0 * (u['total']) / (upload_total)
         u['block_width'] = int((910 - (len(uploads) * 6)) * (u['portion'] / 100.0))
         if u['block_width'] < 1:
             u['block_width'] = 1
