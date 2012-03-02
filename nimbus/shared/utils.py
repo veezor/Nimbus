@@ -57,30 +57,6 @@ def filesizeformat(bytes, unit=""):
             return "%.2f Tb" % (bytes/TB)
 
 
-
-def int_or_string(value):
-    try:
-        return int(value)
-    except ValueError, error:
-        return value
-
-    
-def dict_from_querydict(querydict, lists=()):
-    d = {}
-    for key, value in querydict.items():
-        newkey = key.replace(".","_")
-
-        if not newkey in lists:
-            newvalue = int_or_string(value)
-        else:
-            newvalue = querydict.getlist(key)
-            newvalue = [ int_or_string(x) for x in newvalue ]
-        
-        d[newkey] = newvalue
-
-    return d
-
-
 def ordered_dict_value_to_formatted_float(dictionary):
     return [ ("%.2f" % v) for k,v in sorted( dictionary.items() ) ]
 
@@ -93,11 +69,6 @@ def random_password(size=20):
     return ''.join([choice(string.letters + string.digits) for i in range(size)])
     
     
-
-def datetime_to_str(datetime):
-    return datetime.strftime("%d/%m/%Y - %H:%M:%S")
-
-
 
 ###
 ###   File Handling Specific Definitions
@@ -136,17 +107,6 @@ def isdir(path):
         return True
     else:
         return False
-
-
-def get_filesize_from_lstat(lstat):
-    b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-    val = 0
-    size = lstat.split(' ')[7] # field 7
-    for i,char in enumerate(size):
-        r = (b64.find(char)) * (pow(64,(len(size)-i)-1))
-        val += r
-    return val
-
 
 def project_port(request):
     return (':%s' % request.META['SERVER_PORT']) if request.META['SERVER_PORT'] else ''
