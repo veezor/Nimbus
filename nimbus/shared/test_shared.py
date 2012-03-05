@@ -8,7 +8,7 @@ import unittest
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nimbus.settings'
 
-from nimbus.shared import utils
+from nimbus.shared import utils, signals
 from nimbus.shared.middlewares import LogSetup
 
 LogSetup()
@@ -121,6 +121,26 @@ class UtilsTest(unittest.TestCase):
         port = utils.project_port(request)
         self.assertEqual(port, '')
 
+
+
+class SignalsTest(unittest.TestCase):
+
+    def test_connect_on(self):
+        signal = mock.Mock()
+        callback = mock.Mock()
+        callback.__name__ = "callback"
+        model = mock.Mock()
+        signals.connect_on(callback, model, signal)
+
+        self.assertTrue(signal.connect.called)
+        args, kwargs = signal.connect.call_args
+        self.assertEqual(kwargs['weak'], False)
+        self.assertEqual(kwargs['sender'], model)
+        wrapped_callback = args[0]
+
+        instance = mock.Mock()
+        wrapped_callback(None, instance, None)
+        callback.assert_called_with(instance)
 
 
 if __name__ == "__main__":
