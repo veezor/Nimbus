@@ -2,13 +2,15 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import sys
 import mock
 import string
 import unittest
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nimbus.settings'
 
-from nimbus.shared import utils, signals
+from django.conf import settings
+from nimbus.shared import utils, signals, middlewares
 from nimbus.shared.middlewares import LogSetup
 
 LogSetup()
@@ -141,6 +143,34 @@ class SignalsTest(unittest.TestCase):
         instance = mock.Mock()
         wrapped_callback(None, instance, None)
         callback.assert_called_with(instance)
+
+
+class MiddlewaresTest(unittest.TestCase):
+
+
+    def test_logsetup(self):
+        with mock.patch('logging.config.fileConfig') as mock_config:
+            middlewares.LogSetup()
+            mock_config.assert_called_with(settings.LOGGING_CONF)
+
+
+    def test_threadpool(self):
+        with mock.patch('nimbus.shared.middlewares.BJThreadPool') as mock_threadpool:
+            self.assertEqual(middlewares.ThreadPool.instance, None)
+            self.assertEqual(middlewares.ThreadPool.get_instance(), None)
+            middlewares.ThreadPool()
+            self.assertEqual(middlewares.ThreadPool.instance, mock_threadpool.return_value)
+            self.assertEqual(middlewares.ThreadPool.get_instance(), mock_threadpool.return_value)
+            mock_threadpool.assert_called_with()
+
+
+    def test_ajax_debug(self):
+        with mock.patch('nimbus.shared.middlewares.traceback') as mock_traceback:
+            with mock.patch('nimbus.shared.middlewares.logging') as mock_logging:
+                middlewares.AjaxDebug().process_exception(request=None, exception=None)
+                mock_traceback.print_exc.assert_called_with(file=sys.stderr)
+                mock_logging.getLogger.assert_called_with('nimbus.shared.middlewares')
+                self.assertTrue( mock_logging.getLogger.return_value.exception.called )
 
 
 if __name__ == "__main__":
