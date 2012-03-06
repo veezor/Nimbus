@@ -10,7 +10,7 @@ import unittest
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nimbus.settings'
 
 from django.conf import settings
-from nimbus.shared import utils, signals, middlewares
+from nimbus.shared import utils, signals, middlewares, fields
 from nimbus.shared.middlewares import LogSetup
 
 LogSetup()
@@ -171,6 +171,86 @@ class MiddlewaresTest(unittest.TestCase):
                 mock_traceback.print_exc.assert_called_with(file=sys.stderr)
                 mock_logging.getLogger.assert_called_with('nimbus.shared.middlewares')
                 self.assertTrue( mock_logging.getLogger.return_value.exception.called )
+
+
+
+
+class FieldsTest(unittest.TestCase):
+
+    def assertNotRaises(self, exception, callable, *args, **kwargs):
+        try:
+            callable(*args, **kwargs)
+            raised = False
+        except exception:
+            raised = True
+        self.assertFalse(raised)
+
+    def test_check_domain(self):
+        self.assertRaises(fields.ValidationError, fields.check_domain, "abc")
+        self.assertNotRaises(fields.ValidationError, fields.check_domain, "a.b.com")
+        self.assertNotRaises(fields.ValidationError, fields.check_domain, "localhost")
+        self.assertNotRaises(fields.ValidationError, fields.check_domain, "a.b.com:80")
+        self.assertNotRaises(fields.ValidationError, fields.check_domain, "192.168.6.1")
+
+
+    def test_check_model_name(self):
+        self.assertNotRaises(fields.ValidationError, fields.check_model_name, "a b c")
+        self.assertRaises(fields.ValidationError, fields.check_model_name, "1") #digits
+        self.assertRaises(fields.ValidationError, fields.check_model_name, "abc") # len(str) < 3
+        self.assertNotRaises(fields.ValidationError, fields.check_model_name, "abcd") # len(str) >= 4
+        self.assertRaises(fields.ValidationError, fields.check_model_name, "abçd") # accentuation
+
+
+    def test_name_is_valid(self):
+        self.assertTrue(fields.name_is_valid("a b c"))
+        self.assertFalse(fields.name_is_valid("1")) #digits
+        self.assertFalse(fields.name_is_valid("abc"))# len(str) < 3
+        self.assertTrue(fields.name_is_valid("abcd")) # len(str) >= 4
+        self.assertFalse(fields.name_is_valid("abçd")) # accentuation
+
+
+    def test_form_path(self):
+        form = fields.FormPathField()
+        self.assertRaises(fields.ValidationError, form.clean, "a b c")
+        self.assertRaises(fields.ValidationError, form.clean, "abcd")
+        self.assertNotRaises(fields.ValidationError, form.clean, "/abcd")
+        self.assertRaises(fields.ValidationError, form.clean, "\abcd")
+        self.assertNotRaises(fields.ValidationError, form.clean, "/abcd/")
+        self.assertNotRaises(fields.ValidationError, form.clean, "/abcd/edf/abc")
+        self.assertRaises(fields.ValidationError, form.clean, "\abcd\edf\abc")
+        self.assertRaises(fields.ValidationError, form.clean, "C:")
+        self.assertNotRaises(fields.ValidationError, form.clean, "C:/")
+        self.assertNotRaises(fields.ValidationError, form.clean, "C:/abc")
+        self.assertNotRaises(fields.ValidationError, form.clean, "C:/abc/def/ghi")
+
+
+    def test_model_path(self):
+        path_field = fields.ModelPathField()
+        form_field = path_field.formfield()
+        self.assertTrue(isinstance(form_field, fields.FormPathField))
+
+
+    def test_char_form_field(self):
+        widget = mock.Mock()
+
+        def get_class_attr(max_length):
+            char_form_field = fields.CharFormField(max_length=max_length)
+            return char_form_field.widget_attrs(widget)['class']
+
+        self.assertEqual(get_class_attr(30), 'text small')
+        self.assertEqual(get_class_attr(50), 'text medium')
+        self.assertEqual(get_class_attr(270), 'text big')
+
+
+    def test_ip_address_field(self):
+        widget = mock.Mock()
+
+        ip_form_field = fields.IPAddressField()
+        class_attr = ip_form_field.widget_attrs(widget)['class']
+
+        self.assertEqual(class_attr, 'text small')
+
+
 
 
 if __name__ == "__main__":
