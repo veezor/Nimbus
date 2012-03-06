@@ -1,6 +1,6 @@
 
 <div style="width: {% if table.width %}{{table.width}}{% else %}100%{% endif %};">
-    <h2>{{block.title}}</h2>
+    <h2>{{block.title}} {{block.used|floatformat:1}} de {{block.total|floatformat:1}}GB <span {% if block.percent_used >= block.warn_level %}style="color: #FF0000;"{% endif %}>({{block.percent_used|floatformat:1}}%)</span></h2>
 	<div style="padding-top: 30px; padding-bottom: 30px; padding-right: 20px; margin-bottom: 20px; width:890px; background: #FFFDF6; border: solid 2px grey; box-shadow: 2px 2px 2px #BBBBBB;">
 		<div id="{{block.cid_name}}" style="height:{{block.height}}px;">
 		</div>

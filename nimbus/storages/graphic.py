@@ -47,7 +47,10 @@ class Graphics(object):
         t, u, f = diskinfo.get_data()
         used = u / 1073741824.0
         total = t / 1073741824.0
-        r = [{'title': u"Ocupação do disco: %.1f de %.1fGB (%.1f%%)" %(used, total, 100*used/total),
+        r = [{'title': u"Ocupação do disco:",
+                'used': used,
+                'percent_used': 100.0*used/total,
+                'warn_level': 85.0, # percent
                 'template': 'storage_graph.html',
                 'cid_name': "chart_disk_usage",
                 'height': "200",
