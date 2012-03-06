@@ -21,7 +21,8 @@ from nimbus.shared import (utils,
                            middlewares,
                            fields,
                            forms,
-                           views)
+                           views,
+                           contextprocessors)
 
 LogSetup()
 
@@ -451,6 +452,45 @@ class FormsTest(unittest.TestCase):
         field.choices = None
         forms.make_custom_fields(field)
         field.formfield.assert_called_with(form_class=fields.IPAddressField)
+
+
+class ContextProcessorsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.patch_settings = mock.patch('nimbus.shared.contextprocessors.settings')
+        self.settings = self.patch_settings.start()
+
+        self.patch_messages = mock.patch("nimbus.shared.contextprocessors.messages")
+        self.messages = self.patch_messages.start()
+
+        self.request = mock.Mock()
+
+    def test_product(self):
+        self.settings.NIMBUS_PRODUCT = "test"
+        response = contextprocessors.product(self.request)
+        self.assertEqual( response, {"product" : "test"} )
+
+
+    def test_script_name(self):
+        self.request.META = {"PATH_INFO": "test"}
+        response = contextprocessors.script_name(self.request)
+        self.assertEqual( response, {"script_name" : "test"} )
+
+
+    def test_block_ie(self):
+        self.request.META = {"HTTP_USER_AGENT": "MSIE 6"}
+        response = contextprocessors.block_ie_browser(self.request)
+        self.assertEqual( response, {} )
+        self.assertTrue(self.messages.warning.called)
+
+
+    def test_menus_from_apps(self):
+        self.settings.MODULAR_APPS = ["nimbus.test1", "nimbus.test2", "nimbus.test3"]
+        response = contextprocessors.menus_from_apps(self.request)
+        self.assertEqual( response, {"menus_from_apps" : ["test1_menu.html",
+                                                          "test2_menu.html",
+                                                          "test3_menu.html"]} )
+
 
 
 if __name__ == "__main__":
