@@ -89,16 +89,3 @@ class IPAddressField(forms.IPAddressField):
 
         return attrs
 
-class ChoiceField(forms.ChoiceField):
-
-    def widget_attrs(self, widget):
-        attrs = super(ChoiceField, self).widget_attrs(widget)
-        import pdb; pdb.set_trace()
-        return attrs
-
-class Select(forms.Select):
-
-    def widget_attrs(self, widget):
-        attrs = super(ComboField, self).widget_attrs(widget)
-        import pdb; pdb.set_trace()
-        return attrs
