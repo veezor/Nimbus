@@ -9,13 +9,18 @@ import unittest
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nimbus.settings'
 
+
+from django.db import models
 from django.conf import settings
+import django.forms as dforms
 
 from nimbus.shared.middlewares import LogSetup
+
 from nimbus.shared import (utils,
                            signals,
                            middlewares,
                            fields,
+                           forms,
                            views)
 
 LogSetup()
@@ -370,6 +375,82 @@ class EditSingletonModelTest(unittest.TestCase):
         self.patch_form.stop()
 
 
+
+
+class FormsTest(unittest.TestCase):
+
+
+    def setUp(self):
+        self.select_attrs = {"class":""}
+        self.input_attrs = {"class":"text"}
+
+
+    def _helper_test(self, field, widgettype, attrs):
+        forms.make_custom_fields(field)
+        self.assertTrue( field.formfield.called )
+        args, kwargs = field.formfield.call_args
+        widget = kwargs['widget']
+        self.assertTrue(isinstance(widget, widgettype))
+        self.assertEqual( widget.attrs, attrs )
+
+
+
+    def generic_test(self, fieldtype, widgettype, attrs):
+        field = mock.Mock(spec=fieldtype)
+        field.choices = None
+        self._helper_test(field, widgettype, attrs)
+
+    def test_foreign_key_custom_field(self):
+        self.generic_test(models.ForeignKey,
+                          dforms.Select,
+                          self.select_attrs)
+
+
+    def test_choices(self):
+        field = mock.Mock()
+        field.choices = True
+        self._helper_test(field,
+                          dforms.Select,
+                          self.select_attrs)
+
+
+
+    def test_char_custom_field(self):
+        self.generic_test(models.CharField,
+                          dforms.TextInput,
+                          self.input_attrs)
+
+
+    def test_time_custom_field(self):
+        self.generic_test(models.TimeField,
+                          dforms.TextInput,
+                          self.input_attrs)
+
+
+    def test_positive_small_custom_field(self):
+        self.generic_test(models.PositiveSmallIntegerField,
+                          dforms.TextInput,
+                          self.input_attrs)
+
+
+    def test_many_to_many_custom_field(self):
+        self.generic_test(models.ManyToManyField,
+                          dforms.SelectMultiple,
+                          self.select_attrs)
+
+
+    def test_else(self):
+        field = mock.Mock()
+        field.choices = None
+        forms.make_custom_fields(field)
+        field.formfield.assert_called_with()
+
+
+    def test_ipaddres(self):
+        field = mock.Mock(spec=models.IPAddressField)
+        field.choices = None
+        forms.make_custom_fields(field)
+        field.formfield.assert_called_with(form_class=fields.IPAddressField)
 
 
 if __name__ == "__main__":
