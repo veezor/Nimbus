@@ -10,8 +10,13 @@ import unittest
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nimbus.settings'
 
 from django.conf import settings
-from nimbus.shared import utils, signals, middlewares, fields
+
 from nimbus.shared.middlewares import LogSetup
+from nimbus.shared import (utils,
+                           signals,
+                           middlewares,
+                           fields,
+                           views)
 
 LogSetup()
 
@@ -253,6 +258,122 @@ class FieldsTest(unittest.TestCase):
 
 
 
+class ViewsTest(unittest.TestCase):
+
+    def test_render_to_response(self):
+        with mock.patch('nimbus.shared.views._render_to_response') as mock_render:
+            with mock.patch('nimbus.shared.views.RequestContext') as mock_context:
+                request = mock.Mock()
+                template = "test_template"
+                dictionary = {}
+                views.render_to_response(request, template, dictionary)
+                mock_context.assert_called_with(request)
+                mock_render.assert_called_with(template, dictionary,
+                                               context_instance=mock_context.return_value)
+
+
+
+
+class EditSingletonModelTest(unittest.TestCase):
+
+    def setUp(self):
+        self.patch_update = mock.patch('nimbus.shared.views.update_object')
+        self.update_object = self.patch_update.start()
+        self.patch_create = mock.patch('nimbus.shared.views.create_object')
+        self.create_object = self.patch_create.start()
+        self.patch_reload = mock.patch('nimbus.shared.views.call_reload_baculadir')
+        self.call_reload_baculadir = self.patch_reload.start()
+        self.patch_reverse = mock.patch('nimbus.shared.views.reverse')
+        self.reverse = self.patch_reverse.start()
+        self.patch_form = mock.patch('nimbus.shared.forms.form')
+        self.form = self.patch_form.start()
+
+        self.request = mock.Mock()
+
+
+    def _default_call(self,**kargs):
+        views.edit_singleton_model(self.request,
+                                   "test_template",
+                                   redirect_to="nimbus.base.views.home",
+                                   **kargs)
+
+    def test_reverse(self):
+        self._default_call()
+        self.reverse.assert_called_with("nimbus.base.views.home")
+        self.reverse.reset_mock()
+        views.edit_singleton_model(self.request,
+                                   "test_template",
+                                   redirect_to="/")
+        self.assertFalse(self.reverse.called)
+
+
+    def test_create(self):
+        self.update_object.side_effect = views.Http404
+
+        self._default_call()
+        self.assertTrue(self.create_object.called)
+
+
+    def test_create_not_called(self):
+        self._default_call()
+        self.assertFalse(self.create_object.called)
+
+
+    def test_reload(self):
+        self.request.method = "POST"
+        self._default_call(reload_bacula=False)
+        self.assertFalse(self.call_reload_baculadir.called)
+        self._default_call(reload_bacula=True)
+        self.call_reload_baculadir.assert_called_with()
+
+        self.call_reload_baculadir.reset_mock()
+
+        self.request.method = "GET"
+        self._default_call(reload_bacula=True)
+        self.assertFalse(self.call_reload_baculadir.called)
+
+
+    def test_update_object_call(self):
+        self._default_call()
+        self.update_object.assert_called_with(self.request,
+                                              object_id=1,
+                                              model=None,
+                                              form_class=None,
+                                              template_name="test_template",
+                                              post_save_redirect=self.reverse.return_value,
+                                              extra_context=None)
+
+    def test_create_call(self):
+        self.update_object.side_effect = views.Http404
+        self._default_call()
+        self.create_object.assert_called_with(self.request,
+                                              model=None,
+                                              form_class=None,
+                                              template_name="test_template",
+                                              post_save_redirect=self.reverse.return_value,
+                                              extra_context=None)
+
+
+    def test_form(self):
+        self._default_call()
+        self.assertFalse(self.form.called)
+        model = mock.Mock()
+        self._default_call(model=model)
+        self.form.assert_called_with(model)
+
+
+    def tearDown(self):
+        self.patch_update.stop()
+        self.patch_create.stop()
+        self.patch_reload.stop()
+        self.patch_reverse.stop()
+        self.patch_form.stop()
+
+
+
+
 if __name__ == "__main__":
     unittest.main()
+
+
 
