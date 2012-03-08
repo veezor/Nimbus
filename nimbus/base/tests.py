@@ -5,10 +5,12 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 import re
+import mock
 import datetime
 
 from django.test import TestCase
-from nimbus.base import models, admin
+from nimbus.base import models, admin, commands
+
 
 class NotificationModelTest(TestCase):
 
@@ -159,3 +161,16 @@ class BaseAdminRegistry(TestCase):
 
     def test_notification(self):
         self.assertTrue( models.Notification in admin.admin.site._registry)
+
+
+class BaseCommandsTest(TestCase):
+
+    def test_migration(self):
+        with mock.patch("nimbus.base.commands.migrations") as migrations:
+            commands.update_10_to_11()
+            migrations.update_10_to_11.assert_called_with()
+
+    def test_shell(self):
+        with mock.patch("nimbus.base.commands.call_command") as call_command:
+            commands.shell()
+            call_command.assert_called_with("shell")
