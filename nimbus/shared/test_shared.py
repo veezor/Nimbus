@@ -22,7 +22,8 @@ from nimbus.shared import (utils,
                            fields,
                            forms,
                            views,
-                           contextprocessors)
+                           contextprocessors,
+                           exceptions)
 
 LogSetup()
 
@@ -492,6 +493,17 @@ class ContextProcessorsTest(unittest.TestCase):
                                                           "test3_menu.html"]} )
 
 
+
+class ExceptionsTest(unittest.TestCase):
+
+    def test_message(self):
+        class TestException(exceptions.MyBaseException):
+            """message of exception"""
+
+        try:
+            raise TestException()
+        except TestException, exc:
+            self.assertEqual(exc.message, TestException.__doc__)
 
 if __name__ == "__main__":
     unittest.main()
