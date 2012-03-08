@@ -16,7 +16,7 @@ Catalog {
 	dbuser = {{ db_user }}
 	dbpassword = "{{db_password}}"
 	Name = MyCatalog
-	dbname = "{{db_name}}"
+    dbname = "{{db_name}}"
 }
 
 Messages {
