@@ -49,7 +49,10 @@ def create_database():
         storage.password =  utils.random_password()
         storage.save()
 
+
         computer = Computer.objects.get(id=1)
+        computer.password =  utils.random_password()
+        computer.save()
         computer.activate()
 
         register_administrative_nimbus_models()
