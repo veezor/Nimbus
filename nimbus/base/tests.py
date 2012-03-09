@@ -1,9 +1,6 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
-Replace these with more appropriate tests for your application.
-"""
 import re
 import mock
 import datetime
