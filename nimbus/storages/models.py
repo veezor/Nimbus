@@ -165,11 +165,13 @@ def remove_device_file(device):
 
     if device.storage.active:
         name = device.bacula_name
+        storagename = device.storage.bacula_name
 
         filename = path.join( settings.NIMBUS_DEVICES_DIR, 
                               name)
         storagefile = path.join( settings.NIMBUS_STORAGES_DIR, 
-                              name)
+                              storagename)
+    
 
         utils.remove_or_leave(filename)
         utils.remove_or_leave(storagefile)
