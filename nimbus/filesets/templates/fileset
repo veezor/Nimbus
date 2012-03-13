@@ -1,28 +1,28 @@
 ## {{verbose_name}}
 FileSet {
-	Name = "{{name}}" 
-	Include {
-		Options{
-			signature = "MD5" 
-			compression = "GZIP"
-			{% for include in includes %}wildfile = "{{include}}"
-			{%endfor%}
-		}
-		{% if excludes %}
-		Options{
-			{% for exclude in excludes %}wildfile = "{{exclude}}"
-			{%endfor%}
-			Exclude = yes
-		}
-		{% else %}
-		{% if includes %}
-		Options{
-	        RegexFile = ".*"
-			Exclude = yes
-		}		
-		{% endif %}
-		{% endif %}
-		{% for file in files %}File = "{{file}}"
-		{%endfor%}
-	}
+    Name = "{{name}}" 
+    Include {
+        Options{
+            signature = "MD5" 
+            compression = "GZIP"
+            {% for include in includes %}wildfile = "{{include}}"
+            {%endfor%}
+        }
+        {% if excludes %}
+        Options{
+            {% for exclude in excludes %}wildfile = "{{exclude}}"
+            {%endfor%}
+            Exclude = yes
+        }
+        {% else %}
+        {% if includes %}
+        Options{
+            RegexFile = ".*"
+            Exclude = yes
+        }
+        {% endif %}
+        {% endif %}
+        {% for file in files %}File = "{{file}}"
+        {%endfor%}
+    }
 }
