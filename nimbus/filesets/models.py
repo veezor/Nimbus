@@ -99,5 +99,6 @@ def update_filepath(filepath):
 signals.connect_on(update_fileset_file, FileSet, post_save)
 signals.connect_on(update_filepath, FilePath, post_save)
 signals.connect_on(update_filters, Wildcard, post_save)
+signals.connect_on(update_filters, Wildcard, post_delete)
 signals.connect_on(remove_fileset_file, FileSet, post_delete)
 signals.connect_on(update_filepath, FilePath, post_delete)
