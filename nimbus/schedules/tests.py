@@ -6,7 +6,7 @@ import os
 from django.conf import settings
 from django.test import TestCase
 
-from nimbus.schedules import models
+from nimbus.schedules import models, admin
 
 
 class GenericUnicodeTest(TestCase):
@@ -144,4 +144,19 @@ class SignalsTest(TestCase):
             content = f_obj.read()
             self.assertMultiLineEqual( content, template )
 
+
+
+class ScheduleAdminRegistry(TestCase):
+
+    def test_schedule(self):
+        self.assertTrue( models.Schedule in admin.admin.site._registry)
+
+    def test_run(self):
+        self.assertTrue( models.Run in admin.admin.site._registry)
+
+    def test_backup_level(self):
+        self.assertTrue( models.BackupLevel in admin.admin.site._registry)
+
+    def test_backup_kind(self):
+        self.assertTrue( models.BackupKind in admin.admin.site._registry)
 
