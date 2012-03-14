@@ -105,7 +105,7 @@ class Run(models.Model):
         elif (self.kind.name == 'daily') or (self.kind.name == 'hourly'):
             return 'Todos'
         else:
-            return self.day
+            return str(self.day)
 
     @property
     def bacula_config(self):
