@@ -85,10 +85,11 @@ class Bacula(object):
                 f.write( fname.encode("utf-8") + "\n" )
         
         return self.cmd.restore.\
+                jobid[jobid].\
                 client[client_name].\
                 file["<" + filename].\
                 restoreclient[client_name].\
-                select.all.done.yes.where[where].jobid[jobid].run()
+                select.all.done.yes.where[where].run()
 
 
     def run_backup(self, job_name, client_name):
