@@ -80,4 +80,4 @@ ALTER TABLE ONLY procedures_procedure_job_tasks
     ADD CONSTRAINT procedures_procedure_job_tasks_jobtask_id_fkey FOREIGN KEY (jobtask_id) REFERENCES procedures_jobtask(id) DEFERRABLE INITIALLY DEFERRED;
 
 
--
+
