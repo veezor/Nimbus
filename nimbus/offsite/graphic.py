@@ -57,19 +57,24 @@ class Graphics(object):
     def data_to_template(self):
         """Metodo obrigatorio para todas as classes Graphics"""
         if self.offsite_if_active():
-            most_recent = OffsiteGraphicsData.objects.order_by("-timestamp")[0]
-            total = most_recent.total / 1073741824.0
-            used = most_recent.used / 1073741824.0            
+            if OffsiteGraphicsData.objects.count():
+                most_recent = OffsiteGraphicsData.objects.order_by("-timestamp")[0]
+                total_GB = most_recent.total / 1073741824.0
+                used_GB = most_recent.used / 1073741824.0
+                total = most_recent.total
+                percent_used = 100.0*used_GB/total_GB
+            else:
+                total_GB, used_GB, total, percent_used = 0.0, 0.0, 0.0, 0.0
             return [{'title': u"Ocupação do disco:",
-                    'used': used,
-                    'percent_used': 100.0*used/total,
+                    'used': used_GB,
+                    'percent_used': percent_used,
                     'warn_level': 85.0, # percent
                     'template': 'offsite_graph.html',
                     'width': "",
                     'cid_name': "chart_offsite_usage",
                     'height': "200",
-                    'total': most_recent.total,
-                    'total_GB': total,
-                    'upper_limit': int(total * 1.3)}]
+                    'total': total,
+                    'total_GB': total_GB,
+                    'upper_limit': int(total_GB * 1.3)}]
         else:
             return []
