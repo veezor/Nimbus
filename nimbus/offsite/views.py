@@ -46,7 +46,7 @@ def offsite(request):
 
 @login_required
 def detail(request):
-    offsite = Offsite.objects.get(id=1)
+    offsite = Offsite.get_instance()
     uploads = list(LocalUploadRequest.objects.all()) + list(RemoteUploadRequest.objects.all())
     content = []
     for upload in uploads:
@@ -57,7 +57,7 @@ def detail(request):
                        })
     transferencias_em_execucao = [{'title': u'Transferências em execução',
                                    'content': content}]
-    offsite = Offsite.get_instance()
+
     if offsite.active:
         graphic = Graphics()
         graph_block = graphic.data_to_template()[0]
