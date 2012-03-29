@@ -15,7 +15,7 @@ class Wizard(BaseModel):
     @classmethod
     def has_completed(cls):
         return cls.get_instance().completed
-    
+
     def finish(self):
         self.completed = True
         self.save()
@@ -64,7 +64,7 @@ class WizardManager(object):
 
     def get_step(self, name):
         return self.steps[name]
-    
+
     def get_steps(self):
         at_begin = self._get_ordered_steps(self.at_begin_reversed_positions)
         without_position = self._get_ordered_steps(self.without_position_steps)
@@ -101,9 +101,9 @@ class WizardManager(object):
 
 
     def _add_step(self, step, store, name=None):
-        if name in store:
+        if name in store or name in self.steps:
             raise WizardStepError("Step already added")
-        
+
         store[name] = step
         self.steps[name] = step
 
@@ -144,7 +144,6 @@ class WizardManager(object):
 
 
 wizard_manager = WizardManager()
-
 
 def add_step(position=None, name=None):
 
