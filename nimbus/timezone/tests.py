@@ -9,7 +9,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
-from nimbus.timezone import models, forms
+from nimbus.timezone import models, forms, admin
 from nimbus.shared.middlewares import ThreadPool
 
 
@@ -126,4 +126,9 @@ class TimezoneTest(TestCase):
             form = forms.TimezoneForm(data=newdata, instance=self.timezone)
             self.assertFalse(form.is_valid())
             self.assertRaises(ValidationError, form.clean_area)
+
+
+
+    def test_admin(self):
+        self.assertTrue( models.Timezone in admin.admin.site._registry)
 
