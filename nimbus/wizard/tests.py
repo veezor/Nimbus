@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+
+import sys
 import mock
 from django.test import TestCase
 
-from nimbus.wizard import models, admin
+from nimbus.wizard import models, admin, middleware
 
 
 class WizardTest(TestCase):
@@ -191,7 +193,151 @@ class WizardManagerTest(TestCase):
 
 
     def test_add_step(self):
-        pass
+
+        def step1(request):
+            pass
+
+        def step2(request):
+            pass
+
+        def step3(request):
+            pass
+
+        self.wizard_manager.add_step(step1, position=1)
+        self.wizard_manager.add_step(step2)
+        self.wizard_manager.add_step(step3, position=-11)
+
+        self.assertEqual( ["step1", "step2", "step3"], 
+                          self.wizard_manager.get_steps())
+
+
+    def test_add_step_ordering(self):
+
+        def step1(request):
+            pass
+
+        def step2(request):
+            pass
+
+
+        self.wizard_manager.add_step(step1, position=2)
+        self.wizard_manager.add_step(step2, position=1)
+
+        self.assertEqual( ["step2", "step1"], 
+                          self.wizard_manager.get_steps())
+
+
+
+    def test_next_step(self):
+
+        def step1(request):
+            pass
+
+        def step2(request):
+            pass
+
+        def step3(request):
+            pass
+
+        self.wizard_manager.add_step(step1, position=1)
+        self.wizard_manager.add_step(step2, position=2)
+        self.wizard_manager.add_step(step3, position=3)
+
+        self.assertEqual( ("step2", step2), 
+                          self.wizard_manager.get_next_step(current="step1"))
+
+        self.assertEqual( ("step3", step3), 
+                          self.wizard_manager.get_next_step(current="step2"))
+        self.assertRaises( models.WizardStepError,
+                           self.wizard_manager.get_next_step, current="step3")
+                            
+ 
+    def test_previous_step(self):
+
+        def step1(request):
+            pass
+
+        def step2(request):
+            pass
+
+        def step3(request):
+            pass
+
+        self.wizard_manager.add_step(step1, position=1)
+        self.wizard_manager.add_step(step2, position=2)
+        self.wizard_manager.add_step(step3, position=3)
+
+        
+        self.assertRaises( models.WizardStepError,
+                           self.wizard_manager.get_previous_step, current="step1")
+
+        self.assertEqual( ("step1", step1), 
+                          self.wizard_manager.get_previous_step(current="step2"))
+
+        self.assertEqual( ("step2", step2), 
+                          self.wizard_manager.get_previous_step(current="step3"))
+
+ 
 
     def tearDown(self):
         self.patch.stop()
+
+
+class WizardMiddlewareTest(TestCase):
+
+    def setUp(self):
+        self.wizard = models.Wizard.get_instance()
+
+    def test_not_used(self):
+        self.wizard.completed = True
+        self.wizard.save()
+        with mock.patch("nimbus.wizard.middleware.bacula") as bacula:
+            self.assertRaises( middleware.MiddlewareNotUsed,
+                               middleware.Wizard)
+            bacula.unlock_bacula_and_start.assert_called_with()
+
+
+    def test_load_steps(self):
+        mock_import = mock.Mock()
+        middleware.__import__ = mock_import
+        wizard_middleware = middleware.Wizard()
+        mock_import.assert_any_call("nimbus.timezone.views")
+        mock_import.assert_any_call("nimbus.network.views")
+        mock_import.assert_any_call("nimbus.offsite.views")
+        mock_import.assert_any_call("nimbus.session.views")
+        mock_import.assert_any_call("nimbus.config.views")
+        del middleware.__import__
+
+
+    def test_restricted_url(self):
+        wizard_middleware = middleware.Wizard()
+        request = mock.Mock()
+        request.META = {"PATH_INFO" : "/wizard"} 
+        self.assertFalse( wizard_middleware.is_restricted_url(request))
+
+        request.META = {"PATH_INFO" : "/media"} 
+        self.assertFalse( wizard_middleware.is_restricted_url(request))
+
+        request.META = {"PATH_INFO" : "/recovery"} 
+        self.assertFalse( wizard_middleware.is_restricted_url(request))
+
+        request.META = {"PATH_INFO" : "ajax"} 
+        self.assertFalse( wizard_middleware.is_restricted_url(request))
+
+        request.META = {"PATH_INFO" : "/"} 
+        self.assertTrue( wizard_middleware.is_restricted_url(request))
+
+
+    def test_process_request(self):
+        request = mock.Mock()
+        request.META = {"PATH_INFO" : "/"}
+        wizard_middleware = middleware.Wizard()
+        self.wizard.completed = True
+        self.wizard.save()
+        self.assertEqual( wizard_middleware.process_request(request), None)
+
+        self.wizard.completed = False
+        self.wizard.save()
+        response = wizard_middleware.process_request(request)
+        self.assertNotEqual(response , None)
+        self.assertEqual( response._headers['location'][1], "/wizard/start/")
