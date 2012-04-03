@@ -41,15 +41,15 @@
         {% include "form.html" %}
 
         {% if recovery %}
-        <a href="{{ recovery }}" class="submit"><span>Iniciar</span></a> &nbsp;
+        <a href="{{ recovery }}" class="submit"><span>{% trans "Start" %}</span></a> &nbsp;
         {% endif %}
 
         <p class="input_submit">
             {% if previous %}
-            <a href="{{ previous }}" class="css3button positive big floatleft">Anterior</a> &nbsp;
+            <a href="{{ previous }}" class="css3button positive big floatleft">{% trans "Previous"%}</a> &nbsp;
             {% endif %}
 
-            <button type="submit" class="css3button big positive floatright" value="Próximo">Próximo</button>
+            <button type="submit" class="css3button big positive floatright" value="{% trans "Next" %}">{% trans "Next" %}</button>
         </p>
 
         <input type="hidden" name="next" value="{{ next }}" />
