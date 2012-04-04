@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/system.js"></script>
@@ -18,9 +19,9 @@
     <div class="block_content">
         <form action="/system/create_or_view_ping/" method="post" id="form_ping">
             <p>
-                <label for="ip">IP ou domínio:</label><br/>
+            <label for="ip">{% trans "IP Address or Domain:"%}</label><br/>
                 <input type="text" name="ip" value="" class="text small" id="ip" />
-                <button type="submit" class="css3button big positive" value="Executar">Executar</button>
+                <button type="submit" class="css3button big positive" value="{% trans "Run"%}">{% trans "Run"%}</button>
                 <input type="hidden" name="type" value="{{type}}" id="type" />
             </p>
         </form>

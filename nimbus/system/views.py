@@ -5,6 +5,7 @@ import simplejson
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext_lazy as _
 from django.core import validators
 
 from nimbus.shared.views import render_to_response
@@ -14,11 +15,11 @@ import networkutils
 @login_required
 def network_tool(request, type="ping"):
     if type == "ping":
-        title = u"Teste de ping"
+        title = _(u"Ping")
     elif type == "traceroute":
-        title = u"Teste de traceroute"
+        title = _(u"Traceroute")
     elif type == "nslookup":
-        title = u"Teste de ns lookup"
+        title = _(u"NS Lookup")
     
     extra_content = {'title': title, 'type': type}
     
@@ -58,7 +59,7 @@ def create_or_view_network_tool(request):
                         output = networkutils.resolve_addr(ip)
                 except (networkutils.HostAddrNotFound,
                          networkutils.HostNameNotFound), error:
-                    output = "Não encontrado"
+                    output = _("Not found")
 
         except ValidationError, error:
             output = "\n".join(error.messages)
