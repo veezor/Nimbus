@@ -7,6 +7,7 @@ import xmlrpclib
 
 from django.db import models
 from django.db.models.signals import post_save, post_delete
+from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 
@@ -33,21 +34,23 @@ class StorageGraphicsData(BaseModel):
 
 
 class Storage(BaseModel):
-    name = models.CharField(max_length=255, null=False, blank=False,
+    name = models.CharField(_(u"Name"), max_length=255, null=False, blank=False,
                             validators=[fields.check_model_name])
-    address = models.IPAddressField(default=get_nimbus_address, editable=False,
+    address = models.IPAddressField(_(u"Address"),
+                                    default=get_nimbus_address, editable=False,
                                     null=False, blank=False)
-    password = models.CharField( max_length=255, null=False, 
+    password = models.CharField( _(u"Password"),
+                                 max_length=255, null=False, 
                                  blank=False, editable=False,
                                  default=utils.random_password)
 
-    description = models.TextField(max_length=500, blank=True)
-    active = models.BooleanField(editable=False)
+    description = models.TextField(_(u"Description"),max_length=500, blank=True)
+    active = models.BooleanField(_(u"Active"), editable=False)
 
 
 
     class Meta:
-        verbose_name = u"Dispositivo de armazenamento"
+        verbose_name = _(u"Storage")
 
     @property
     def is_local(self):

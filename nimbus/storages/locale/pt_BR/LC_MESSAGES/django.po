@@ -1,0 +1,164 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-04 17:06-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:19 models.py:37
+msgid "Name"
+msgstr "Nome"
+
+#: forms.py:20 models.py:39
+msgid "Address"
+msgstr "Endereço"
+
+#: forms.py:21 models.py:42
+msgid "Password"
+msgstr "Senha"
+
+#: forms.py:22 models.py:47
+msgid "Description"
+msgstr "Descrição"
+
+#: models.py:48
+msgid "Active"
+msgstr "Ativo"
+
+#: models.py:53 views.py:120
+msgid "Storage"
+msgstr "Dispositivo de armazenamento"
+
+#: views.py:33
+msgid "Automatically added"
+msgstr "Adicionado automaticamente"
+
+#: views.py:38
+msgid "Storage automatically identified"
+msgstr "Dispositivo de armazenamento identificado automaticamente"
+
+#: views.py:49 templates/storages_list.html:20 templates/storages_view.html:20
+msgid "Add Storage"
+msgstr "Adicionar armazenamento"
+
+#: views.py:57
+msgid "Edit Storage"
+msgstr "Editar armazenamento"
+
+#: views.py:73
+msgid "Storages"
+msgstr "Dispositivos de armazenamento"
+
+#: views.py:99
+msgid "Computer : %s"
+msgstr "Computador : %s"
+
+#: views.py:106
+msgid "Backups in progress"
+msgstr "Backups em execução"
+
+#: views.py:114
+msgid "Partition /bacula not found"
+msgstr "Partição /bacula não encontrada"
+
+#: views.py:135
+#, python-format
+msgid "Computers of Storage \"%s\""
+msgstr "Computadores do armazenamento \"%s\""
+
+#: views.py:146
+msgid "Storage enabled."
+msgstr "Dispositivo de armazenamento ativado com sucesso"
+
+#: templates/storages_add.html:20
+msgid "Storages list"
+msgstr "Dispositivos de armazenamento"
+
+#: templates/storages_add.html:31 templates/storages_list.html:32
+#: templates/storages_view.html:30
+msgid "Edit"
+msgstr "Editar"
+
+#: templates/storages_add.html:32
+msgid "Remove"
+msgstr "Remover"
+
+#: templates/storages_add.html:40 templates/storages_list.html:39
+msgid "Enable"
+msgstr "Ativar"
+
+#: templates/storages_add.html:48
+msgid "New storages not found."
+msgstr "Novos dispositivos de armazenamento não encontrados."
+
+#: templates/storages_edit.html:18
+msgid "Update"
+msgstr "Atualizar"
+
+#: templates/storages_list.html:24
+msgid "This storage is disabled"
+msgstr "Armazenamento está desativado"
+
+#: templates/storages_list.html:47
+msgid "No enabled storages."
+msgstr "Sem armazenamentos ativos"
+
+#: templates/storages_list.html:48
+msgid "Try"
+msgstr "Tente"
+
+#: templates/storages_list.html:48
+msgid "add storage."
+msgstr "adicionar armazenamento"
+
+#: templates/storages_view.html:20
+msgid "View all storages"
+msgstr "Ver todos os dispositivos de armazenamento"
+
+#: templates/storages_view.html:36
+msgid "No related procedures"
+msgstr "Sem procedimentos relacionados"
+
+#: templates/storages_view.html:39
+msgid "RELATED COMPUTERS"
+msgstr "COMPUTADORES RELACIONADOS"
+
+#: templates/storages_view.html:52
+msgid "edit"
+msgstr "editar"
+
+#: templates/storages_view.html:53
+msgid "Offsite enabled:"
+msgstr "Offsite ativado:"
+
+#: templates/storages_view.html:53
+msgid "Yes"
+msgstr "Sim"
+
+#: templates/storages_view.html:53
+msgid "No"
+msgstr "Não"
+
+#: templates/storages_view.html:54
+msgid "Schedule:"
+msgstr "Agendamento:"
+
+#: templates/storages_view.html:55
+msgid "File sets:"
+msgstr "Conjunto de arquivos:"
+
+#: templates/storages_view.html:69
+msgid "Disk Space"
+msgstr "Uso do disco"

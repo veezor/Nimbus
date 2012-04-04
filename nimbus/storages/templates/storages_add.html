@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/storages.js"></script>
@@ -16,7 +17,7 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <p><a href="/storages/list" class="css3button positive">Listar armazenamento</a></p>
+        <p><a href="/storages/list" class="css3button positive">{% trans "Storages list" %}</a></p>
         <div class="storages">
         {% for storage in storages %}
             <div class="storage {% if not storage.active %}desativado{% endif %}">
@@ -27,8 +28,8 @@
                         <small class="ip">{{storage.address}}</small>
                     </div>
                     <p class="options">
-                        <a href="/storages/{{storage.id}}/edit/" class="css3button positive pill">Editar</a>
-                        <a href="/storages/{{storage.id}}/delete/" class="css3button pill negative">Remover</a>
+                    <a href="/storages/{{storage.id}}/edit/" class="css3button positive pill">{% trans "Edit" %}</a>
+                    <a href="/storages/{{storage.id}}/delete/" class="css3button pill negative">{% trans "Remove" %}</a>
                     </p>
                     
                 </div>
@@ -36,7 +37,7 @@
                     <div class="floatright">
                         {% if not storage.active %}
                         <form action="/storages/{{storage.id}}/new/" method="post" class="floatright">
-                            <button type="submit" class="css3button positive big" value="Ativar">Ativar</button>
+                            <button type="submit" class="css3button positive big" value="{% trans "Enable" %}"> {% trans "Enable" %} </button>
                         </form>
                         {% endif %}
                     </div>
@@ -44,7 +45,7 @@
                 <div class="clear"></div>
             </div>
         {% empty %}
-            <h2>Não existem armazenamentos adicionais em sua rede.</h2>
+        <h2>{% trans "New storages not found." %}</h2>
         {% endfor %}
     </div>
         

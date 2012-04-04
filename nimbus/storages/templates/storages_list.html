@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/storages.js"></script>
@@ -16,11 +17,11 @@
 	</div>
 
     <div class="block_content">
-        <p><a href="/storages/add" class="css3button positive">Adicionar armazenamento</a></p>
+        <p><a href="/storages/add" class="css3button positive">{% trans "Add Storage"%}</a></p>
         <div class="storages">
         {% for storage in storages %}
             <div class="storage {% if not storage.active %}desativado{% endif %}">
-                {% if not storage.active %}<p><strong>Este armazenamento está desativado.</strong></p>{% endif %}
+                {% if not storage.active %}<p><strong>{% trans "This storage is disabled" %}</strong></p>{% endif %}
                 <div class="left">
                     <div class="title">
                         <img src="/media/icons/storage.png"/>
@@ -28,14 +29,14 @@
                         <small class="ip">{{storage.address}}</small>
                     </div>
                     <p class="description">{{storage.description}}</p>
-                    <p class="options"><a href="/storages/{{storage.id}}/edit/" class="css3button positive">Editar</a></p>
+                    <p class="options"><a href="/storages/{{storage.id}}/edit/" class="css3button positive">{% trans "Edit"%}</a></p>
                     
                 </div>
                 <div class="right">
                     <div class="floatright">
                         {% if not storage.active %}
                         <form action="/storages/{{storage.id}}/activate/" method="post" class="floatright">
-                            <button type="submit" class="css3button positive" value="Ativar">Ativar</button>
+                            <button type="submit" class="css3button positive" value="{% trans "Enable"%}">{% trans "Enable" %}</button>
                         </form>
                         {% endif %}
                     </div>
@@ -43,8 +44,8 @@
                 <div class="clear"></div>
             </div>
         {% empty %}
-            <h2>Não existem armazenamentos ativos.</h2>
-            <p>Tente <a href="{% url nimbus.storages.views.add %}">adicionar um armazenamento</a>.</p>
+            <h2>{% trans "No enabled storages."%}</h2>
+            <p>{% trans "Try" %} <a href="{% url nimbus.storages.views.add %}"> {% trans "add storage." %}</a></p>
         {% endfor %}
     </div>
         

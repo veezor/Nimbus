@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 
 from nimbus.storages.models import Storage
@@ -29,12 +30,12 @@ def new(request):
 
             name = request.META.get('REMOTE_HOST')
             if not name:
-                name = u"Adicionado automaticamente"
+                name = _(u"Automatically added")
 
             storage =  Storage(name = name,
                                 address = request.META['REMOTE_ADDR'],
                                 password= request.POST['password'],
-                                description="Armazenamento identificado automaticamente")
+                                description=_("Storage automatically identified"))
             storage.save()
 
             return HttpResponse(status=200)
@@ -45,7 +46,7 @@ def new(request):
 
 @login_required
 def add(request):
-    title = u"Adicionar armazenamento"
+    title = _(u"Add Storage")
     storages = Storage.objects.filter(active=False)
     return render_to_response(request, "storages_add.html", locals())
 
@@ -53,7 +54,7 @@ def add(request):
 
 @login_required
 def edit(request, object_id):
-    extra_context = {'title': u"Editar armazenamento"}
+    extra_context = {'title': _(u"Edit Storage")}
     r =  create_update.update_object( request,
                                       object_id = object_id,
                                       model = Storage,
@@ -69,7 +70,7 @@ def edit(request, object_id):
 def list(request):
     d = {
         "storages" : Storage.objects.filter(active=True),
-        "title": u"Armazenamento"
+        "title": _(u"Storages")
     }
 
     return render_to_response(request, "storages_list.html", d)
@@ -95,14 +96,14 @@ def view(request, object_id):
                 'label' : job.procedure.name,
                 'date' : job.starttime,
                 'tooltip' : job.status_message,
-                'message' : u'Computador : %s' % job.client.computer.name
+                'message' : _(u'Computer : %s') % job.client.computer.name
             })
     except (Procedure.DoesNotExist, Computer.DoesNotExist), error:
         pass
 
 
     backups_em_execucao = [{
-        'title': u'Backups em Execução',
+        'title': _(u'Backups in progress'),
         'content': running_procedures_content
     }]
 
@@ -110,13 +111,13 @@ def view(request, object_id):
     try:
         diskusage = diskinfo.get_usage()
     except OSError, error:
-        messages.error(request, "Partição /bacula não encontrada")
+        messages.error(request, _(u"Partition /bacula not found"))
         diskusage = 0
 
 
     d = {
         "storage" : storage,
-        "title": u"Armazenamento",
+        "title": _(u"Storage"),
         "backups_em_execucao": backups_em_execucao,
         "espaco_em_disco": diskusage
     }
@@ -131,7 +132,7 @@ def view_computer(request, object_id):
     d = {
         "storage" : storage,
         "computers" : computers,
-        "title": u'Computadores do armazenamento "%s"' % storage.name
+        "title": _(u'Computers of Storage "%s"') % storage.name
     }
     return render_to_response(request, "computers_list.html", d)
 
@@ -142,7 +143,7 @@ def activate(request, object_id):
     storage.active = True
     storage.save()
 
-    messages.success(request, u'Armazenamento ativado com sucesso.')
+    messages.success(request, _(u'Storage enabled.'))
     return redirect('/storages/list')
 
 
