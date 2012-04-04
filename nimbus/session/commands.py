@@ -4,25 +4,26 @@
 import getpass
 
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from nimbus.libs.commands import command
 
 
 @command('--change-password')
 def change_password():
-    u"""Troca a senha do super-usuário do nimbus"""
+    _(u"""Change admin password""")
 
     while True:
-        password = getpass.getpass("new password: ")
-        confirm_password = getpass.getpass("confirm password: ")
+        password = getpass.getpass(_("new password: "))
+        confirm_password = getpass.getpass(_("confirm password: "))
 
         if password != confirm_password:
-            print "password does not match"
+            print _("password does not match")
             print
         else:
             user = User.objects.get(id=1)
             user.set_password(password)
             user.save()
-            print "password changed"
+            print _("password changed")
             break
 
 

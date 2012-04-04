@@ -1,8 +1,9 @@
 {% extends "base_login.html" %}
+{% load i18n %}
 
 {% block content %}
     <p>
-        Você foi desconectado com sucesso.
-        <br/><a href="{% url django.contrib.auth.views.login %}">Realizar login</a>
+        {% trans "You have been disconnected." %}
+        <br/><a href="{% url django.contrib.auth.views.login %}">{% trans "Login" %}</a>
     </p>
 {% endblock %}

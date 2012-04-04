@@ -1,4 +1,5 @@
 {% extends "base_login.html" %}
+{% load i18n %}
 {% block content %}
 
 <!-- <form action="page.html" method="post">
@@ -22,10 +23,10 @@
         {% include "form.html" %}
 
         <p class="set-right">
-            <input type="checkbox" class="checkbox" checked="checked" id="rememberme" /> <label for="rememberme">Manter minha sessão ativa</label>
+        <input type="checkbox" class="checkbox" checked="checked" id="rememberme" /> <label for="rememberme">{% trans "Remember me"%}</label>
         </p>
         <p class="set-right">
-            <button type="submit" class="css3button big positive" value="Acessar">Acessar</button> &nbsp;
+        <button type="submit" class="css3button big positive" value="{% trans "Login" %}">{% trans "Login" %}</button> &nbsp;
         </p>
 
         <input type="hidden" name="next" value="{{ next }}" />

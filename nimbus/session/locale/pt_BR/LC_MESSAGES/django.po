@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-04 15:40-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: commands.py:13
+msgid "Change admin password"
+msgstr "Modificar senha do usuário admin"
+
+#: commands.py:16
+msgid "new password: "
+msgstr "Nova senha: "
+
+#: commands.py:17
+msgid "confirm password: "
+msgstr "Confirmar senha: "
+
+#: commands.py:20
+msgid "password does not match"
+msgstr "Senhas digitadas são diferentes"
+
+#: commands.py:26
+msgid "password changed"
+msgstr "Senha modificada com sucesso"
+
+#: forms.py:12
+msgid "Username"
+msgstr "Usuário"
+
+#: forms.py:13
+msgid "Password"
+msgstr "Senha"
+
+#: views.py:19
+msgid "5 of 5 - Admin password"
+msgstr "5 de 5 - Senha do usuário admin"
+
+#: views.py:34
+msgid "Please fill all fields."
+msgstr "Por favor, preencha todos os campos"
+
+#: templates/login.html:26
+msgid "Remember me"
+msgstr "Manter sessão ativa"
+
+#: templates/login.html:29 templates/logout.html:7
+msgid "Login"
+msgstr "Acessar"
+
+#: templates/logout.html:6
+msgid "You have been disconnected."
+msgstr "Você foi desconectado com sucesso"
