@@ -15,6 +15,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 
 from nimbus.shared import signals
@@ -46,12 +47,12 @@ NTP_SERVERS = [
 
 
 class Timezone(BaseModel):
-    ntp_server = models.CharField('Servidor ntp', max_length=255, blank=False,
+    ntp_server = models.CharField(_('NTP Server'), max_length=255, blank=False,
                                    null=False, default="pool.ntp.br",
                                    validators=[check_domain])
-    country = models.CharField('País', max_length=255, blank=False, 
+    country = models.CharField(_('Country'), max_length=255, blank=False, 
                                 choices=COUNTRY_CHOICES)
-    area = models.CharField('Região', max_length=255, blank=False, 
+    area = models.CharField(_('Area'), max_length=255, blank=False, 
                              null=False)
 
 
@@ -67,11 +68,11 @@ class Timezone(BaseModel):
             subprocess.check_call(command, stdout = subprocess.PIPE,
                                   stderr = subprocess.PIPE)
         except subprocess.CalledProcessError:
-            raise ValidationError(u"Impossível sincronizar com o servidor ntp. Verifique endereço e conectividade")
+            raise ValidationError(_(u"Error in sync with NTP server. Check ntp server address and internet connectivity"))
 
 
     class Meta:
-        verbose_name = u"Fuso horário"
+        verbose_name = _(u"Time zone")
 
 
     
@@ -88,7 +89,7 @@ def update_system_timezone(timezone):
             time.tzset()
         except Exception, error:
             logger = logging.getLogger(__name__)
-            logger.exception("Conexao com nimbus-manager falhou")
+            logger.exception(_("Nimbus Manager connection failed") )
 
 
     systemprocesses.norm_priority_job( "Set system timezone", 
@@ -103,7 +104,7 @@ def update_ntp_cron_file(timezone):
             server.generate_ntpdate_file_on_cron(timezone.ntp_server)
         except Exception, error:
             logger = logging.getLogger(__name__)
-            logger.exception("Conexao com nimbus-manager falhou")
+            logger.exception(_("Nimbus Manager connection failed"))
 
 
     systemprocesses.norm_priority_job( "Generate ntpdate cron file", 

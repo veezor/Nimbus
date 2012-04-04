@@ -9,6 +9,7 @@ from pytz import country_timezones
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 
 from nimbus.timezone.forms import TimezoneForm
 from nimbus.shared.views import edit_singleton_model
@@ -20,7 +21,7 @@ from nimbus.wizard.views import previous_step_url, next_step_url
 @add_step(position=3)
 def timezone(request):
     extra_context = {
-        'wizard_title': u'4 de 5 - Configuração de Hora',
+        'wizard_title': _(u'4 of 5 - Time zone config'),
         'page_name': u'timezone',
         'previous': previous_step_url('timezone')
     }
