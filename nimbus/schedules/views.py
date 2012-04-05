@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
+from django.utils.translation import ugettext as _
 from django.contrib import messages
 
 from nimbus.libs.bacula import call_reload_baculadir
@@ -123,7 +124,7 @@ def do_delete(request, schedule_id):
     if s.is_model:
         for procedure in s.procedures.all():
             new_schedule = Schedule()
-            new_schedule.name = 'Agendamentos de %s' % procedure.name
+            new_schedule.name = _('Schedule of %s') % procedure.name
             new_schedule.is_model = False
             new_schedule.save()
             for run in s.runs.all():
@@ -140,7 +141,7 @@ def do_delete(request, schedule_id):
     name = s.name
     s.delete()
     call_reload_baculadir()
-    messages.success(request, u"Perfil de agendamento '%s' removido com sucesso." % name)
+    messages.success(request, _(u"Schedule of profile '%s' removed.") % name)
     return redirect('/procedures/profile/list')
 
 

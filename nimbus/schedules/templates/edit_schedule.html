@@ -1,3 +1,4 @@
+{% load i18n  %}
 {% block headtags %}
 	<link rel="stylesheet" type="text/css" href="/media/css/overcast/jquery-ui-1.8.13.custom.css" />
 	<script type="text/javascript" src="/media/js/schedules.js"></script>
@@ -49,7 +50,7 @@
 	<tr class="border">
 		<td>
 			<div id="month" class="checkboxes">
-				<h3>Dia do mês:</h3>
+				<h3>{% trans "Day:"%}</h3>
 				<input type="checkbox" class="month" id="month_01" name="01"/><label for="month_01">01</label>
 				<input type="checkbox" class="month" id="month_02" name="02"/><label for="month_02">02</label>
 				<input type="checkbox" class="month" id="month_03" name="03"/><label for="month_03">03</label>
@@ -89,13 +90,13 @@
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="css3button positive" id="month_button"><span>Agendamento Mensal</span></a>
+			<a class="css3button positive" id="month_button"><span>{% trans "Monthly Schedule"%}</span></a>
 		</td>
 	</tr>
 	<tr class="border">
 		<td>
 			<div id="week" class="checkboxes">
-				<h3>Dia da semana:</h3>
+				<h3>{% trans "Weekday:"%}</h3>
 				<input type="checkbox" class="week" id="week_0" value="0" /><label for="week_0">Dom</label>
 				<input type="checkbox" class="week" id="week_1" value="0" /><label for="week_1">Seg</label>
 				<input type="checkbox" class="week" id="week_2" value="0" /><label for="week_2">Ter</label>
@@ -111,13 +112,13 @@
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="css3button positive" id="week_button"><span>Agendamento Semanal</span></a>
+			<a class="css3button positive" id="week_button"><span>{% trans "Weekly Schedule" %}</span></a>
 		</td>
 	</tr>
 	<tr class="border">
 		<td>
 			<div id="hours" class="checkboxes">
-				<h3>Hora:</h3>
+				<h3>{% trans "Hour:"%}</h3>
 				<input type="checkbox" class="hours" id="hour_00" checked="checked" /><label for="hour_00">00</label>
 				<input type="checkbox" class="hours" id="hour_01" /><label for="hour_01">01</label>
 				<input type="checkbox" class="hours" id="hour_02" /><label for="hour_02">02</label>
@@ -150,13 +151,13 @@
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="css3button positive" id="day_button"><span>Agendamento Diário</span></a>
+			<a class="css3button positive" id="day_button"><span>{% trans "Daily Schedule"%}</span></a>
 		</td>
 	</tr>
 	<tr class="border">
 		<td>
 			<div id="minutes" class="checkboxes">
-				<h3>Minuto:</h3>
+				<h3>{% trans "Minute:" %}</h3>
 				<input type="checkbox" class="minutes" id="minute_00" checked="checked" /><label for="minute_00">00</label>
 				<input type="checkbox" class="minutes" id="minute_01" /><label for="minute_01">01</label>
 				<input type="checkbox" class="minutes" id="minute_02" /><label for="minute_02">02</label>
@@ -226,31 +227,31 @@
 				<option value="{{level.id}}">{{level.name}}</option>
 				{% endfor %}
 			</select><br />
-			<a class="css3button positive" id="hour_button"><span>Agendamento a cada hora</span></a>
+			<a class="css3button positive" id="hour_button"><span>{% trans "Hourly Schedule"%}</span></a>
 		</td>
 	</tr>
 </table>
 </div>
-<h3>Agendamentos selecionados</h3>
+<h3>{% trans "Selected schedules" %}</h3>
 <div id="schedules_made">
 <table id="inventory" cellpadding="0" cellspacing="0">
 	<thead>
-		<tr><th>&nbsp;</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr>
+        <tr><th>&nbsp;</th><th>{% trans "Type"%}</th><th>{% trans "Rate"%}</th><th>{% trans "Day"%}</th><th>{% trans "Hour"%}</th></tr>
 	</thead>
 	<tbody></tbody>
 </table>
 {% if is_model %}
 <p>
-	<label>Nome:</label>
+    <label>{% trans "Name:"%}</label>
 	<input type="text" id="schedule_name" value="{{schedule.name}}">
 </p>
 {% else %}
-<input type="hidden" id="schedule_name" value="Apenas para este procedimento"/>
+<input type="hidden" id="schedule_name" value="{% trans "Only this schedule"%}"/>
 {% endif %}
 </div>
 {% if reload %}
-<button class="css3button positive" onclick="if (create_schedule() == true) {window.location.reload()}">Salvar</button>
+<button class="css3button positive" onclick="if (create_schedule() == true) {window.location.reload()}">{% trans "Save"%}</button>
 {% else %}
-<button class="css3button positive" onclick="create_schedule()">Salvar</button>
+<button class="css3button positive" onclick="create_schedule()">{% trans "Save"%}</button>
 {% endif %}
 {% endblock %}

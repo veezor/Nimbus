@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "base.html" %}
 
 {% block headtags %}
@@ -29,7 +30,7 @@
             <p><strong>Esta operação não poderá ser desfeita. Deseja prosseguir mesmo assim?</strong></p>
             <p>
                 <!-- <input type="submit" class="css3button positive" name="confirm" value="Prosseguir" /> ou <a href="" onclick="history.back(-1); return false;">Cancelar</a> -->
-                <a href="/schedules/do_delete/{{schedule.id}}" class="css3button negative">Excluir</a> ou <a href="" class="css3button positive" onclick="history.back(-1); return false;">Cancelar</a>
+                <a href="/schedules/do_delete/{{schedule.id}}" class="css3button negative">{% trans "Remove"%}</a> ou <a href="" class="css3button positive" onclick="history.back(-1); return false;">{% trans "Cancel"%}</a>
             </p>
         </form>
     </div>

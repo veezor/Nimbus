@@ -8,47 +8,53 @@ from datetime import datetime
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete
+from django.utils.translation import ugettext_lazy as _
 
 from nimbus.base.models import BaseModel
 from nimbus.shared import signals, utils, enums, fields
 from nimbus.libs.template import render_to_file
 
 
-LEVELS = tuple( (l,l) for l in enums.levels )  
+LEVELS = tuple( (l,l) for l in enums.levels )
 WEEKDAYS = tuple( (d,d) for d in enums.weekdays )
 MONTHDAYS = tuple( (d,d) for d in enums.days )
 
 
 class BackupLevel(models.Model):
-    name = models.CharField(max_length=255, unique=True, null=False)
+    name = models.CharField(_(u"Name"),
+                            max_length=255, unique=True, null=False)
 
     def __unicode__(self):
         return self.name
 
 
     class Meta:
-        verbose_name = u"Nível de backup"
+        verbose_name = _(u"Backup level")
+
 
 class BackupKind(models.Model):
-    name = models.CharField(max_length=255, unique=True, null=False)
-    name_pt = models.CharField(max_length=255, unique=True, null=False)
+    name = models.CharField(_(u"Name"),
+                            max_length=255, unique=True, null=False)
+    name_pt = models.CharField(_(u"Name in portuguese"),
+                               max_length=255, unique=True, null=False)
 
     def __unicode__(self):
         return self.name
 
 
     class Meta:
-        verbose_name = u"Tipo de agendamento"
+        verbose_name = _(u"Schedule type")
 
 class Schedule(BaseModel):
-    name = models.CharField(u'Nome qualquer', max_length=255, null=False,
+    name = models.CharField(_(u'Name'), max_length=255, null=False,
                             blank=False)
-    is_model = models.BooleanField(default=False, null=False)
+    is_model = models.BooleanField(_(u"Is model"),
+                                   default=False, null=False)
 
 
 
     class Meta:
-        verbose_name = u"Agendamento"
+        verbose_name = _(u"Schedule")
 
     def get_runs(self):
         # runs = []
@@ -88,9 +94,10 @@ class Schedule(BaseModel):
 class Run(models.Model):
     schedule = models.ForeignKey(Schedule, related_name="runs", null=False,
                                  blank=False)
-    day = models.PositiveSmallIntegerField(null=False, max_length=2)
-    hour = models.CharField(null=False, max_length=2)
-    minute = models.CharField(null=False, max_length=2)
+    day = models.PositiveSmallIntegerField(_(u"Day"),
+                                           null=False, max_length=2)
+    hour = models.CharField(_(u"Hour"), null=False, max_length=2)
+    minute = models.CharField(_(u"Minute"), null=False, max_length=2)
     level = models.ForeignKey(BackupLevel)
     kind = models.ForeignKey(BackupKind)
     
