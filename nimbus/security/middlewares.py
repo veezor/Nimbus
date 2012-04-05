@@ -4,10 +4,8 @@
 from django.shortcuts import redirect
 from django.contrib import messages
 
-
-
-from nimbus.security.models import AdministrativeModel
 from nimbus.security.exceptions import AdministrativeModelError
+from django.utils.translation import ugettext as _
 
 
 class AdministrativeModelChangeCatcher(object):
@@ -16,5 +14,5 @@ class AdministrativeModelChangeCatcher(object):
     def process_exception(self, request, exception):
 
         if isinstance(exception, AdministrativeModelError):
-            messages.error(request, u"Impossível alterar esse elemento.")
+            messages.error(request, _(u"Access denied."))
             return redirect(request.META['PATH_INFO'])
