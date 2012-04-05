@@ -10,6 +10,7 @@ import logging.config
 
 from django.conf import settings
 from backgroundjobs import ThreadPool as BJThreadPool
+from django.utils.translation import ugettext_lazy as _
 
 
 
@@ -45,4 +46,4 @@ class AjaxDebug(object):
     def process_exception(self, request, exception):
         traceback.print_exc(file=sys.stderr)
         logger = logging.getLogger(__name__)
-        logger.exception("Exception levantada no django")
+        logger.exception(_(u"Exception raised from django"))

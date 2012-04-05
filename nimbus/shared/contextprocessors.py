@@ -5,6 +5,7 @@ import re
 
 from django.contrib import messages
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 from os import path
 
 def product(request):
@@ -26,5 +27,5 @@ def block_ie_browser(request):
     # detects browser
     browser = request.META['HTTP_USER_AGENT']
     if re.search("MSIE", browser):
-        messages.warning(request, "Navegador incompativel com o Nimbus. Sistema testado apenas para Google Chrome e Mozilla Firefox.")
+        messages.warning(request, _(u"Incompatible browser. Nimbus tested only Google Chrome and Mozilla Firefox"))
     return {}

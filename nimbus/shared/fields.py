@@ -6,6 +6,7 @@ import re
 from django import forms
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 
 path_re = re.compile('^([a-zA-Z]:)?/([a-zA-Z0-9 .@_-]+/?)*$')
@@ -30,7 +31,7 @@ def check_domain(value):
 
 def check_model_name(value):
     if not NAME_RE.match(value):
-        raise ValidationError("O campo deve conter apenas caracteres alfa-numéricos e espaços. O limite mínimo de caracteres é 4.")
+        raise ValidationError(_(u"This field must be alphanumeric or space. Minimum size required is 4."))
 
 def name_is_valid(value):
     try:
@@ -43,7 +44,7 @@ class FormPathField(forms.CharField):
     def clean(self, value):
         super(FormPathField, self).clean(value)
         if not re.match(path_re, value):
-            raise forms.ValidationError, u'Invalid format'
+            raise forms.ValidationError, _(u'Invalid format')
         return value
 
 

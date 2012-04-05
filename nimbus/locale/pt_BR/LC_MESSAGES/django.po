@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-05 08:44-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: shared/contextprocessors.py:30
+msgid ""
+"Incompatible browser. Nimbus tested only Google Chrome and Mozilla Firefox"
+msgstr "Navegador incompatível. Nimbus testado apenas com Google Chrome e Mozilla Firefox"
+
+#: shared/enums.py:23
+msgid "Sunday"
+msgstr "Domingo"
+
+#: shared/enums.py:24
+msgid "Monday"
+msgstr "Segunda-feira"
+
+#: shared/enums.py:25
+msgid "Tuesday"
+msgstr "Terça-feira"
+
+#: shared/enums.py:26
+msgid "Wednesday"
+msgstr "Quarta-feira"
+
+#: shared/enums.py:27
+msgid "Thusday"
+msgstr "Quinta-feira"
+
+#: shared/enums.py:28
+msgid "Friday"
+msgstr "Sexta-feira"
+
+#: shared/enums.py:29
+msgid "Saturday"
+msgstr "Sábado"
+
+#: shared/fields.py:35
+msgid "This field must be alphanumeric or space. Minimum size required is 4."
+msgstr "O campo deve conter apenas caracteres alfa-numéricos e espaços. O limite mínimo de caracteres é 4."
+
+#: shared/fields.py:48
+msgid "Invalid format"
+msgstr "Formato inválido"
+
+#: shared/middlewares.py:49
+msgid "Exception raised from django"
+msgstr "Exception levantada no django"
+
