@@ -7,6 +7,7 @@ webservices/manager/binary
 deb/var/nimbus/custom
 deb/etc/
 *.deb
+*.mo
 nimbus/settings.py
 .DS_Store
 .gitignore
