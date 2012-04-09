@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "base.html" %}
 
 {% block headtags %}
@@ -23,7 +24,7 @@
         <form action="/restore/restore_files" id="restore_form" method="post">
             <input id="url_tree" name="url" value="{% url nimbus.restore.views.get_tree_search_file %}" type="hidden"/>
             {% if computer %}
-                <p><a href="/computers/list">Listar todos os computadores</a></p>
+                <p><a href="/computers/list">{% trans "List computers" %}</a></p>
                 <div class="computers">
                     <div class="computer">
                         <div class="left">
@@ -47,9 +48,9 @@
                 </ul>
                 {% endif %}
                 <p>
-                    <label for="procedure_id">Selecione o procedimento:</label><br/>
+                    <label for="procedure_id">{% trans "Select procedure" %}</label><br/>
                     <select name="procedure_id" id="procedure_id" >
-                        <option value=""> - Selecione - </option>
+                        <option value=""> - {% trans "Select" %} - </option>
                         {% for procedure in computer.procedure_set.all %}
                         <option value="{{procedure.id}}">{{procedure.name}}</option>
                         {% endfor %}
@@ -62,9 +63,9 @@
                 </ul>
                 {% endif %}
                 <p>
-                    <label for="computer_id">Computador que será restaurado:</label><br/>
+                <label for="computer_id">{% trans "Computer that will be restored" %}:</label><br/>
                     <select  id="computer_id" name="computer_id">
-                        <option value=""> - Selecione - </option>
+                        <option value=""> - {% trans "Select" %} - </option>
                         {% for computer in computers %}
                         <option value="{{computer.id}}">{{computer.name}}</option>
                         {% endfor %}
@@ -78,9 +79,9 @@
                 </ul>
                 {% endif %}
                 <p class="procedure_select" class="hidden">
-                    <label for="procedure_id">Selecione o procedimento:</label><br/>
+                    <label for="procedure_id">{% trans "Select procedure" %}</label><br/>
                     <select name="procedure_id" id="procedure_id" >
-                        <option value=""> - Selecione - </option>
+                        <option value=""> - {% trans "Select" %} - </option>
                         {% for procedure in computer.procedure_set.all %}
                         <option value="{{procedure.id}}">{{procedure.name}}</option>
                         {% endfor %}
@@ -89,7 +90,7 @@
             {% endif %}
     
             <div class="restore_step_1">
-                <h2 class="titulo_step">1. Data para restauração</h2>
+                <h2 class="titulo_step">1. {% trans "Date to restore" %}</h2>
                 
                 {% if errors.data_inicio %}
                 <ul class="errorlist">
@@ -102,17 +103,17 @@
                 </ul>
                 {% endif %}
                 <p>
-    				<label>Data inicial:</label> 
+                    <label>{% trans "Start date"%}:</label> 
     				<input type="text" class="text date_picker" id="data_inicio" name="data_inicio" value="{% now "d-m-Y" %}" />
     				&nbsp;&nbsp;
-    				<label>Data final:</label> 
+                    <label>{% trans "End date"%}:</label> 
     				<input type="text" class="text date_picker" id="data_fim" name="data_fim" value="{% now "d-m-Y" %}" />
     				<button type="submit" class="css3button big positive submit_step_1" value="Filtrar">Filtrar</button>
     			</p>
     		</div>
 
             <div class="restore_step_2" class="hidden">
-                <h2 class="titulo_step">2. Selecione um Job para restauração</h2>
+                <h2 class="titulo_step">2. {% trans "Select the job to restore"%}</h2>
 
                 {% if errors.job_id %}
                 <ul class="errorlist">
@@ -120,34 +121,34 @@
                 </ul>
                 {% endif %}
                 <select name="job_id"  id="jobs_list">
-                    <option value=""> - Selecione um Job - </option>
+                    <option value=""> - {% trans "Select a Job"%} - </option>
                 </select>
                 <div class="clear"></div>
             </div>
 
             <div class="restore_step_3" class="hidden">
-                <h2 class="titulo_step">3. Arquivos para restauração</h2>
+                <h2 class="titulo_step">3. {% trans "Files to restore"%}</h2>
             
                 <p>
-    				<label>Buscar arquivo:</label>
+                    <label>{% trans "Find files" %}:</label>
     				<input type="text" name="pattern" id="pattern" class="text small" />
-    				<button type="button" class="css3button big positive" id="buscar_arquivos" value="Buscar">Buscar</button>
+                    <button type="button" class="css3button big positive" id="buscar_arquivos" value="Buscar">{% trans "Find"%}</button>
     			</p>
 				<ul id="files" job="" computer="" is_windows="true" destination="false" restore="true"></ul>
 
                 <!-- <ul class="tree"><li class="directory first"><span><a href="#" path="/">Arquivos</a></span></li></ul> -->
                 
                 <div class="clear"></div><hr />
-                <a href="#" class="css3button positive open_step_4"><span>Selecionar local para restauração</span></a>
+                <a href="#" class="css3button positive open_step_4"><span>{% trans "Select the destination to restore"%}</span></a>
             </div>
             <div class="restore_step_4" class="hidden">
-                <h2 class="titulo_step">4. Local para restauração</h2>
+                <h2 class="titulo_step">4. {% trans "Target to restore"%}</h2>
 
 				<ul id="destination" restore="false" destination="true" computer="" is_windows="true"></ul>
                 
                 <!-- <ul class="tree_computer"><li class="directory first"><span><a href="#" path="/">Selecione o local para restauração</a></span></li></ul> -->
     		    <p>
-                    <button type="submit" class="css3button big positive" value="Restaurar Arquivos">Restaurar Arquivos</button>
+                <button type="submit" class="css3button big positive" value="Restore">{% trans "Restore"%}</button>
                 </p>
                 <div class="clear"></div>
             </div>

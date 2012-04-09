@@ -1,0 +1,251 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-09 16:35-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: views.py:27 views.py:45 views.py:73 views.py:91 views.py:116 views.py:138
+#: templates/restore_list.html:151 templates/step6.html:51
+msgid "Restore"
+msgstr "Restaurar"
+
+#: views.py:165
+msgid "Restore started"
+msgstr "Restauração iniciada com sucesso"
+
+#: templates/restore_list.html:27
+msgid "List computers"
+msgstr "Listar computadores"
+
+#: templates/restore_list.html:51 templates/restore_list.html.py:82
+#: templates/step2.html:25
+msgid "Select procedure"
+msgstr "Selecionar procedimento"
+
+#: templates/restore_list.html:53 templates/restore_list.html.py:68
+#: templates/restore_list.html:84 templates/step1.html:24
+#: templates/step2.html:27 templates/step3.html:40
+msgid "Select"
+msgstr "Selecione"
+
+#: templates/restore_list.html:66
+msgid "Computer that will be restored"
+msgstr "Computador que será restaurado"
+
+#: templates/restore_list.html:93
+msgid "Date to restore"
+msgstr "Data para restauração"
+
+#: templates/restore_list.html:106 templates/step3.html:28
+msgid "Start date"
+msgstr "Data inicial"
+
+#: templates/restore_list.html:109 templates/step3.html:30
+msgid "End date"
+msgstr "Data final"
+
+#: templates/restore_list.html:116
+msgid "Select the job to restore"
+msgstr "Selecione o job para restauração"
+
+#: templates/restore_list.html:124
+msgid "Select a Job"
+msgstr "Selecione o Job"
+
+#: templates/restore_list.html:130
+msgid "Files to restore"
+msgstr "Arquivos para restauração"
+
+#: templates/restore_list.html:133 templates/step4.html:35
+msgid "Find files"
+msgstr "Buscar arquivos"
+
+#: templates/restore_list.html:135 templates/step4.html:37
+msgid "Find"
+msgstr "Buscar"
+
+#: templates/restore_list.html:142
+msgid "Select the destination to restore"
+msgstr "Selecionar destino da restauração"
+
+#: templates/restore_list.html:145
+msgid "Target to restore"
+msgstr "Destino da restauração"
+
+#: templates/step1.html:19
+msgid "Step 1: Select computer"
+msgstr "Passo 1: Selecione o computador"
+
+#: templates/step1.html:22
+msgid "Select computer:"
+msgstr "Selecione o computador:"
+
+#: templates/step1.html:31
+msgid "No computer has been selected"
+msgstr "Nenhum computador foi selecionado."
+
+#: templates/step1.html:31 templates/step2.html:19
+msgid "Step 2: Select procedure"
+msgstr "Passo 2: Selecione o procedimento"
+
+#: templates/step2.html:22 templates/step3.html:22 templates/step4.html:24
+#: templates/step5.html:23 templates/step6.html:22
+msgid "Computer"
+msgstr "Computador"
+
+#: templates/step2.html:30
+msgid "available backup"
+msgstr "backup disponível"
+
+#: templates/step2.html:32
+msgid "available backups"
+msgstr "backups disponíveis"
+
+#: templates/step2.html:39
+msgid "Back to step 1: Select computer"
+msgstr "Voltar ao passo 1: Selecionar computador"
+
+#: templates/step2.html:40
+msgid "No procedure has been selected"
+msgstr "Nenhum procedimento foi selecionado"
+
+#: templates/step2.html:40 templates/step3.html:19 templates/step4.html:58
+msgid "Step 3: Select backup"
+msgstr "Passo 3: Selecionar backup"
+
+#: templates/step3.html:25 templates/step4.html:27 templates/step5.html:26
+#: templates/step6.html:28
+msgid "Procedure"
+msgstr "Procedimento"
+
+#: templates/step3.html:32
+msgid "Filter"
+msgstr "Filtrar"
+
+#: templates/step3.html:35
+msgid "Select backup"
+msgstr "Selecionar backup"
+
+#: templates/step3.html:38
+msgid "No backups for this date"
+msgstr "Nenhum backup para a data selecionada"
+
+#: templates/step3.html:42 templates/step4.html:30 templates/step5.html:29
+msgid "files"
+msgstr "arquivos"
+
+#: templates/step3.html:50
+msgid "Back to step 2: Select procedure"
+msgstr "Voltar ao passo 2: Selecionar procedimento"
+
+#: templates/step3.html:51
+msgid "No backup has been selected"
+msgstr "Nenhum backup selecionado"
+
+#: templates/step3.html:51
+msgid "Step 4 - Select files"
+msgstr "Passo 4 - Selecionar arquivos"
+
+#: templates/step4.html:21
+msgid "Step 4: Select files"
+msgstr "Passo 4: Selecionar arquivos"
+
+#: templates/step4.html:39 templates/step5.html:32 templates/step6.html:35
+msgid "Files"
+msgstr "Arquivos"
+
+#: templates/step4.html:42
+msgid "Browser files"
+msgstr "Navegar pelos arquivos"
+
+#: templates/step4.html:44
+msgid "Add selected files to list"
+msgstr "Adicionar arquivos selecionados para a lista"
+
+#: templates/step4.html:48
+msgid "Selected files"
+msgstr "Arquivos selecionados"
+
+#: templates/step4.html:59 templates/step5.html:20
+msgid "Step 5: Select destination"
+msgstr "Passo 5: Selecionar destino"
+
+#: templates/step5.html:32 templates/step6.html:35
+msgid "file or directory"
+msgstr "arquivo ou diretório"
+
+#: templates/step5.html:32 templates/step6.html:35
+msgid "files or directories"
+msgstr "arquivos ou diretórios"
+
+#: templates/step5.html:35
+msgid "Select destination"
+msgstr "Selecionar destino"
+
+#: templates/step5.html:39
+msgid "Restore files to original source location"
+msgstr "Restaurar arquivos para o local de origem"
+
+#: templates/step5.html:50
+msgid "Back to step 4: Select files"
+msgstr "Voltar ao passo 4: Selecionar arquivos"
+
+#: templates/step5.html:51
+msgid "Step 6 - Overview"
+msgstr "Passo 6 - Resumo"
+
+#: templates/step6.html:19
+msgid "Step 6: Overview"
+msgstr "Passo 6: Resumo"
+
+#: templates/step6.html:23
+msgid "Name"
+msgstr "Nome"
+
+#: templates/step6.html:24
+msgid "IP Address"
+msgstr "Endereço IP"
+
+#: templates/step6.html:25
+msgid "Operating System"
+msgstr "Sistema operacional"
+
+#: templates/step6.html:29
+msgid "Date"
+msgstr "Data"
+
+#: templates/step6.html:30
+msgid "Type"
+msgstr "Tipo de backup"
+
+#: templates/step6.html:31
+msgid "Storage"
+msgstr "Armazenamento"
+
+#: templates/step6.html:32
+msgid "Destination"
+msgstr "Destino"
+
+#: templates/step6.html:32
+msgid "Original source location"
+msgstr "Local de origem"
+
+#: templates/step6.html:50
+msgid "Back to step 5: Select destination"
+msgstr "Voltar ao passo 5: Selecionar destino"
+
+#~ msgid "Step 5: Select target"
+#~ msgstr "Passo 5: Selecionar destino"

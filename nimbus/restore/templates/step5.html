@@ -17,26 +17,26 @@
 	</div>
 
     <div class="block_content">
-	<h2>Passo 5: Selecionar o local de destino dos arquivos</h2><br />
+    <h2>{% trans "Step 5: Select destination"%}</h2><br />
         <form action="/restore/step6/" id="step5_form" method="post">
 			<p>
-				<label>Computador:</label> {{computer.name}}
+                <label>{% trans "Computer"%}:</label> {{computer.name}}
 			</p>	
 			<p>
-				<label>Procedimento:</label> {{procedure.name}}
+                <label>{% trans "Procedure"%}:</label> {{procedure.name}}
 			</p>
 			<p>
-				<label>Backup:</label> {{job.end_time}} - {{job.backup_level}} - {{job.jobfiles}} arquivos ({{job.human_readable_size.size}} {{job.human_readable_size.unit}})
+                <label>Backup:</label> {{job.end_time}} - {{job.backup_level}} - {{job.jobfiles}} {% trans "files"%} ({{job.human_readable_size.size}} {{job.human_readable_size.unit}})
 			</p>
 			<p>
-				<label>Arquivos a restaurar:</label> {% if files|length == 1%}1 arquivo ou diretório{% else %}{{files|length}} arquivos ou diretórios{%endif%}
+                <label>{% trans "Files"%}:</label> {% if files|length == 1%}1 {%trans "file or directory"%}{% else %}{{files|length}} {% trans "files or directories"%}{%endif%}
 			</p>
 			<p>
-                <label for="job_id">Selecione o destino dos arquivos:</label>
+                <label for="job_id">{% trans "Select destination"%}:</label>
 				<ul class="veezortree" id="destination" restore="false" destination="true" job="{{job.jobid}}" computer="{{computer.id}}" is_windows="{% if computer.operation_system == "windows" %}true{% else %}false{% endif %}">
 					<li>
 						<input type="radio" checked="true" name="destination_restore_path" value="" class="full_path">
-						<span>Restaurar arquivos em seus locais de origem</span>
+                        <span>{% trans "Restore files to original source location"%}</span>
 					</li>
 				</ul>
             </p>
@@ -47,8 +47,8 @@
 			<input type="hidden" name="paths" value="{{file}}"></input>
 			{% endfor %}
 			<div>
-				<a href="#" class="css3button negative last_step" onClick="$('#step5_form')[0].action = '/restore/step4/'; $('#step5_form')[0].submit();"><span>Voltar ao passo 4: Escolher os arquivos</span></a>
-				<button type="submit" class="css3button positive next_step">Passo 6 - Resumo</button>
+                <a href="#" class="css3button negative last_step" onClick="$('#step5_form')[0].action = '/restore/step4/'; $('#step5_form')[0].submit();"><span>{% trans "Back to step 4: Select files"%}</span></a>
+                <button type="submit" class="css3button positive next_step">{% trans "Step 6 - Overview" %}</button>
 			</div>
         </form>
         

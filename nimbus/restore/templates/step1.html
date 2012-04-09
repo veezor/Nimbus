@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <link rel="stylesheet" type="text/css" href="/media/css/restore.css" />
@@ -15,19 +16,19 @@
 	</div>
 
     <div class="block_content">
-	<h2>Passo 1: Selecionar o computador</h2><br />
+    <h2>{% trans "Step 1: Select computer"%}</h2><br />
         <form action="/restore/step2/" id="step1_form" method="post">
 			<p>
-                <label for="computer_id">Selecione o computador:</label>
+                <label for="computer_id">{% trans "Select computer:"%}</label>
                 <select name="computer_id" id="computer_id" >
-                    <option value=""> - Selecione - </option>
+                    <option value=""> - {%trans "Select"%} - </option>
                     {% for computer in computers %}
                     <option value="{{computer.id}}">{{computer.name}}</option>
                     {% endfor %}
                 </select>
             </p>
 			<div>
-				<button type="submit" class="css3button positive next_step" onClick="if ($('#step1_form')[0].computer_id.value == '') {alert('Nenhum computador foi selecionado'); return false}">Passo 2 - Escolher o procedimento</button>
+                <button type="submit" class="css3button positive next_step" onClick="if ($('#step1_form')[0].computer_id.value == '') {alert('{% trans "No computer has been selected"%}'); return false}">{% trans 'Step 2: Select procedure'%}</button>
 			</div>
         </form>
         

@@ -16,23 +16,23 @@
 	</div>
 
     <div class="block_content">
-	<h2>Passo 6: Resumo</h2><br />
+    <h2>{% trans "Step 6: Overview"%}</h2><br />
         <form action="/restore/restore_files/" id="restore_form" method="post">
 			<p>
-				<label>Computador:</label><br />
-					Nome: {{computer.name}}<br />
-					Endereço IP: {{computer.address}}<br />
-					Sistema Operacional: {{computer.operation_system|capfirst}}
+                <label>{%trans "Computer"%}:</label><br />
+                    {% trans "Name"%}: {{computer.name}}<br />
+                    {% trans "IP Address"%}: {{computer.address}}<br />
+                    {% trans "Operating System"%}: {{computer.operation_system|capfirst}}
 			</p>	
 			<p>
-				<label>Procedimento:</label> {{procedure.name}}<br/>
-				<label>Data do backup:</label> {{job.end_time}}<br/>
-				<label>Tipo de backup:</label> {{job.backup_level}}<br/>
-				<label>Dados armazenados em:</label> {{procedure.storage}}<br/>
-				<label>Arquivos serão restaurados em:</label> {% if destination == ""%}Seus locais de origem{% else %}{{destination}}{% endif %}
+                <label>{% trans "Procedure"%}:</label> {{procedure.name}}<br/>
+                <label>{% trans "Date"%}:</label> {{job.end_time}}<br/>
+                <label>{% trans "Type"%}:</label> {{job.backup_level}}<br/>
+                <label>{% trans "Storage"%}:</label> {{procedure.storage}}<br/>
+                <label>{% trans "Destination"%}:</label> {% if destination == ""%}{%trans "Original source location"%}{% else %}{{destination}}{% endif %}
 			</p>
 			<p>
-				<label>Arquivos a restaurar:</label> {% if files|length == 1%}1 arquivo ou diretório{% else %}{{files|length}} arquivos ou diretórios{%endif%}
+                <label>{% trans "Files"%}:</label> {% if files|length == 1%}1 {%trans "file or directory"%}{% else %}{{files|length}} {% trans "files or directories"%}{%endif%}
 				<ul id="file_list_to_restore" class="file_lists">
 					{% for file in files %}
 					{% if file|last == "/"%}<li class="directory">{{file}}{% else %}<li class="file">{{file}}{%endif%}</li>
@@ -47,8 +47,8 @@
 			{% endfor %}
 			<input type="hidden" name="destination" value="{{destination}}"></input>
 			<div>
-				<a href="#" class="css3button negative last_step" onClick="$('#restore_form')[0].action = '/restore/step5/'; $('#restore_form')[0].submit();"><span>Voltar ao passo 5: Escolher o destino</span></a>
-				<button type="submit" class="css3button positive next_step">Restaurar</button>
+                <a href="#" class="css3button negative last_step" onClick="$('#restore_form')[0].action = '/restore/step5/'; $('#restore_form')[0].submit();"><span>{% trans "Back to step 5: Select destination" %}</span></a>
+                <button type="submit" class="css3button positive next_step">{% trans "Restore" %}</button>
 			</div>
         </form>
         

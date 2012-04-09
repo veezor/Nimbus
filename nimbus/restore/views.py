@@ -2,21 +2,15 @@
 # Create your views here.
 
 
-import os
 import simplejson
-import xmlrpclib
-from glob import glob
 from datetime import datetime, timedelta
 
 
-from django.conf import settings
-from django.core import serializers
-from django.http import HttpResponse 
+from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.views.generic import create_update
-from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 
 from nimbus.bacula.models import Job
 from nimbus.computers.models import Computer
@@ -26,17 +20,17 @@ from nimbus.libs.bacula import Bacula
 
 @login_required
 def step1(request):
-    """Selecionar o computador"""
+    """Select the computer"""
     computers = Computer.objects.filter(active=True,id__gt=1)
     extra_content = {
         'computers': computers,
-        'title': u"Restauração de arquivos"
+        'title': _(u"Restore")
     }
     return render_to_response(request, "step1.html", extra_content)
 
 @login_required
 def step2(request):
-    """Selecionar do procedure"""
+    """Select the procedure"""
     if (request.method == "POST") or (request.method == "GET"):
         if (request.method == "POST"):
             data = request.POST
@@ -48,7 +42,7 @@ def step2(request):
         computer = Computer.objects.get(id=data["computer_id"])
         extra_content = {
             'computer': computer,
-            'title': u"Restauração de arquivos"
+            'title': _(u"Restore")
         }
         return render_to_response(request, "step2.html", extra_content)
     else:
@@ -56,7 +50,7 @@ def step2(request):
 
 @login_required
 def step3(request):
-    """Selecionar o JOB"""
+    """Select the job"""
     if request.method == "POST":
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
@@ -76,7 +70,7 @@ def step3(request):
             'jobs': jobs,
             'start_date': start_date.strftime("%d/%m/%Y"),
             'end_date': end_date.strftime("%d/%m/%Y"),
-            'title': u"Restauração de arquivos"
+            'title': _(u"Restore")
         }
         return render_to_response(request, "step3.html", extra_content)
     else:
@@ -84,7 +78,7 @@ def step3(request):
 
 @login_required
 def step4(request):
-    """Escolher os arquivos"""
+    """Choose files"""
     if request.method == "POST":
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
@@ -94,7 +88,7 @@ def step4(request):
             'computer': computer,
             'procedure': procedure,
             'job': job,
-            'title': u"Restauração de arquivos"
+            'title': _(u"Restore")
         }
         if data.has_key('paths'):
             paths = data.getlist("paths")
@@ -105,7 +99,7 @@ def step4(request):
 
 @login_required
 def step5(request):
-    """Definir o destino dos arquivos"""
+    """Set destination"""
     if request.method == "POST":
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
@@ -119,7 +113,7 @@ def step5(request):
             'procedure': procedure,
             'job': job,
             'files': files,
-            'title': u"Restauração de arquivos"
+            'title': _(u"Restore")
         }
         return render_to_response(request, "step5.html", extra_content)
     else:
@@ -127,7 +121,7 @@ def step5(request):
 
 @login_required
 def step6(request):
-    """Resumo e restore"""
+    """Overview"""
     if request.method == "POST":
         data = request.POST
         computer = Computer.objects.get(id=data["computer_id"])
@@ -141,7 +135,7 @@ def step6(request):
             'job': job,
             'files': files,
             'destination': destination,
-            'title': u"Restauração de arquivos"
+            'title': _(u"Restore")
         }
         return render_to_response(request, "step6.html", extra_content)
     else:
@@ -168,7 +162,7 @@ def restore_files(request):
         files = request.POST.getlist("paths")
         bacula = Bacula()
         bacula.run_restore(computer.bacula_name, jobid, target, files)
-        messages.success(request, "Recuperação iniciada com sucesso")    
+        messages.success(request, _(u"Restore started"))
         return redirect('/procedures/list/')
 
 @login_required

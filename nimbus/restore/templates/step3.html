@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <link rel="stylesheet" type="text/css" href="/media/css/restore.css" />
@@ -15,30 +16,30 @@
 	</div>
 
     <div class="block_content">
-	<h2>Passo 3: Selecionar o backup</h2><br />
+    <h2>{% trans "Step 3: Select backup"%}</h2><br />
         <form action="/restore/step4/" id="step3_form" method="post">
 			<p>
-				<label>Computador:</label> {{computer.name}}
+                <label>{% trans "Computer"%}:</label> {{computer.name}}
 			</p>	
 			<p>
-				<label>Procedimento:</label> {{procedure.name}}
+                <label>{% trans "Procedure"%}:</label> {{procedure.name}}
 			</p>
 			<p>
-				<label>Data inicial:</label> 
+                <label>{% trans "Start date"%}:</label> 
 				<input type="text" class="date_picker" name="start_date" value="{{start_date}}" />
-				<label>Data final:</label> 
+                <label>{% trans "End date"%}:</label> 
 				<input type="text" class="date_picker" name="end_date" value="{{end_date}}" />
-				<a href="#" class="css3button positive" onClick="$('#step3_form')[0].action = '/restore/step3/'; $('#step3_form')[0].submit();"><span>Filtrar</span></a>
+                <a href="#" class="css3button positive" onClick="$('#step3_form')[0].action = '/restore/step3/'; $('#step3_form')[0].submit();"><span>{% trans "Filter"%}</span></a>
 			</p>
 			<p>
-                <label for="job_id">Selecione o backup a ser restaurado:</label>
+                <label for="job_id">{% trans "Select backup"%}:</label>
                 <select name="job_id" id="job_id" >
 					{% if jobs|length == 0%}
-					<option value=""> Não há nenhum backup para este computador e procedimento neste período</option>
+                    <option value=""> {% trans "No backups for this date"%}</option>
 					{% else %}
-                    <option value=""> - Selecione - </option>
+                    <option value=""> - {% trans "Select"%} - </option>
                     {% for job in jobs %}
-                    <option value="{{job.jobid}}">{{job.end_time}} - {{job.backup_level}} - {{job.jobfiles}} arquivos ({{job.human_readable_size.size}} {{job.human_readable_size.unit}})</option>
+                    <option value="{{job.jobid}}">{{job.end_time}} - {{job.backup_level}} - {{job.jobfiles}} {% trans "files" %} ({{job.human_readable_size.size}} {{job.human_readable_size.unit}})</option>
                     {% endfor %}
 					{% endif %}
                 </select>
@@ -46,8 +47,8 @@
 			<input type="hidden" name="computer_id" value="{{computer.id}}"></input>
 			<input type="hidden" name="procedure_id" value="{{procedure.id}}"></input>
 			<div>
-				<a href="#" class="css3button negative last_step" onClick="$('#step3_form')[0].action = '/restore/step2/'; $('#step3_form')[0].submit();"><span>Voltar ao passo 2: Escolher o procedimento</span></a>
-				<button type="submit" class="css3button positive next_step" onClick="if ($('#step3_form')[0].job_id.value == '') {alert('Nenhum backup foi selecionado'); return false}">Passo 4 - Escolher os arquivos</button>
+                <a href="#" class="css3button negative last_step" onClick="$('#step3_form')[0].action = '/restore/step2/'; $('#step3_form')[0].submit();"><span>{% trans "Back to step 2: Select procedure"%}</span></a>
+                <button type="submit" class="css3button positive next_step" onClick="if ($('#step3_form')[0].job_id.value == '') {alert('{% trans "No backup has been selected"%}'); return false}">{% trans "Step 4 - Select files" %}</button>
 			</div>
         </form>
         
