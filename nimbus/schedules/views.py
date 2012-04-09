@@ -141,7 +141,7 @@ def do_delete(request, schedule_id):
     name = s.name
     s.delete()
     call_reload_baculadir()
-    messages.success(request, _(u"Schedule of profile '%s' removed.") % name)
+    messages.success(request, _(u"Profile of schedule '%s' removed.") % name)
     return redirect('/procedures/profile/list')
 
 

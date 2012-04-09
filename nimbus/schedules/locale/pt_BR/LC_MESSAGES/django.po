@@ -1,0 +1,187 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-09 14:49-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models.py:24 models.py:36 models.py:49
+msgid "Name"
+msgstr "Name"
+
+#: models.py:32
+msgid "Backup level"
+msgstr "Nível de backup"
+
+#: models.py:38
+msgid "Name in portuguese"
+msgstr "Nome em português"
+
+#: models.py:46
+msgid "Schedule type"
+msgstr "Tipo de agendamento"
+
+#: models.py:51
+msgid "Is model"
+msgstr "É um modelo?"
+
+#: models.py:57
+msgid "Schedule"
+msgstr "Agendamento"
+
+#: models.py:97 templates/add_schedule.html:228
+#: templates/edit_schedule.html:239
+msgid "Day"
+msgstr "Dia"
+
+#: models.py:99 templates/add_schedule.html:228
+#: templates/edit_schedule.html:239
+msgid "Hour"
+msgstr "Hora"
+
+#: models.py:100
+msgid "Minute"
+msgstr "Minuto"
+
+#: views.py:127
+#, python-format
+msgid "Schedule of %s"
+msgstr "Agendamento de %s"
+
+#: views.py:144
+#, python-format
+msgid "Profile of schedule '%s' removed."
+msgstr "Perfil de agendamento '%s' removido com sucesso."
+
+#: templates/add_schedule.html:42 templates/edit_schedule.html:53
+msgid "Day:"
+msgstr "Dia:"
+
+#: templates/add_schedule.html:82 templates/edit_schedule.html:93
+msgid "Monthly Schedule"
+msgstr "Agendamento mensal"
+
+#: templates/add_schedule.html:88 templates/edit_schedule.html:99
+msgid "Weekday:"
+msgstr "Dia da semana:"
+
+#: templates/add_schedule.html:89
+msgid "Sun"
+msgstr "Dom"
+
+#: templates/add_schedule.html:90
+msgid "Mon"
+msgstr "Seg"
+
+#: templates/add_schedule.html:91
+msgid "Tue"
+msgstr "Ter"
+
+#: templates/add_schedule.html:92
+msgid "Wed"
+msgstr "Qua"
+
+#: templates/add_schedule.html:93
+msgid "Thu"
+msgstr "Qui"
+
+#: templates/add_schedule.html:94
+msgid "Fri"
+msgstr "Sex"
+
+#: templates/add_schedule.html:95
+msgid "Sat"
+msgstr "Sáb"
+
+#: templates/add_schedule.html:104 templates/edit_schedule.html:115
+msgid "Weekly Schedule"
+msgstr "Agendamento semanal"
+
+#: templates/add_schedule.html:110 templates/edit_schedule.html:121
+msgid "Hour:"
+msgstr "Hora:"
+
+#: templates/add_schedule.html:143 templates/edit_schedule.html:154
+msgid "Daily Schedule"
+msgstr "Agendamento diário"
+
+#: templates/add_schedule.html:149 templates/edit_schedule.html:160
+msgid "Minute:"
+msgstr "Minuto:"
+
+#: templates/add_schedule.html:219 templates/edit_schedule.html:230
+msgid "Hourly Schedule"
+msgstr "Agendamento de hora em hora"
+
+#: templates/add_schedule.html:224 templates/edit_schedule.html:235
+msgid "Selected schedules"
+msgstr "Agendamentos selecionados"
+
+#: templates/add_schedule.html:228 templates/edit_schedule.html:239
+msgid "Type"
+msgstr "Tipo"
+
+#: templates/add_schedule.html:228 templates/edit_schedule.html:239
+msgid "Rate"
+msgstr "Frequência"
+
+#: templates/add_schedule.html:234 templates/edit_schedule.html:245
+msgid "Name:"
+msgstr "Nome:"
+
+#: templates/add_schedule.html:238 templates/edit_schedule.html:249
+msgid "Only this schedule"
+msgstr "Somente para esse agendamento"
+
+#: templates/add_schedule.html:242 templates/add_schedule.html.py:244
+msgid "Add schedule"
+msgstr "Adicionar agendamento"
+
+#: templates/edit_schedule.html:253 templates/edit_schedule.html.py:255
+msgid "Save"
+msgstr "Salvar"
+
+#: templates/remove_schedule.html:14
+msgid "Removal Confirmation"
+msgstr "Confirmação de remoção"
+
+#: templates/remove_schedule.html:19
+msgid "You are about to remove schedule"
+msgstr "Você está prestes a remover o agendamento"
+
+#: templates/remove_schedule.html:22
+msgid "The following backups are using this schedule"
+msgstr "Os seguintes procedimentos de backup utilizam este agendamento"
+
+#: templates/remove_schedule.html:26
+msgid "Removing this schedule won't effect any of the previous backups."
+msgstr ""
+"Remover este agendamento não afetará o funcionamento dos backups listados."
+
+#: templates/remove_schedule.html:28
+msgid "There is no backup using this schedule."
+msgstr "Não existe nenhum procedimento de backup utilizando este agendamento."
+
+#: templates/remove_schedule.html:31
+msgid "This operation cannot be undone, are you sure you want to proceed?"
+msgstr "Esta operação não poderá ser desfeita. Deseja prosseguir mesmo assim?"
+
+#: templates/remove_schedule.html:33
+msgid "Remove"
+msgstr "Remover"
+
+#: templates/remove_schedule.html:33
+msgid "Cancel"
+msgstr "Cancelar"
