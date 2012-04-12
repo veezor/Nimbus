@@ -27,14 +27,16 @@ def timezone(request):
     return edit_singleton_model( request, "generic.html",
                                  next_step_url('timezone'),
                                  formclass = TimezoneForm,
-                                 extra_context = extra_context )
+                                 extra_context = extra_context,
+                                 reload_bacula = False)
 
 
 @login_required
 def timezone_conf(request):
     return edit_singleton_model( request, "timezoneconf.html",
                                  "nimbus.timezone.views.timezone_conf",
-                                 formclass = TimezoneForm )
+                                 formclass = TimezoneForm,
+                                 reload_bacula = False)
 
 
 def area_request(request):

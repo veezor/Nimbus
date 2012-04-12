@@ -11,7 +11,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.forms import widgets
 
-from nimbus.filesets.models import FileSet, FilePath
+from nimbus.filesets.models import FileSet, FilePath, Wildcard
 from nimbus.computers.models import Computer, NimbusClientMessageError
 from nimbus.shared.views import render_to_response
 from nimbus.shared.forms import form_mapping, form_from_model
@@ -49,7 +49,14 @@ def do_add(request):
             filepaths_form = forms.FilesFormSet(data, instance=new_fileset)
             if filepaths_form.is_valid():
                 filepaths_form.save()
-                return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi criado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
+                wildcards_form = forms.WildcardsFormSet(data, instance=new_fileset)
+                if wildcards_form.is_valid():
+                    wildcards_form.save()
+                    return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi criado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
+                else:
+                    filepaths_form.delete()
+                    new_fileset.delete()
+                    return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos filtros","error":1}')
             else:
                 new_fileset.delete()
                 return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos arquivos","error":1}')
@@ -82,6 +89,12 @@ def do_edit(request, fileset_id):
             filepaths_form = forms.FilesToDeleteForm(data, instance=new_fileset)
             if filepaths_form.is_valid():
                 filepaths_form.save()
+                wildcards_form = forms.WildcardsFormSet(data, instance=new_fileset)
+                if wildcards_form.is_valid():
+                    for wildcard in new_fileset.wildcards.all():
+                        wildcard.delete()
+                    new_fileset.save()
+                    wildcards_form.save()
                 call_reload_baculadir()
                 return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi atualizado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
             else:
@@ -135,6 +148,12 @@ def do_delete(request, fileset_id):
                 novo_arquivo.fileset = novo_fileset
                 novo_arquivo.path = file.path
                 novo_arquivo.save()
+            for w in f.wildcards.all():
+                novo_wildcard = Wildcard()
+                novo_wildcard.expression = w.expression
+                novo_wildcard.kind = w.kind
+                novo_wildcard.fileset = novo_fileset
+                novo_wildcard.save()
             procedure.fileset = novo_fileset
             procedure.save()
     name = f.name

@@ -1,11 +1,42 @@
+
 <div style="width: {% if table.width %}{{table.width}}{% else %}100%{% endif %};">
-    <h2>{{block.title}}</h2>
-    <div id="{{block.cid_name}}" charttype="{{block.type}}" class="jqplotchart" style="height:{% if block.height %}{{block.height}}px{% else %}150px{% endif %};">
-        {% for key, line in block.lines.items %}
-        <chartdata>{{line|join:","}}</chartdata>
-        {% endfor %}
-        <chartlabels>{{block.labels|join:","}}</chartlabels>
-        <chartheader>{{block.header|join:","}}</chartheader>
-		<max_value>{{block.total}}</max_value>
-    </div>
+    <h2>{{block.title}} {{block.used|floatformat:1}} de {{block.total|floatformat:1}}GB <span {% if block.percent_used >= block.warn_level %}style="color: #FF0000;"{% endif %}>({{block.percent_used|floatformat:1}}%)</span></h2>
+	<div style="padding-top: 30px; padding-bottom: 30px; padding-right: 20px; margin-bottom: 20px; width:890px; background: #FFFDF6; border: solid 2px grey; box-shadow: 2px 2px 2px #BBBBBB;">
+		<div id="{{block.cid_name}}" style="height:{{block.height}}px;">
+		</div>
+	</div>
+	<script type="text/javascript">
+		TESTE = "";
+		g1 = new Dygraph(
+			document.getElementById("{{block.cid_name}}"),
+			"/storages/csv_data",
+			{
+				// colors: ['#B3433C'],
+				colors: ['#B3433C', '#BBBBBB'],
+				fillAlpha: 1.0,
+				labelsDivStyles: {'font-size': '10', 'background': '#FFFDF6'},
+				labelsDivWidth: 350,
+				axisLabelFontSize: 10,
+				fillGraph: true,
+				strokeWidth: 2,
+				showRoller: false,
+				errorBars: false,
+				valueRange: [0,{{block.upper_limit}}],
+				axes: {
+					x: {
+						axisLabelFormatter: function(d, gran) {
+							var this_time = Dygraph.zeropad(d.getHours())+":"+ Dygraph.zeropad(d.getMinutes())+":"+Dygraph.zeropad(d.getSeconds());
+							var this_day = Dygraph.zeropad(d.getDate())+"/"+ Dygraph.zeropad(d.getMonth() + 1);
+							return this_time +" "+ this_day
+						}
+					},
+					y: {
+						axisLabelFormatter: function(d, gran) {
+							return d + "GB";
+						}
+					}
+				}
+			}
+		);
+	</script>
 </div>

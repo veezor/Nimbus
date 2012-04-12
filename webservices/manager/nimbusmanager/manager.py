@@ -9,12 +9,16 @@ from SocketServer import ThreadingMixIn
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 import os
+import sys
 import stat
 import shutil
 import socket
 import tempfile
+import resource
 import threading
 import subprocess
+
+from pwd import getpwnam
 from os.path import join,basename
 
 import networkutils
@@ -41,21 +45,41 @@ class DaemonOperationError(Exception):
 class InvalidTimeZoneError(Exception):
     pass
 
+class RecreateDBError(Exception):
+    pass
 
 
+
+def call_command(*args):
+    cmd = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = cmd.communicate()
+    if cmd.returncode != 0:
+        raise subprocess.CalledProcessError(cmd.returncode, "error")
+    return cmd.returncode, stdout, stderr
+
+
+def log(code, stdout, stderr):
+    with file(tempfile.mktemp(), "w") as f:
+        f.write(str(code) + "\n")
+        f.write("\nstdout\n")
+        f.write(stdout)
+        f.write("\nerror\n")
+        f.write(stderr)
 
 class Manager(object):
 
     DAEMON_OPERATIONS = ("start", "stop", "restart", "status")
 
-    ALLOWED_DAEMON = (  "director", "client", 
+    ALLOWED_DAEMON = (  "director", "client",
                         "storage", "network",
-                        "nimbus", "nginx")
+                        "nimbus", "nginx",
+                        "cron")
 
     DAEMON_MAP = { "director" : "bacula-ctl-dir",
-                   "storage" : "bacula-ctl-sd", 
+                   "storage" : "bacula-ctl-sd",
                    "client" : "bacula-ctl-fd",
-                   "network" : "networking" }
+                   "network" : "networking",
+                   "cron" : "cron"}
 
 
     def __init__(self, debug=False):
@@ -97,6 +121,7 @@ class Manager(object):
         local_time = util.current_time()
         self.logger.info("Successfully changed timezone to %s!" % timezone)
         self.logger.info("UCT is %s and localtime is %s." % (uct_time, local_time))
+        return True
 
 
     def generate_ntpdate_file_on_cron(self, server):
@@ -104,6 +129,7 @@ class Manager(object):
             f.write(NTP_TEMPLATE % server)
         os.chmod(NTP_CRON_FILE, stat.S_IEXEC)
         subprocess.check_call([NTP_CRON_FILE], shell=True)
+        return True
 
     def _change_paths(self):
         tempdir = tempfile.mkdtemp(prefix='nimbusmanager-')
@@ -124,6 +150,7 @@ class Manager(object):
         dns.write(_templates.DNS % locals())
         dns.close()
         self.logger.info("DNS file created")
+        return True
 
     def generate_interfaces(self, interface_name, interface_addr=None, netmask=None, 
             type="static", broadcast=None, 
@@ -144,6 +171,7 @@ class Manager(object):
             interfaces.write( template % locals())
         interfaces.close()
         self.logger.info("Interfaces file created")
+        return True
 
     
     def get_interfaces(self):
@@ -170,11 +198,37 @@ class Manager(object):
 
 
 
+    def recreate_db(self, name, dump_file):
+        pid = os.fork()
+        if pid == 0:
+            try:
+                maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
+                os.closerange(0, maxfd)
+                uid = getpwnam("postgres").pw_uid
+                os.setuid(uid)
+                c,s,e = call_command("dropdb", name)
+                log(c,s,e)
+                c,s,e = call_command("createdb", name)
+                log(c,s,e)
+                c,s,e = call_command("psql", name,"-f",dump_file)
+                log(c,s,e)
+                sys.exit(0)
+            except Exception:
+                sys.exit(1)
+        else:
+            (wpid, wstatus) = os.wait()
+            if wpid == pid and wstatus != 0:
+                raise RecreateDBError()
+            return pid == wpid
+
+
+
     def network_restart(self):
         def do():
             self._control_daemon('networking', 'restart')
         timer = threading.Timer(10, do)
         timer.start()
+        return True
 
    
     def __getattr__(self, attr):

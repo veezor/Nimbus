@@ -300,8 +300,10 @@ class RemoteManager(BaseManager):
 
 
     def get_remote_volumes_list(self):
-        return [ f.name for f in self.s3.list_files() if filename_is_volumename(f.name) ]
+        return [ f.name for f in self.get_remote_volumes() ]
 
+    def get_remote_volumes(self):
+        return [ f for f in self.s3.list_files() if filename_is_volumename(f.name) ]
 
     def _upload_file(self, filename, dest, callback=None, userdata=None):
         self.s3.multipart_status_callbacks.add_callback( userdata.increment_part )
@@ -319,11 +321,10 @@ class RemoteManager(BaseManager):
 
     def _download_file(self, filename, dest, callback=None, userdata=None):
 
-        device = Device.objects.all()[0]
         if isabs(filename):
             destfilename = filename
         else:
-            destfilename = join(device.archive, filename)
+            destfilename = join(settings.NIMBUS_DEFAULT_ARCHIVE, filename)
 
         self.s3.download_file( filename, destfilename, callback=callback)
 

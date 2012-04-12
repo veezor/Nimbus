@@ -53,10 +53,28 @@ class QueueServiceManager(object):
             if q_name == queue_name:
                 try:
                     req = self._get_request(request)
-                    result.append( req.volume.path )
+                    result.append( req )
                 except RemoteUploadRequest.DoesNotExist:
                     pass
 
+        return result
+
+
+    def get_volumes_on_queue(self, queue_name):
+        return [ req.volume.filename\
+                for req in self.get_requests_on_queue(queue_name) ]
+
+
+    def get_active_requests(self):
+        result = []
+
+        def add(queue):
+            if not queue.current_request is None:
+                result.append( queue.current_request )
+
+        add(self.max_priority_queue_manager)
+        add(self.min_priority_queue_manager )
+        add(self.middle_priority_queue_manager )
         return result
 
 
@@ -197,8 +215,11 @@ class QueueServiceManagerFacade(object):
     def list_queues(self):
         return self.service_manager.list_queues()
 
-    def get_requests_on_queue(self, queue_name):
-        return self.service_manager.get_requests_on_queue(queue_name)
+    def get_volumes_on_queue(self, queue_name):
+        return self.service_manager.get_volumes_on_queue(queue_name)
+
+    def get_progress_data(self):
+        return QueueProgressReporter(self.service_manager).export_data()
 
     def run_delete_agent(self):
         self.service_manager.run_delete_agent()
@@ -343,6 +364,10 @@ class Worker(Process):
             self.logger.info(str(self.pid) + ' request %s uploaded with sucess' % str(self.request))
             set_request_as_done(self.request_id)
             self.logger.info(str(self.pid) + ' request %s marked as sucessful' % str(self.request))
+        except OSError, error:
+            self.logger.exception(str(self.pid) + ' file not found. Probably procedure delete (%s)' % self.request_id)
+            set_request_as_done(self.request_id)
+            self.request.delete()
         except IOError, error:
             self.logger.exception(str(self.pid) + ' request %s upload error' % self.request_id)
             sys.exit(2)
@@ -390,6 +415,10 @@ def set_request_as_done(request_id):
     service_manager.set_request_as_done(request_id)
 
 
+def get_queue_progress_data():
+    service_manager = get_queue_service_manager()
+    return service_manager.get_progress_data()
+
 
 class DeleteAgent(Thread):
 
@@ -397,3 +426,85 @@ class DeleteAgent(Thread):
         from nimbus.offsite.managers import RemoteManager
         remote_manager = RemoteManager()
         remote_manager.process_pending_delete_requests()
+
+
+
+
+class QueueProgressReporter(object):
+
+    def __init__(self, queue_manager):
+        self.queue_manager = queue_manager
+
+    def _get_requests_on_queues(self):
+        result = []
+        for queue in self.queue_manager.list_queues():
+            result.extend( self.queue_manager.get_requests_on_queue(queue) )
+        return result
+
+
+    def _get_recent_request_from_job(self, requests):
+        key_func = lambda req: req.last_update
+        request = sorted(requests, key=key_func, reverse=True)[0]
+        return request
+
+
+    def _get_recent_volume_from_job(self, requests ):
+        request = self._get_recent_request_from_job(requests)
+        return request.volume.filename
+
+    def _get_start_time_from_job(self, requests ):
+        key_func = lambda req: req.created_at
+        request = sorted(requests, key=key_func)[0]
+        return request.created_at.strftime("%H:%M:%S de %d/%m/%Y")
+
+
+    def _get_rate_from_job(self, requests):
+        request = self._get_recent_request_from_job(requests)
+        return request.rate
+
+    def _get_total_size_from_job(self, requests):
+        return sum( req.volume.size for req in requests )
+
+    def _get_transferred_bytes_from_job(self, requests):
+        return sum( req.transferred_bytes for req in requests )
+
+    def _group_by_job(self, requests):
+        jobs = {}
+        for req in requests:
+            job = req.job
+            if not job in jobs:
+                jobs[job] = []
+
+            jobs[job].append(req)
+
+        return jobs
+
+    def _get_active_jobs(self):
+        requests = self.queue_manager.get_active_requests()
+        return [ req.job for req in requests ]
+
+
+    def export_data(self):
+        result = []
+        requests = self._get_requests_on_queues()
+        requests_by_job = self._group_by_job(requests)
+        active_jobs = self._get_active_jobs()
+        for job, p_requests in requests_by_job.items():
+            data = {}
+            data['name'] = job.procedure.name
+            data['id'] = job.jobid
+            data['total'] = self._get_total_size_from_job(p_requests)
+            data['done'] = self._get_transferred_bytes_from_job(p_requests)
+
+            if job in active_jobs:
+                data['speed'] = self._get_rate_from_job(p_requests)
+            else:
+                data['speed'] = 0
+
+            data['current_file'] = self._get_recent_volume_from_job(p_requests)
+            data['added'] = self._get_start_time_from_job(p_requests)
+            result.append(data)
+        key_func = lambda item: item['added']
+        return sorted(result, key=key_func)
+
+

@@ -66,6 +66,18 @@
                             {% for file in fileset.files.all %}
                             <li>{{file.path}}</li>
                             {% endfor %}
+							{% if fileset.includes %}
+							Sendo apenas aqueles nos padrões abaixo:<br/>
+                            {% for wildcard in fileset.includes %}
+                            <li>{{wildcard.expression}}</li>
+                            {% endfor %}
+							{% endif %}
+							{% if fileset.excludes %}
+							Com exceção daqueles nos padrões abaixo:<br/>
+                            {% for wildcard in fileset.excludes %}
+                            <li>{{wildcard.expression}}</li>
+                            {% endfor %}
+							{% endif %}
                         </ul>
                         </div>
                     </div><!-- .right -->
@@ -128,6 +140,7 @@
 			<hr />
             {% endfor %}
 		</div><!-- .schedule -->
+		<div class="clear"></div><hr />
     </div>
     <div class="bendl"></div>
 	<div class="bendr"></div>

@@ -15,7 +15,7 @@
 .hide table thead th, .hide table tbody td{
     font-size: 11px;
 }
-.status_ok, .status_error, .status_warning, .status_waiting, .status_running{
+.status_ok, .status_error, .status_warning, .status_waiting, .status_running {
     -moz-border-radius: 3px;
     -khtml-border-radius: 3px;
     -webkit-border-radius: 3px;
@@ -42,4 +42,10 @@
     padding: 4px;
     border: 1px solid #c3c3c3;
     
+}
+.cancel_job {
+    padding: 2px 4px;
+    display: block;
+    float: right;
+    margin-right: 8px;
 }

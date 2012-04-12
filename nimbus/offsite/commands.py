@@ -3,6 +3,7 @@
 
 import xmlrpclib
 from nimbus.libs.commands import command
+from nimbus.offsite import models
 from nimbus.offsite import managers
 from nimbus.offsite import queue_service
 
@@ -58,6 +59,18 @@ def start_queue_service():
     u"""Inicia o serviço da fila de offsite"""
     queue_service.start_queue_manager_service()
 
+
+@command("--offsite-simple-config")
+def offsite_simple_config(username, password, rate_limit=-1):
+    u"""Configuração simples do offsite.
+    Use --offsite-simple-config username password"""
+    offsite = models.Offsite.get_instance()
+    offsite.username = username
+    offsite.password = password
+    offsite.rate_limit = rate_limit
+    offsite.active = True
+    offsite.clean()
+    offsite.save()
 
 @command("--check-offsite-integrity")
 def check_offsite_integrity():

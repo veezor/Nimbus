@@ -1,3 +1,7 @@
+%{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%{!?python_version: %define python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
+#
+
 Name:           NimbusClientService
 Version:        1.2
 Release:        75.1
@@ -55,3 +59,6 @@ fi
 /usr/bin/nimbusclientservice
 /usr/bin/nimbusnotifier
 /etc/nimbus
+%if 0%{?centos_version} != 505
+%python_sitelib/Nimbus_Client_Service-1.0-py%{python_version}.egg-info
+%endif

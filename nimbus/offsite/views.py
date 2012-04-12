@@ -2,7 +2,7 @@
 
 from urllib2 import URLError
 from os.path import join
-from datetime import datetime
+from datetime import datetime, timedelta
 import simplejson
 
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -17,6 +17,7 @@ from nimbus.offsite.models import (LocalUploadRequest,
                                    DownloadRequest)
 from nimbus.procedures.models import Procedure
 from nimbus.offsite.models import Offsite
+from nimbus.offsite.queue_service import get_queue_progress_data
 from nimbus.offsite.graphic import Graphics
 from nimbus.shared import utils
 # from nimbus.graphics.models import GraphicsManager, ResourceItemNotFound
@@ -166,6 +167,81 @@ def list_uploadrequest(request):
                                "list_type": "Uploads",
                                "title": u"Uploads ativos"})
 
+def upload_queue_status():
+    uploads = get_queue_progress_data()
+    upload_total = 0.0 # bytes
+    upload_done = 0.0 # bytes
+    current_speed = 0.0 # B/s
+    for u in uploads:
+        current_speed += u["speed"]
+        upload_total += u["total"]
+        upload_done += u["done"]
+    next_start = 0
+    for u in uploads:
+        u['portion'] = 100.0 * (u['total']) / (upload_total)
+        u['block_width'] = int((910 - (len(uploads) * 6)) * (u['portion'] / 100.0))
+        if u['block_width'] < 1:
+            u['block_width'] = 1
+        if next_start == 0:
+            u["estimate_start"] = u["added"]
+        else:
+            delta_from_now = datetime.now() + timedelta(seconds=int(next_start))
+            u["estimate_start"] = delta_from_now.strftime("%H:%M:%S de %d/%m/%Y")
+        u["done_percent"] = (float(u["done"]) / u["total"]) * 100.0
+        if u["speed"]:
+            u["eta"] = int((u["total"] - u["done"]) / (u["speed"]))
+        elif current_speed:
+            u["eta"] = int((u["total"] - u["done"]) / (current_speed))
+        else:
+            u["eta"] = 0
+        next_start += u["eta"]
+        if u["eta"]:
+            u["eta_str"] = str(timedelta(seconds=int(u["eta"])))
+            u["end_time"] = datetime.now() + timedelta(seconds=int(next_start))
+            u["end_time_str"] = u["end_time"].strftime("%H:%M:%S de %d/%m/%Y")
+        else:
+            u["eta_str"] = "Parado"
+            u["end_time"] = 0
+            u["end_time_str"] = "Parado"
+        u['speed'] = u['speed'] / 1024.0 # kB/s
+        u['total'] = u['total'] / 1048576.0 # MB
+        u['done'] = u['done'] / 1048576.0 # MB
+    if current_speed:
+        eta = (upload_total - upload_done) / current_speed # seconds
+        eta_str = str(timedelta(seconds=int(eta)))
+        end_time = datetime.now() + timedelta(seconds=int(eta))
+        end_time_str = end_time.strftime("%H:%M:%S de %d/%m/%Y")
+    else:
+        eta = 0
+        eta_str = "Parado"
+        end_time = 0
+        end_time_str = "Parado"
+    return {"uploads": uploads,
+            "upload_total": upload_total / 1048576.0, # MB
+            "upload_done": upload_done / 1048576.0, # MB
+            "current_speed": current_speed / 1024.0, # kB/s
+            "eta_str": eta_str,
+            "end_time_str": end_time_str}
+
+@login_required
+def upload_queue(request):
+    data = upload_queue_status()
+    # data = get_queue_progress_data()
+    data["title"] = u"Uploads ativos"
+    return render_to_response(request, 
+                              "upload_queue.html", data)
+
+@login_required
+def upload_queue_data(request):
+    data = upload_queue_status()
+    for item in range(len(data['uploads'])):
+        data['uploads'][item]['eta'] = None
+        data['uploads'][item]['end_time'] = None
+
+    json_data = simplejson.dumps(data)
+    return HttpResponse(json_data)
+
+
 @login_required
 def list_procedures(request):
     procedures = Procedure.objects.filter(id__gt=1, offsite_on=True)
@@ -176,8 +252,8 @@ def list_procedures(request):
 
 @login_required
 def list_offsite(request):
-    procedures = Procedure.with_run_after('Offsite')
-    last_jobs = Procedure.jobs_with_run_after('Offsite')
+    procedures = Procedure.with_job_tasks('Offsite')
+    last_jobs = Procedure.jobs_with_job_tasks('Offsite')
     extra_content = {'procedures': procedures,
                      'last_jobs' : last_jobs,
                      'title': u"Procedimentos com offsite ativo"}
@@ -185,4 +261,12 @@ def list_offsite(request):
     return render_to_response(request, "procedures_list.html", extra_content)
 
 
+@login_required
+def csv_data(request):
+    g = Graphics()
+    d = g.last_days(days=90)
+    r = ["Date,Utilizado"]
+    for i in d:
+        r.append("%s,%s" % (i.timestamp.strftime("%Y/%m/%d %H:%M:%S"), float(i.used)/1073741824.0))
+    return HttpResponse("\n".join(r))
 

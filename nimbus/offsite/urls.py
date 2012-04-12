@@ -5,6 +5,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('nimbus.offsite.views',
     (r'^detail', 'detail'),
+    (r'^csv_data', 'csv_data'),
     (r'^edit', 'edit'),
     (r'^list_downloadrequest', 'list_downloadrequest'),
     (r'^list_uploadrequest', 'list_uploadrequest'),
@@ -13,6 +14,8 @@ urlpatterns = patterns('nimbus.offsite.views',
     (r'^self_auth', 'self_auth'), # WORKAROUND enquanto a central não informa o host do servidor de storage
     (r'^list_procedures', 'list_procedures'),
     (r'^list_offsite/$', 'list_offsite'),
+    (r'^upload_queue/$', 'upload_queue'),
+    (r'^upload_queue_data/$', 'upload_queue_data'),
 )
 
 

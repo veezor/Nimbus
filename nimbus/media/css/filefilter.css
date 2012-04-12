@@ -1,0 +1,36 @@
+.filter_block {
+    overflow: auto;
+/*    margin: 5px;*/
+    width: 100px;
+    height: 150px;
+    border: solid 1px;
+	background: #FEFCC6;    
+}
+#filter_list {
+    margin: 5px;
+    padding: 5px;
+    margin-top: 50px;
+    height: 130px;
+/*    border: solid 1px;*/
+}
+#filter_table {
+    text-align: center;
+}
+span.added_filter {
+    background: url("/media/icons/41.png") no-repeat;
+    padding-left: 20px;
+    cursor: pointer;
+    padding-bottom: 10px;
+}
+.include_button {
+    cursor:pointer;
+}
+.exclude_button {
+    cursor:pointer;
+}
+#custom_filter_tr {
+    display: none;
+}
+div#filter_hidden_block {
+    display: none;
+}

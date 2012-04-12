@@ -18,6 +18,7 @@ from nimbus.shared.views import render_to_response
 from nimbus.libs.bacula import call_reload_baculadir
 from nimbus.shared.forms import form
 from nimbus.bacula.models import Job
+from nimbus.storages.graphic import Graphics
 
 @login_required
 def new(request):
@@ -152,3 +153,17 @@ def deactivate(request, object_id):
     storage.save()
 
     return redirect('/storages/list')
+
+@login_required
+def csv_data(request):
+    g = Graphics()
+    d = g.last_days(days=90)
+    r = ["Date,Utilizado"]
+    for i in d:
+        r.append("%s,%s" % (i.timestamp.strftime("%Y/%m/%d %H:%M:%S"), float(i.used)/1073741824.0))
+    return HttpResponse("\n".join(r))
+    
+    
+    
+    
+    

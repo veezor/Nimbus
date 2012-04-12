@@ -13,11 +13,12 @@ import codecs
 
 
 
-product_apps = {'professional': ['nimbus.offsite'],
-                'opensource': []}
+product_apps = {'professional': ['nimbus.offsite', 'nimbus.recovery'],
+                'opensource': ['nimbus.offsite', 'nimbus.recovery']}
 base_dirs = ['nimbus/libs', 'nimbus/media', 'nimbus/remotestorages',
              'nimbus/confs', 'nimbus/binary', 'nimbus/graphics',
-             'nimbus/shared', 'nimbus/build', 'nimbus/statistics']
+             'nimbus/shared', 'nimbus/build', 'nimbus/statistics',
+            'nimbus/adminmedia']
 
 garbage = ['.pyc', 'DS_Store', 'header_py_professional.txt',
            'header_py_opensource.txt', 'header_js_professional.txt',

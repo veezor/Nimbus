@@ -12,6 +12,10 @@ Tipos possíveis: ok, warn, error
 		{% else %}
         {{job.start_time}}: Procedimento de {{job.backup_type}} de '{{job.procedure.name}}' para '{{job.procedure.computer.name}}'
 		{% endif %}
+		{% if job.human_general_status == "executando" or job.human_general_status == "esperando" %}
+		<!-- <span class="cancel_job">Cancelar</span> -->
+		<button type="submit" class="cancel_job css3button negative" value="Desativar" id="{{job.jobid}}">Cancelar execução</button>
+		{% endif %}
         <div class="clear"></div>
 	</h3>
 	<div id="job_{{job.jobid}}_details">

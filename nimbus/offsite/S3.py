@@ -36,7 +36,6 @@ class RateLimiter(object):
     def __init__(self, rate_limit, update_rate_limit_time=10):
         """rate limit in kBytes / second"""
         self.reset(rate_limit, update_rate_limit_time)
-        self.update_rate_limit_time = update_rate_limit_time
         self._last_update_rate_limit = None
         self.rate = None
         self.logger = logging.getLogger("rate-limiter")
@@ -47,6 +46,7 @@ class RateLimiter(object):
         self.start = time()
         self._transferred_size = 0
         self._first_write = True # detect resume operation
+        self.update_rate_limit_time = update_rate_limit_time
 
 
     def __call__(self, transferred_size, total_size):
@@ -72,6 +72,7 @@ class RateLimiter(object):
 
             rate = t_size / elapsed_time
             self.rate = rate
+
             expected_time = t_size / self.rate_limit
             sleep_time = expected_time - elapsed_time
 
@@ -87,7 +88,6 @@ class RateLimiter(object):
 
     def _update_rate_limit(self, transferred_size):
         from nimbus.offsite import queue_service
-
         if self.update_rate_limit_time > 0:
             if self._last_update_rate_limit is None:
                 self._last_update_rate_limit = time()
@@ -157,6 +157,7 @@ class CallbackAggregator(object):
 
     def __init__(self, *callbacks):
         self.callbacks = list(callbacks)
+        self.logger = logging.getLogger(__name__)
 
     def add_callback(self, callback):
         self.callbacks.append(callback)
@@ -166,7 +167,11 @@ class CallbackAggregator(object):
 
     def __call__(self, *args, **kwargs):
         for callbacks in self.callbacks:
-            callbacks(*args, **kwargs)
+            try:
+                callbacks(*args, **kwargs)
+            except Exception, e:
+                self.logger.exception("Exception in callback")
+
 
 
 
@@ -237,7 +242,6 @@ class S3(object):
         from nimbus.offsite import queue_service
         self.logger.info('simple upload')
         key = self.bucket.new_key(keyname)
-
         self.rate_limiter.reset( queue_service.get_worker_ratelimit() )
         md5 = utils.md5_for_large_file(filename)
         headers={'x-amz-meta-nimbus-md5' : md5}
@@ -350,6 +354,9 @@ class S3(object):
     def delete_file(self, filename):
         self.bucket.delete_key(filename)
 
+
+    def get_file_entry(self, filename):
+        return self.bucket.lookup(filename)
 
     def get_size(self):
         entries = self.list_files()

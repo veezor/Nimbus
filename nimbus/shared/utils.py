@@ -3,6 +3,7 @@
 
 import os
 import string
+import xmlrpclib
 from random import choice
 
 
@@ -152,3 +153,5 @@ def project_port(request):
 
 
 
+def get_nimbus_manager():
+    return xmlrpclib.ServerProxy(settings.NIMBUS_MANAGER_URL)
