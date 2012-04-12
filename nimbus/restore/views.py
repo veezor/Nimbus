@@ -168,7 +168,8 @@ def restore_files(request):
         files = request.POST.getlist("paths")
         bacula = Bacula()
         bacula.run_restore(computer.bacula_name, jobid, target, files)
-        messages.success(request, "Recuperação iniciada com sucesso")    
+        messages.success(request, "Recuperação iniciada com sucesso")
+        messages.warning(request, "Atenção, a recuperação pode demorar alguns instantes para ser exibida na interface web")
         return redirect('/procedures/list/')
 
 @login_required

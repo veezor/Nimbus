@@ -7,6 +7,8 @@ import datetime
 import tempfile
 import xmlrpclib
 
+
+
 from django.conf import settings
 
 
@@ -17,7 +19,7 @@ from pybacula import BaculaCommandLine, configcheck, BConsoleInitError
 
 from nimbus.shared import utils
 from nimbus.bacula import models
-
+from nimbus.libs import systemprocesses
 
 try:
     if settings.PYBACULA_TEST:
@@ -70,26 +72,31 @@ class Bacula(object):
         return result
 
     def run_restore(self, client_name, jobid, where, files):
-        self.logger.info("Executando run_restore_")
-        filename = tempfile.mktemp()
-        for fname in list(files):
-            if utils.isdir(fname):
-                subfiles = models.File.objects\
-                        .select_related()\
-                        .filter(path__path__startswith=fname)
-                files.extend( s.fullname for s in subfiles  )
+        def do_restore():
+            self.logger.info("Executando run_restore_")
+            filename = tempfile.mktemp()
+            for fname in list(files):
+                if utils.isdir(fname):
+                    subfiles = models.File.objects\
+                            .select_related()\
+                            .filter(job=jobid, path__path__startswith=fname)
+                    files.extend( s.fullname for s in subfiles  )
 
 
-        with file(filename, "w") as f:
-            for fname in files:
-                f.write( fname.encode("utf-8") + "\n" )
-        
-        return self.cmd.restore.\
-                jobid[jobid].\
-                client[client_name].\
-                file["<" + filename].\
-                restoreclient[client_name].\
-                select.all.done.yes.where[where].run()
+            with file(filename, "w") as f:
+                for fname in files:
+                    f.write( fname.encode("utf-8") + "\n" )
+
+            self.cmd.restore.\
+                    jobid[jobid].\
+                    client[client_name].\
+                    file["<" + filename].\
+                    restoreclient[client_name].\
+                    select.all.done.yes.where[where].run()
+            self.logger.info("Fim run_restore")
+        systemprocesses.max_priority_job("restore", do_restore)
+
+
 
 
     def run_backup(self, job_name, client_name):
