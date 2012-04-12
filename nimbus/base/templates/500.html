@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 
 {% block content %}
@@ -9,18 +10,17 @@
     			<div class="bheadl"></div>
     			<div class="bheadr"></div>
 			
-    			<h2><img src="/media/icons/warn.png" /> Erro 500 - O servidor encontrou um problema inesperado</h2>
+                <h2><img src="/media/icons/warn.png" /> {% trans "Error 500 - internal server error" %}</h2>
 			
     		</div>		<!-- .block_head ends -->
 		
     		<div class="block_content tab_content">
 
                 <p>
-                    O problema que você está enfrentando é um erro inesperado encontrado pelo servidor,
-                    por favor tente executar novamente o procedimento.
+                    {% trans "This is an unexpected error and you should contact support or try again." %}
                 </p>
                 <p>
-                    Se possível reporte o problema que está ocorrendo para a equipe de Suporte Técnico.
+                    {% trans "We suggest you to report this error to the tech support."%}
                 </p>
 			
     		</div>		<!-- .block_content ends -->

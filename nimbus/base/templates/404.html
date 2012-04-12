@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 
 {% block content %}
@@ -9,17 +10,17 @@
     			<div class="bheadl"></div>
     			<div class="bheadr"></div>
 			
-    			<h2><img src="/media/icons/warn.png" /> Erro 404 - A página procurada não foi encontrada</h2>
+                <h2><img src="/media/icons/warn.png" /> {% trans "Error 404 - Page not found" %} </h2>
 			
     		</div>		<!-- .block_head ends -->
 		
     		<div class="block_content tab_content">
 
                 <p>
-                    A página que vou está tentando acessar não foi encontrada no servidor.
+                    {% trans "The page you are trying to access will not be found on the server."%}
                 </p>
                 <p>
-                    Para acessar uma página válida por favor use o menu acima.
+                    {% trans "To access a valid page please use the menu above."%}
                 </p>
 			
     		</div>		<!-- .block_content ends -->

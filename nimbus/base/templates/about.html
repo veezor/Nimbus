@@ -1,4 +1,5 @@
 {% block headtags %}
+{% load i18n %}
 <!-- <script type="text/javascript" src="/media/js/filesets.js"></script> -->
 <!-- <script type="text/javascript" src="/media/js/veezortree.js"></script> -->
 <link rel="stylesheet" type="text/css" href="/media/css/about.css"/>
@@ -8,15 +9,14 @@
 <div id="about">
 	<div id="about_block">
 		<div id="about_content">
-			Versão: {{version}} revisão #{{release}}<br/>
-			Licença: <a href="/LICENSE/">GPLv3</a><br />
-			Último self-backup: {{last_backup}}<br/>
-			Computadores: {{computers}}<br />
-			Procedimentos: {{procedures}}<br />
-			Backups: {{jobs}}<br />
+            {% trans "Version" %}: {{version}} {% trans "release"%} #{{release}}<br/>
+            {% trans "License" %}: <a href="/LICENSE/">GPLv3</a><br />
+            {% trans "Last self-backup"%}: {{last_backup}}<br/>
+            {% trans "Computers" %}: {{computers}}<br />
+            {% trans "Procedures"%}: {{procedures}}<br />
+            {% trans "Backups" %}: {{jobs}}<br />
 		</div>
 	</div>
-	<!-- <a href="http://trynimbus.com">Nimbus Opensource</a> é uma iniciativa <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a> -->
-	<a href="http://trynimbus.com">Nimbus Opensource</a> é uma iniciativa <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a>
+    <a href="http://trynimbus.com">Nimbus Opensource</a> {% trans "by"%} <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a>
 </div>
 {% endblock %}
