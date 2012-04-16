@@ -14,9 +14,12 @@ class EmailConfForm(forms.ModelForm):
     def is_valid(self):
         data = self.data.copy()
         if not 'active' in data:
-            data['send_to'] = 'seuemail@suaempresa.com'
-            data['email_host'] = 'suaempresa.com'
-            data['email_port'] = '25'
+            if not 'send_to' in data:
+                data['send_to'] = 'seuemail@suaempresa.com'
+            if not 'email_host' in data:
+                data['email_host'] = 'suaempresa.com'
+            if not 'email_port' in data:
+                data['email_port'] = '25'
         self.data = data
         return super(EmailConfForm, self).is_valid()
 

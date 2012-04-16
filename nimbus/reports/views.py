@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 
 from nimbus.shared import views
+from nimbus.reports.models import EmailConf
 from nimbus.reports.forms import EmailConfForm
 from nimbus.reports.models import send_hello_message
 
@@ -24,6 +25,10 @@ def email_conf(request):
 
 @login_required
 def email_test(request):
+    conf = EmailConf.get_instance()
+    if not conf.active:
+        messages.warning(request, u"Campo de ativação não selecionado")
+        return redirect("nimbus.reports.views.email_conf")
     if request.method == "GET":
         return views.render_to_response(request, "emailtest.html", {})
     elif request.method == "POST":
