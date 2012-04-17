@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -57,42 +58,42 @@
 				<ul id="nav">
 					<li class="active"><a href="#">Backup</a>
 					    <ul>
-					        <li><a href="/procedures/add">Criar backup</a></li>
-                            <li><a href="/restore/step1/">Restaurar Backup</a></li>
-                            <li><a href="/procedures/profile/list">Listar perfis de configuração</a></li>
-                            <li><a href="/procedures/list">Listar procedimentos</a></li>
+                            <li><a href="/procedures/add"> {% trans "New Backup" %} </a></li>
+                            <li><a href="/restore/step1/"> {% trans "Restore" %}</a></li>
+                            <li><a href="/procedures/profile/list"> {% trans "List profiles" %} </a></li>
+                            <li><a href="/procedures/list"> {% trans "List procedures" %} </a></li>
                         </ul>
 					</li>
-                    <li class="active"><a href="#">Computadores</a>
+                    <li class="active"><a href="#"> {% trans "Computers" %} </a>
 					    <ul>
-                            <li><a href="/computers/list">Listar computador</a></li>
-                            <li><a href="/computers/add">Ativar novo computador</a></li>
-                            <li><a href="/storages/list">Listar Armazenamento</a></li>
-                            <li><a href="/storages/add">Adicionar Armazenamento</a></li>
+                            <li><a href="/computers/list"> {% trans "List computers"%} </a></li>
+                            <li><a href="/computers/add"> {% trans "Activate new computer" %} </a></li>
+                            <li><a href="/storages/list"> {% trans "List storages" %} </a></li>
+                            <li><a href="/storages/add"> {% trans "Add Storage" %} </a></li>
                         </ul>
 					</li>
 					{% for menu in menus_from_apps %}
 					{% include menu %}
 					{% endfor %}
-					<li><a href="#">Ferramentas</a>
+                    <li><a href="#"> {% trans "Tools" %} </a>
 					    <ul>
                             <li><a href="/system/network_tool/ping/">Ping</a></li>
                             <li><a href="/system/network_tool/traceroute/">Traceroute</a></li>
                             <li><a href="/system/network_tool/nslookup/">NSLookup</a></li>
                         </ul>
 					</li>
-					<li><a href="#">Configurações</a>
+                    <li><a href="#"> {% trans "Configuration" %} </a>
                         <ul>
-                            <li><a href="/users/password_change">Alterar Senha</a></li>
-                            <li><a href="/network/config">Configuração de Rede</a></li>
-                            <li><a href="/timezone/config">Configuração de Hora</a></li>
-                            <li><a href="/reports/email_conf">Notificações por email</a></li>
+                            <li><a href="/users/password_change"> {% trans "Change Password" %} </a></li>
+                            <li><a href="/network/config"> {% trans "Network Config" %} </a></li>
+                            <li><a href="/timezone/config"> {% trans "Timezone Config" %} </a></li>
+                            <li><a href="/reports/email_conf"> {% trans "Mail Notification" %} </a></li>
                         </ul>
 					</li>
-					<li class="nobg"><a href="#">Ajuda</a>
+                    <li class="nobg"><a href="#"> {% trans "Help" %} </a>
                         <ul>
-                            <li><a href="/base/about" id="about_buttom">Sobre o Nimbus</a></li>
-                            <li><a href="http://forum.nimbusbackup.com">Fórum</a></li>
+                            <li><a href="/base/about" id="about_buttom"> {% trans "About Nimbus" %} </a></li>
+                            <li><a href="http://forum.nimbusbackup.com"> {% trans "Forum" %} </a></li>
                         </ul>
 					</li>
 				</ul>
@@ -100,12 +101,12 @@
 				{% include "status_header.html" %}
 				<div id="logout-button" class="align_right"><a href="/session/logout">Sair</a></div>
 				<div id="clock" class="time align_right">
-			        <small>Horário</small><br/>
+                    <small>{% trans "Time" %}</small><br/>
 			        <span id="actual_time">{% now "H:i:s" %}</span>
 			    </div>
 				<div id="notifier"></div>
 			</div>
-			<noscript><div class="message error">Atenção! Seu javascript precisa estar ativo para usar o Nimbus corretamente.</div></noscript>
+            <noscript><div class="message error">{% trans "Warning! Your javascript is disabled. Nimbus requires javascript." %}</div></noscript>
             {% if messages %}
                 {% for msg in messages %}
                     <div class="message {{ msg.tags }}">
@@ -115,12 +116,6 @@
             {% endif %}
 
             {%block content%}
-            <div class="annoying">
-                O seu navegador n&atilde;o &eacute; confi&aacute;vel para o Nimbus. Nosso software &eacute; testado para os browsers 
-                <a href="http://www.mozilla.com/en-US/firefox/new/" target="_blank">Mozilla Firefox</a> e 
-                <a href="http://www.google.com/chrome/intl/en/make/download-mac.html?brand=CHKZ" target="_blank">Google Chrome</a>. Caso deseje reportar
-                erros ou enviar sujest&otilde;es, visite nosso <a href="http://forum.nimbusbackup.com/">f&oacute;rum</a>.
-            </div>
             {%endblock%}
 
             {%block page%}
@@ -128,8 +123,8 @@
 
 			<div id="footer">
 				<!-- <p class="left"><a href="http://trynimbus.com">Nimbus Opensource</a> é uma iniciativa <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a> | -->
-				<p class="left"><a href="http://trynimbus.com">Nimbus Opensource</a> é uma iniciativa <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a> |
-				<a href="/LICENSE/">Terms and License</a></p>
+                <p class="left"><a href="http://trynimbus.com">Nimbus Opensource</a> {% trans "by" %} <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a> |
+                <a href="/LICENSE/">{% trans "Terms and License" %}</a></p>
 				<p class="right">Nimbus Opensource Backup v1.3</p>
 			</div>
 			</div>

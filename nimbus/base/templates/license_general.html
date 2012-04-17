@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -49,7 +50,7 @@
             <div class="logo_center"> <a href="/"> <img src="/media/images/nimbus_logo_opensource.png" /> </a>  </div>
             <p></p>
 				
-			<noscript><div class="message error">Atenção! Seu javascript precisa estar ativo para usar o Nimbus corretamente.</div></noscript>
+            <noscript><div class="message error">{% trans "Warning! Your javascript is disabled. Nimbus requires javascript." %}</div></noscript>
             {% if messages %}
                 {% for msg in messages %}
                     <div class="message {{ msg.tags }}">
@@ -65,7 +66,7 @@
                         <div class="bheadl"></div>
                         <div class="bheadr"></div>
 
-                        <h2>Licença</h2>
+                        <h2>{% trans "License" %}</h2>
                     </div>		<!-- .block_head ends -->
 
                     <div class="block_content">
@@ -82,8 +83,8 @@
             {%endblock%}
 
 			<div id="footer">
-				<p class="left"><a href="http://trynimbus.com">Nimbus Opensource</a> é uma iniciativa <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a> |
-				<a href="/LICENSE/">Terms and License</a></p>
+                <p class="left"><a href="http://trynimbus.com">Nimbus Opensource</a> {% trans "by" %} <a href="http://veezor.com"><img src="/media/lib/images/logo_veezor.gif" alt="Veezor® Network Intelligence" /></a> |
+                <a href="/LICENSE/">{% trans "Terms and License" %}</a></p>
 				<p class="right">Nimbus Opensource Backup v1.3</p>
 			</div>
 		</div>

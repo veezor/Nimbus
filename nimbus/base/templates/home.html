@@ -1,5 +1,6 @@
-
 {% extends 'base.html' %}
+{% load i18n %}
+
 
 {% block headtags %}
 <link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.jqplot.css" />
@@ -59,7 +60,7 @@
     			<div class="bheadl"></div>
     			<div class="bheadr"></div>
 
-    			<h2>Sistema e servidor</h2>
+                <h2>{% trans "System and Server"%}</h2>
     		</div>		<!-- .block_head ends -->
 
     		<div class="block_content">
@@ -76,13 +77,13 @@
     		<div class="block_content">
                 <div id="memory-use">
                     <div class="left memory">
-                        <h4>Uso da Memória</h4>
+                        <h4>{% trans "Memory usage" %}</h4>
                         {% with grafico_uso_memoria.lines.Ocupado.0 as value %}
         			        {% include "bar_chart.html" %}
         			    {% endwith %}
     			    </div>
     			    <div class="right cpu">
-                        <h4>Uso da CPU</h4>
+                        <h4> {% trans "CPU Usage" %} </h4>
                         {% with grafico_uso_cpu.lines.Ocupado.0 as value %}
         			        {% include "bar_chart.html" %}
         			    {% endwith %}
@@ -104,8 +105,8 @@
     			<div class="bheadl"></div>
     			<div class="bheadr"></div>
 
-    			<h2 class="floatleft">Procedimentos</h2>&nbsp;&nbsp;
-    			<a href="/procedures/history" class="css3button positive">Listar todos os procedimentos</a>
+                <h2 class="floatleft">{% trans "Procedures" %}</h2>&nbsp;&nbsp;
+                <a href="/procedures/history" class="css3button positive">{% trans "List procedures" %}</a>
 
     		</div>		<!-- .block_head ends -->
 

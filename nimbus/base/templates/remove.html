@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block headtags %}
 {% endblock %}
 
@@ -10,15 +10,15 @@
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
-		<h2>Confirmação de remoção</h2>
+        <h2>{% trans "Removal confirmation"%}</h2>
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
         <form method="post" action="{{action_url}}">
-            <h1>Você está prestes a remover "{{remove_name}}".</h1>
-            <p>Esta operação não poderá ser desfeita. Deseja prosseguir mesmo assim?</p>
+            <h1>{% trans "You are about to remove" %} "{{remove_name}}".</h1>
+            <p><strong>{% trans "This operation cannot be undone, are you sure you want to proceed?" %}</strong></p>
             <p>
-                <input type="submit" class="submit mid" name="confirm" value="Prosseguir" /> ou <a href="" onclick="history.back(-1); return false;">Cancelar</a>
+            <input type="submit" class="submit mid" name="confirm" value="Prosseguir" /> ou <a href="" onclick="history.back(-1); return false;"> {% trans "Cancel"%} </a>
             </p>
         </form>
     </div>

@@ -1,0 +1,306 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-17 10:11-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: commands.py:15
+msgid "Start django's shell"
+msgstr "Inicia o shell do Django"
+
+#: commands.py:21
+msgid "Migrate from version 1.0 to 1.1"
+msgstr "Migração da versão 1.0 para 1.1"
+
+#: commands.py:25
+msgid "Error: all clients must be active on the network"
+msgstr "Erro: todos os clientes devem estar ativos na rede"
+
+#: views.py:43
+msgid "Amount of data made backup"
+msgstr "Quantidade de dados realizados backup"
+
+#: views.py:55
+msgid "Amount of backup files made"
+msgstr "Quantidade de arquivos realizados backup"
+
+#: views.py:71 templates/home.html:80
+msgid "Memory usage"
+msgstr "Uso de memória"
+
+#: views.py:73 views.py:81
+msgid "Free"
+msgstr "Disponível"
+
+#: views.py:74 views.py:82
+msgid "Used"
+msgstr "Em uso"
+
+#: views.py:80
+msgid "CPU usage"
+msgstr "Uso de CPU"
+
+#: views.py:119
+msgid "Not run yet"
+msgstr "Não executado ainda"
+
+#: templates/404.html:13
+msgid "Error 404 - Page not found"
+msgstr "Erro 404 - Página não encontrada"
+
+#: templates/404.html:20
+msgid "The page you are trying to access will not be found on the server."
+msgstr ""
+"A página que voce está tentando acessar não pode ser encontrada no servidor"
+
+#: templates/404.html:23
+msgid "To access a valid page please use the menu above."
+msgstr "Acesse uma página válida, navegando através do menu acima."
+
+#: templates/500.html:13
+msgid "Error 500 - internal server error"
+msgstr "Erro 500 - Erro interno do servidor"
+
+#: templates/500.html:20
+msgid ""
+"This is an unexpected error and you should contact support or try again."
+msgstr ""
+"Esse é um erro inesperado e voce deve contactar o suporte ou tentar novamente"
+
+#: templates/500.html:23
+msgid "We suggest you to report this error to the tech support."
+msgstr "Nós sugerimos voce reportar esse erro para o suporte técnico"
+
+#: templates/about.html:12
+msgid "Version"
+msgstr "Versão"
+
+#: templates/about.html:12
+msgid "release"
+msgstr "revisão"
+
+#: templates/about.html:13 templates/license_general.html:69
+msgid "License"
+msgstr "Licença"
+
+#: templates/about.html:14
+msgid "Last self-backup"
+msgstr "Último self backup"
+
+#: templates/about.html:15 templates/base.html:67
+msgid "Computers"
+msgstr "Computadores"
+
+#: templates/about.html:16 templates/home.html:108
+msgid "Procedures"
+msgstr "Procedimentos"
+
+#: templates/about.html:17
+msgid "Backups"
+msgstr "Backups"
+
+#: templates/about.html:20 templates/base.html:126
+#: templates/base_login.html:90 templates/base_wizard.html:106
+#: templates/license_general.html:86
+msgid "by"
+msgstr "é uma iniciativa de"
+
+#: templates/base.html:61
+msgid "New Backup"
+msgstr "Novo backup"
+
+#: templates/base.html:62
+msgid "Restore"
+msgstr "Restaurar backup"
+
+#: templates/base.html:63
+msgid "List profiles"
+msgstr "Listar perfis de configuração"
+
+#: templates/base.html:64 templates/home.html:109
+msgid "List procedures"
+msgstr "Listar procedimentos"
+
+#: templates/base.html:69
+msgid "List computers"
+msgstr "Listar computadores"
+
+#: templates/base.html:70
+msgid "Activate new computer"
+msgstr "Ativar novo computador"
+
+#: templates/base.html:71
+msgid "List storages"
+msgstr "Listar armazenamentos"
+
+#: templates/base.html:72
+msgid "Add Storage"
+msgstr "Adicionar armazenamento"
+
+#: templates/base.html:78
+msgid "Tools"
+msgstr "Ferramentas"
+
+#: templates/base.html:85
+msgid "Configuration"
+msgstr "Configuração"
+
+#: templates/base.html:87
+msgid "Change Password"
+msgstr "Alterar senha"
+
+#: templates/base.html:88
+msgid "Network Config"
+msgstr "Configuração de rede"
+
+#: templates/base.html:89
+msgid "Timezone Config"
+msgstr "Configuração de hora"
+
+#: templates/base.html:90
+msgid "Mail Notification"
+msgstr "Notificações por email"
+
+#: templates/base.html:93
+msgid "Help"
+msgstr "Ajuda"
+
+#: templates/base.html:95
+msgid "About Nimbus"
+msgstr "Sobre o Nimbus"
+
+#: templates/base.html:96
+msgid "Forum"
+msgstr "Fórum"
+
+#: templates/base.html:104
+msgid "Time"
+msgstr "Horário"
+
+#: templates/base.html:109 templates/license_general.html:53
+msgid "Warning! Your javascript is disabled. Nimbus requires javascript."
+msgstr ""
+"Atenção! Seu javascript precisa estar ativo para o Nimbus funcionar "
+"corretamente"
+
+#: templates/base.html:127 templates/base_login.html:91
+#: templates/base_wizard.html:107 templates/license_general.html:87
+msgid "Terms and License"
+msgstr "Termos e licença"
+
+#: templates/home.html:63
+msgid "System and Server"
+msgstr "Sistema e servidor"
+
+#: templates/home.html:86
+msgid "CPU Usage"
+msgstr "Uso de CPU"
+
+#: templates/remove.html:13
+#, fuzzy
+msgid "Removal confirmation"
+msgstr "Configuração"
+
+#: templates/remove.html:18
+msgid "You are about to remove"
+msgstr "Voce está prestes a remover"
+
+#: templates/remove.html:19
+msgid "This operation cannot be undone, are you sure you want to proceed?"
+msgstr "Essa operação não pode ser desfeita. Tem certeza que deseja prosseguir?"
+
+#: templates/remove.html:21 templates/stat_block.html:22
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: templates/stat_block.html:12
+#, python-format
+msgid ""
+"\n"
+"        %(job.start_time)s: Restore job to '%(job.procedure.computer.name)"
+"s'\n"
+"        "
+msgstr ""
+"\n"
+"        %(job.start_time)s: Procedimento de restauração para '%(job.procedure.computer.name)"
+"s'\n"
+"        "
+
+#: templates/stat_block.html:16
+#, python-format
+msgid ""
+"\n"
+"        %(job.start_time)s: Procedure of %(job.backup_type)s from '%(job."
+"procedure.name)s' to '%(job.procedure.computer.name)s'\n"
+"        "
+msgstr ""
+"\n"
+"        %(job.start_time)s: Procedimento de %(job.backup_type)s de '%(job."
+"procedure.name)s' para '%(job.procedure.computer.name)s'\n"
+"        "
+
+#: templates/stat_block.html:30
+msgid "Procedure"
+msgstr "Procedimento"
+
+#: templates/stat_block.html:34
+msgid "This procedure is no more"
+msgstr "Esse procedimento não existe mais"
+
+#: templates/stat_block.html:40 templates/stat_block.html.py:42
+msgid "Computer"
+msgstr "Computador"
+
+#: templates/stat_block.html:42
+msgid "Computer not found"
+msgstr "Computador não encontrado"
+
+#: templates/stat_block.html:44
+msgid "Backup level "
+msgstr "Nível de backup"
+
+#: templates/stat_block.html:45
+msgid "Schedule time"
+msgstr "Agendado para"
+
+#: templates/stat_block.html:46
+msgid "Start"
+msgstr "Início"
+
+#: templates/stat_block.html:48 templates/stat_block.html.py:51
+msgid "End"
+msgstr "Término"
+
+#: templates/stat_block.html:49 templates/stat_block.html.py:52
+msgid "Duration"
+msgstr "Duração"
+
+#: templates/stat_block.html:51 templates/stat_block.html.py:52
+msgid "The procedure was not completed"
+msgstr "O procedimento ainda não foi concluído"
+
+#: templates/stat_block.html:54
+msgid "Copied files"
+msgstr "Arquivos copiados"
+
+
+#: templates/stat_block.html:56
+msgid "Status"
+msgstr "Status"
+
+#: templates/stat_block.html:57
+msgid "Errors"
+msgstr "Erros"

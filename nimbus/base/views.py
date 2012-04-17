@@ -7,6 +7,7 @@ import systeminfo
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 from django.conf import settings
 
 from nimbus.shared import utils
@@ -39,7 +40,7 @@ def ack_notification(request):
 def home(request):
     job_bytes = Job.get_bytes_from_last_jobs()
     grafico_backup_dados = {
-        'title': u"Quantidade de dados realizados backup", 'width': "100%",
+        'title': _(u"Amount of data made backup"), 'width': "100%",
         'type': "bar",
         'cid': "chart1",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_bytes)],
@@ -51,7 +52,7 @@ def home(request):
 
     job_files = Job.get_files_from_last_jobs()
     grafico_backup_arquivos = {
-        'title': u"Quantidade de arquivos realizados backup", 'width': "100%",
+        'title': _(u"Amount of backup files made"), 'width': "100%",
         'type': "bar",
         'cid': "chart2",
         'header': [d.strftime("%d/%m/%y") for d in sorted(job_files)],
@@ -67,18 +68,18 @@ def home(request):
     memory = systeminfo.get_memory_usage()
     memory_free = 100 - memory
 
-    grafico_uso_memoria = {'title': u"Uso da memória", 'width': "90%", 'type': "pie", 'cid': "chart4", 'header': ["Gigabytes"],
+    grafico_uso_memoria = {'title': _(u"Memory usage"), 'width': "90%", 'type': "pie", 'cid': "chart4", 'header': ["Gigabytes"],
               'lines': {
-                  "Disponível": [memory_free],
-                  "Ocupado": [memory]}}
+                  _(u"Free"): [memory_free],
+                  _(u"Used"): [memory]}}
 
     cpu = systeminfo.get_cpu_usage()
     cpu_free = 100 - memory
 
 
-    grafico_uso_cpu = {'title': u"Uso da CPU", 'width': "", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
-        "Disponível": [cpu_free],
-        "Ocupado": [cpu]}}
+    grafico_uso_cpu = {'title': _(u"CPU usage"), 'width': "", "type": "pie", 'cid': "chart5", 'header': ["Clocks"], 'lines': {
+        _(u"Free"): [cpu_free],
+        _(u"Used"): [cpu]}}
 
     # Dados de content:
     # - type
@@ -115,7 +116,7 @@ def about(request):
     try:
         last_backup = Procedure.objects.get(id=1).last_success_date().endtime.strftime("%d/%m/%Y - %H:%M:%S")
     except IndexError:
-        last_backup = "Não realizado"
+        last_backup = _("Not run yet")
 
     data = {'computers': computers,
             'procedures': procedures,
