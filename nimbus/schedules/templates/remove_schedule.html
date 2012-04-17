@@ -18,7 +18,6 @@
         <form method="post" action="">
             <h1>{% trans "You are about to remove schedule" %} "{{schedule.name}}".</h1>
 				{% if procedures %}
-				Os seguintes procedimentos de backup utilizam este agendamento:
                 {% trans "The following backups are using this schedule" %}:
 					{% for procedure in procedures %}
 				<li>{{procedure.name}}</li>
