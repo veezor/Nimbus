@@ -4,6 +4,7 @@ from nimbus.computers import models
 from django import forms
 from django.forms import widgets
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
+from django.utils.translation import ugettext_lazy as _
 from nimbus.shared import forms as nimbus_forms
 from django.forms import models as django_models
 
@@ -24,8 +25,8 @@ def make_form(modeltype, exclude_fields=None):
     return Form
 
 class ComputerForm(django_models.ModelForm):
-    name = forms.CharField(label=u'Nome do Computador', widget=widgets.TextInput(attrs={'class': 'text'}))
-    address = forms.CharField(label=u'Endereço de Rede', widget=widgets.TextInput(attrs={'class': 'text'}))
+    name = forms.CharField(label=_(u'Name'), widget=widgets.TextInput(attrs={'class': 'text'}))
+    address = forms.CharField(label=_(u'IP Address'), widget=widgets.TextInput(attrs={'class': 'text'}))
     
     class Meta:
         model = models.Computer

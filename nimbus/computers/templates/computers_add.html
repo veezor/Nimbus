@@ -8,7 +8,8 @@
 {% block page %}
 
 <div class="message info">
-    <p> Para ativar um novo computador ao sistema é necessário instalar o software cliente. Para obtê-lo clique <a href="http://download.nimbusbackup.com/client/"> aqui </a>. </p>
+    <p> {% trans "To activate a new computer yout must install the client software. To get it click" %} <a href="http://download.nimbusbackup.com/client/">{% trans "here" %}</a>. </p>
+</div>
 </div>
 
 <div class="block">
@@ -20,8 +21,8 @@
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
-        <p><a href="/computers/list" class="css3button positive">Listar computadores</a></p>
-        <p>Clique no botão ativar ao lado do computador desejado para torná-lo uma máquina ativa no Nimbus.</p>
+        <p><a href="/computers/list" class="css3button positive">{% trans "List computers"%} </a></p>
+        <p>{% trans "Click in 'activate' button if want to make it active in Nimbus" %}.</p>
         <div class="computers">
         {% for comp in computers %}
             <div class="computer {% if not comp.active %}desativado{% endif %}">
@@ -31,14 +32,14 @@
                         <h3 class="name">{{comp.name}}</h3>
                         <small class="ip">{{comp.address}} - {{comp.operation_system|title}}</small>
                         <p class="options">
-                            <a href="/computers/{{comp.id}}/edit_no_active/" class="css3button pill positive">Editar</a>
-                            <a href="/computers/{{comp.id}}/delete/" class="css3button pill negative">Remover</a>
+                        <a href="/computers/{{comp.id}}/edit_no_active/" class="css3button pill positive">{% trans "Edit"%}</a>
+                            <a href="/computers/{{comp.id}}/delete/" class="css3button pill negative">{% trans "Remove"%}</a>
                         </p>
                     </div>
                 </div>
                 <div class="right">
                     <div class="floatright">
-                        <a href="/computers/{{comp.id}}/activate/" class="css3button positive big">Ativar</a>
+                        <a href="/computers/{{comp.id}}/activate/" class="css3button positive big">{% trans "Activated"%}</a>
 <!--                         <a href="/computers/{{comp.id}}/configure/" class="css3button positive big">Reconfigurar</a> -->
 {#                        <form action="/computers/{{comp.id}}/activate/" method="post" class="floatright">#}
 {#                            <button type="submit" class="css3button positive" value="Ativar">Ativar</button>#}
@@ -48,8 +49,8 @@
                 <div class="clear"></div>
             </div>
         {% empty %}
-            <h2>Não existem computadores pendentes para ativação.</h2>
-            <p>Para ativar um novo computador você deve instalar o software cliente na máquina cliente.</p>
+            <h2>{% trans "No new computers to activate." %}</h2>
+            <p>{% trans "To activate a new computer yout must install the client software."%}</p>
         {% endfor %}
         </div>
     

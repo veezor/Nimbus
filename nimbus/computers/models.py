@@ -11,6 +11,7 @@ import keymanager
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save
+from django.utils.translation import ugettext_lazy as _
 
 from nimbus.bacula.models import Job, Client
 from nimbus.base.models import BaseModel
@@ -36,20 +37,22 @@ class NimbusClientMessageError(Exception):
 
 
 class ComputerGroup(models.Model):
-    name = models.CharField(max_length=255, unique=True, blank=False, null=False)
+    name = models.CharField(_(u"Name"), max_length=255,
+                            unique=True, blank=False, null=False)
 
     def __unicode__(self):
         return self.name
 
 
     class Meta:
-        verbose_name = u"Grupo de computadores"
+        verbose_name = _(u"Computers group")
 
 
 class CryptoInfo(models.Model):
-    key = models.CharField( max_length=2048, blank=False, null=False)
-    certificate = models.CharField( max_length=2048, blank=False, null=False)
-    pem = models.CharField( max_length=4096, blank=False, null=False)
+    key = models.CharField(_(u"Key"), max_length=2048, blank=False, null=False)
+    certificate = models.CharField(_(u"Certificate"), max_length=2048,
+                                   blank=False, null=False)
+    pem = models.CharField(_(u"PEM"), max_length=4096, blank=False, null=False)
 
 
     def _save_file(self, content, filename):
@@ -71,28 +74,29 @@ class CryptoInfo(models.Model):
 
 
 class Computer(BaseModel):
-    name = models.CharField(max_length=255, unique=True, blank=False, null=False,
-                            validators=[fields.check_model_name])
-    address = models.IPAddressField(blank=False, null=False, unique=True)
-    operation_system = models.CharField(max_length=255, blank=False, null=False,
-                                        choices=OS )
-    description = models.TextField(max_length=1024, blank=True)
-    password = models.CharField(max_length=255, blank=False, null=False, 
-                                editable=False, default=utils.random_password)
-    groups = models.ManyToManyField(ComputerGroup, related_name="computers", 
-                                    blank=True, null=True)
-    active = models.BooleanField(editable=False)
-    crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False, 
+    name = models.CharField(_(u"Name"), max_length=255, unique=True, blank=False,
+                            null=False, validators=[fields.check_model_name])
+    address = models.IPAddressField(_("IP Address"), blank=False,
+                                    null=False, unique=True)
+    operation_system = models.CharField(_("Operation System"), max_length=255,
+                                        blank=False, null=False, choices=OS )
+    description = models.TextField(_(u"Description"), max_length=1024, blank=True)
+    password = models.CharField(_(u"Password"), max_length=255, blank=False,
+                                null=False, editable=False, default=utils.random_password)
+    groups = models.ManyToManyField(_(u"Groups"), ComputerGroup,
+                                    related_name="computers", blank=True, null=True)
+    active = models.BooleanField(_(u"Active"),editable=False)
+    crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False,
                                     unique=True, editable=False)
 
 
 
     class Meta:
-        verbose_name = u"Computador"
+        verbose_name = _(u"Computer")
 
     def get_config_file(self):
         config = Config.get_instance()
-        return render_to_string("bacula-fd", 
+        return render_to_string("bacula-fd",
                                 director_name=config.director_name,
                                 password=self.password,
                                 name=self.bacula_name,
@@ -162,8 +166,8 @@ class Computer(BaseModel):
 
     def activate(self):
         if self.active:
-            raise ComputerAlreadyActive("O computador já está ativo")
-        self.configure() 
+            raise ComputerAlreadyActive(_("Computer already active"))
+        self.configure()
         self.active = True
         self.save()
 
@@ -203,7 +207,7 @@ def update_computer_file(computer):
 def remove_computer_file(computer):
     """Computer remove file"""
     if computer.active:
-        filename = path.join(settings.NIMBUS_COMPUTERS_DIR, 
+        filename = path.join(settings.NIMBUS_COMPUTERS_DIR,
                              computer.bacula_name)
         utils.remove_or_leave(filename)
 
