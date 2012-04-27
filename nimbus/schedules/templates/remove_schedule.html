@@ -29,7 +29,7 @@
 			<br />
             <p><strong>{% trans "This operation cannot be undone, are you sure you want to proceed?" %}</strong></p>
             <p>
-                <a href="/schedules/do_delete/{{schedule.id}}" class="css3button negative">{% trans "Remove"%}</a> ou <a href="" class="css3button positive" onclick="history.back(-1); return false;">{% trans "Cancel"%}</a>
+            <a href="/schedules/do_delete/{{schedule.id}}" class="css3button negative">{% trans "Remove"%}</a> {% trans "or" %} <a href="" class="css3button positive" onclick="history.back(-1); return false;">{% trans "Cancel"%}</a>
             </p>
         </form>
     </div>
