@@ -17,10 +17,9 @@ import manager
 
 
 def main(debug=False):
+    logger = logging.getLogger(__name__)
     try:
         util.load_logging_system()
-        logger = logging.getLogger(__name__)
-
         config = util.get_config()
         pidfile = config.get("PATH","pid")
         pid = os.getpid()
