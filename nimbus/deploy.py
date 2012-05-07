@@ -89,7 +89,7 @@ def copy_files(destination='../../deploy_tmp'):
         shutil.rmtree(destination)
     except:
         pass
-    shutil.copytree('../../nimbus/', destination)
+    shutil.copytree('../', destination)
 
 def remove_unused(destination):
     for d in dirs_to_remove(destination):
