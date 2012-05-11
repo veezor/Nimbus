@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 from nimbus.shared.views import render_to_response
 from nimbus.network.models import NetworkInterface, get_raw_network_interface_address
+from nimbus.network.forms import NetworkForm
 from nimbus.shared.views import edit_singleton_model
 from nimbus.shared.utils import project_port
 from nimbus.wizard.models import add_step
@@ -23,14 +24,19 @@ def network(request):
                      'page_name': u'network'}
     if request.method == "GET":
         interface = NetworkInterface.get_instance()
-        Form = form(NetworkInterface)
-        extra_context['form'] = Form(instance=interface)
+        extra_context['form'] = NetworkForm(instance=interface)
         return render_to_response( request, "generic.html", extra_context)
     else:
-        edit_singleton_model(request, "generic.html",
-                              next_step_url('network'),
-                              model = NetworkInterface,
-                              extra_context = extra_context)
+        response = edit_singleton_model(request, "generic.html",
+                                        next_step_url('network'),
+                                        formclass = NetworkForm,
+                                        extra_context = extra_context)
+                           
+
+        if response.status_code == 200:
+            return response
+            
+                                                  
 
         interface = NetworkInterface.get_instance()
 

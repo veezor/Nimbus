@@ -28,7 +28,8 @@ class NetworkInterface(BaseModel):
     netmask = models.IPAddressField('Máscara de rede', null=False)
     gateway = models.IPAddressField('Gateway', null=False)
     dns1 = models.IPAddressField('Servidor DNS1', null=False)
-    dns2 = models.IPAddressField('Servidor DNS2', blank=True,null=True)
+    dns2 = models.IPAddressField('Servidor DNS2', blank=True, 
+                                 null=True, default=None)
 
 
     class Meta:
