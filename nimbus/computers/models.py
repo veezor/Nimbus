@@ -83,7 +83,7 @@ class Computer(BaseModel):
     description = models.TextField(_(u"Description"), max_length=1024, blank=True)
     password = models.CharField(_(u"Password"), max_length=255, blank=False,
                                 null=False, editable=False, default=utils.random_password)
-    groups = models.ManyToManyField(_(u"Groups"), ComputerGroup,
+    groups = models.ManyToManyField(ComputerGroup,
                                     related_name="computers", blank=True, null=True)
     active = models.BooleanField(_(u"Active"),editable=False)
     crypto_info = models.ForeignKey(CryptoInfo, null=False, blank=False,
