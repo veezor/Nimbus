@@ -27,7 +27,7 @@ from nimbus.libs.bacula import (force_unlock_bacula_and_start,
 
 @command("--create-database")
 def create_database():
-    u"""Cria a base de dados do nimbus"""
+    u"""Create nimbus database"""
     call_command('syncdb',verbosity=0,interactive=False)
     if len(User.objects.all()) == 0:
         u = User(username = "admin",
@@ -62,6 +62,7 @@ def create_database():
 
 @command("--create-conf-dirs")
 def create_conf_dirs(prefix=''):
+    u"""Create nimbus configuration directories"""
     members = dir(settings)
     directories = [member for member in members if member.endswith("_DIR")]
     directories = [getattr(settings, dr) for dr in directories]
