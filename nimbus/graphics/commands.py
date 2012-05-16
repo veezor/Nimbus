@@ -7,7 +7,7 @@ from nimbus.graphics.models import Graphics
 
 @command("--update-graphs-data")
 def update_graphs_data():
-    u"""Atualiza os dados dos gráficos"""
+    u"""Update Nimbus graphics data"""
     # manager = GraphicsManager()
     # manager.collect_data()
     manager = Graphics()
