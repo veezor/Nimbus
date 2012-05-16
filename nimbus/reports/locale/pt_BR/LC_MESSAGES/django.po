@@ -1,0 +1,148 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-16 16:25-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:19
+msgid "youruser@yourcompany.com"
+msgstr "seuusuario@suaempresa.com.br"
+
+#: forms.py:20
+msgid "yourcompany.com"
+msgstr "suaempresa.com.br"
+
+#: models.py:21
+msgid "Nimbus: Email config test"
+msgstr "Nimbus: Email de confirmação de configuração do Nimbus"
+
+#: models.py:22
+msgid ""
+"\n"
+"This email was sent on request to verify the configuration of the Nimbus "
+"mail notification.\n"
+msgstr ""
+"\n"
+"Este email foi enviado a seu pedido para verificação da configuração de "
+"email do Nimbus. \n"
+
+#: models.py:39
+msgid "Active"
+msgstr "Ativo"
+
+#: models.py:40
+msgid "Send to"
+msgstr "Enviar para"
+
+#: models.py:41
+msgid "Host"
+msgstr "Host"
+
+#: models.py:43
+msgid "Port"
+msgstr "Porta"
+
+#: models.py:44
+msgid "Username"
+msgstr "Nome do usuário"
+
+#: models.py:46
+msgid "Password"
+msgstr "Senha"
+
+#: models.py:51 templates/emailconf.html:12 templates/emailtest.html:12
+msgid "Mail notification"
+msgstr "Configuração de email"
+
+#: models.py:85
+msgid "Not available"
+msgstr "Não disponível"
+
+#: views.py:33
+msgid "Email sent correctly, check your mailbox"
+msgstr "Email enviado corretamente, verifique sua caixa postal"
+
+#: views.py:35
+msgid "Unable to send email, check configuration"
+msgstr "Impossível enviar email, verifique configurações"
+
+#: templates/email_report.:3
+msgid "Computer"
+msgstr "Computador"
+
+#: templates/email_report.:4
+msgid "Schedule"
+msgstr "Agendamento"
+
+#: templates/email_report.:5
+msgid "Scheduled time"
+msgstr "Hora do agendamento"
+
+#: templates/email_report.:6
+msgid "Start"
+msgstr "Início"
+
+#: templates/email_report.:7
+msgid "End"
+msgstr "Fim"
+
+#: templates/email_report.:8
+msgid "Duration"
+msgstr "Duração"
+
+#: templates/email_report.:9
+msgid "Data size"
+msgstr "Dados"
+
+#: templates/email_report.:10
+msgid "Data rate"
+msgstr "Taxa de gravação"
+
+#: templates/email_report.:11
+msgid "Compression"
+msgstr "Compressão"
+
+#: templates/email_report.:12
+msgid "Encryption"
+msgstr "Encriptação"
+
+#: templates/email_report.:12
+msgid "yes"
+msgstr "sim"
+
+#: templates/email_report.:12
+msgid "no"
+msgstr "não"
+
+#: templates/email_report.:13
+msgid "Status message"
+msgstr "Resultado"
+
+#: templates/email_report.:16
+msgid "Debug messages"
+msgstr "Mensagens para depuração"
+
+#: templates/emailconf.html:19
+msgid "Update"
+msgstr "Atualizar"
+
+#: templates/emailtest.html:18
+msgid "Back"
+msgstr "Voltar"
+
+#: templates/emailtest.html:19
+msgid "Test config"
+msgstr "Testar configuração"
