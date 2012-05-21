@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/offsite.js"></script>
@@ -11,7 +12,7 @@
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
-		<h2>Detalhes do offsite</h2>
+		<h2>{% trans "Offsite details" %}</h2>
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
@@ -21,7 +22,7 @@
             {% include "form.html" %}
 
             <p class="input_submit">
-                <button type="submit" class="css3button big positive" value="Atualizar">Atualizar</button>
+                <button type="submit" class="css3button big positive" value="Atualizar">{% trans "Update" %}</button>
             </p>
 
         </form>

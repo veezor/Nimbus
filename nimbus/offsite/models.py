@@ -13,6 +13,7 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save, pre_save
+from django.utils.translation import ugettext_lazy as _
 
 #from nimbus.offsite import managers
 from nimbus.offsite.S3 import S3, S3AuthError, MIN_MULTIPART_SIZE
@@ -42,7 +43,7 @@ class Offsite(BaseModel):
 
 
     class Meta:
-        verbose_name = u"Configurações do offsite"
+        verbose_name = _(u"Offsite configuration")
 
     @classmethod
     def on_remove(cls, procedure):
@@ -68,18 +69,18 @@ class Offsite(BaseModel):
             try:
                 nimbus_central_data = self._get_nimbus_central_data()
                 if nimbus_central_data['status'] != 1:
-                    logger.error("Status da conta do usuário inválido")
-                    raise ValidationError("Sua assinatura está com problemas, verifique situação na central de atendimento")
+                    logger.error(_("status of the user account is invalid"))
+                    raise ValidationError(_("Your signature has problems, check your situation in the central attendment"))
             except urllib2.HTTPError, error:
                 if error.getcode() == 401:
-                    logger.error("Username or password error")
-                    raise ValidationError("Usuário ou senha incorretos")
+                    logger.error(_("Username or password error"))
+                    raise ValidationError(_("User or password incorrect"))
                 else:
-                    logger.exception("Offsite test config")
-                    raise ValidationError("Impossível conectar. Tente novamente mais tarde")
+                    logger.exception(_("Offsite test config"))
+                    raise ValidationError(_("Cannot connect. Please try again later"))
             except urllib2.URLError, error:
-                    logger.exception("Offsite test config")
-                    raise ValidationError("Erro, verifique sua conexão com a rede externa")
+                    logger.exception(_("Offsite test config"))
+                    raise ValidationError(_("Error, verify your connection with the external web"))
 
 
 
@@ -99,8 +100,8 @@ class Offsite(BaseModel):
                         rate_limit=self.rate_limit,
                         host=self.host)
             except S3AuthError, error:
-                logger.exception("nimbus central keys error")
-                raise ValidationError("Erro de configuração. Contactar o suporte. Chaves não conferem")
+                logger.exception(_("nimbus central keys error"))
+                raise ValidationError(_("Configuration error. Contact the support. The keys don't confer"))
 
 
 
@@ -346,7 +347,7 @@ def update_offsite(offsite):
         task = JobTask()
         task.name = "Offsite"
         task.creator = offsite
-        task.description = "Mantém uma cópia de seu backup na nuvem"
+        task.description = _("Keep a copy of your backup in the cloud")
         task.command = "%s --upload-requests %%v" % settings.NIMBUS_EXE
         task.runswhen = "After"
         task.save()

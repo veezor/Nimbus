@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 
 {% block headtags %}
 <link rel="stylesheet" type="text/css" href="/media/css/offsite.css" />
@@ -16,7 +16,7 @@
 		<div class="bheadr"></div>
 		<h2>{{ title }}</h2>
 		<div class="right">
-            A lista será atualizada em <span class="tempo_restante">10</span> segundos. <small>(<a href="#" rel="{{script_name}}" class="atualizar_agora">atualizar agora</a>)</small>
+            {% trans "The list will be updated within" %}<span class="tempo_restante">10</span> {% trans "seconds." %} <small>(<a href="#" rel="{{script_name}}" class="atualizar_agora">{% trans "Update now" %}</a>)</small>
 			
 		</div>
 	</div>
@@ -24,17 +24,17 @@
     <div class="block_content">
 
         {% if not object_list %}
-            <p>Não existem downloads ativos no momento.</p>
+            <p>{% trans "There are no downloads currently active" %}</p>
         {% else %}
             <table class="request_list">
                 <thead>
                     <tr>
-                        <th>Caminho do arquivo</th>
-                        <th>Criado em</th>
-                        <th>Tentativas</th>
-                        <th>Transferência</th>
-                        <th>Concluído</th>
-                    </tr>
+                        <th>{% trans "File path" %}</th>
+                        <th>{% trans "Created on" %}</th>
+                        <th>{% trans "Attempts" %}</th>
+                        <th>{% trans "Transference" %}</th>
+                        <th>{% trans "Done" %}</th>
+		    </tr>
                 </thead>
 
                 <tbody>
@@ -42,10 +42,11 @@
                     <tr>
                         <td>{{ object.volume.filename }}</td>
                         <td>{{ object.created_at|date:"d/m/Y H:i" }}</td>
-                        <td align="right">{{ object.attempts }} <small>(última: {{ object.last_attempt }})</small></td>
-                        <td align="right">{{ object.friendly_rate }} <small>(tempo restante: {{ object.estimated_transfer_time }})</small></td>
+                        <td align="right">{{ object.attempts }} <small>({% trans "last:" %} {{ object.last_attempt }})</small></td>
+                        <td align="right">{{ object.friendly_rate }} <small>({% trans "remaining time:" %} {{ object.estimated_transfer_time }})</small></td>
                         <td align="right">
-                            <div class="concluido_wrapper" title="{{ object.finished_percent }}% concluído.">
+                            <div class="concluido_wrapper" title= "{{ object.finished_percent }}"{% trans "% completed." %}")
+>
                                 <div class="concluido_percent" style="width: {{ object.finished_percent }}%">&nbsp;</div>
                             </div>
                         </td>

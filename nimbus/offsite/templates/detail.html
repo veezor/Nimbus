@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load i18n %}
+
 {% block headtags %}
 <script type="text/javascript" src="http://dygraphs.com/dygraph-combined.js"></script>
 {% endblock %}
@@ -9,16 +11,16 @@
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
-		<h2>Detalhes do offsite</h2>
+		<h2>{% trans "Offsite details" %}</h2>
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
 
         {% if offsite.active %}
-            <p><a href="/offsite/list_uploadrequest">Visualizar uploads ativos</a> • <a href="/offsite/list_downloadrequest">Visualizar downloads ativos</a></p>
+            <p><a href="/offsite/list_uploadrequest">{% trans "View active uploads" %}</a> •<a href="/offsite/list_downloadrequest">{% trans "View active downloads" %}</a></p>
 
             <div class="block-executados">
-                <h3>Ocupação do offsite</h3>
+                <h3>{% trans "Space used by the Offsite" %}</h3>
 				{% with graph_block as block %}
    		        	{% include block.template %}
         		{% endwith %}
@@ -36,8 +38,8 @@
         
             <div class="clear"></div>
         {% else %}
-            <h1>Offsite inativo</h1>
-            <p>Antes de usar o offsite <a href="{% url nimbus.offsite.views.edit %}">você deve ativá-lo</a>.</p>
+            <h1>{% trans "Offsite inactive" %}</h1>
+            <p>{% trans "Before using offsite" %}<a href="{% url nimbus.offsite.views.edit %}">{% trans " you must activate it" %}</a></p>
         {% endif %}
     </div>
 

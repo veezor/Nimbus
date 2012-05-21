@@ -9,6 +9,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils.translation import ugettext as _
 
 from nimbus.libs import systemprocesses
 from nimbus.offsite import managers
@@ -32,7 +33,7 @@ from nimbus.wizard.views import previous_step_url, next_step_url
 
 @add_step()
 def offsite(request):
-    extra_context = {'wizard_title': u'3 de 5 - Configuração do Offsite',
+    extra_context = {'wizard_title': _(u'3 of 5 - Offsite Configuration'),
                      'page_name': u'offsite',
                      'previous': previous_step_url('offsite')}
     return edit_singleton_model(request, "generic.html",
@@ -56,7 +57,7 @@ def detail(request):
                         'label' : upload.volume.filename,
                         'message' : "%.2f MB" % utils.bytes_to_mb(upload.volume.size)
                        })
-    transferencias_em_execucao = [{'title': u'Transferências em execução',
+    transferencias_em_execucao = [{'title': _(u'Transfers in execution'),
                                    'content': content}]
 
     if offsite.active:
@@ -64,12 +65,12 @@ def detail(request):
         graph_block = graphic.data_to_template()[0]
     else:
         ocupacao_offsite = 0.0
-        messages.error(request, "Offsite desativado")
+        messages.error(request, _("Offsite disabled"))
     return render_to_response(request, "detail.html", locals())
 
 @login_required
 def edit(request):
-    title = u'Editar configurações do offsite'
+    title = _(u'Edit offsite configuration')
     return edit_singleton_model(request, "offsite_edit.html", 
                                 "nimbus.offsite.views.detail",
                                 formclass = OffsiteForm,
@@ -135,7 +136,7 @@ def list_downloadrequest(request):
                               "list_downuploadrequest.html", 
                               {"object_list": downloads_requests,
                                "list_type": "Downloads",
-                               "title": u"Downloads ativos"})
+                               "title": _(u"Active downloads")})
 
 @login_required
 def list_uploadrequest(request):
@@ -200,9 +201,9 @@ def upload_queue_status():
             u["end_time"] = datetime.now() + timedelta(seconds=int(next_start))
             u["end_time_str"] = u["end_time"].strftime("%H:%M:%S de %d/%m/%Y")
         else:
-            u["eta_str"] = "Parado"
+            u["eta_str"] = _("Stopped")
             u["end_time"] = 0
-            u["end_time_str"] = "Parado"
+            u["end_time_str"] = _("Stopped")
         u['speed'] = u['speed'] / 1024.0 # kB/s
         u['total'] = u['total'] / 1048576.0 # MB
         u['done'] = u['done'] / 1048576.0 # MB
@@ -213,9 +214,9 @@ def upload_queue_status():
         end_time_str = end_time.strftime("%H:%M:%S de %d/%m/%Y")
     else:
         eta = 0
-        eta_str = "Parado"
+        eta_str = _("Stopped")
         end_time = 0
-        end_time_str = "Parado"
+        end_time_str = _("Stopped")
     return {"uploads": uploads,
             "upload_total": upload_total / 1048576.0, # MB
             "upload_done": upload_done / 1048576.0, # MB
@@ -227,7 +228,7 @@ def upload_queue_status():
 def upload_queue(request):
     data = upload_queue_status()
     # data = get_queue_progress_data()
-    data["title"] = u"Uploads ativos"
+    data["title"] = _(u"Active uploads")
     return render_to_response(request, 
                               "upload_queue.html", data)
 
@@ -246,7 +247,7 @@ def upload_queue_data(request):
 def list_procedures(request):
     procedures = Procedure.objects.filter(id__gt=1, offsite_on=True)
     extra_content = {'procedures': procedures,
-                     'title': u"Procedimentos com offsite ativo"}
+                     'title': _(u"Procedures with offsite active")}
     return render_to_response(request, "procedures_list.html", extra_content)
 
 
@@ -256,7 +257,7 @@ def list_offsite(request):
     last_jobs = Procedure.jobs_with_job_tasks('Offsite')
     extra_content = {'procedures': procedures,
                      'last_jobs' : last_jobs,
-                     'title': u"Procedimentos com offsite ativo"}
+                     'title': _(u"Procedures with offsite active")}
 
     return render_to_response(request, "procedures_list.html", extra_content)
 

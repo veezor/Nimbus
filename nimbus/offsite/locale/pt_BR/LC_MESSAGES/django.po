@@ -1,0 +1,318 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-18 15:03-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:13 forms.py:31
+msgid "Enable upload rate"
+msgstr "Ativar taxa de upload"
+
+#: forms.py:15 forms.py:33
+msgid "Upload Rate (kb/s)"
+msgstr "Taxa de upload (kb/s)"
+
+#: models.py:46
+msgid "Offsite configuration"
+msgstr "Configuração do Offsite"
+
+#: models.py:72
+msgid "status of the user account is invalid"
+msgstr "Status da conta do usuário inválido"
+
+#: models.py:73
+msgid ""
+"Your signature has problems, check your situation in the central attendment"
+msgstr ""
+"Sua assinatura está com problemas, verifique sua situação com a central de "
+"atendimento"
+
+#: models.py:76
+msgid "Username or password error"
+msgstr ""
+
+#: models.py:77
+msgid "User or password incorrect"
+msgstr "Usuario ou senha incorreta"
+
+#: models.py:79 models.py:82
+msgid "Offsite test config"
+msgstr "Teste de configuração do Offsite"
+
+#: models.py:80
+msgid "Cannot connect. Please try again later"
+msgstr "Impossível conectar. Tente novamente mais tarde"
+
+#: models.py:83
+msgid "Error, verify your connection with the external web"
+msgstr "Erro, verifique sua conexão com a rede externa"
+
+#: models.py:103
+msgid "nimbus central keys error"
+msgstr ""
+
+#: models.py:104
+msgid "Configuration error. Contact the support. The keys don't confer"
+msgstr "Erro de configuração. Contactar o suporte. Chaves não conferem"
+
+#: models.py:350
+msgid "Keep a copy of your backup in the cloud"
+msgstr "Mantém uma cópia de seu backup na nuvem"
+
+#: views.py:36
+msgid "3 of 5 - Offsite Configuration"
+msgstr "3 de 5 - Configuração do Offsite"
+
+#: views.py:60
+msgid "Transfers in execution"
+msgstr "Transferências em execução"
+
+#: views.py:68
+msgid "Offsite disabled"
+msgstr "Offsite desativado"
+
+#: views.py:73
+msgid "Edit offsite configuration"
+msgstr "Editar configuração do Offsite"
+
+#: views.py:139 templates/offsite_menu.html:7
+msgid "Active downloads"
+msgstr "Downloads ativos"
+
+#: views.py:204 views.py:206 views.py:217 views.py:219
+msgid "Stopped"
+msgstr "Parado"
+
+#: views.py:231 templates/offsite_menu.html:6
+msgid "Active uploads"
+msgstr "Uploads ativos"
+
+#: views.py:250 views.py:260
+msgid "Procedures with offsite active"
+msgstr "Procedimentos com offsite ativo"
+
+#: templates/detail.html:14 templates/offsite_edit.html:15
+#: templates/offsite_menu.html:4
+msgid "Offsite details"
+msgstr "Detalhes do offsite"
+
+#: templates/detail.html:20
+msgid "View active uploads"
+msgstr "Visualizar uploads ativos"
+
+#: templates/detail.html:20
+msgid "View active downloads"
+msgstr "Visualizar downloads ativos"
+
+#: templates/detail.html:23
+msgid "Space used by the Offsite"
+msgstr "Ocupação do offsite"
+
+#: templates/detail.html:41
+msgid "Offsite inactive"
+msgstr "Offsite inativo"
+
+#: templates/detail.html:42
+msgid "Before using offsite"
+msgstr "Antes de usar o Offsite"
+
+#: templates/detail.html:42
+msgid " you must activate it"
+msgstr "você deve ativá-lo"
+
+#: templates/list_downloadrequest.html:16
+msgid "Actives downloads"
+msgstr "Downloads ativos"
+
+#: templates/list_downloadrequest.html:18
+#: templates/list_downuploadrequest.html:19
+#: templates/list_uploadrequest.html:19
+msgid "The list will be updated within"
+msgstr "A lista será atualizada em"
+
+#: templates/list_downloadrequest.html:18
+#: templates/list_downuploadrequest.html:19
+#: templates/list_uploadrequest.html:19
+msgid "seconds."
+msgstr "segundos"
+
+#: templates/list_downloadrequest.html:18
+msgid "update now"
+msgstr "Atualizar agora"
+
+#: templates/list_downloadrequest.html:25
+#: templates/list_downuploadrequest.html:27
+msgid "There are no downloads currently active"
+msgstr "Não há downloads ativos atualmente"
+
+#: templates/list_downloadrequest.html:30
+#: templates/list_downuploadrequest.html:32
+#: templates/list_uploadrequest.html:31
+msgid "File path"
+msgstr "Caminho do arquivo"
+
+#: templates/list_downloadrequest.html:31
+#: templates/list_downuploadrequest.html:33
+#: templates/list_uploadrequest.html:32
+msgid "Created on"
+msgstr "Criado em"
+
+#: templates/list_downloadrequest.html:32
+#: templates/list_downuploadrequest.html:34
+#: templates/list_uploadrequest.html:33
+msgid "Attempts"
+msgstr "Tentativas"
+
+#: templates/list_downloadrequest.html:33
+#: templates/list_downuploadrequest.html:35
+#: templates/list_uploadrequest.html:34
+msgid "Transference"
+msgstr "Transferência"
+
+#: templates/list_downloadrequest.html:34
+#: templates/list_downuploadrequest.html:36
+#: templates/list_uploadrequest.html:35
+msgid "Done"
+msgstr "Concluído"
+
+#: templates/list_downloadrequest.html:43
+msgid "Last:"
+msgstr "último"
+
+#: templates/list_downloadrequest.html:44
+msgid "Time left"
+msgstr "Tempo restante"
+
+#: templates/list_downloadrequest.html:46
+#: templates/list_downuploadrequest.html:48
+#: templates/list_uploadrequest.html:48
+msgid "% completed."
+msgstr "Concluído"
+
+#: templates/list_downuploadrequest.html:19
+#: templates/list_uploadrequest.html:19
+msgid "Update now"
+msgstr "Atualizar agora"
+
+#: templates/list_downuploadrequest.html:45
+#: templates/list_uploadrequest.html:45
+msgid "last:"
+msgstr "Ultimo"
+
+#: templates/list_downuploadrequest.html:46
+msgid "remaining time:"
+msgstr "Tempo restante"
+
+#: templates/list_uploadrequest.html:26
+msgid "There are no "
+msgstr "Não existem"
+
+#: templates/list_uploadrequest.html:26
+msgid "currently active."
+msgstr "ativos no momento"
+
+#: templates/list_uploadrequest.html:46
+msgid "time left:"
+msgstr "Tempo restante"
+
+#: templates/list_volume.html:12
+msgid "Capacity"
+msgstr "Capacidade"
+
+#: templates/offsite_edit.html:25
+msgid "Update"
+msgstr "Atualizar"
+
+#: templates/offsite_menu.html:5
+msgid "Edit configuations"
+msgstr "Editar configurações"
+
+#: templates/offsite_menu.html:8
+msgid "Offsite procedures"
+msgstr "Procedimentos do offsite"
+
+#: templates/select_storage.html:11
+msgid "Select device"
+msgstr "Selecionar dispositivo"
+
+#: templates/select_storage.html:16
+msgid "Please select the destination where you want to perform the backup."
+msgstr ""
+"Por favor, selecione o destino onde deseja realizar a cópia de segurança."
+
+#: templates/select_storage.html:27
+msgid "No device was found. Please connect an external hd or pendrive."
+msgstr ""
+"Nenhum dispositivo foi encontrado. Por favor conecte um hd ou pendrive "
+"externo."
+
+#: templates/upload_queue.html:22
+msgid "There is no backup being sent to the Off Site"
+msgstr "Não existe nenhum backup sendo enviado para o Offsite"
+
+#: templates/upload_queue.html:27
+msgid "Downloaded"
+msgstr "Transferidos"
+
+#: templates/upload_queue.html:27 templates/upload_queue.html.py:47
+msgid "of"
+msgstr "de"
+
+#: templates/upload_queue.html:28
+msgid "Current speed"
+msgstr "Velocidade atual"
+
+#: templates/upload_queue.html:29
+msgid "Estimated time:"
+msgstr "Tempo estimado"
+
+#: templates/upload_queue.html:30
+msgid "Estimated end:"
+msgstr "Término estimado:"
+
+#: templates/upload_queue.html:46
+msgid "Procedure"
+msgstr "Procedimento"
+
+#: templates/upload_queue.html:47
+msgid "Completed:"
+msgstr "Concluído"
+
+#: templates/upload_queue.html:48
+msgid "Current volume:"
+msgstr "Volume atual"
+
+#: templates/upload_queue.html:49
+msgid "Transfer rate:"
+msgstr "Taxa de transferência"
+
+#: templates/upload_queue.html:50
+msgid "Estimated time left:"
+msgstr "Tempo restante estimado"
+
+#: templates/upload_queue.html:51
+msgid "Added to queue at:"
+msgstr "Adicionado a fila em:"
+
+#: templates/upload_queue.html:52
+msgid "Start in:"
+msgstr "Inicio estimado para:"
+
+#: templates/upload_queue.html:53
+msgid "Conclusion estimated time:"
+msgstr "Tempo estimado:"
+
+

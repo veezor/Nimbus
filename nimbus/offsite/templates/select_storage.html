@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load i18n %}
+
 {% block content %}
 
 <div class="block">
@@ -6,12 +8,12 @@
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
-		<h2>Selecionar dispositivo</h2>
+		<h2>{% trans "Select device" %}</h2>
 	</div>
 
     <div class="block_content">
 
-        <h1>Por favor, selecione o destino onde deseja realizar a cópia de segurança:</h1>
+        <h1>{% trans "Please select the destination where you want to perform the backup." %}</h1>
 
         <div class="bloco_texto">
 
@@ -22,7 +24,7 @@
                     <label for="{{device}}">{{device}}</label>
                 </p>
             {% empty %}
-                <p>Nenhum dispositivo foi encontrado. Por favor conecte um hd ou pendrive externo.</p>
+                <p>{% trans "No device was found. Please connect an external hd or pendrive." %}</p>
             {% endfor %}
 
             {% if devices %}

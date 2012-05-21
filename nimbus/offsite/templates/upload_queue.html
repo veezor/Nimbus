@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 
 {% block headtags %}
 <!-- <link rel="stylesheet" type="text/css" href="/media/css/offsite.css" /> -->
@@ -19,15 +19,15 @@
 		<h2>{{ title }}</h2>
 	</div>
     <div id="empty_content" class="block_content {% if uploads %}hidden{% endif %}">
-		<center>Não existe nenhum backup sendo enviado para o Offsite</center>
+		<center>{% trans "There is no backup being sent to the Off Site" %}</center>
 	</div>
 	<div id="full_content" class="block_content {% if not uploads %}hidden{% endif %}">
 		<table id="overview_box">
 			<tr>
-				<td>Transferidos <span id="upload_done">{{upload_done|floatformat:1}}</span> de <span id="upload_total">{{upload_total|floatformat}}</span> MB (<span id="percent_done">{% widthratio upload_done upload_total 100 %}</span>%)</td>
-				<td>Velocidade atual: <span id="current_speed">{{current_speed|floatformat:1}}</span> kB/s</td>
-				<td>Tempo estimado: <span id="eta_str">{{eta_str}}</span></td>
-				<td>Término estimado: <span id="end_time_str">{{end_time_str}}</span></td>
+				<td>{% trans "Downloaded" %}<span id="upload_done">{{upload_done|floatformat:1}}</span>{% trans "of" %} <span id="upload_total">{{upload_total|floatformat}}</span> MB (<span id="percent_done">{% widthratio upload_done upload_total 100 %}</span>%)</td>
+				<td>{% trans "Current speed" %}: <span id="current_speed">{{current_speed|floatformat:1}}</span> kB/s</td>
+				<td>{% trans "Estimated time:" %} <span id="eta_str">{{eta_str}}</span></td>
+				<td>{% trans "Estimated end:" %} <span id="end_time_str">{{end_time_str}}</span></td>
 			</tr>
 		</table>
 		<div id="fullbar">
@@ -43,14 +43,14 @@
 			<div class="upload_info" id="info_queue_item_{{upload.id}}" {% if forloop.first %}style="display: block;"{% endif %}>
 				<table>
 					<tbody>
-						<tr><td>Procedimento:</td><td><span class="upload_name info_queue_item_{{upload.id}}">{{upload.name}}</span></td></tr>
-						<tr><td>Concluído:</td><td><span class="upload_done info_queue_item_{{upload.id}}">{{upload.done|floatformat:1}}</span> de <span class="upload_total info_queue_item_{{upload.id}}">{{upload.total|floatformat:1}}</span> MB (<span class="done_percent info_queue_item_{{upload.id}}">{{upload.done_percent|floatformat:1}}</span>%)</td></tr>
-						<tr><td>Volume atual:</td><td><span class="current_file info_queue_item_{{upload.id}}">{{upload.current_file}}</span></td></tr>
-						<tr><td>Taxa de transferência:</td><td><span class="current_speed info_queue_item_{{upload.id}}">{{upload.speed|floatformat:1}}</span> kB/s</td></tr>
-						<tr><td>Tempo restante estimado:</td><td><span class="eta_str info_queue_item_{{upload.id}}">{{upload.eta_str}}</span></td></tr>
-						<tr><td>Adicionado a fila em:</td><td><span class="added info_queue_item_{{upload.id}}">{{upload.added}}</span></td></tr>
-						<tr><td>Inicio estimado para:</td><td><span class="estimate_start info_queue_item_{{upload.id}}">{{upload.estimate_start}}</span></td></tr>
-						<tr><td>Conclusão estimada em:</td><td><span class="end_time_str info_queue_item_{{upload.id}}">{{upload.end_time_str}}</span></td></tr>
+						<tr><td>{% trans "Procedure" %}</td><td><span class="upload_name info_queue_item_{{upload.id}}">{{upload.name}}</span></td></tr>
+						<tr><td>{% trans "Completed:" %}</td><td><span class="upload_done info_queue_item_{{upload.id}}">{{upload.done|floatformat:1}}</span>{% trans "of" %}<span class="upload_total info_queue_item_{{upload.id}}">{{upload.total|floatformat:1}}</span> MB (<span class="done_percent info_queue_item_{{upload.id}}">{{upload.done_percent|floatformat:1}}</span>%)</td></tr>
+						<tr><td>{% trans "Current volume:" %}</td><td><span class="current_file info_queue_item_{{upload.id}}">{{upload.current_file}}</span></td></tr>
+						<tr><td>{% trans "Transfer rate:" %}</td><td><span class="current_speed info_queue_item_{{upload.id}}">{{upload.speed|floatformat:1}}</span> kB/s</td></tr>
+						<tr><td>{% trans "Estimated time left:" %}</td><td><span class="eta_str info_queue_item_{{upload.id}}">{{upload.eta_str}}</span></td></tr>
+						<tr><td>{% trans "Added to queue at:" %}</td><td><span class="added info_queue_item_{{upload.id}}">{{upload.added}}</span></td></tr>
+						<tr><td>{% trans "Start in:" %}</td><td><span class="estimate_start info_queue_item_{{upload.id}}">{{upload.estimate_start}}</span></td></tr>
+						<tr><td>{% trans "Conclusion estimated time:" %}</td><td><span class="end_time_str info_queue_item_{{upload.id}}">{{upload.end_time_str}}</span></td></tr>
 					</tbody>
 				</table>
 				<div class="progress_bar">
