@@ -13,6 +13,7 @@ from time import time
 from django.conf import settings
 from django.db import connections
 from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import ugettext as _
 
 
 from nimbus.offsite import managers as offsite
@@ -51,19 +52,19 @@ def rewrite_nimbus_conf_files():
 def recovery_nimbus(offsite_manager):
     logger = logging.getLogger(__name__)
     recovery_manager = RecoveryManager(offsite_manager)
-    logger.info("iniciando download da base de dados")
+    logger.info(_(u"Starting download databases"))
     recovery_manager.download_databases()
-    logger.info("download da base de dados efetuado com sucesso")
+    logger.info(_(u"database download completed successfully"))
     # stop the world - nimbus,bacula,cron
-    logger.info("iniciando recuperacao da base de dados")
+    logger.info(_(u"Starting database recovery"))
     recovery_manager.recovery_databases()
-    logger.info("recuperacao da base de dados efetuado com sucesso")
-    logger.info("iniciando geracao de arquivos de configuracao")
+    logger.info(_(u"database recovery completed successfully"))
+    logger.info(_(u"Generating configuration files"))
     rewrite_nimbus_conf_files()
-    logger.info("geracao dos arquivos de configuracao realizada com sucesso")
-    logger.info("iniciando download dos volumes")
+    logger.info(_(u"Configuration files generated successfully"))
+    logger.info(_(u"Starting download backup files"))
     recovery_manager.download_volumes()
-    logger.info("download dos volumes efetuado com sucesso")
+    logger.info(_(u"Download backup files completed"))
     # start the world - nimbus,bacula,cron
     recovery_manager.finish()
 
@@ -205,7 +206,7 @@ class RecoveryProgressReporter(object):
             time = int(kb/rate)
             return str(datetime.timedelta(seconds=time))
         else:
-            return "stalled"
+            return _(u"stalled")
 
 
     def _get_offsite_volumes_from_procedure(self, procedure):
@@ -251,12 +252,12 @@ class RecoveryProgressReporter(object):
          bytes_remain, percent) = self._get_bytes_data()
 
         os.system("clear")
-        print "Recuperação do Nimbus"
+        print _("Nimbus Recovery")
 
         f = utils.filesizeformat
 
         for p in self.procedures:
-            print "{0} \t {1} de {2}".format(p.name,
+            print _("{0} \t {1} of {2}").format(p.name,
                                           f(p.downloaded_size),
                                           f(p.size_on_offsite))
 
@@ -267,7 +268,7 @@ class RecoveryProgressReporter(object):
             rate = 0
         rate = f(rate*1024)
 
-        print "Total \t {0} de {1} - {2}% - Tempo estimado: {3}. Taxa de download atual: {4}/s".format(f(downloaded_size),
+        print _("Completed \t {0} of {1} - {2}% - Estimated time: {3}. Download rate: {4}/s").format(f(downloaded_size),
                                                                     f(total_size),
                                                                     percent,
                                                                     eta,
