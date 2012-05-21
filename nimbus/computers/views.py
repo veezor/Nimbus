@@ -268,5 +268,5 @@ def configure(request, object_id):
         messages.success(request, _(u'Computer reconfigured.'))
     except IOError as (errno, strerror):
         messages.error(request, _(u'Internal Error. %(code)s: %(error)s') % { 'code' : errno,
-                                                                               'erro' : strerror}
+                                                                               'erro' : strerror})
     return redirect('nimbus.computers.views.list')
