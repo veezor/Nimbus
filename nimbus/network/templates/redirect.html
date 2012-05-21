@@ -1,6 +1,6 @@
 {% extends "base_wizard.html" %}
-
 {% block headtags %}
+{% load i18n %}
 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function(){
@@ -16,7 +16,7 @@
 
 {% block page %}
 
-<h1>Você está sendo redirecionado para o novo ip. &nbsp;<img src="/media/icons/loading_bar.gif" /></h1>
-<p>Se em até 10 segundos você não for redirecionado para o novo endereço, acesse <a href="http://{{ ip_address }}/{{ url }}">http://{{ ip_address }}/{{ url }}</a>.</p>
+<h1>{% trans "You are being redirected to the new ip." %} &nbsp;<img src="/media/icons/loading_bar.gif" /></h1>
+<p>{% trans "If within 10 seconds you are not redirected to the new address, go to" %} <a href="http://{{ ip_address }}/{{ url }}">http://{{ ip_address }}/{{ url }}</a>.</p>
 
 {% endblock %}
