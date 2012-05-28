@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/procedures.js"></script>
@@ -27,29 +28,28 @@
 					<ol>
 					{% if procedure.fileset.is_model %}
                     <li>
-                    {%blocktrans%}
-					 The file set's profile <strong>"{{procedure.fileset.name}}"</strong> will not be affected
-                    {%endblocktrans%}
+                    
+					{% trans "The file set's profile " %} <strong>"{{procedure.fileset.name}}"</strong>{% trans "will not be affected" %}
+                    
                     </li>
 					{% else %}
-                    {%blocktrans%}
-					<li>The file set <strong>"{{procedure.fileset.name}}"</strong> is used only by <strong>"{{procedure.name}}"</strong> and <strong>will be removed</strong>.</li>
-                    {%endblocktrans%}
+                    
+					<li>{% trans "The file set" %} <strong>"{{procedure.fileset.name}}"</strong>{% trans "is used only by" %} <strong>"{{procedure.name}}"</strong>{% trans "and" %} <strong>{% trans "will be removed" %}</strong>.</li>
+                    
 					{% endif %}
 					{% if procedure.schedule.is_model %}
-                    {%blocktrans%}
-					<li> The <strong>"{{procedure.schedule.name}}"</strong> profile schedule will not be affected.</li>
-                    {%endblocktrans%}
-					{% else %}
-                    {%blocktrans%}
-					<li>The schedule <strong>"{{procedure.schedule.name}}"</strong> is used only by <strong>"{{procedure.name}}"</strong> and <strong>will be removed</strong>.</li>
-                    {%endblocktrans%}
+                    
+					<li>{% trans "The" %} <strong>"{{procedure.schedule.name}}"</strong>{% trans "profile schedule will not be affected." %}</li>
+      					{% else %}
+                   
+					<li>	{% trans "The schedule" %} <strong>"{{procedure.schedule.name}}"</strong>{% trans "is used only by" %} <strong>"{{procedure.name}}"</strong>{% trans "and" %} <strong>{% trans "will be removed" %}</strong>.</li>
+                
 					{% endif %}
 					</ol>
 					{% endfor %}
 				</ol>
 				{% else %}
-                <li>{% trans "here are no backup procedures associated for this computer."%}</li>
+                <li>{% trans "There are no backup procedures associated for this computer."%}</li>
 				{% endif %}
 				{% if last_jobs %}
                 <li>{% trans "There are no backups related to this computer" %}</li>
@@ -57,7 +57,7 @@
         		{% include "stat_block.html" %}
 				</div>
 				{% else %}
-                <li>{% trans "The following backups will be deleted and their recovery will be unavailable." %}</li>
+                <li>{% trans "The following backups will be deleted and their recovery will be unavailable:" %}</li>
 				{% endif %}
 			</ul>
             <br \>
