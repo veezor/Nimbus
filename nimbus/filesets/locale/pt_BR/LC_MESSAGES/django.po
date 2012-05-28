@@ -1,0 +1,153 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-23 08:19-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:13
+msgid "Name"
+msgstr "Nome"
+
+#: forms.py:20 models.py:55
+msgid "File"
+msgstr "Arquivo"
+
+#: models.py:27
+msgid "File sets"
+msgstr "Conjunto de arquivos"
+
+#: models.py:71
+msgid "Filter"
+msgstr "Filtro"
+
+#: views.py:34
+#, python-format
+msgid "File set of %s"
+msgstr "Conjunto de arquivos de %s"
+
+#: views.py:36
+msgid "Create new file sets"
+msgstr "Criar novo conjunto de arquivos"
+
+#: views.py:74
+#, python-format
+msgid "Edit file sets '%s'"
+msgstr "Editar conjunto de arquivos '%s' "
+
+#: views.py:119
+msgid "Unable to connect to client"
+msgstr "Impossivel conectar com o cliente"
+
+#: views.py:122
+msgid "Computer not exists"
+msgstr "Computador não existe"
+
+#: views.py:125
+msgid "Client Nimbus error"
+msgstr "Erro no Cliente Nimbus"
+
+#: views.py:145
+#, python-format
+msgid "File of %s"
+msgstr "Arquivos de %s"
+
+#: views.py:163
+#, python-format
+msgid "File sets profile '%s' was removed successfully."
+msgstr "Perfil de conjunto de arquivos '%s' foi removido com sucesso"
+
+#: templates/add_fileset.html:27 templates/edit_fileset.html:36
+msgid "Show filters"
+msgstr "Mostrar filtros"
+
+#: templates/add_fileset.html:30 templates/add_fileset.html.py:42
+#: templates/edit_fileset.html:39 templates/edit_fileset.html.py:54
+msgid "Filters:"
+msgstr "Filtros"
+
+#: templates/add_fileset.html:34 templates/edit_fileset.html:43
+msgid "Only this"
+msgstr "Apenas estes"
+
+#: templates/add_fileset.html:34 templates/edit_fileset.html:43
+msgid "files:"
+msgstr "arquivos"
+
+#: templates/add_fileset.html:48
+msgid "Ignore this"
+msgstr "Ignorar estes"
+
+#: templates/add_fileset.html:48 templates/edit_fileset.html:60
+msgid "files"
+msgstr "arquivos"
+
+#: templates/add_fileset.html:61
+msgid "Fill out the fields below correctly"
+msgstr "Preencha os campos a baixo corretamente"
+
+#: templates/add_fileset.html:70 templates/edit_fileset.html:83
+msgid "Save"
+msgstr "Salvar"
+
+#: templates/edit_fileset.html:23
+msgid "Remove current files:"
+msgstr "Remover arquivos atuais"
+
+#: templates/edit_fileset.html:26 templates/remove_fileset.html:33
+msgid "Delete"
+msgstr "Excluir"
+
+#: templates/edit_fileset.html:26
+msgid "Files"
+msgstr "Arquivos"
+
+#: templates/edit_fileset.html:34
+msgid "Add new files:"
+msgstr "Adicionar novos Arquivos"
+
+#: templates/edit_fileset.html:60
+msgid "Ignore these"
+msgstr "Ignorar estes"
+
+#: templates/remove_fileset.html:14
+msgid "Removal confirmation"
+msgstr "Confirmação de remoção"
+
+#: templates/remove_fileset.html:19
+msgid "You are about to delete the file sets"
+msgstr "Você está prestes a remover o conjunto de arquivos"
+
+#: templates/remove_fileset.html:21
+msgid "The following backup procedures use this file sets:"
+msgstr ""
+"Os seguintes procedimentos de backups utilizam estes conjuntos de arquivos "
+
+#: templates/remove_fileset.html:25
+msgid "Remove this set does not affect the operation of the listed backups."
+msgstr ""
+"Remover este conjunto de não afetará o funcionamento dos backups listados."
+
+#: templates/remove_fileset.html:27
+msgid "There is no backup procedure using this file sets."
+msgstr "Nã existe procedimentos de usando este conjunto de arquivos"
+
+#: templates/remove_fileset.html:30
+msgid "This operation can not be undone. Would you like to proceed anyway?"
+msgstr "Esta operação não poderá ser desfeita. Deseja prosseguir mesmo assim?"
+
+#: templates/remove_fileset.html:33
+msgid "Cancel"
+msgstr "Cancelar"

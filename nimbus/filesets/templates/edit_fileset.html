@@ -1,4 +1,6 @@
+{% load i18n %}
 {% block headtags %}
+
 <script type="text/javascript" src="/media/lib/js/jquery.tooltip.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.tooltip.css"/>
 <script type="text/javascript" src="/media/js/filesets.js"></script>
@@ -18,10 +20,10 @@
         <form action="/filesets/{{ fileset.id }}/do_edit/" method="post" id="main_form">
 			<input type="hidden" value="{{ computer.id }}" id="computer_id" />
 			{{deletes_form.management_form}}
-			<h2>Remover arquivo atuais:</h2>
+			<h2>{% trans "Remove current files:" %}</h2>
             <!--  FIX-ME tableless -->
             <div>
-                <div class="float_left fileset_checkbox">Apagar</div><div class="float_left fileset_input">Arquivo</div>
+                <div class="float_left fileset_checkbox">{% trans "Delete" %}</div><div class="float_left fileset_input">{% trans "Files" %} </div>
                 <br class="clear" />
 				{% for form in deletes_form.forms %}
                 <div class="fileset_line"><div class="float_left fileset_checkbox">{{form.DELETE}}</div><div class="float_left fileset_input">{{form.path}} {{form.id}}{{form.fileset}}</div></div>
@@ -29,16 +31,16 @@
                 {% endfor %}
 		    </div>
 			<hr>
-			<h2>Adicionar novos aquivos:</h2>
+			<h2>{% trans "Add new files:" %}</h2>
 			<ul id="arvore1" class="veezortree" restore="false" destination="false" computer="{{computer.id}}" is_windows="{% if computer.operation_system == "windows" %}true{% else %}false{% endif %}"></ul>
-			<button class="css3button negative" id="show_filters_button">Mostrar filtros</button>
+			<button class="css3button negative" id="show_filters_button">{% trans "Show filters" %}</button>
 			<div id="filter_hidden_block">
 				<hr>
-				<label>Filtros:</label>
+				<label>{% trans "Filters:" %}</label>
 				<table>
 					<tr>
 						<td>
-							Apenas estes<br/>arquivos:<br />
+							{% trans "Only this" %}<br/>{% trans "files:" %}<br />
 							<div class="filter_block">
 								<ul id="include_list">
 									{% for wildcard in fileset.includes%}
@@ -49,13 +51,13 @@
 						</td>
 						<td>
 							<div id="filter_list">
-								Filtros:
+								{% trans "Filters:" %}
 								<table id="filter_table">
 								</table>
 							</div>
 						</td>
 						<td>
-							Ignorar estes<br/>arquivos:<br />
+							{% trans "Ignore these" %}<br/>{% trans "files" %}:<br />
 							<div class="filter_block">
 								<ul id="exclude_list">
 									{% for wildcard in fileset.excludes%}
@@ -78,7 +80,7 @@
 			</p>
 			<hr />
 			<p>
-                <button type="button" class="css3button" id="submit_button" value="Salvar">Salvar</button>
+                <button type="button" class="css3button" id="submit_button" value="Salvar">{% trans "Save" %}</button>
             </p>
         </form>
 	</div>		<!-- .block_content ends -->

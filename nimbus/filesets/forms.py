@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 
 from nimbus.filesets.models import *
+
 from django import forms
 from django.forms import widgets
+from django.utils.translation import ugettext_lazy as _
+
 from nimbus.shared import forms as nimbus_forms
 
 
 class FileSetForm(forms.ModelForm):
-    name = forms.CharField(label=u"Nome", widget=widgets.TextInput(attrs={'class': 'text small'}))
+    name = forms.CharField(label=_(u"Name"), widget=widgets.TextInput(attrs={'class': 'text small'}))
     # is_model = forms.BooleanField(widget=widgets.HiddenInput(attrs={'value': '0'}))
     class Meta:
         model = FileSet
 
 
 class FilePathForm(forms.ModelForm):
-    path = forms.CharField(label=u"Arquivo", widget=widgets.TextInput(attrs={'class': 'text small'}))
+    path = forms.CharField(label=_(u"File"), widget=widgets.TextInput(attrs={'class': 'text small'}))
     class Meta:
         model = FilePath
 

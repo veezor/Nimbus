@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.forms import widgets
+from django.utils.translation import ugettext as _
 
 from nimbus.filesets.models import FileSet, FilePath, Wildcard
 from nimbus.computers.models import Computer, NimbusClientMessageError
@@ -30,9 +31,9 @@ def add(request, computer_id=None):
     if referer.local == '/procedures/profile/list/':
         fileset_form.initial = {'is_model': True}
     elif referer.local.startswith('/procedures/'):
-        fileset_form.initial = {'name': 'Conjunto de arquivos de %s' % computer.name}
+        fileset_form.initial = {'name': _('File set of %s') % computer.name}
         hide_name = True
-    content = {'title': u"Criar conjunto de arquivos",
+    content = {'title': _(u"Create new file sets"),
                'computer': computer,
                'fileset_form': fileset_form,
                'hide_name': hide_name}
@@ -52,16 +53,16 @@ def do_add(request):
                 wildcards_form = forms.WildcardsFormSet(data, instance=new_fileset)
                 if wildcards_form.is_valid():
                     wildcards_form.save()
-                    return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi criado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
+                    return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":_("File sets \'%s\' was created successfully")}' % (new_fileset.id, new_fileset.name, new_fileset.name))
                 else:
                     filepaths_form.delete()
                     new_fileset.delete()
-                    return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos filtros","error":1}')
+                    return HttpResponse('{"status":false,"fileset_id":"none","message":_("Filter errors"),"error":1}')
             else:
                 new_fileset.delete()
-                return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos arquivos","error":1}')
+                return HttpResponse('{"status":false,"fileset_id":"none","message":_("File errors"),"error":1}')
         else:
-            return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos fileset","error":0}')
+            return HttpResponse('{"status":false,"fileset_id":"none","message":_("fileset errors"),"error":0}')
 
 
 @login_required
@@ -70,7 +71,7 @@ def edit(request, fileset_id, computer_id):
     fileset_form = forms.FileSetForm(prefix="fileset", instance=f)
     deletes_form = forms.FilesToDeleteForm(instance=f)
     computer = get_object_or_404(Computer, pk=computer_id)
-    content = {'title': u"Editar Conjunto de Arquivos '%s'" % f.name,
+    content = {'title': _(u"Edit file sets '%s'") % f.name,
                'computer': computer,
                'fileset_form': fileset_form,
                'deletes_form': deletes_form,
@@ -96,12 +97,12 @@ def do_edit(request, fileset_id):
                     new_fileset.save()
                     wildcards_form.save()
                 call_reload_baculadir()
-                return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":"Conjunto de arquivos \'%s\' foi atualizado com sucesso"}' % (new_fileset.id, new_fileset.name, new_fileset.name))
+                return HttpResponse('{"status":true,"fileset_id":"%s","fileset_name":"%s","message":_("file sets \'%s\' was update successfully")}' % (new_fileset.id, new_fileset.name, new_fileset.name))
             else:
                 new_fileset.delete()
-                return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos arquivos","error":1}')
+                return HttpResponse('{"status":false,"fileset_id":"none","message":_("File errors"),"error":1}')
         else:
-            return HttpResponse('{"status":false,"fileset_id":"none","message":"Erro nos fileset","error":0}')
+            return HttpResponse('{"status":false,"fileset_id":"none","message":_("Fileset errors"),"error":0}')
     
 @login_required
 def get_tree(request):
@@ -115,13 +116,13 @@ def get_tree(request):
                 response = simplejson.dumps(files)
             except socket.error, error:
                 response = simplejson.dumps({"type" : "error",
-                                             "message" : "Impossível conectar ao cliente"})
+                                             "message" :_("Unable to connect to client")})
             except Computer.DoesNotExist, error:
                 response = simplejson.dumps({"type" : "error",
-                                             "message" : "Computador não existe"})
+                                             "message" : _("Computer not exists")})
             except NimbusClientMessageError, error:
                 response = simplejson.dumps({"type" : "error",
-                                             "message" : "Erro no cliente Nimbus."})
+                                             "message" : _("Client Nimbus error")})
             return HttpResponse(response, mimetype="text/plain")
         except Exception:
             traceback.print_exc()
@@ -141,7 +142,7 @@ def do_delete(request, fileset_id):
     if f.is_model:
         for procedure in f.procedures.all():
             novo_fileset = FileSet()
-            novo_fileset.name = 'Arquivos de %s' % procedure.name
+            novo_fileset.name = _('File of %s') % procedure.name
             novo_fileset.save()
             for file in f.files.all():
                 novo_arquivo = FilePath()
@@ -159,7 +160,7 @@ def do_delete(request, fileset_id):
     name = f.name
     f.delete()
     call_reload_baculadir()
-    messages.success(request, u"Perfil de conjunto de arquivos '%s' removido com sucesso." % name)
+    messages.success(request, _(u"File sets profile '%s' was removed successfully.") % name)
     return redirect('/procedures/profile/list')
 
 
