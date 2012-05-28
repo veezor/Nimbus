@@ -210,9 +210,8 @@ msgid "CPU Usage"
 msgstr "Uso de CPU"
 
 #: templates/remove.html:13
-#, fuzzy
 msgid "Removal confirmation"
-msgstr "Configuração"
+msgstr "Confirmação de remoção"
 
 #: templates/remove.html:18
 msgid "You are about to remove"
