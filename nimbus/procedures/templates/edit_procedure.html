@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/procedures.js"></script>
@@ -44,36 +45,36 @@
 			</ul>
 				{% endif %}
 			<p>
-				{% if field.label == 'Agendamento' %}
+				{% ifequal field.label _('Schedule') %}
 				<label>{{ field.label }}:</label><br />
-				<a href="/schedules/add/" id="schedule_button" class="css3button positive add_schedule_button">Criar um agendamento</a>
-				<span id="discard_schedule" class="hidden"> ou <a class="css3button negative" onClick="unset_schedule()">Descartar e escolher um perfil</a></span>
+				<a href="/schedules/add/" id="schedule_button" class="css3button positive add_schedule_button">{% trans "Create a schedule" %}</a>
+				<span id="discard_schedule" class="hidden">{% trans "or" %}<a class="css3button negative" onClick="unset_schedule()">{% trans "Discard and choose a profile" %}</a></span>
 				{{field}}
 				{% else %}
-					{%if field.label == 'Conjunto de arquivos' %}
+					{%ifequal field.label _('File sets') %}
 				<label>{{ field.label }}:</label><br />
-				<a href="/filesets/add/" class="filesets css3button positive" id="fileset_button">Criar um conjunto de arquivos</a>
-				<span id="discard_fileset" class="hidden"> ou <a class="css3button negative" onClick="unset_fileset()">Descartar e escolher um perfil</a></span>
+				<a href="/filesets/add/" class="filesets css3button positive" id="fileset_button">{% trans "Create set files " %}</a>
+				<span id="discard_fileset" class="hidden"> {% trans "or" %} <a class="css3button negative" onClick="unset_fileset()">{% trans "Discard and choose a profile" %}</a></span>
 				{{field}}
 					{% else %}
-						{%if field.label == 'Tempo de retenção' %}
-				<label>{{field.label}}: <span id="slider_value"></span> dias</label><br />
+						{%ifequal field.label _('Retention time') %}
+				<label>{{field.label}}: <span id="slider_value"></span>{% trans "days" %}</label><br />
 				{{field}}
 				<div id="slider"></div>
-				<span class="add_new_pool"><a href="#">Adicionar Outro Valor</a></span>
+				<span class="add_new_pool"><a href="#">{% trans "Add another value" %}</a></span>
 						{% else %}
 				<label>{{ field.label }}:</label><br />
 				{{ field }}
-						{% endif %}
-					{% endif %}
-				{% endif %}
+						{% endifequal %}
+					{% endifequal %}
+				{% endifequal %}
 			</p>
 			{% endfor %}
 			{% for hidden in form.hidden_fields %}
 			{{ hidden }}
 			{% endfor %}
 			<hr />
-			<p><button type="submit" value="submit" class="css3button big positive">Salvar</button><a href="/procedures/list" class="css3button big negative">Cancelar</a></p>
+			<p><button type="submit" value="submit" class="css3button big positive">{% trans "Save" %}</button><a href="/procedures/list" class="css3button big negative">{% trans "Cancel" %}</a></p>
 		</form>
 		<form action="/schedules/add/" method="POST" id="to_schedule_form"></form>
 	</div>

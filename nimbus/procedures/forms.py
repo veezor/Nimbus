@@ -5,7 +5,7 @@ import re
 from django.db.models import Q
 from nimbus.procedures.models import *
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 
 class ProcedureForm(forms.ModelForm):
@@ -31,23 +31,23 @@ class ProcedureForm(forms.ModelForm):
                 if field not in ['schedule', 'fileset']:
                     remove_null_choice(self.fields[field])
                 else:
-                    self.fields[field].empty_label = u"-ou escolha um perfil-"
+                    self.fields[field].empty_label =_(u"-or choose a profile-")
 
 
-    computer = forms.models.ModelChoiceField(label=_("Computador"),
+    computer = forms.models.ModelChoiceField(label=_("Computer"),
                                              queryset=Computer.objects.filter(id__gt=1).filter(active=True))
     # name = forms.CharField(initial=self.name_sugestion)
 
-    pool_retention_time = forms.IntegerField(label="Tempo de retenção",
+    pool_retention_time = forms.IntegerField(label=_("Retention time"),
                                              min_value=1, max_value=9999,
                                              initial=10)
                                              # widget=forms.HiddenInput())
-    fileset = forms.models.ModelChoiceField(label=_("Conjunto de arquivos"),
+    fileset = forms.models.ModelChoiceField(label=_("File sets"),
                                             queryset=FileSet.objects.filter(id__gt=1),
-                                            empty_label = u"-ou escolha um perfil-")
-    schedule = forms.models.ModelChoiceField(label=_("Agendamento"),
+                                            empty_label = _(u"-or choose a profile-"))
+    schedule = forms.models.ModelChoiceField(label=_("schedule"),
                                              queryset=Schedule.objects.filter(id__gt=1),
-                                             empty_label = u"-ou escolha um perfil-")
+                                             empty_label = _(u"-or choose a profile-"))
 
     class Meta:
         model = Procedure
@@ -78,7 +78,7 @@ class ProcedureEditForm(forms.ModelForm):
                                             queryset=Schedule.objects.filter(
                                                 Q(is_model=True) | Q(id=s_id)))
                                                 
-    pool_retention_time = forms.IntegerField(label="Tempo de retenção",
+    pool_retention_time = forms.IntegerField(label=_("Retention time"),
                                              min_value=1, max_value=9999)
                                              # widget=forms.HiddenInput())
                                 
