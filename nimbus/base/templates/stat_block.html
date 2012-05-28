@@ -9,15 +9,11 @@ Possible types: ok, warn, error
     <h3>
 		<span class="status_{{job.general_status}}">Status {{job.human_general_status}}</span>
 		{% if job.type == 'R'%}
-        {% blocktrans %}
-        {{job.start_time}}: Restore job to '{{job.procedure.computer.name}}'
-        {% endblocktrans %}
+        {{job.start_time}}: {% trans "Restore job to" %} '{{job.procedure.computer.name}}'
 		{% else %}
-        {% blocktrans %}
-        {{job.start_time}}: Procedure of {{job.backup_type}} from '{{job.procedure.name}}' to '{{job.procedure.computer.name}}'
-        {% endblocktrans %}
+        {{job.start_time}}: {% trans "Procedure of" %} {{job.backup_type}} {% trans "from" %} '{{job.procedure.name}}' {% trans "to" %} '{{job.procedure.computer.name}}'
 		{% endif %}
-		{% if job.human_general_status == "executando" or job.human_general_status == "esperando" %}
+		{% if job.human_general_status == "running" or job.human_general_status == "waiting" %}
 		<!-- <span class="cancel_job">Cancelar</span> -->
         <button type="submit" class="cancel_job css3button negative" value="Desativar" id="{{job.jobid}}">{% trans "Cancel" %}</button>
 		{% endif %}
