@@ -1,0 +1,160 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-02 19:20-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: computers.js:30
+msgid "Group"
+msgstr "Grupo"
+
+#: computers.js:30
+msgid "added."
+msgstr "adicionado"
+
+#: computers.js:32
+msgid ""
+"It was not possible to insert the group. A group with the same name already "
+"exists."
+msgstr "Não foi possível inserir o grupo. Um grupo com o mesmo nome já existe."
+
+#: filesets.js:113
+msgid "No file selected."
+msgstr "Nenhum arquivo selecionado"
+
+#: filesets.js:228
+msgid ""
+"One or more filters will not be added because it already in the list of "
+"'Ignore these files'."
+msgstr ""
+"Um ou mais filtros não será adicionado porque já está na lista de 'Ignorar "
+"esses arquivos'."
+
+#: filesets.js:228 filesets.js.py:256
+msgid "The filter below will not be added\n"
+msgstr "O filtro abaixo não será adicionado\n"
+
+#: filesets.js:256
+msgid ""
+"One or more filters will not be added because it already in the list of "
+"'Only these files'."
+msgstr ""
+"Um ou mais filtros não será adicionado porque já está na lista de'Somente "
+"esses arquivos'"
+
+#: offsite.js:58
+msgid "Last: "
+msgstr "Último"
+
+#: offsite.js:59
+msgid "remain:"
+msgstr "Restante"
+
+#: offsite.js:60
+msgid "done."
+msgstr "Concluído"
+
+#: procedures.js:31
+msgid "Choose a computer to use as a base file"
+msgstr "Escolha um computador para usar como um arquivo de base"
+
+#: procedures.js:68
+msgid "You need choose one computer"
+msgstr "Você precisa escolher um computador"
+
+#: procedures.js:104
+msgid "Em"
+msgstr "Em"
+
+#: procedures.js:121
+msgid "Use the fileset created"
+msgstr "Usar o fileset criado"
+
+#: procedures.js:126 procedures.js.py:139
+msgid "Change"
+msgstr "Modificar"
+
+#: procedures.js:134
+msgid "Use the schedule created"
+msgstr "Usar o agendamento criado"
+
+#: procedures.js:147
+msgid "Create another schedule"
+msgstr "Criar outro agendamento"
+
+#: procedures.js:162
+msgid "Create another fileset"
+msgstr "Criar outro fileset"
+
+#: restore.js:17
+msgid "No file selected for restore."
+msgstr "Nenhum arquivo foi selecionado para restauração"
+
+#: restore.js:39
+msgid "Searching files"
+msgstr "Procurando arquivos"
+
+#: restore.js:49
+msgid "No file found"
+msgstr "Nenhum arquivo encontrado"
+
+#: schedules.js:31
+msgid "You must choose at least one day of the month to run the backup"
+msgstr ""
+
+#: schedules.js:58
+msgid "You must choose at least one day a week to run the backup"
+msgstr ""
+
+#: schedules.js:100
+msgid "Type"
+msgstr ""
+
+#: schedules.js:100
+msgid "Day"
+msgstr ""
+
+#: schedules.js:100
+msgid "Hour"
+msgstr ""
+
+#: schedules.js:162
+msgid "You must define at least one scheduling"
+msgstr ""
+
+#: schedules.js:217
+msgid "An error occurred when creating the schedule."
+msgstr ""
+
+#: system.js:10
+msgid "Wait..."
+msgstr "Aguarde..."
+
+#: system.js:18
+msgid "Error running ping"
+msgstr "Erro na execução do ping"
+
+#: timezone.js:18
+msgid "Error: Unable to get the list of time zones."
+msgstr "Erro: Não é possível obter a lista de fusos horários."
+
+#: veezortree.js:45
+msgid "My computer"
+msgstr "Meu computador"
+
+#: veezortree.js:88
+msgid "Wait"
+msgstr "Aguarde"
