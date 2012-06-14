@@ -1,0 +1,424 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-11 16:08-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:28 models.py:40 models.py:77
+msgid "Name"
+msgstr "Nome"
+
+#: forms.py:29 models.py:79 templates/computers_view.html:74
+msgid "IP Address"
+msgstr "Endereço de IP"
+
+#: models.py:48
+msgid "Computers group"
+msgstr "Grupo do computador"
+
+#: models.py:52
+msgid "Key"
+msgstr "Chave"
+
+#: models.py:53
+msgid "Certificate"
+msgstr "Certificado"
+
+#: models.py:55
+msgid "PEM"
+msgstr "PEM"
+
+#: models.py:81
+msgid "Operation System"
+msgstr "Sistema Operacional"
+
+#: models.py:83
+msgid "Description"
+msgstr "Descrição"
+
+#: models.py:84
+msgid "Password"
+msgstr "Senha"
+
+#: models.py:88
+msgid "Active"
+msgstr "Ativar"
+
+#: models.py:95
+msgid "Computer"
+msgstr "Computador"
+
+#: models.py:169
+msgid "Computer already active"
+msgstr "Computadot já está ativado"
+
+#: views.py:36
+#, python-format
+msgid "Your computer is protected.  IP address is: %s"
+msgstr "Seu computador está protegido. O endereço de IP é: %s"
+
+#: views.py:39
+msgid "Warning! Procedures of computer"
+msgstr "Atenção! Os procedimentos do computador"
+
+#: views.py:39
+msgid "are disabled. IP address is: "
+msgstr "estão desativados. O endereõ de IP é: "
+
+#: views.py:42
+msgid "Warning! Computer"
+msgstr "Atenção! Computador"
+
+#: views.py:45
+msgid "Warning! Your computer seems to unprotected"
+msgstr "Atenção! Seu computador parece está desprotegido"
+
+#: views.py:52
+msgid "Activate new computer"
+msgstr "Ativar novo computador"
+
+#: views.py:60 views.py:103
+msgid "Edit computer"
+msgstr "Editar computador"
+
+#: views.py:61
+msgid "This computer is not activated yet."
+msgstr "Este computador ainda não está ativado."
+
+#: views.py:81
+#, python-format
+msgid "Added automatically %s"
+msgstr "Adicionado automaticamente %s"
+
+#: views.py:84
+msgid "There is already a computer with that ip address"
+msgstr "Existe um computador com o mesmo endereço de IP"
+
+#: views.py:89
+msgid "Computer automatically identified"
+msgstr "Computador identificado automaticamente"
+
+#: views.py:91
+msgid "Computer added with successful"
+msgstr "Computador adcionado com sucesso"
+
+#: views.py:93
+msgid "There is a new computer waiting to be added"
+msgstr "Existe um novo computador esperando para ser adicionado"
+
+#: views.py:98
+msgid "Error: Add computer failed"
+msgstr "Erro: Falha ao adicionar o computador"
+
+#: views.py:129
+msgid "Computer removed."
+msgstr "Computador removido"
+
+#: views.py:145
+msgid "Active computers"
+msgstr "Ativar computadores"
+
+#: views.py:162 views.py:176 views.py:191
+#, python-format
+msgid "Computer : %s"
+msgstr "Computer : %s"
+
+#: views.py:195
+msgid "Running backups"
+msgstr "Executando Backups"
+
+#: views.py:199
+msgid "Failed backups"
+msgstr "Backups com falha"
+
+#: views.py:202
+msgid "View computer"
+msgstr "Visualizar computador"
+
+#: views.py:213
+msgid "Create"
+msgstr "Criar"
+
+#: views.py:239 views.py:257
+msgid "Computer not found"
+msgstr "Computador não encontrado"
+
+#: views.py:242
+msgid "Computer already activated"
+msgstr "Computador já está ativado"
+
+#: views.py:245
+msgid "Connection error"
+msgstr "Erro na conexão"
+
+#: views.py:247
+msgid "Computer activated."
+msgstr "Computador ativado"
+
+#: views.py:259
+msgid "Computer deactivated"
+msgstr "Computador desativado"
+
+#: views.py:266
+msgid "Computer reconfigured."
+msgstr "Computador reconfigurado"
+
+#: views.py:268
+#, python-format
+msgid "Internal Error. %s:"
+msgstr "Erro interno. %s:"
+
+#: templates/base_computers.html:37 templates/base_computers.html.py:41
+msgid "Add group"
+msgstr "Adicionar grupo"
+
+#: templates/base_computers.html:39
+msgid "Group name"
+msgstr "Nome de grupo"
+
+#: templates/base_computers.html:41
+msgid "or"
+msgstr "ou"
+
+#: templates/base_computers.html:41 templates/remove_computer.html:59
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: templates/base_computers.html:44
+msgid "Update"
+msgstr "Atualizar"
+
+#: templates/computers_add.html:13
+msgid ""
+"To activate a new computer yout must install the client software. To get it "
+"click"
+msgstr ""
+"Para ativar um novo computador você deve instalar o software cliente. Para "
+"obtê-lo click"
+
+#: templates/computers_add.html:13
+msgid "here"
+msgstr "Aqui"
+
+#: templates/computers_add.html:26 templates/computers_view.html:25
+msgid "List computers"
+msgstr "Listar computadores"
+
+#: templates/computers_add.html:27
+msgid "Click in 'activate' button if want to make it active in Nimbus"
+msgstr "Clique no botão 'ativar' se quiser torná-lo ativo no Nimbus"
+
+#: templates/computers_add.html:37 templates/computers_list.html:53
+#: templates/computers_list.html.py:90 templates/computers_list.html:91
+#: templates/computers_view.html:37
+msgid "Edit"
+msgstr "Editar"
+
+#: templates/computers_add.html:38 templates/computers_view.html:38
+msgid "Remove"
+msgstr "Remover"
+
+#: templates/computers_add.html:44
+msgid "Activated"
+msgstr "Ativado"
+
+#: templates/computers_add.html:54
+msgid "No new computers to activate."
+msgstr "Nenhum computador para ser ativado"
+
+#: templates/computers_add.html:55
+msgid "To activate a new computer yout must install the client software."
+msgstr "Para ativar um novo computador você deve instalar o software cliente"
+
+#: templates/computers_list.html:23
+msgid "There is a computer to be activated."
+msgstr "Nenhum computador para ser ativado"
+
+#: templates/computers_list.html:23
+msgid "Active new computer"
+msgstr "Ativar novo computador"
+
+#: templates/computers_list.html:23
+msgid "There are"
+msgstr "Existem"
+
+#: templates/computers_list.html:23
+msgid "computers to be actived."
+msgstr "computadores para serem ativados"
+
+#: templates/computers_list.html:23
+msgid "Active new computers"
+msgstr "Ativar novo computador"
+
+#: templates/computers_list.html:25
+msgid "There are no computers to be activated"
+msgstr "Não existe computadores para serem ativados"
+
+#: templates/computers_list.html:30
+msgid "Filter by group"
+msgstr "Filtar por grupo"
+
+#: templates/computers_list.html:35
+msgid "Filter"
+msgstr "Filtrar"
+
+#: templates/computers_list.html:54
+msgid "remove"
+msgstr "remover"
+
+#: templates/computers_list.html:65 templates/computers_view.html:50
+msgid "Restore"
+msgstr "Restaurar"
+
+#: templates/computers_list.html:67
+msgid "create backup"
+msgstr "criar backup"
+
+#: templates/computers_list.html:68 templates/computers_view.html:54
+msgid "Reconfigure"
+msgstr "Reconfigurar"
+
+#: templates/computers_list.html:72 templates/computers_view.html:57
+msgid "There are no procedures for this computer."
+msgstr "Não existe procedimentos para esse computador."
+
+#: templates/computers_list.html:74 templates/computers_view.html:59
+msgid "FILES TO BACKUP"
+msgstr "ARQUIVOS PARA BACKUP"
+
+#: templates/computers_list.html:88
+msgid "Offsite enabled?"
+msgstr "Offsite ativo?"
+
+#: templates/computers_list.html:88 templates/computers_view.html:73
+msgid "Yes"
+msgstr "Sim"
+
+#: templates/computers_list.html:88 templates/computers_view.html:73
+msgid "No"
+msgstr "Não"
+
+#: templates/computers_list.html:89
+msgid "Local storage:"
+msgstr "Local de armazenamento"
+
+#: templates/computers_list.html:91
+msgid "Files:"
+msgstr "Arquivos"
+
+#: templates/computers_list.html:108
+msgid "There are computer added."
+msgstr "Não existe computador para ser ativado"
+
+#: templates/computers_view.html:24
+msgid "Add computer"
+msgstr "Adicionar computador"
+
+#: templates/computers_view.html:45
+msgid "Activate"
+msgstr "Ativado"
+
+#: templates/computers_view.html:53
+msgid "Backup"
+msgstr "Backup"
+
+#: templates/computers_view.html:73
+msgid "Offsite enabled"
+msgstr "Offsite ativo"
+
+#: templates/computers_view.html:74
+msgid "Storage"
+msgstr "Armazenamento"
+
+#: templates/computers_view.html:75
+msgid "Schedule"
+msgstr "Agendamento"
+
+#: templates/computers_view.html:75 templates/computers_view.html.py:76
+msgid "edit"
+msgstr "editar"
+
+#: templates/computers_view.html:76
+msgid "Files"
+msgstr "Arquivos"
+
+#: templates/remove_computer.html:17
+msgid "Removal Confirmation"
+msgstr "Confirmação de remoção"
+
+#: templates/remove_computer.html:22
+msgid "You are about to remove the computer"
+msgstr "Você está prestes a remover o computador"
+
+#: templates/remove_computer.html:25
+msgid ""
+"The following backup procedures are associated with this computer and will "
+"be deleted:"
+msgstr ""
+"Os seguintes procedimentos de backup estão associado com este computador e "
+"serão removidos"
+
+#: templates/remove_computer.html:31
+msgid "The file set's profile "
+msgstr "O perfil do conjunto de arquivos"
+
+#: templates/remove_computer.html:31
+msgid "will not be affected"
+msgstr "não será afetado"
+
+#: templates/remove_computer.html:33
+msgid " The file sets"
+msgstr "O conjunto de arquivos"
+
+#: templates/remove_computer.html:33 templates/remove_computer.html.py:38
+msgid "is used only by"
+msgstr "é usado apenas por"
+
+#: templates/remove_computer.html:33 templates/remove_computer.html.py:38
+msgid "and"
+msgstr "e"
+
+#: templates/remove_computer.html:33 templates/remove_computer.html.py:38
+msgid "will be removed"
+msgstr "será removido"
+
+#: templates/remove_computer.html:36
+msgid "The profile scheduling"
+msgstr "O perfil de agendamento"
+
+#: templates/remove_computer.html:38
+msgid "The scheduling"
+msgstr "O Agendamento"
+
+#: templates/remove_computer.html:44
+msgid "There are backup procedures associated with this computer."
+msgstr "Não existe procedimentos de backup associados com este computador."
+
+#: templates/remove_computer.html:47
+msgid "The following backups will be deleted and no longer be restored."
+msgstr "Os seguintes backups serão excluídos e não poderam ser restaurados."
+
+#: templates/remove_computer.html:52
+msgid "There are no backups saved related to this computer."
+msgstr "Não existe backups salvos para o computador relatado"
+
+#: templates/remove_computer.html:56
+msgid "This operation can not be undone. Would you like to proceed anyway?"
+msgstr "Esta operação não pode ser desfeita. Deseja continuar mesmo assim?"
+
+#: templates/remove_computer.html:59
+msgid "Delete"
+msgstr "Deletar"

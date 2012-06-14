@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-21 16:07-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models.py:55
+msgid "Starting download databases"
+msgstr "Iniciando download da base de dados"
+
+#: models.py:57
+msgid "database download completed successfully"
+msgstr "Download da base de dados completada com sucesso"
+
+#: models.py:59
+msgid "Starting database recovery"
+msgstr "Iniciando recuperação da base de dados"
+
+#: models.py:61
+msgid "database recovery completed successfully"
+msgstr "Recuperação da base de dados completada com sucesso"
+
+#: models.py:62
+msgid "Generating configuration files"
+msgstr "Gerando arquivos de configuração"
+
+#: models.py:64
+msgid "Configuration files generated successfully"
+msgstr "Arquivos de configuração gerados com sucesso"
+
+#: models.py:65
+msgid "Starting download backup files"
+msgstr "Iniciando o download dos arquivos de backup"
+
+#: models.py:67
+msgid "Download backup files completed"
+msgstr "Download dos arquivos de backup concluído com sucesso"
+
+#: models.py:209
+msgid "stalled"
+msgstr "paralisado"
+
+#: models.py:255
+msgid "Nimbus Recovery"
+msgstr "Recuperação do Nimbus"
+
+#: models.py:260
+msgid "{0} \t {1} of {2}"
+msgstr "{0} \t {1} de {2}"
+
+#: models.py:271
+#, python-format
+msgid ""
+"Completed \t {0} of {1} - {2}% - Estimated time: {3}. Download rate: {4}/s"
+msgstr "Total \t {0} de {1} - {2}% - Tempo estimado: {3}. Taxa de download: {4}/s"

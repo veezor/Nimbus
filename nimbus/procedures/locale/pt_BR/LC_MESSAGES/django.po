@@ -1,0 +1,362 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-25 09:43-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:34 forms.py:47 forms.py:50
+msgid "-or choose a profile-"
+msgstr "-ou escolha um perfil"
+
+#: forms.py:37 models.py:64 templates/profile_list.html:53
+#: templates/profile_list.html.py:113
+msgid "Computer"
+msgstr "Computer"
+
+#: forms.py:41 forms.py:81 templates/add_procedure.html:62
+#: templates/edit_procedure.html:60
+msgid "Retention time"
+msgstr "Tempo de retenção"
+
+#: forms.py:45 templates/edit_procedure.html:54 templates/profile_list.html:18
+msgid "File sets"
+msgstr "Conjunto de arquivos"
+
+#: forms.py:48
+msgid "schedule"
+msgstr "agendamento"
+
+#: forms.py:72 models.py:69
+msgid "Fileset"
+msgstr "Conjunto de arquivo"
+
+#: forms.py:77 models.py:67 templates/add_procedure.html:49
+#: templates/edit_procedure.html:48
+msgid "Schedule"
+msgstr "Agendamento"
+
+#: models.py:61
+msgid "Retention Time (days)"
+msgstr "Tempo de retenção (dias)"
+
+#: models.py:71
+msgid "Storage device"
+msgstr "Dispositivo de armazenamento"
+
+#: models.py:73
+msgid "Name"
+msgstr "Nome"
+
+#: models.py:75
+msgid "Auxiliary tasks"
+msgstr "Tarefas auxiliares"
+
+#: models.py:80 templates/profile_list.html:53
+#: templates/profile_list.html.py:113
+msgid "Procedure"
+msgstr "Procedimento"
+
+#: models.py:286
+msgid "Error in communication with the Bacula"
+msgstr "Erro na comunicação com o cliente Bacula"
+
+#: views.py:43
+msgid "Add backup"
+msgstr "Adcionar backup"
+
+#: views.py:61
+#, python-format
+msgid "Backup procedure '%s' successfully created"
+msgstr "Procedimento de backup '%s' criado com sucesso"
+
+#: views.py:64 views.py:95
+msgid "The backup procedure has not been created due to the following errors:"
+msgstr "O procedimento de backup não foi criado devido aos seguintes erros:"
+
+#: views.py:73
+#, python-format
+msgid "Editing '%s'"
+msgstr "Editando '%s'"
+
+#: views.py:91
+#, python-format
+msgid "Procedure '%s' changed successfully."
+msgstr "Procedimento '%s' alterado com sucesso"
+
+#: views.py:119
+msgid "Procedure successfully removed."
+msgstr "Procedimento removido com sucesso"
+
+#: views.py:128
+msgid "Procedure in execution."
+msgstr "Procedimento em execução"
+
+#: views.py:130
+msgid "Backup server down, impossible to perform the operation."
+msgstr "Servidor de backup inativo, impossível realizar operação."
+
+#: views.py:136
+msgid "Backup procedure"
+msgstr "Procedimento de backup"
+
+#: views.py:147
+msgid "Procedure successfully activated"
+msgstr "Procedimento ativado com sucesso"
+
+#: views.py:157
+msgid "Procedure successfully deactivated"
+msgstr "Procedimento desativado com sucesso"
+
+#: views.py:162 views.py:166
+msgid "Profiles configuration"
+msgstr "Perfis de configuração"
+
+#: views.py:176 templates/procedures_list.html:99
+msgid "Procedural History"
+msgstr "Histórico de Procedimentos"
+
+#: views.py:198
+msgid "Procedure successfully canceled"
+msgstr "Procedimento cancelado com sucesso"
+
+#: templates/add_procedure.html:52 templates/edit_procedure.html:50
+msgid "Create a schedule"
+msgstr "Criar um agendamento"
+
+#: templates/add_procedure.html:53 templates/add_procedure.html.py:59
+#: templates/edit_procedure.html:51 templates/edit_procedure.html.py:57
+msgid "or"
+msgstr "ou"
+
+#: templates/add_procedure.html:53 templates/add_procedure.html.py:59
+#: templates/edit_procedure.html:51 templates/edit_procedure.html.py:57
+msgid "Discard and choose a profile"
+msgstr "Descartar e escolher perfil"
+
+#: templates/add_procedure.html:56
+msgid "Set files"
+msgstr "Conjunto de arquivos"
+
+#: templates/add_procedure.html:58 templates/edit_procedure.html:56
+msgid "Create set files "
+msgstr "Criar conjunto de arquivos"
+
+#: templates/add_procedure.html:63 templates/edit_procedure.html:61
+msgid "days"
+msgstr "dias"
+
+#: templates/add_procedure.html:66 templates/edit_procedure.html:64
+msgid "Add another value"
+msgstr "Adicionar novo valor"
+
+#: templates/add_procedure.html:79
+msgid "Add Backup"
+msgstr "Adicionar novo backup"
+
+#: templates/edit_procedure.html:77
+msgid "Save"
+msgstr "Salvar"
+
+#: templates/edit_procedure.html:77 templates/remove_procedure.html:47
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: templates/procedures_history.html:27
+msgid "&lt;&lt; first"
+msgstr "&lt;&lt; primeiro"
+
+#: templates/procedures_history.html:28
+msgid "&lt; previous"
+msgstr "&lt; último"
+
+#: templates/procedures_history.html:32
+msgid "Page"
+msgstr "Página"
+
+#: templates/procedures_history.html:32
+msgid "of"
+msgstr "de"
+
+#: templates/procedures_history.html:36
+msgid "next &gt;"
+msgstr "próximo &gt;"
+
+#: templates/procedures_history.html:37
+msgid "last &gt;&gt;"
+msgstr "último &gt;&gt;"
+
+#: templates/procedures_list.html:32 templates/profile_list.html:43
+#: templates/profile_list.html.py:103
+msgid "Edit"
+msgstr "Editar"
+
+#: templates/procedures_list.html:33 templates/profile_list.html:44
+#: templates/profile_list.html.py:104 templates/remove_procedure.html:47
+msgid "Remove"
+msgstr "Remover"
+
+#: templates/procedures_list.html:39
+msgid "Execute now"
+msgstr "Executar agora"
+
+#: templates/procedures_list.html:43
+msgid "Active"
+msgstr "Ativar"
+
+#: templates/procedures_list.html:47
+msgid "Disable"
+msgstr "Desativar"
+
+#: templates/procedures_list.html:51
+msgid "PROCEDURE DISABLED"
+msgstr "PROCEDIMENTO DESATIVADO"
+
+#: templates/procedures_list.html:51
+msgid "SETTINGS PROCEDURE"
+msgstr "CONFIGURAÇÕES DO PROCEDIMENTO"
+
+#: templates/procedures_list.html:54
+msgid "File sets:"
+msgstr "Conjunto de arquivos"
+
+#: templates/procedures_list.html:56 templates/procedures_list.html.py:61
+msgid "[Profile]"
+msgstr "[Perfil]"
+
+#: templates/procedures_list.html:59
+msgid "Schedule:"
+msgstr "Agendamento"
+
+#: templates/procedures_list.html:64
+msgid "Retention time of files:"
+msgstr "Tempo de retenção dos arquivos:"
+
+#: templates/procedures_list.html:66
+msgid "Post-backup tasks:"
+msgstr "Tarefas Pós-backup:"
+
+#: templates/procedures_list.html:82
+msgid "There are no procedures added."
+msgstr "Não existem procedimentos adicionados."
+
+#: templates/procedures_list.html:100
+msgid "List all procedures"
+msgstr "Listar todos os procedimentos"
+
+#: templates/profile_list.html:19 templates/profile_list.html.py:92
+msgid "Add"
+msgstr "Adicionar"
+
+#: templates/profile_list.html:21
+msgid "from computer"
+msgstr "a partir do computador:"
+
+#: templates/profile_list.html:38
+msgid "Choose a computer::"
+msgstr "Escoher um computador"
+
+#: templates/profile_list.html:50 templates/profile_list.html.py:110
+msgid "Used by:"
+msgstr "Utilizado por"
+
+#: templates/profile_list.html:63
+msgid "List of files"
+msgstr "Lista de arquivos"
+
+#: templates/profile_list.html:71
+msgid "Since only those patterns below:"
+msgstr "Sendo apenas aqueles nos padrões abaixo:"
+
+#: templates/profile_list.html:77
+msgid "With the exception of those in the standards below:"
+msgstr "Com exceção daqueles nos padrões abaixo:"
+
+#: templates/profile_list.html:92 templates/profile_list.html.py:123
+msgid "Schedules"
+msgstr "Agendamentos"
+
+#: templates/profile_list.html:128
+msgid "Type"
+msgstr "Tipo"
+
+#: templates/profile_list.html:128
+msgid "Frequency"
+msgstr "Frequência"
+
+#: templates/profile_list.html:128
+msgid "Day"
+msgstr "Dia"
+
+#: templates/profile_list.html:128
+msgid "Time"
+msgstr "Hora"
+
+#: templates/remove_procedure.html:16
+msgid "Removal Confirmation"
+msgstr "Confirmação de remoção"
+
+#: templates/remove_procedure.html:21
+msgid "You are about to delete the backup procedure"
+msgstr "Você está prestes a remover o procedimento de backup"
+
+#: templates/remove_procedure.html:23
+msgid "The computer"
+msgstr "O computador"
+
+#: templates/remove_procedure.html:23 templates/remove_procedure.html.py:25
+msgid "will not be affected."
+msgstr "naõ será afetado."
+
+#: templates/remove_procedure.html:25
+msgid "The profile of the set of files"
+msgstr "O perfil do conjunto de arquivos"
+
+#: templates/remove_procedure.html:27
+msgid "The set of files"
+msgstr "O conjunto de arquivos"
+
+#: templates/remove_procedure.html:27 templates/remove_procedure.html.py:32
+msgid "is only used for this backup and"
+msgstr "é usado apenas para este backup e"
+
+#: templates/remove_procedure.html:27 templates/remove_procedure.html.py:32
+msgid "will be removed"
+msgstr "será removido"
+
+#: templates/remove_procedure.html:30
+msgid "The profile of schedule"
+msgstr "O perfil de agendamento"
+
+#: templates/remove_procedure.html:30
+msgid "will not be affected"
+msgstr "não será afetado"
+
+#: templates/remove_procedure.html:32
+msgid "The schedule"
+msgstr "O agendamento"
+
+#: templates/remove_procedure.html:35
+msgid "The following backups will be deleted and can not be restored:"
+msgstr ""
+"Os seguintes backups serão apagados e não mais poderão ser restaurados:"
+
+#: templates/remove_procedure.html:40
+msgid "There is no backup unless this procedure"
+msgstr "Não existe nenhum backup salvo deste procedimento"
+
+#: templates/remove_procedure.html:44
+msgid "This operation can not be undone. Would you like to proceed anyway?"
+msgstr "Esta operação não poderá ser desfeita. Deseja prosseguir mesmo assim?"

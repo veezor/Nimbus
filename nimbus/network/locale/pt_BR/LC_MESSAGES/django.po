@@ -1,0 +1,101 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-15 15:49-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: models.py:29
+msgid "IP Address"
+msgstr "Endereço de IP"
+
+#: models.py:30
+msgid "Netmask"
+msgstr "Máscara de Rede"
+
+#: models.py:32
+msgid "DNS1 Server"
+msgstr "Servidor DNS1"
+
+#: models.py:33
+msgid "DNS2 Server"
+msgstr "Servidor DNS2"
+
+#: models.py:37
+msgid "Network interface"
+msgstr "Interface de rede"
+
+#: models.py:54
+msgid "Error, There is another computer with the same IP address."
+msgstr "Erro, existe outra máquina com o mesmo IP na rede."
+
+#: models.py:84
+msgid "Generating network interface configuration"
+msgstr "gerando configuração de rede"
+
+#: models.py:92
+msgid "generating DNS configuration"
+msgstr "gerando configuração de DNS"
+
+#: models.py:99
+msgid "restarting network right now"
+msgstr ""
+
+#: models.py:101
+msgid "restarting network exited"
+msgstr ""
+
+#: models.py:104
+msgid "Connection with nimbus-manager failed"
+msgstr "Conexão com nimbus-manager falhou"
+
+#: models.py:106
+msgid "Returning the signal that changes the IP"
+msgstr ""
+
+#: models.py:116
+msgid "Updating the IP director"
+msgstr "Atualizando IP do director"
+
+#: models.py:125
+msgid "Updating the IP storage"
+msgstr "Atualizando IP do storage"
+
+#: models.py:134
+msgid "Updating the Client-Nimbus IP"
+msgstr "Atualizando ip do client nimbus"
+
+#: views.py:22
+msgid "2 of 5 - Network Config"
+msgstr "2 de 5 - Configuração de rede"
+
+#: views.py:41
+msgid "redirecting user to redirect page"
+msgstr "redirecionando o usuario para a página"
+
+#: templates/myform.html:10
+msgid "Network configuration"
+msgstr "Configuração de rede"
+
+#: templates/myform.html:17
+msgid "Update"
+msgstr "Atualizar"
+
+#: templates/redirect.html:19
+msgid "You are being redirected to the new ip."
+msgstr "Você está sendo redirecionado para o novo ip."
+
+#: templates/redirect.html:20
+msgid "If within 10 seconds you are not redirected to the new address, go to"
+msgstr "Se em até 10 segundos você não for redirecionado para o novo endereço, acesse"
