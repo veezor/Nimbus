@@ -63,7 +63,7 @@ msgstr "Computador"
 
 #: models.py:169
 msgid "Computer already active"
-msgstr "Computadot já está ativado"
+msgstr "Computador já está ativado"
 
 #: views.py:36
 #, python-format
@@ -422,3 +422,4 @@ msgstr "Esta operação não pode ser desfeita. Deseja continuar mesmo assim?"
 #: templates/remove_computer.html:59
 msgid "Delete"
 msgstr "Deletar"
+

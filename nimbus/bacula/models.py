@@ -3,6 +3,7 @@
 
 from datetime import datetime, timedelta
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 class Client(models.Model):
     clientid = models.IntegerField(primary_key=True)
@@ -15,6 +16,7 @@ class Client(models.Model):
 
     class Meta:
         db_table = u'client'
+        verbose_name = _(u"Client")
 
     @property
     def computer(self):
@@ -36,6 +38,7 @@ class File(models.Model):
 
     class Meta:
         db_table = u'file'
+        verbose_name = _(u"File")
 
 
     @property
@@ -52,6 +55,7 @@ class Fileset(models.Model):
 
     class Meta:
         db_table = u'fileset'
+        verbose_name = _(u"Fileset")
 
 
 class Filename(models.Model):
@@ -61,6 +65,7 @@ class Filename(models.Model):
 
     class Meta:
         db_table = u'filename'
+        verbose_name = _(u"Filename")
 
 class Job(models.Model):
     MESSAGES = ['Criado mas sem executar ainda.',
@@ -77,27 +82,27 @@ class Job(models.Model):
                 'Esperando pelo cliente',
                 'Esperando',
                 'Gravando dados']
-    STATUS_MESSAGES_MAPPING = {'C': ('Created, not yet running', 0),
-                               'R': ('Running', 1),
-                               'B': ('Blocked', 2),
-                               'T': ('Completed successfully',3),
-                               'E': ('Terminated with errors',5),
-                               'e': ('Non-fatal error',6),
-                               'f': ('Fatal error',7),
-                               'D': ('Verify found differences',8),
-                               'A': ('Canceled by user',9),
-                               'F': ('Waiting for Client',11),
-                               'S': ('Waiting for Storage daemon',12),
-                               'm': ('Waiting for new media',12),
-                               'M': ('Waiting for media mount',12),
-                               's': ('Waiting for storage resource',12),
-                               'j': ('Waiting for job resource',12),
-                               'c': ('Waiting for client resource',12),
-                               'd': ('Waiting on maximum jobs',12),
-                               't': ('Waiting on start time',12),
-                               'p': ('Waiting on higher priority jobs',12),
-                               'i': ('Doing batch insert file records',13),
-                               'a': ('SD despooling attributes',12)}
+    STATUS_MESSAGES_MAPPING = {'C': (_(u'Created, not yet running'), 0),
+                               'R': (_(u'Running'), 1),
+                               'B': (_('uBlocked'), 2),
+                               'T': (_('uCompleted successfully'),3),
+                               'E': (_(u'Terminated with errors'),5),
+                               'e': (_(u'Non-fatal error'),6),
+                               'f': (_(u'Fatal error'),7),
+                               'D': (_(u'Verify found differences'),8),
+                               'A': (_(u'Canceled by user'),9),
+                               'F': (_(u'Waiting for Client'),11),
+                               'S': (_(u'Waiting for Storage daemon'),12),
+                               'm': (_(u'Waiting for new media'),12),
+                               'M': (_(u'Waiting for media mount'),12),
+                               's': (_(u'Waiting for storage resource'),12),
+                               'j': (_(u'Waiting for job resource'),12),
+                               'c': (_(u'Waiting for client resource'),12),
+                               'd': (_(u'Waiting on maximum jobs'),12),
+                               't': (_(u'Waiting on start time'),12),
+                               'p': (_(u'Waiting on higher priority jobs'),12),
+                               'i': (_(u'Doing batch insert file records'),13),
+                               'a': (_(u'SD despooling attributes'),12)}
     jobid = models.IntegerField(primary_key=True )
     job = models.TextField()
     name = models.TextField()
@@ -126,6 +131,7 @@ class Job(models.Model):
 
     class Meta:
         db_table = u'job'
+        verbose_name = _(u"Job")
 
     def __unicode__(self):
         return self.name
@@ -172,14 +178,7 @@ class Job(models.Model):
 
     @property
     def human_general_status(self):
-        status = self.general_status
-        _status_mapping = {
-            'error' : 'erro',
-            'warning' : 'alerta',
-            'waiting' : 'esperando',
-            'running' : 'executando'
-        }
-        return _status_mapping.get(status, 'ok')
+        return self.general_status
 
     @property
     def backup_level(self):
@@ -193,7 +192,7 @@ class Job(models.Model):
         if self.type == "B":
             return 'Backup'
         elif self.type == 'R':
-            return 'Restauração'
+            return 'Restore'
 
     @property
     def end_time(self):
@@ -283,7 +282,7 @@ class Job(models.Model):
     @property
     def status_message(self):
         #FIX-ME
-        return self.MESSAGES[self.STATUS_MESSAGES_MAPPING.get(self.jobstatus, "Desconhecido")[1]]
+        return self.STATUS_MESSAGES_MAPPING.get(self.jobstatus, _(u"Unknown"))[1]
 
     @property
     def duration(self):
@@ -310,6 +309,7 @@ class JobMedia(models.Model):
 
     class Meta:
         db_table = u'jobmedia'
+        verbose_name = _(u"JobMedia")
 
 class Media(models.Model):
     mediaid = models.IntegerField(primary_key=True)
@@ -357,6 +357,7 @@ class Media(models.Model):
     
     class Meta:
         db_table = u'media'
+        verbose_name = _(u"JobMedia")
 
 
 class Path(models.Model):
@@ -365,6 +366,7 @@ class Path(models.Model):
 
     class Meta:
         db_table = u'path'
+        verbose_name = _(u"Path")
 
 class Pool(models.Model):
     poolid = models.IntegerField(primary_key=True)
@@ -395,5 +397,6 @@ class Pool(models.Model):
 
     class Meta:
         db_table = u'pool'
+        verbose_name = _(u"Pool")
 
 

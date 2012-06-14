@@ -8,6 +8,7 @@ from django.http import Http404
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 
 from nimbus.shared import views
 from nimbus.reports.forms import EmailConfForm
@@ -29,9 +30,9 @@ def email_test(request):
     elif request.method == "POST":
         try:
             send_hello_message()
-            messages.success(request, u"Email enviado corretamente, verifique sua caixa postal")
+            messages.success(request, _(u"Email sent correctly, check your mailbox"))
         except (smtplib.SMTPException, socket.error):
-            messages.error(request, u"Impossível enviar email, verifique configurações")
+            messages.error(request, _(u"Unable to send email, check configuration"))
         return redirect('nimbus.reports.views.email_conf')
     else:
         raise Http404()

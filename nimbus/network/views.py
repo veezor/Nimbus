@@ -14,12 +14,12 @@ from nimbus.shared.utils import project_port
 from nimbus.wizard.models import add_step
 from nimbus.wizard.views import next_step_url, redirect_next_step
 from nimbus.shared.forms import form
-
+from django.utils.translation import ugettext as _
 
 @add_step(position=1)
 def network(request):
     logger = logging.getLogger(__name__)
-    extra_context = {'wizard_title': u'2 de 5 - Configuração de Rede',
+    extra_context = {'wizard_title': _(u'2 of 5 - Network Config'),
                      'page_name': u'network'}
     if request.method == "GET":
         interface = NetworkInterface.get_instance()
@@ -38,12 +38,12 @@ def network(request):
         if interface.address == get_raw_network_interface_address():
             return redirect_next_step('network')
         else:
-            logger.info('redirecting user to redirect page')
+            logger.info(_('redirecting user to redirect page'))
             return render_to_response(request, "redirect.html", 
                                         dict(ip_address=interface.address,
                                              url=next_step_url('network')))
 
-
+    print request
 
 @login_required
 def network_conf(request):
@@ -57,3 +57,5 @@ def redirect_after_update(request):
     port = project_port(request)
     ip_address = ni.address + port
     return render_to_response(request, 'redirect.html', locals())
+   
+

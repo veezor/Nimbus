@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 
 {% block page %}
@@ -8,14 +9,14 @@
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
-		<h2>Configuração de notificações por email</h2>
+        <h2>{% trans "Mail notification" %}</h2>
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
     
         <form method="post" action="{% url nimbus.reports.views.email_conf %}">
             {% include "form.html" %}
-            <p><button type="submit" class="css3button big positive floatleft" value="Atualizar">Atualizar</button></p>
+            <p><button type="submit" class="css3button big positive floatleft" value="Atualizar">{% trans "Update" %}</button></p>
         </form>
 
 

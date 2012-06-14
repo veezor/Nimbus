@@ -1,17 +1,19 @@
-Computador: {{ computer.name }}
-Agendamento: {{ procedure.name }}
-Hora do agendamento: {{ job.schedule_time }}
-Início: {{  job.start_time }}
-Fim: {{ job.real_end_time }}
-Duração: {{ job.duration }}
-Dados: {{ job.human_readable_size.size }} {{ job.human_readable_size.unit }}
-Taxa de gravação: {{ rate }}
-Compressão: {{ compression }}
-Encriptação: {% if encryption == 'yes'%}sim{%else%}não{%endif%}
-Resultado: {{ job.status_message }}
+{% load i18n %}
+
+{% trans "Computer" %}: {{ computer.name }}
+{% trans "Schedule" %}: {{ procedure.name }}
+{% trans "Scheduled time" %}: {{ job.schedule_time }}
+{% trans "Start"%}: {{  job.start_time }}
+{% trans "End"%}: {{ job.real_end_time }}
+{% trans "Duration"%}: {{ job.duration }}
+{% trans "Data size"%}: {{ job.human_readable_size.size }} {{ job.human_readable_size.unit }}
+{% trans "Data rate"%}: {{ rate }}
+{% trans "Compression" %}: {{ compression }}
+{% trans "Encryption" %}: {% if encryption == 'yes'%}{% trans "yes" %}{%else%}{% trans "no" %}{%endif%}
+{% trans "Status message" %}: {{ job.status_message }}
 
 {%if job.human_general_status != 'ok' %}
-Mensagens para depuração:
+{% trans "Debug messages" %}:
 {{ stdin }}
 {% endif %}
 

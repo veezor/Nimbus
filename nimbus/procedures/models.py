@@ -13,6 +13,7 @@ from django.contrib.contenttypes import generic
 from django.db.models import Q
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete, pre_save, pre_delete, m2m_changed
+from django.utils.translation import ugettext_lazy as _
 
 from pybacula import BConsoleInitError
 
@@ -49,7 +50,7 @@ class JobTask(models.Model):
         if self.active:
             return "%s - %s" % (self.name, self.description) 
         else:
-            return "(desativado) %s - %s" % (self.name, self.description) 
+            return " (off) %s - %s" % (self.name, self.description) 
 
 
 class Procedure(BaseModel):
@@ -60,23 +61,23 @@ class Procedure(BaseModel):
     pool_retention_time = models.IntegerField(verbose_name=_("Retention Time (days)"),
                                               blank=False, null=False,
                                               default=30)
-    computer = models.ForeignKey(Computer, verbose_name=_("Computador"),
+    computer = models.ForeignKey(Computer, verbose_name=_("Computer"),
                                  blank=False, null=False)
     active = models.BooleanField(default=True, blank=True, null=False)
     schedule = models.ForeignKey(Schedule, verbose_name=_("Schedule"),
                                  related_name='procedures')
     fileset = models.ForeignKey(FileSet, verbose_name=_("Fileset"),
                                 related_name='procedures')
-    storage = models.ForeignKey(Storage, verbose_name=_("Dispositivo de Armazenamento"), null=False,
+    storage = models.ForeignKey(Storage, verbose_name=_("Storage device"), null=False,
                                 blank=False)
     name = models.CharField(verbose_name=_("Name"), max_length=255, blank=False,
                             null=False)
-    job_tasks = models.ManyToManyField(JobTask, verbose_name="Tarefas auxiliares",
+    job_tasks = models.ManyToManyField(JobTask, verbose_name=_("Auxiliary tasks"),
                             related_name='procedure', blank=True, null=True)
 
 
     class Meta:
-        verbose_name = u"Procedimento"
+        verbose_name = _(u"Procedure")
 
 
     def fileset_bacula_name(self):
@@ -282,7 +283,7 @@ def remove_procedure_volumes(procedure):
 
     except BConsoleInitError, error:
         logger = logging.getLogger(__name__)
-        logger.exception("Erro na comunicação com o bacula")
+        logger.exception(_("Error in communication with the Bacula"))
 
 
 

@@ -10,6 +10,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, InvalidPage
+from django.utils.translation import ugettext as _
 
 from pybacula import BConsoleInitError
 
@@ -39,7 +40,7 @@ def add(request, teste=None):
         else:
             initial = {}
 
-    title = u"Adicionar backup"
+    title = _(u"Add backup")
     form = ProcedureForm(initial=initial, prefix="procedure")
     tasks = JobTask.objects.all()
     content = {'title': title,
@@ -57,10 +58,10 @@ def add(request, teste=None):
         if procedure_form.is_valid():
             procedure = procedure_form.save()
             call_reload_baculadir()
-            messages.success(request, "Procedimento de backup '%s' criado com sucesso" % procedure.name)
+            messages.success(request, _("Backup procedure '%s' successfully created") % procedure.name)
             return redirect('/procedures/list')
         else:
-            messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
+            messages.error(request, _("The backup procedure has not been created due to the following errors:"))
             content['form'] = procedure_form
             return render_to_response(request, "add_procedure.html", content)
     return render_to_response(request, "add_procedure.html", content)
@@ -69,7 +70,7 @@ def add(request, teste=None):
 @login_required
 def edit(request, procedure_id):
     p = get_object_or_404(Procedure, pk=procedure_id)
-    title = u"Editando '%s'" % p.name
+    title = _(u"Editing '%s'") % p.name
     partial_form = ProcedureForm(prefix="procedure", instance=p)
     content = {'title': title,
               'form': partial_form,
@@ -87,11 +88,11 @@ def edit(request, procedure_id):
         procedure_form = ProcedureForm(data, instance=p, prefix="procedure")
         if procedure_form.is_valid():
             procedure_form.save()
-            messages.success(request, "Procedimento '%s' alterado com sucesso" % p.name)
+            messages.success(request, _("Procedure '%s' changed successfully.") % p.name)
             call_reload_baculadir()
             return redirect('/procedures/list')
         else:
-            messages.error(request, "O procedimento de backup não foi criado devido aos seguintes erros")
+            messages.error(request, _("The backup procedure has not been created due to the following errors:"))
             content['forms'] = [procedure_form]
             return render_to_response(request, "edit_procedure.html", content)
     return render_to_response(request, 'edit_procedure.html', content)
@@ -115,7 +116,7 @@ def do_delete(request, object_id):
         procedure.fileset.delete()
     procedure.delete()
     call_reload_baculadir()
-    messages.success(request, u"Procedimento removido com sucesso.")
+    messages.success(request, _(u"Procedure successfully removed."))
     return redirect('/procedures/list')
 
 
@@ -124,15 +125,15 @@ def execute(request, object_id):
     try:
         procedure = Procedure.objects.get(id=object_id)
         procedure.run()
-        messages.success(request, u"Procedimento em execução.")
+        messages.success(request, _(u"Procedure in execution."))
     except BConsoleInitError, error:
-        messages.error(request, u"Servidor de backup inativo, impossível realizar operação.")
+        messages.error(request, _(u"Backup server down, impossible to perform the operation."))
     return redirect('/procedures/list')
 
 @login_required
 def list_all(request):
     procedures = Procedure.objects.filter(id__gt=1)
-    title = u"Procedimentos de backup"
+    title = _(u"Backup procedure")
     last_jobs = Procedure.all_non_self_jobs()[:10]
     return render_to_response(request, "procedures_list.html", locals())
 
@@ -143,7 +144,7 @@ def activate(request, object_id):
         procedure.active = True
         procedure.save()
         call_reload_baculadir()
-        messages.success(request, "Procedimento ativado com sucesso")
+        messages.success(request, _("Procedure successfully activated"))
     return redirect('/procedures/list')
 
 @login_required
@@ -153,16 +154,16 @@ def deactivate(request, object_id):
         procedure.active = False
         procedure.save()
         call_reload_baculadir()
-        messages.success(request, "Procedimento desativado com sucesso")
+        messages.success(request, _("Procedure successfully deactivated"))
     return redirect('/procedures/list')
 
 @login_required
 def profile_list(request):
-    title = u"Perfis de configuração"
+    title = _(u"Profiles configuration")
     filesets = FileSet.objects.filter(is_model=True)
     schedules = Schedule.objects.filter(is_model=True)
     computers = Computer.objects.filter(active=True,id__gt=1)
-    content = {'title': u"Perfis de configuração",
+    content = {'title': _(u"Profiles configuration"),
                'filesets': filesets,
                'schedules': schedules,
                'computers': computers}
@@ -172,7 +173,7 @@ def profile_list(request):
 @login_required
 def history(request, object_id=False):
     #TODO: Filtrar jobs de um procedimento específico
-    title = u'Histórico de Procedimentos'
+    title = _(u'Procedural History')
     # get page number
     try:
         page = int(request.GET.get('page', '1'))
@@ -194,7 +195,7 @@ def history(request, object_id=False):
 def cancel_job(request, job_id):
     if request.method == "POST":
         Procedure.cancel_jobid(job_id)
-        messages.success(request, "Procedimento cancelado com sucesso")
+        messages.success(request, _("Procedure successfully canceled"))
     return redirect('/procedures/list')
 
 

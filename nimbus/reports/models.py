@@ -9,6 +9,7 @@ import fileinput
 from django.db import models
 from django.conf import settings
 from django.core.mail import send_mail as django_send_email
+from django.utils.translation import ugettext_lazy as _
 
 
 from nimbus.shared.fields import check_domain
@@ -17,10 +18,10 @@ from nimbus.bacula.models import Job
 from nimbus.computers.models import Computer
 from nimbus.base.models import SingletonBaseModel as BaseModel
 
-EMAIL_TEST_SUBJECT=u"Nimbus: Email de teste"
-EMAIL_TEST_MESSAGE=u"""
-Este email foi enviado a seu pedido para verificação da configuração de email do Nimbus.
-"""
+EMAIL_TEST_SUBJECT=_(u"Nimbus: Email config test")
+EMAIL_TEST_MESSAGE=_(u"""
+This email was sent on request to verify the configuration of the Nimbus mail notification.
+""")
 DEFAULT_SOCKET_TIMEOUT=10
 
 
@@ -35,19 +36,19 @@ REPORT_EXTRA_FIELDS = [
 
 
 class EmailConf(BaseModel):
-    active = models.BooleanField(u"Ativo",default=False)
-    send_to = models.EmailField(u"Enviar para",max_length=255)
-    email_host = models.CharField(u"Host", max_length=255,
+    active = models.BooleanField(_(u"Active"),default=False)
+    send_to = models.EmailField(_(u"Send to"),max_length=255)
+    email_host = models.CharField(_(u"Host"), max_length=255,
                                   validators=[check_domain])
-    email_port = models.IntegerField(u"Porta")
-    email_user = models.CharField(u"Nome do usuário",max_length=255,
+    email_port = models.IntegerField(_(u"Port"))
+    email_user = models.CharField(_(u"Username"), max_length=255,
                                   blank=True, null=True)
-    email_password = models.CharField(u"Senha",max_length=255,
+    email_password = models.CharField(_(u"Password"),max_length=255,
                                       blank=True, null=True)
     tls_support =  models.BooleanField(u"TLS",default=False)
 
     class Meta:
-        verbose_name = u"Configuração de email"
+        verbose_name = _(u"Mail notification")
 
 
 
@@ -81,7 +82,7 @@ def get_report_extra_fields(txt):
         try:
             field_value = get_field_from_txt(field, txt)
         except IndexError:
-            field_value = u'Não disponível'
+            field_value = _(u'Not available')
 
         result[field] = field_value
 

@@ -11,6 +11,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+
 
 from nimbus.shared import signals
 from nimbus.libs import bacula
@@ -24,15 +26,15 @@ from nimbus.base.models import UUIDSingletonModel as BaseModel
 
 
 class NetworkInterface(BaseModel):
-    address = models.IPAddressField('Endereço IP', null=False)
-    netmask = models.IPAddressField('Máscara de rede', null=False)
+    address = models.IPAddressField(_('IP Address'), null=False)
+    netmask = models.IPAddressField(_('Netmask'), null=False)
     gateway = models.IPAddressField('Gateway', null=False)
-    dns1 = models.IPAddressField('Servidor DNS1', null=False)
-    dns2 = models.IPAddressField('Servidor DNS2', blank=True,null=True)
-
+    dns1 = models.IPAddressField(_('DNS1 Server'), null=False)
+    dns2 = models.IPAddressField(_('DNS2 Server'), blank=True,null=True)
+ 
 
     class Meta:
-        verbose_name = u"Interface de rede"
+        verbose_name = _(u"Network interface")
 
     def __init__(self, *args, **kwargs):
         super(NetworkInterface, self).__init__(*args, **kwargs)
@@ -49,7 +51,7 @@ class NetworkInterface(BaseModel):
             return
         returncode, stdout = networkutils.ping(self.address, packets=1)
         if not returncode:
-            raise ValidationError(u'Erro, existe outra máquina com o mesmo IP na rede.')
+            raise ValidationError(_(u'Error, There is another computer with the same IP address.'))
 
     def __unicode__(self):
         return u"%s/%s" % (self.address, self.netmask)
@@ -79,7 +81,7 @@ def update_networks_file(interface):
 
     try:
         server = ServerProxy(settings.NIMBUS_MANAGER_URL)
-        logger.info('gerando configuracao de interfaces de rede')
+        logger.info(_('Generating network interface configuration'))
         server.generate_interfaces("eth0",
                                    interface.address,
                                    interface.netmask,
@@ -87,21 +89,21 @@ def update_networks_file(interface):
                                    interface.broadcast,
                                    interface.network,
                                    interface.gateway)
-        logger.info('gerando configuracao de dns')
+        logger.info(_('generating DNS configuration'))
 
         if interface.dns2 is None:
             interface.dns2 = interface.dns1
 
         server.generate_dns(interface.dns1,
                              interface.dns2)
-        logger.info('restarting network right now')
+        logger.info(_('restarting network right now'))
         server.network_restart()
-        logger.info('restarting network exited')
+        logger.info(_('restarting network exited'))
     except Exception, error:
         logger = logging.getLogger(__name__)
-        logger.exception("Conexao com nimbus-manager falhou")
+        logger.exception(_("Connection with nimbus-manager failed"))
 
-    logger.info('retornando do signal que troca o ip')
+    logger.info(_('Returning the signal that changes the IP'))
 
 
 def update_director_address(interface):
@@ -111,7 +113,7 @@ def update_director_address(interface):
     config.director_address = interface.address
     config.save(system_permission=True)
     logger = logging.getLogger(__name__)
-    logger.info("Atualizando ip do director")
+    logger.info(_("Updating the IP director"))
 
 def update_storage_address(interface):
     from nimbus.storages.models import Storage # Ver nota nos imports iniciais
@@ -120,7 +122,7 @@ def update_storage_address(interface):
     storage.address = interface.address
     storage.save(system_permission=True)
     logger = logging.getLogger(__name__)
-    logger.info("Atualizando ip do storage")
+    logger.info(_("Updating the IP storage"))
 
 def update_nimbus_client_address(interface):
     from nimbus.computers.models import Computer # Ver nota nos imports iniciais
@@ -129,7 +131,7 @@ def update_nimbus_client_address(interface):
     computer.address = interface.address
     computer.save(system_permission=True)
     logger = logging.getLogger(__name__)
-    logger.info("Atualizando ip do client nimbus")
+    logger.info(_("Updating the Client-Nimbus IP"))
 
 def get_nimbus_address():
     from nimbus.config.models import Config # Ver nota nos imports iniciais

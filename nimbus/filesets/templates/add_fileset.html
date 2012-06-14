@@ -1,4 +1,7 @@
+{% load i18n %}
+
 {% block headtags %}
+
 <script type="text/javascript" src="/media/lib/js/jquery.tooltip.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/lib/css/jquery.tooltip.css"/>
 <script type="text/javascript" src="/media/js/filesets.js"></script>
@@ -21,14 +24,14 @@
 			<input type="hidden" name="files-INITIAL_FORMS" value="0" id="id_files-INITIAL_FORMS">
 			<input type="hidden" name="files-MAX_NUM_FORMS" id="id_files-MAX_NUM_FORMS">
 			<input type="hidden" value="{{ computer.id }}" id="computer_id" />
-			<button class="css3button negative" id="show_filters_button">Mostrar filtros</button>
+			<button class="css3button negative" id="show_filters_button">{% trans "Show filters" %}</button>
 			<div id="filter_hidden_block">
 				<hr>
-				<label>Filtros:</label>
+				<label>{% trans "Filters:" %}</label>
 				<table>
 					<tr>
 						<td>
-							Apenas estes<br/>arquivos:<br />
+							{% trans "Only this" %}<br/>{% trans "files:" %}<br />
 							<div class="filter_block">
 								<ul id="include_list">
 								</ul>
@@ -36,13 +39,13 @@
 						</td>
 						<td>
 							<div id="filter_list">
-								Filtros:
+								{% trans "Filters:" %}
 								<table id="filter_table">
 								</table>
 							</div>
 						</td>
 						<td>
-							Ignorar estes<br/>arquivos:<br />
+							{% trans "Ignore this" %}<br/>{% trans "files" %}:<br />
 							<div class="filter_block">
 								<ul id="exclude_list">
 								</ul>
@@ -55,7 +58,7 @@
 				<input type="hidden" name="wildcards-MAX_NUM_FORMS">
 			</div>
 			<hr>
-			<span id="field_error_0" class="field_error" style="display: none;">Preencha os campos abaixo corretamente<br/></span>
+			<span id="field_error_0" class="field_error" style="display: none;">{% trans "Fill out the fields below correctly" %}<br/></span>
 			<p {% if hide_name %}class="hidden"{% endif %}>
 			<label>{{fileset_form.name.label}}: </label>{{ fileset_form.name }}
 			</p>
@@ -64,7 +67,7 @@
 			</p>
             <hr />
 			<p>
-                <button type="button" class="css3button positive big" id="submit_button" value="Salvar">Salvar</button>
+                <button type="button" class="css3button positive big" id="submit_button" value="Salvar">{% trans "Save" %}</button>
             </p>
         </form>
 	</div>		<!-- .block_content ends -->

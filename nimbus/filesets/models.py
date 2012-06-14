@@ -6,6 +6,7 @@ from os import path
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete
+from django.utils.translation import ugettext_lazy as _
 
 from nimbus.base.models import BaseModel
 from nimbus.shared import utils, signals, fields
@@ -23,7 +24,7 @@ class FileSet(BaseModel):
 
 
     class Meta:
-        verbose_name = u"Conjunto de arquivos"
+        verbose_name = _(u"File sets")
         
     @property
     def includes(self):
@@ -51,7 +52,7 @@ class FilePath(models.Model):
         return u"%s - %s" % (self.fileset.name, self.path)
 
     class Meta:
-        verbose_name = u"Arquivo"
+        verbose_name = _(u"File")
 
 
 class Wildcard(models.Model):
@@ -67,7 +68,7 @@ class Wildcard(models.Model):
             return "Include: '%s'" % self.expression
 
     class Meta:
-        verbose_name = u"Filtro"            
+        verbose_name = _(u"Filter")            
 
 def update_fileset_file(fileset):
     """FileSet update filesets to a procedure instance"""

@@ -7,8 +7,8 @@ from nimbus.reports.models import send_email_report
 
 @command("--email-report")
 def email_report(job_id):
-    u"""Parâmetros: job_id
-    Envia os emails de alerta"""
+    u"""Send email alert.
+    Parameter: job_id"""
     send_email_report(job_id)
 
 

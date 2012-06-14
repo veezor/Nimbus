@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/procedures.js"></script>
@@ -14,10 +15,10 @@
 		<h2>{{title}}</h2>
 	</div>
     <div class="block_content">
-		<h2 class="floatleft">Conjuntos de arquivos</h2>
-		&nbsp;&nbsp;<a href="/filesets/add/" class="css3button positive edit-fileset" id="fileset_new">Adicionar</a>
+		<h2 class="floatleft">{% trans "File sets" %}</h2>
+		&nbsp;&nbsp;<a href="/filesets/add/" class="css3button positive edit-fileset" id="fileset_new">{% trans "Add" %}</a>
 		<select class="computer-fileset" id="select_fileset_new">
-			<option value="">a partir do computador:</option>
+			<option value="">{% trans "from computer" %}</option>
             {% for computer in computers %}
             <option value="{{ computer.id }}">{{ computer.name }}</option>
             {% endfor %}
@@ -34,22 +35,22 @@
                     </div>
                     <div class="title-right">
 						<select class="computer-fileset" id="select_fileset_{{fileset.id}}">
-							<option value="">Escolha um computador:</option>
+							<option value="">{% trans "Choose a computer::" %}</option>
                             {% for computer in computers %}
                             <option value="{{ computer.id }}">{{ computer.name }}</option>
                             {% endfor %}
                         </select>
-                        <a class="css3button positive edit-fileset" id="fileset_{{fileset.id}}" href="/filesets/{{ fileset.id }}/edit/"><span>Editar</span></a>
-                        <a class="css3button negative" href="/filesets/delete/{{fileset.id}}"><span>Excluir</span></a>
+                        <a class="css3button positive edit-fileset" id="fileset_{{fileset.id}}" href="/filesets/{{ fileset.id }}/edit/"><span>{% trans "Edit" %}</span></a>
+                        <a class="css3button negative" href="/filesets/delete/{{fileset.id}}"><span>{% trans "Remove" %}</span></a>
                     </div>
                     <div class="clear"></div>
                 </div><!-- .title -->
                 <div class="body">
                     <div class="left">
-                        <h3>Utilizado por:</h3>
+                        <h3>{% trans "Used by:" %}</h3>
                         <table cellpadding="0" cellspacing="0">
                             <thead>
-                                <tr><th>Procedimento</th><th>Computador</th></tr>
+                                <tr><th>{% trans "Procedure" %}</th><th>{% trans "Computer" %}</th></tr>
                             </thead>
                             <tbody>
                                 {% for procedure in fileset.procedures.all %}
@@ -59,7 +60,7 @@
                         </table>
                     </div><!-- .left -->
                     <div class="right">
-                        <h3 class="floatleft">Lista de arquivos</h3>
+                        <h3 class="floatleft">{% trans "List of files" %}</h3>
                         <div class="clear"></div>
                         <div class="list">
                         <ul>
@@ -67,13 +68,13 @@
                             <li>{{file.path}}</li>
                             {% endfor %}
 							{% if fileset.includes %}
-							Sendo apenas aqueles nos padrões abaixo:<br/>
+							{% trans "Since only those patterns below:" %}<br/>
                             {% for wildcard in fileset.includes %}
                             <li>{{wildcard.expression}}</li>
                             {% endfor %}
 							{% endif %}
 							{% if fileset.excludes %}
-							Com exceção daqueles nos padrões abaixo:<br/>
+							{% trans "With the exception of those in the standards below:" %}<br/>
                             {% for wildcard in fileset.excludes %}
                             <li>{{wildcard.expression}}</li>
                             {% endfor %}
@@ -88,7 +89,7 @@
 			{% endfor %}
 		</div><!-- .procedure -->
         
-        <h2 class="floatleft">Agendamentos</h2>&nbsp;<a href="/schedules/add/" class="css3button positive edit-schedule"><span>Adicionar</span></a>
+        <h2 class="floatleft">{% trans "Schedules" %}</h2>&nbsp;<a href="/schedules/add/" class="css3button positive edit-schedule"><span>{% trans "Add" %}</span></a>
 		<div class="clear"></div><hr />
         <!-- real env for schedules -->
 		<div class="schedule">
@@ -99,17 +100,17 @@
     			        <span class="name">{{ schedule.name }}</span>
                     </div>
                     <div class="title-right">
-                        <a class="css3button positive edit-schedule" href="/schedules/{{schedule.id}}/edit/"><span>Editar</span></a>
-                        <a class="css3button negative" href="/schedules/delete/{{schedule.id}}"><span>Excluir</span></a>
+                        <a class="css3button positive edit-schedule" href="/schedules/{{schedule.id}}/edit/"><span>{% trans "Edit" %}</span></a>
+                        <a class="css3button negative" href="/schedules/delete/{{schedule.id}}"><span>{% trans "Remove" %}</span></a>
                     </div>
                     <div class="clear"></div>
                 </div><!-- .title -->
                 <div class="body">
                     <div class="left">
-                        <h3>Utilizado por:</h3>
+                        <h3>{% trans "Used by:" %}</h3>
                         <table cellpadding="0" cellspacing="0">
                             <thead>
-                                <tr><th>Procedimento</th><th>Computador</th></tr>
+                                <tr><th>{% trans "Procedure" %}</th><th>{% trans "Computer" %}</th></tr>
                             </thead>
                             <tbody>
             					{% for procedure in schedule.procedures.all %}
@@ -119,12 +120,12 @@
                         </table>
                     </div><!-- .left -->
                     <div class="right">
-                        <h3 class="floatleft">Agendamentos</h3>
+                        <h3 class="floatleft">{% trans "Schedules" %}</h3>
                         <div class="clear"></div>
 						<div class="list">
                         <table cellpadding="0" cellspacing="0">
                             <thead>
-                                <tr><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr>
+                                <tr><th>{% trans "Type" %}</th><th>{% trans "Frequency" %}</th><th>{% trans "Day" %}</th><th>{% trans "Time" %}</th></tr>
                             </thead>
                             <tbody>
             					{% for run in schedule.runs.all %}

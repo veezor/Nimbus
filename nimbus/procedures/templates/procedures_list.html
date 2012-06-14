@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
 <script type="text/javascript" src="/media/js/procedures.js"></script>
@@ -28,41 +29,41 @@
                         <small>Computador: {{procedure.computer.name}} ({{procedure.computer.operation_system|title}})</small>
                     </div>
                     <p class="options">
-                        <a href="/procedures/{{procedure.id}}/edit/" class="css3button positive pill">Editar</a>
-                        <a href="/procedures/{{procedure.id}}/delete/" class="css3button negative pill">Remover</a>
+                        <a href="/procedures/{{procedure.id}}/edit/" class="css3button positive pill">{% trans "Edit" %}</a>
+                        <a href="/procedures/{{procedure.id}}/delete/" class="css3button negative pill">{% trans "Remove" %}</a>
                     </p>
                 </div>
                 <div class="right">
                     <div class="floatright align-left">
                         <form action="/procedures/{{procedure.id}}/execute/" method="post" class="floatright">
-                            <button type="submit" class="css3button positive" value="Executar agora">Executar Agora</button>
+                            <button type="submit" class="css3button positive" value="Executar agora">{% trans "Execute now" %}</button>
                         </form>
                         {% if not procedure.active %}
                         <form action="/procedures/{{procedure.id}}/activate/" method="post" class="floatright">
-                            <button type="submit" class="css3button positive" value="Ativar">Ativar</button>
+                            <button type="submit" class="css3button positive" value="Ativar">{% trans "Active" %}</button>
                         </form>
                         {% else %}
                         <form action="/procedures/{{procedure.id}}/deactivate/" method="post" class="floatright">
-                            <button type="submit" class="css3button negative" value="Desativar">Desativar</button>
+                            <button type="submit" class="css3button negative" value="Desativar">{% trans "Disable" %}</button>
                         </form>
                         {% endif %}
                     </div>
-                    <h4>{% if not procedure.active %}PROCEDIMENTO DESATIVADO{% else %}CONFIGURAÇÕES DO PROCEDIMENTO{% endif %}</h4>
+                    <h4>{% if not procedure.active %}{% trans "PROCEDURE DISABLED" %}{% else %}{% trans "SETTINGS PROCEDURE" %}{% endif %}</h4>
                     <div class="procedure-config {% if not procedure.active %}inactive{% endif %}">
                         <div>
-                            Conjunto de arquivos: <strong>{{procedure.fileset.name}}</strong>
+                            {% trans "File sets:" %} <strong>{{procedure.fileset.name}}</strong>
 							{% if procedure.fileset.is_model %}
-								[Perfil]
+								{% trans "[Profile]" %}
 							{% endif %}
 							<br/>
-                            Agendamento: <strong>{{procedure.schedule.name}}</strong>
+                            {% trans "Schedule:" %} <strong>{{procedure.schedule.name}}</strong>
 							{% if procedure.schedule.is_model %}
-								[Perfil]
+                                                                {% trans "[Profile]" %}
 							{% endif %}
 							<br/>
-                            Tempo de retenção dos arquivos: <strong>{{procedure.pool_retention_time}}</strong>
+                            {% trans "Retention time of files:" %} <strong>{{procedure.pool_retention_time}}</strong>
 							{% if procedure.job_tasks.all %}
-							<br/>Tarefas Pós-backup:
+							<br/>{% trans "Post-backup tasks:" %}
 							{% for task in procedure.job_tasks.all %}
 							{% if task.active %}
 							<li>{{task}}</li>
@@ -78,7 +79,7 @@
                 <div class="clear"></div>
             </div>
         {% empty %}
-            <p>Não existem procedimentos adicionados.</p>
+            <p>{% trans "There are no procedures added." %}</p>
         {% endfor %}
         </div>
 
@@ -95,8 +96,8 @@
     			<div class="bheadl"></div>
     			<div class="bheadr"></div>
 
-    			<h2 class="floatleft">Histórico de Procedimentos</h2>&nbsp;&nbsp;
-    			<a href="/procedures/history" class="css3button positive">Listar todos os procedimentos</a>
+    			<h2 class="floatleft">{% trans "Procedural History" %}</h2>&nbsp;&nbsp;
+    			<a href="/procedures/history" class="css3button positive">{% trans "List all procedures" %}</a>
 
     		</div>		<!-- .block_head ends -->
 
