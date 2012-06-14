@@ -55,10 +55,9 @@ $(document).ready(function(){
                     tr = $('<tr>');
                     caminho_arquivo = $('<td>').text(down.fields.filename);
                     criado_em = $('<td>').text(down.fields.created_at);
-                    tentativas = $('<td>').html(down.fields.attempts + " <small>(última: " + down.fields.last_attempt + ")</small>");
-                    transferencia = $('<td>').html(down.fields.friendly_rate + " <small>(restante: " + down.fields.estimated_transfer_time + ")</small>");
-
-                    wrapper = $('<div>').addClass("concluido_wrapper").attr({"title": down.fields.finished_percent + "% concluído."});
+                    tentativas = $('<td>').html(down.fields.attempts + " <small>(" +gettext("Last: ") + down.fields.last_attempt + ")</small>");
+                    transferencia = $('<td>').html(down.fields.friendly_rate + " <small>( "+gettext("remain:") + down.fields.estimated_transfer_time + ")</small>");
+                    wrapper = $('<div>').addClass("concluido_wrapper").attr({"title": down.fields.finished_percent + "%"+ gettext("done.")});
                     percent = $('<div>').addClass("concluido_percent").css("width", down.fields.finished_percent + "%").html("&nbsp;");
                     concluido = $('<td>').append(wrapper.append(percent));
 

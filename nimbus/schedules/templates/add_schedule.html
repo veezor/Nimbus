@@ -1,11 +1,12 @@
 {% load i18n  %}
 {% block headtags %}
-	<link rel="stylesheet" type="text/css" href="/media/css/overcast/jquery-ui-1.8.13.custom.css" />
-	<link rel="stylesheet" type="text/css" href="/media/lib/css/style.css" />
+       	<link rel="stylesheet" type="text/css" href="/media/css/overcast/jquery-ui-1.8.13.custom.css" />
+		<link rel="stylesheet" type="text/css" href="/media/lib/css/style.css" />
 <!-- 	<link href="/media/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css"/> -->
-	<script type="text/javascript" src="/media/jquery-ui-1.7.2.custom.min.js"></script>
-	<script type="text/javascript" src="/media/js/schedules.js"></script>
-	<script type="text/javascript">
+		<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>     
+		<script type="text/javascript" src="/media/jquery-ui-1.7.2.custom.min.js"></script>
+        <script type="text/javascript" src="/media/js/schedules.js"></script>
+        <script type="text/javascript">
 		// ESTE CODIGO TEM QUE FICAR AQUI
 		SCHEDULES = new Array();
 		EDITING = false;

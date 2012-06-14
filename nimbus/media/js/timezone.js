@@ -15,7 +15,7 @@ $(document).ready(function() {
                 $("select#id_area").change();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("Erro: Não foi possível obter a lista de fusos horários.");
+                alert(gettext("Error: Unable to get the list of time zones."));
                 this; // the options for this ajax request
             }
         });

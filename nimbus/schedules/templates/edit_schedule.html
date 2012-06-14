@@ -1,13 +1,16 @@
 {% load i18n  %}
 {% block headtags %}
-	<link rel="stylesheet" type="text/css" href="/media/css/overcast/jquery-ui-1.8.13.custom.css" />
-	<script type="text/javascript" src="/media/js/schedules.js"></script>
-	<script type="text/javascript">
+	    
+		<link rel="stylesheet" type="text/css" href="/media/css/overcast/jquery-ui-1.8.13.custom.css" />
+        
+        <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+		<script type="text/javascript" src="/media/js/schedules.js"></script>
+		<script type="text/javascript">
 		// ESTE CODIGO TEM QUE FICAR AQUI
 		EDITING = true;
 		EDITED_SCHEDULE_ID = {{schedule.id}};
-		SCHEDULES = new Array();
-		{% for run in runs %}
+		SCHEDULES = new Array();a
+		{% for run in runs %}a
 		SCHEDULES.push({'id': '{{run.id}}', 'status': 'old', 'kind_id': '{{run.kind.id}}', 'kind': '{{run.kind.name_pt}}', 'level_id': '{{run.level.id}}', 'level': '{{run.level.name}}', 'day_num': '{{run.day}}', 'day': '{{run.day_string}}', 'hour': '{{run.hour}}', 'minute': '{{run.minute}}'});		
 		{% endfor %}
 		update_inventory();
@@ -236,13 +239,13 @@
 <div id="schedules_made">
 <table id="inventory" cellpadding="0" cellspacing="0">
 	<thead>
-        <tr><th>&nbsp;</th><th>{% trans "Type"%}</th><th>{% trans "Rate"%}</th><th>{% trans "Day"%}</th><th>{% trans "Hour"%}</th></tr>
+        <tr><th>&nbsp;</th><th>{% trans "Type" %}</th><th>{% trans "Rate"%}</th><th>{% trans "Day"%}</th><th>{% trans "Hour" %}</th></tr>
 	</thead>
 	<tbody></tbody>
 </table>
 {% if is_model %}
 <p>
-    <label>{% trans "Name:"%}</label>
+    <label>{% trans "Name:" %}</label>
 	<input type="text" id="schedule_name" value="{{schedule.name}}">
 </p>
 {% else %}
@@ -250,7 +253,7 @@
 {% endif %}
 </div>
 {% if reload %}
-<button class="css3button positive" onclick="if (create_schedule() == true) {window.location.reload()}">{% trans "Save"%}</button>
+<button class="css3button positive" onclick="if (create_schedule() == true) {window.location.reload()}">{% trans "Save" %}</button>
 {% else %}
 <button class="css3button positive" onclick="create_schedule()">{% trans "Save"%}</button>
 {% endif %}

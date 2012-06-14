@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block page %}
 {% load i18n %}
+ <script type="text/javascript" src="/jsi18n/network/djangojs"></script>
+
+<script type="text/javascript">
+  window.alert(gettext('Olá MundO!!'));
+</script>
 
 <div class="block">
 

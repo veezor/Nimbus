@@ -7,7 +7,7 @@ $(document).ready(function(){
     });
     function update_groups() {
         groups = $('#id_groups');
-        groups.empty();
+ a       groups.empty();
         
         $.post('/computers/group/list/', {'ajax': true}, function(data){
             for (group in data) {
@@ -27,9 +27,9 @@ $(document).ready(function(){
             if (data.message == 'success') {
                 $('.add_group').slideUp();
                 update_groups();
-                alert('Grupo "' + group_name + '" adicionado.');
+                alert(gettext("Group") + group_name + gettext("added."));
             } else {
-                alert('Não foi possível inserir o grupo. Um grupo com o mesmo nome já existe.');
+                alert(gettext('It was not possible to insert the group. A group with the same name already exists.'));
             }
         }, "json");
         return false;

@@ -29,7 +29,7 @@ $(document).ready(function(){
 		var hours_array = get_hours()
 		var minutes_array = get_minutes();
 		if (month_array.length == 0) {
-			alert("Você deve escolher ao menos um dia do mês para executar o backup");
+			alert(gettext("You must choose at least one day of the month to run the backup"));
 		} else {
 			var level_id = $('select#id_month-level option:selected').val();
 			var level = $('select#id_month-level option:selected').text();
@@ -57,7 +57,7 @@ $(document).ready(function(){
 		var hours_array = get_hours()
 		var minutes_array = get_minutes();
 		if (week_array.length == 0) {
-			alert("Você deve escolher ao menos um dia da semana para executar o backup");
+			alert(gettext("You must choose at least one day a week to run the backup"));
 		} else {
 			var level_id = $('select#id_week-level option:selected').val();
 			var level = $('select#id_week-level option:selected').text();
@@ -101,7 +101,7 @@ $(document).ready(function(){
 	// fim do adicionar de hora em hora
 });
 function update_inventory() {
-	$("#inventory")[0].innerHTML = "<thead><tr><th>&nbsp;</th><th>Tipo</th><th>Frequência</th><th>Dia</th><th>Hora</th></tr></thead><tbody></tbody>";
+	$("#inventory")[0].innerHTML = "<thead><tr><th>&nbsp;</th><th>"+gettext("Type")+"</th><th>Frequência</th><th>"+gettext("Day")+"</th><th>"+gettext("Hour")+"</th></tr></thead><tbody></tbody>";
 	for (var index in SCHEDULES) {
 		var ob = SCHEDULES[index];
         // if (ob['status'] != 'deleted') {
@@ -163,7 +163,7 @@ function uncheck_all() {
 }
 function submit_all() {
 	if (SCHEDULES.length == 0) {
-		alert("Você deve definir ao menos um agendamento");
+		alert(gettext("You must define at least one scheduling"));
 		return false;
 	}
 	var schedule_name = $("#schedule_name").val();
@@ -218,7 +218,7 @@ function submit_all() {
 		SCHEDULE_ID = TMP_SCHEDULE_ID;
 		return true;				
 	} else {
-		alert('Ocorreu um erro na criação do agendamento');
+		alert(gettext('An error occurred when creating the schedule.'));
 		return false;
 	}
 }

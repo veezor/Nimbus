@@ -13,7 +13,7 @@ $(document).ready(function(){
     });
     $("#submit_files").click(function() {
         if ($(".added_file").length == 0) {
-            alert("Nenhum arquivo foi selecionado para restauração");
+            alert(gettext("No file selected for restore.");
             return false;
         } else {
             for (var f = 0; f < $(".added_file").length; f++) {
@@ -35,7 +35,7 @@ $(document).ready(function(){
     function do_search() {
         get_tree_path = "/restore/get_tree/";
         $(".search_result").remove();
-		$("#search_result_list").append("<li class='search_result'>Buscando arquivos <img src='/media/icons/loading_bar.gif'/></li>");    
+		$("#search_result_list").append("<li class='search_result'>"+gettext("Searching files")+"<img src='/media/icons/loading_bar.gif'/></li>");    
         // jobid = job_id.value
         pattern = $('#pattern').val();
         root_path = '/';
@@ -45,7 +45,7 @@ $(document).ready(function(){
                function(data) {
                    $(".search_result").remove();
                    if (data.length == 0) {
-                       $("#search_result_list").append("<li class='search_result'>Nenhum arquivo encontrado</li>");
+                       $("#search_result_list").append("<li class='search_result'>"+gettext("No file found")+"</li>");
                    } else {
                        for (var f = 0; f < data.length; f++) {
                            append_file_to_search(data[f]);
