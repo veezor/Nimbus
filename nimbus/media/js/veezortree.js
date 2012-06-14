@@ -42,7 +42,7 @@ function create_tree(Tree) {
 		var path = "";
 		var click_event = "fetch_dir_content('" + Tree.CONTAINER + "', '" + path + "', '" + Tree.computer + "', '" + Tree.CONTAINER+Tree.ITEM_INDEX + "')"
 		var new_line = "<li class='directory'id='li_" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" +
-						"<input type='" + Tree.CHECK_TYPE + "' disabled='disabled'><span class='end_path' onClick=\"" + click_event + "\">Meu computador" +
+						"<input type='" + Tree.CHECK_TYPE + "' disabled='disabled'><span class='end_path' onClick=\"" + click_event + "\">"+gettext("My computer")+
 						"</span></li><ul id='" + Tree.CONTAINER+Tree.ITEM_INDEX + "'>" + 
 						"</ul>"
 	} else {
@@ -85,7 +85,7 @@ function fetch_dir_content(container, path, computer, id) {
 	if ($("#wait")[0] != undefined) {
 		return false
 	} else {
-		$("#" + Tree.CONTAINER).append("<div id='wait'><span>Aguarde <img src='/media/icons/loading_bar.gif'/></span></div>");
+		$("#" + Tree.CONTAINER).append("<div id='wait'><span>"+gettext("Wait")+"<img src='/media/icons/loading_bar.gif'/></span></div>");
         $("#" + container).offset()
         $("#wait").offset($("#" + container).offset());
         // $("#wait").offset(this_item_li.offset());

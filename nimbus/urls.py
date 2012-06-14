@@ -16,6 +16,22 @@ def modular_app_patterns():
             pattern_list.append((r'^%s/' % app_name, include('%s.urls' % app)))
     return pattern_list
 
+js_info_dict = {
+    'domain' : 'djangojs',
+    'packages': ('nimbus.schedules',
+                 'nimbus.computers',
+                 'nimbus.procedures',  
+                 'nimbus.base', 
+                 'nimbus.filesets', 
+                 'nimbus.graphics', 
+                 'nimbus.restore', 
+                 'nimbus.storages', 
+                 'nimbus.system', 
+                 'nimbus.timezone', 
+                 'nimbus.offsite',),
+
+}
+
 urlpatterns = patterns('',
     (r'^$', include('nimbus.base.urls')),
     (r'^base/', include('nimbus.base.urls')),
@@ -33,7 +49,10 @@ urlpatterns = patterns('',
     (r'^filesets/', include('nimbus.filesets.urls')),
     (r'^schedules/', include('nimbus.schedules.urls')),
     (r'^reports/', include('nimbus.reports.urls')),
+    (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^LICENSE/', 'nimbus.base.views.license'),
+    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+
 )
 for app in modular_app_patterns():
     urlpatterns += patterns('',
@@ -50,3 +69,5 @@ if settings.DEBUG:
     urlpatterns += patterns('',
     ('^admin/', include(admin.site.urls)),
 )
+
+

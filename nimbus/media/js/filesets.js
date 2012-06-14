@@ -110,7 +110,7 @@ $(document).ready(function(){
 		};
         // $('#main_form').submit();
         if (total == 0) {
-            alert("Nenhum arquivo foi selecionado")
+            alert(gettext("No file selected."))
         } else {
             submit_filter();
             if (typeof NOT_ASYNC != "undefined") {
@@ -226,7 +226,7 @@ $(".include_button").click(function(){
         }
     };
     if (dont_put.length >= 1) {
-        alert("Um ou mais filtros não serão adicionados pois já se encontram na lista de 'Ignorar estes arquivos'.\n Os filtro abaixo não serão adicionados\n"+dont_put)
+        alert(gettext("One or more filters will not be added because it already in the list of 'Ignore these files'.")+"\n"+gettext("The filter below will not be added\n")+dont_put))
     }
     for (var i = 0; i < do_put.length; i++) {
         if (exist_in(do_put[i], current_includes) == false) {
@@ -254,7 +254,7 @@ $(".exclude_button").click(function(){
         }
     };
     if (dont_put.length >= 1) {
-        alert("Um ou mais filtros não serão adicionados pois já se encontram na lista de 'Apenas estes arquivos'.\n Os filtro abaixo não serão adicionados\n"+dont_put)
+        alert(gettext("One or more filters will not be added because it already in the list of 'Only these files'.")+"\n"+ gettext("The filter below will not be added\n")+dont_put)
     }
     for (var i = 0; i < do_put.length; i++) {
         if (exist_in(do_put[i], current_excludes) == false) {

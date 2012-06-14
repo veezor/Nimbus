@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $(".cancel_job").click(function(){
-        var s = confirm("Tem certeza que deseja cancelar a execução deste procedimento?");
+        var s = confirm(gettext("Are you sure that you want to cancel execution of this procedure?"));
         if (s == true) {
             var job_id = $(this)[0].id;
             // window.location="/procedures/" + job_id + "/cancel_job";
@@ -29,7 +29,7 @@ $(document).ready(function(){
         var fileset_id = $(this)[0].id;
         selected_val = $('#select_' + fileset_id)[0].value;
         if (selected_val == "") {
-            alert("Escolha um computador para usar como base de arquivos");
+            alert(gettext("Choose a computer to use as a base file"));
             return false;
         }
         locattion = $(this)[0].href;
@@ -67,7 +67,7 @@ $(document).ready(function(){
         }
         else
         {
-            jQuery.facebox('Você precisa escolher um computador');
+            jQuery.facebox(gettext('You need choose one computer'));
         }
         return false;
     });
@@ -103,7 +103,7 @@ $(document).ready(function(){
 	
 	$(".add_new_pool").click(function(){
 		$("#slider").hide();
-		$("#slider_value").html("Em");
+		$("#slider_value").html(gettext("Em"));
 		$("#id_procedure-pool_retention_time").show();
 		$("#id_procedure-pool_retention_time").focus();
 		$(".add_new_pool").hide();
@@ -121,12 +121,12 @@ $(document).ready(function(){
 function set_fileset() {
     // FILESET_ID = $(".fileset_return").val();
     if (typeof FILESET_ID != "undefined") {
-        $("#id_procedure-fileset").append("<option value="+FILESET_ID+">Usar o fileset criado</option>");
+        $("#id_procedure-fileset").append("<option value="+FILESET_ID+">"+gettext("Use the fileset created")+"</option>");
         $("#id_procedure-fileset").val(FILESET_ID);
         $("#id_procedure-fileset").hide("slow");
         $("#uniform-id_procedure-fileset").hide('slow');
         $("#discard_fileset").show('slow');
-        $("#fileset_button").html("<span>Modificar</span>");
+        $("#fileset_button").html("<span>"+gettext("Change")+"</span>");
         $("#fileset_button").attr('href', "/filesets/" + FILESET_ID + "/edit/");   
         $(".fileset_return").val(FILESET_ID);         
     }
@@ -134,12 +134,12 @@ function set_fileset() {
 function set_schedule() {
     // SCHEDULE_ID = $(".schedule_return").val();
     if (typeof SCHEDULE_ID != "undefined") {
-        $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">Usar o agendamento criado</option>");
+        $("#id_procedure-schedule").append("<option value="+SCHEDULE_ID+">"+gettext("Use the schedule created")+"</option>");
         $("#id_procedure-schedule").val(SCHEDULE_ID);
         $("#id_procedure-schedule").hide('slow');
         $("#uniform-id_procedure-schedule").hide('slow');
         $("#discard_schedule").show('slow');
-        $("#schedule_button").html("Modificar");
+        $("#schedule_button").html(gettext("Change");
         $("#schedule_button").attr('href', "/schedules/" + SCHEDULE_ID + "/edit/"); 
         $(".schedule_return").val(SCHEDULE_ID);
     }
@@ -147,7 +147,7 @@ function set_schedule() {
 function unset_schedule() {
     $("#uniform-id_procedure-schedule").show('slow');
     $("#discard_schedule").hide('slow');
-    $("#schedule_button").html("<span>Criar outro agendamento</span>");
+    $("#schedule_button").html("<span>"+gettext("Create another schedule")+"</span>");
     $("#schedule_button").attr('href', "/schedules/add/");   
     $(".schedule_return").val("");
     $("#id_procedure-schedule").val('');
@@ -162,7 +162,7 @@ function unset_schedule() {
 function unset_fileset() {
     $("#uniform-id_procedure-fileset").show('slow');
     $("#discard_fileset").hide('slow');
-    $("#fileset_button").html("<span>Criar outro fileset</span>");
+    $("#fileset_button").html("<span>"+gettext("Create another fileset")+"</span>");
     $("#fileset_button").attr('href', "/filesets/add/");
     $("#id_procedure-fileset").val('');
     for (var i = 0; i <= $("#id_procedure-fileset")[0].length; i++){

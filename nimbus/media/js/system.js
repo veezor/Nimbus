@@ -7,7 +7,7 @@ $(document).ready(function(){
     
     $('#form_ping').submit(function(){
         $('#mensagem').slideUp().empty();
-        $('#mensagem').html('<img src="/media/icons/loading_bar.gif" /> Aguarde...');
+        $('#mensagem').html('<img src="/media/icons/loading_bar.gif" />'+gettext("Wait..."));
         $('#mensagem').slideDown();
         
         var type = $('#type').val();
@@ -15,7 +15,7 @@ $(document).ready(function(){
             function(data){
                 $('#mensagem').empty();
                 if (!data) {
-                    $('#mensagem').html("Erro ao executar o ping.");
+                    $('#mensagem').html(gettext("Error running ping");
                     return false;
                 }
                 

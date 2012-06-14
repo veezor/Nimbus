@@ -1,0 +1,141 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-02 19:41-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: SelectFilter2.js:37
+#, perl-format
+msgid "Available %s"
+msgstr "Disponível %s"
+
+#: SelectFilter2.js:45
+msgid "Choose all"
+msgstr "Escolher todos"
+
+#: SelectFilter2.js:50
+msgid "Add"
+msgstr "Adicionar"
+
+#: SelectFilter2.js:52
+msgid "Remove"
+msgstr "Remover"
+
+#: SelectFilter2.js:57
+#, perl-format
+msgid "Chosen %s"
+msgstr "Escolhido %s"
+
+#: SelectFilter2.js:58
+msgid "Select your choice(s) and click "
+msgstr "Selecione a sua escolha(s) e click" 
+
+#: SelectFilter2.js:63
+msgid "Clear all"
+msgstr "Limpar todos"
+
+#: actions.js:18 actions.min.js:1
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] "%(sel)s de %(cnt)s selecionado"
+msgstr[1] "%(sel)s de %(cnt)s selecionado"
+
+#: actions.js:109 actions.min.js:5
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr "Você tem alterações não salvas nos campos editáveis individuais. Se você executar uma ação, as alterações não salvas serão perdidas. "
+
+#: actions.js:121 actions.min.js:6
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr "Você selecionou uma ação, mas você não salvou as alterações nos campos individuais ainda. Por favor, clique em OK para salvar. Você vai precisar re-executar a ação."
+
+#: actions.js:123 actions.min.js:6
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr "Você selecionou uma ação, e você não fez alteração nos campos individuais. Você provavelmente está procurando o botão Go, em vez do botão Salvar."
+
+#: calendar.js:24 dateparse.js:32
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr "Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro Novembro"
+"Dezembro"
+
+#: calendar.js:25
+msgid "S M T W T F S"
+msgstr "D S T Q Q S S"
+
+#: collapse.js:9 collapse.js.py:21 collapse.min.js:1
+msgid "Show"
+msgstr "Mostrar"
+
+#: collapse.js:16 collapse.min.js:1
+msgid "Hide"
+msgstr "Esconder"
+
+#: dateparse.js:33
+msgid "Sunday Monday Tuesday Wednesday Thursday Friday Saturday"
+msgstr "Domingo Segunda Terça Quarta Quinta Sexta Sábado"
+
+#: admin/DateTimeShortcuts.js:49 admin/DateTimeShortcuts.js.py:84
+msgid "Now"
+msgstr "Agora"
+
+#: admin/DateTimeShortcuts.js:53
+msgid "Clock"
+msgstr "Relógio"
+
+#: admin/DateTimeShortcuts.js:80
+msgid "Choose a time"
+msgstr "Escolha uma hora"
+
+#: admin/DateTimeShortcuts.js:85
+msgid "Midnight"
+msgstr "Meia-noite"
+
+#: admin/DateTimeShortcuts.js:86
+msgid "6 a.m."
+msgstr "6 a.m"
+
+#: admin/DateTimeShortcuts.js:87
+msgid "Noon"
+msgstr "Meio-dia"
+
+#: admin/DateTimeShortcuts.js:91 admin/DateTimeShortcuts.js.py:188
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: admin/DateTimeShortcuts.js:133 admin/DateTimeShortcuts.js.py:182
+msgid "Today"
+msgstr "Hoje"
+
+#: admin/DateTimeShortcuts.js:137
+msgid "Calendar"
+msgstr "Calendário"
+
+#: admin/DateTimeShortcuts.js:180
+msgid "Yesterday"
+msgstr "Ontem"
+
+#: admin/DateTimeShortcuts.js:184
+msgid "Tomorrow"
+msgstr "Amanhã"

@@ -1,7 +1,8 @@
-{% load i18n %}
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block headtags %}
+	<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 {% endblock %}
 
 {% block page %}

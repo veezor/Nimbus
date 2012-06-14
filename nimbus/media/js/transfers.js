@@ -78,14 +78,14 @@ function get_data() {
                         '<div class="upload_info" id="info_queue_item_'+u['id']+'" style="display: none;">' +
             				'<table>' +
             					'<tbody>' +
-            						'<tr><td>Procedimento:</td><td><span class="upload_name info_queue_item_'+u['id']+'"></span></td></tr>' +
-            						'<tr><td>Concluído:</td><td><span class="upload_done info_queue_item_'+u['id']+'"></span> de <span class="upload_total info_queue_item_'+u['id']+'"></span> MB (<span class="done_percent info_queue_item_'+u['id']+'"></span>%)</td></tr>' +
-            						'<tr><td>Volume atual:</td><td><span class="current_file info_queue_item_'+u['id']+'"></span></td></tr>' +
-            						'<tr><td>Taxa de transferência:</td><td><span class="current_speed info_queue_item_'+u['id']+'"></span> kB/s</td></tr>' +
-            						'<tr><td>Tempo restante estimado:</td><td><span class="eta_str info_queue_item_'+u['id']+'"></span></td></tr>' +
-            						'<tr><td>Adicionado a fila em:</td><td><span class="added info_queue_item_'+u['id']+'"></span></td></tr>' +
-            						'<tr><td>Inicio estimado para:</td><td><span class="estimate_start info_queue_item_'+u['id']+'"></span></td></tr>' +
-            						'<tr><td>Conclusão estimada em:</td><td><span class="end_time_str info_queue_item_'+u['id']+'"></span></td></tr>' +
+            						'<tr><td>'+gettext('Procedures:')+'</td><td><span class="upload_name info_queue_item_'+u['id']+'"></span></td></tr>' +
+            						'<tr><td>'+gettext('Completed:')+'</td><td><span class="upload_done info_queue_item_'+u['id']+'"></span> de <span class="upload_total info_queue_item_'+u['id']+'"></span> MB (<span class="done_percent info_queue_item_'+u['id']+'"></span>%)</td></tr>' +
+            						'<tr><td>'+gettext('Current volume:')+'</td><td><span class="current_file info_queue_item_'+u['id']+'"></span></td></tr>' +
+            						'<tr><td>'+gettext('Transfer rate:')+'</td><td><span class="current_speed info_queue_item_'+u['id']+'"></span> kB/s</td></tr>' +
+            						'<tr><td>'+gettext('Estimated time left:')+'</td><td><span class="eta_str info_queue_item_'+u['id']+'"></span></td></tr>' +
+            						'<tr><td>'+gettext('Added to queue at:')+'</td><td><span class="added info_queue_item_'+u['id']+'"></span></td></tr>' +
+            						'<tr><td>'+gettext('Start in:')+'</td><td><span class="estimate_start info_queue_item_'+u['id']+'"></span></td></tr>' +
+            						'<tr><td>'+gettext('Conclusion estimated time:')+'</td><td><span class="end_time_str info_queue_item_'+u['id']+'"></span></td></tr>' +
             					'</tbody>' +
             				'</table>' +
             				'<div class="progress_bar">' +

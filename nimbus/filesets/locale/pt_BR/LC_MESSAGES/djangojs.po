@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-01 09:48-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+
+
+#: filesets.js:113
+msgid "No file selected."
+msgstr "Nenhum arquivo selecionado."
+
+#: filesets.js:228
+msgid ""
+"One or more filters will not be added because it already in the list of "
+"'Ignore these files'."
+msgstr "Um ou mais filtros não será adicionado porque já está na lista de "
+"'Ignorar esses arquivos'."
+
+#: filesets.js:228 filesets.js.py:256
+msgid "The filter below will not be added\n"
+msgstr "O filtro abaixo não será adicionado\n"
+
+#: filesets.js:256
+msgid ""
+"One or more filters will not be added because it already in the list of "
+"'Only these files'."
+msgstr "Um ou mais filtros não será adicionado porque já está na lista de"
+"'Somente esses arquivos'."

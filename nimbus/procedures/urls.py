@@ -22,4 +22,8 @@ urlpatterns = patterns('nimbus.procedures.views',
                         # (r'^profile/add/$', 'profile_add'),
                         # (r'^profile/(?P<object_id>\d+)/edit/$', 'profile_edit'),
                         # (r'^profile/(?P<object_id>\d+)/delete/$', 'profile_delete'),
+                                           
+
 )
+
+

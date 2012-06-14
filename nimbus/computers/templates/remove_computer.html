@@ -2,6 +2,7 @@
 {% load i18n %}
 
 {% block headtags %}
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="/media/js/procedures.js"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/historico.css" />
 {% endblock %}
@@ -13,58 +14,49 @@
 	<div class="block_head">
 		<div class="bheadl"></div>
 		<div class="bheadr"></div>
-        <h2>{% trans "Removal Confirmation"%}</h2>
+		<h2>{% trans "Removal Confirmation" %}</h2>
 	</div>		<!-- .block_head ends -->
 
     <div class="block_content">
         <form method="post" action="">
-            <h1>{% trans "You are about to remove computer" %} "{{computer.name}}".</h1>
-			<ul>
+            <h1>{% trans "You are about to remove the computer"%} "{{computer.name}}".</h1>
+			<ul> 
 				{% if procedures %}
-                <li> {% trans "The following backup procedures are associated with this computer and will be deleted:" %} </li>
+				<li> {% trans "The following backup procedures are associated with this computer and will be deleted:" %}</li>
 				<ol>
 					{% for procedure in procedures %}
 					<li>{{procedure.name}}</li>
 					<ol>
 					{% if procedure.fileset.is_model %}
-                    <li>
-                    
-					{% trans "The file set's profile " %} <strong>"{{procedure.fileset.name}}"</strong>{% trans "will not be affected" %}
-                    
-                    </li>
+					<li>{% trans "The file set's profile " %} <strong>"{{procedure.fileset.name}}"</strong>{% trans "will not be affected" %}</li>
 					{% else %}
-                    
-					<li>{% trans "The file set" %} <strong>"{{procedure.fileset.name}}"</strong>{% trans "is used only by" %} <strong>"{{procedure.name}}"</strong>{% trans "and" %} <strong>{% trans "will be removed" %}</strong>.</li>
-                    
+					<li>{% trans " The file sets"%}} <strong>"{{procedure.fileset.name}}"</strong>{% trans "is used only by" %} <strong>"{{procedure.name}}"</strong> {% trans "and"%} <strong>{% trans "will be removed"%}</strong>.</li>
 					{% endif %}
 					{% if procedure.schedule.is_model %}
-                    
-					<li>{% trans "The" %} <strong>"{{procedure.schedule.name}}"</strong>{% trans "profile schedule will not be affected." %}</li>
-      					{% else %}
-                   
-					<li>	{% trans "The schedule" %} <strong>"{{procedure.schedule.name}}"</strong>{% trans "is used only by" %} <strong>"{{procedure.name}}"</strong>{% trans "and" %} <strong>{% trans "will be removed" %}</strong>.</li>
-                
+					<li>{% trans "The profile scheduling" <strong>"{{procedure.schedule.name}}"</strong>{% trans "will not be affected." %}</li>
+					{% else %}
+					<li>{% trans "The scheduling" %} <strong>"{{procedure.schedule.name}}"</strong> {% trans "is used only by" %} <strong>"{{procedure.name}}"</strong> {% trans "and"%} <strong>{% trans "will be removed" %}</strong>.</li>
 					{% endif %}
 					</ol>
 					{% endfor %}
 				</ol>
 				{% else %}
-                <li>{% trans "There are no backup procedures associated for this computer."%}</li>
+				<li>{% trans "There are backup procedures associated with this computer." %}</li>
 				{% endif %}
 				{% if last_jobs %}
-                <li>{% trans "There are no backups related to this computer" %}</li>
+				<li>{% trans "The following backups will be deleted and no longer be restored." %}:</li>
 				<div style="margin-left: 50px; margin-right: 50px;">
         		{% include "stat_block.html" %}
 				</div>
 				{% else %}
-                <li>{% trans "The following backups will be deleted and their recovery will be unavailable:" %}</li>
+				<li>{% trans "There are no backups saved related to this computer." %}.</li>
 				{% endif %}
 			</ul>
             <br \>
-            <p><strong>{% trans "This operation cannot be undone, are you sure you want to proceed?" %}</strong></p>
+			<p><strong>{% trans "This operation can not be undone. Would you like to proceed anyway?" %}</strong></p>
             <p>
                 <!-- <input type="submit" class="css3button positive" name="confirm" value="Prosseguir" /> ou <a href="" onclick="history.back(-1); return false;">Cancelar</a> -->
-                <a href="/computers/{{computer.id}}/do_delete/" class="css3button negative">{% trans "Remove"%}</a> {% trans "or" %}  <a href="" class="css3button positive" onclick="history.back(-1); return false;">{% trans "Cancel"%}</a>
+                <a href="/computers/{{computer.id}}/do_delete/" class="css3button negative">{% trans "Delete" %}</a> ou <a href="" class="css3button positive" onclick="history.back(-1); return false;">{% trans "Cancel" %}</a>
             </p>
         </form>
     </div>

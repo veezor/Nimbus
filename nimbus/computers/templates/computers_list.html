@@ -2,6 +2,7 @@
 {% load i18n %}
 
 {% block headtags %}
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <link rel="stylesheet" type="text/css" href="/media/css/computers.css" />
 <script type="text/javascript" src="/media/jquery.cookie.js"></script>
 <script type="text/javascript" src="/media/js/computers.js"></script>
@@ -19,19 +20,19 @@
 
     <div class="block_content">
 		{% if inactive_computers %}
-        <div class="left">{% if inactive_computers|length == 1%}{% trans "There is a computer to be activated." %} <a href="/computers/add" class="css3button positive">{% trans "Activate new computer"%}</a>{% else %} {% trans "There are"%} {{inactive_computers|length}} {% trans "computers to be activated" %} <a href="/computers/add" class="css3button positive">{% trans "Activate new computers" %}</a>{% endif %}</div>
+        <div class="left">{% if inactive_computers|length == 1%} {% trans "There is a computer to be activated." %} <a href="/computers/add" class="css3button positive">{% trans "Active new computer" %}</a>{% else %}{% trans "There are" %} {{inactive_computers|length}} {% trans "computers to be actived." %} <a href="/computers/add" class="css3button positive">{% trans "Active new computers" %}</a>{% endif %}</div>
 		{% else %}
-        <div class="left">{% trans "There are no computers to be activated" %}</div>
+		<div class="left">{% trans "There are no computers to be activated" %}</div>
 		{% endif %}
 		<div id="computers-filter">
 			<form action="/computers/list" method="get">
 			<select name="group"   id="computers-group">
-                <option value=""> {% trans "Filter by group" %} </option>
+				<option value="">{% trans "Filter by group" %}</option>
 				{% for group in groups %}
 					<option value="{{group.name}}">{{group.name}}</option>
 				{% endfor%}
 			</select>
-            <button type="submit" class="css3button positive" value="Filtrar">{% trans "Filter"%}</button>
+			<button type="submit" class="css3button positive" value="Filtrar">{% trans "Filter" %}</button>
 			</form>
 		</div>
 		
@@ -45,12 +46,12 @@
                         <img src="/media/icons/computer.png" alt="" />
                         <h3 class="name"><a href="/computers/{{ comp.id }}/view">{{comp.name}}</a></h3>
                         <small class="ip">{{comp.address}} - {{comp.operation_system|title}} </small> <br/>
-                        <small class="ip">{% trans "Group:" %} {% for g in comp.groups.all %} {{g.name}} {% endfor %}</small>
+                        <small class="ip">Grupos: {% for g in comp.groups.all %} {{g.name}} {% endfor %}</small>
                     </div>
                     <p class="description">{{comp.description}}</p>
                     <p class="options">
                         <a href="/computers/{{comp.id}}/edit/" class="css3button positive pill">{% trans "Edit" %}</a>
-                        <a href="/computers/{{comp.id}}/delete/" class="css3button negative pill">{% trans "Remove" %}</a>
+                        <a href="/computers/{{comp.id}}/delete/" class="css3button negative pill">{% trans "remove" %}</a>
                     </p>
                 </div>
                 <div class="right">
@@ -61,16 +62,16 @@
                         </form>
                         {% endif %}
                         {% if comp.procedure_set.count %}
-                        <a href="/restore/step2?computer_id={{ comp.id }}" class="floatright css3button positive"> {% trans "Restore"%} </a>
+                        <a href="/restore/step2?computer_id={{ comp.id }}" class="floatright css3button positive">{% trans "Restore" %}</a>
                         {% endif %}
-                        <a href="/procedures/add/?comp_id={{ comp.id }}" class="floatright css3button positive">{% trans "Create backup"%}</a>
-                        <a href="/computers/{{comp.id}}/configure/" class="css3button positive">{% trans "Reconfigurate" %}</a>
+                        <a href="/procedures/add/?comp_id={{ comp.id }}" class="floatright css3button positive">{% trans "create backup" %}</a>
+                        <a href="/computers/{{comp.id}}/configure/" class="css3button positive">{% trans "Reconfigure" %}</a>
                         
                     </div>
                     {% if not comp.procedure_set.count %}
-                    <p>{% trans "There are no procedures for this computer"%}</p>
+                        <p>{% trans "There are no procedures for this computer." %}</p>
                     {% else %}
-                    <h4 class="floatleft">{% trans "FILES TO BACKUP"%}</h4>
+                        <h4 class="floatleft">{% trans "FILES TO BACKUP" %}</h4>
                         <div class="clear"></div>
                         <div class="files">
                             {% for proc in comp.procedure_set.all %}
@@ -84,10 +85,10 @@
                                 </div>
                                 <div class="fileset_detail">
                                     <br/>
-                                    {% trans "Offsite enabled?" %} <strong>{% if proc.offsite_on %}{% trans "Yes"%}{% else %}{% trans "No"%}{% endif %}</strong><br/>
-                                    {% trans "Storage:"%} <strong><a href="/storages/{{proc.storage.id}}/view"><span title="{% trans "IP Address:"%} {{proc.storage.address}} - {{proc.storage.description|slice:":25"}}...">{{proc.storage.name}}</span></a></strong><br/>
-                                    {% trans "Schedule:"%} <strong>{{proc.schedule}}</strong> <small>(<a href="/procedures/{{proc.id}}/edit">{% trans "edit"%}</a>)</small><br/>
-                                    {% trans "Files:"%} <small>(<a href="/procedures/{{proc.id}}/edit/">{% trans "edit"%}</a>)</small>
+                                    {% trans "Offsite enabled?" %}<strong>{% if proc.offsite_on %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</strong><br/>
+                                    {% trans "Local storage:" %}<strong><a href="/storages/{{proc.storage.id}}/view"><span title="Endereço: {{proc.storage.address}} - {{proc.storage.description|slice:":25"}}...">{{proc.storage.name}}</span></a></strong><br/>{% trans 
+                                    "Schedule:" %} <strong>{{proc.schedule}}</strong> <small>(<a href="/procedures/{{proc.id}}/edit">{% trans "Edit" %}</a>)</small><br/>
+                                    {% trans "Files:" %} <small>(<a href="/procedures/{{proc.id}}/edit/">{% trans "Edit" %}</a>)</small>
 
                                     <ul>
                                         {% for file in proc.fileset.files.all %}
@@ -104,7 +105,7 @@
                 <div class="clear"></div>
             </div>
         {% empty %}
-        <p>{% trans "There are no registred computers" %}</p>
+            <p>{% trans "There are computer added." %}</p>
         {% endfor %}
         </div>
     
