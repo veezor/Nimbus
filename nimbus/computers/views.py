@@ -36,12 +36,10 @@ def check_my_status(request):
             message = _(u"Your computer is protected.  IP address is: %s") % (computer.name, ip)
         elif computer.procedure_set.all():
             status = {'status': "inactive_jobs", 'ip': ip, 'name': computer.name}
-            message = _(u"Warning! Procedures of computer %(name)s are disabled. IP address is: %(ip)s") % { 'name' : computer.name,
-                                                                                                             'ip' : ip }
+            message = _(u"Warning! Procedures of computer")+ '%s' +_("are disabled. IP address is: ")+ '%s' % (computer.name, ip)
         else:
             status = {'status': "no_jobs", 'ip': ip, 'name': computer.name}
-            message = _(u"Warning! Computer %(name)s activated but no backups found. IP address is: %(ip)s") % { 'name' : computer.name,
-                                                                                                                 'ip' : ip }
+            message = _(u"Warning! Computer")+ '%s' +("activated but no backups found. IP address is: %s") % (computer.name, ip)
     else:
         status = {'status': "ERROR", 'ip': ip, 'name': None}
         message = _(u"Warning! Your computer seems to unprotected")
@@ -267,6 +265,5 @@ def configure(request, object_id):
         computer.configure()
         messages.success(request, _(u'Computer reconfigured.'))
     except IOError as (errno, strerror):
-        messages.error(request, _(u'Internal Error. %(code)s: %(error)s') % { 'code' : errno,
-                                                                               'erro' : strerror}
+        messages.error(request, _(u"Internal Error. %s:")+ '%s' % (errno, strerror))
     return redirect('nimbus.computers.views.list')
